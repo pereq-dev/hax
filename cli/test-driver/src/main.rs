@@ -321,6 +321,14 @@ async fn main() -> Result<()> {
         signal = interrupted() => Err(anyhow::anyhow!("interrupted by {signal}")),
     };
     flush().await;
+    // Drift gets its own exit code, so that a caller can tell it from a
+    // failure; clap uses 2 for usage errors.
+    if let Err(e) = &result
+        && e.is::<fls::refresh::Drift>()
+    {
+        eprintln!("Error: {e:?}");
+        std::process::exit(3);
+    }
     result
 }
 
@@ -365,6 +373,10 @@ async fn run() -> Result<()> {
                 cache_dir.display()
             )
         })?;
+
+    if let Some(cli::Command::Fls(command)) = options.command() {
+        return fls::subcommand(&options, command.clone()).await;
+    }
 
     // The FLS suite reads its tests from the files and never runs the frontend.
     if options.suite() == cli::Suite::Fls {

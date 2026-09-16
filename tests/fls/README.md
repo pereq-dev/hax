@@ -4,7 +4,7 @@ One test file per language construct, each run through every backend as a whole 
 
 ## Checklist for a new test
 
-1. **Location.** `src/<chapter>/<section>/<name>.rs`, where `<chapter>` is the slug of the FLS source file (`expressions`) and `<section>` the slug of the section title (`call-expressions`). The slugs are listed in `tests/fls-ids.txt` once it exists.
+1. **Location.** `src/<chapter>/<section>/<name>.rs`, where `<chapter>` is the slug of the FLS source file (`expressions`) and `<section>` the slug of the innermost section heading above the paragraph (`call-expressions`). Both are columns of `tests/fls-ids.txt`: the `chapter` column is the chapter directory and the `section` column the section directory. A paragraph directly under the chapter heading has the chapter slug as its section, so its test lives at `src/<chapter>/<chapter>/<name>.rs`.
 2. **Header.** The first lines of the file are `//!` directives; only `//!` lines are read, not `#![doc = "..."]` or `/*! */` comments. The header ends at the first line that is neither empty nor a `//!` line.
    - `@fls: <id>, <id>, ...` lists the paragraph identifiers the test covers. Required.
    - `@title: <text>` is the row label of the report. Required.
@@ -32,6 +32,17 @@ The observed stage of every test is compared with `tests/fls-results/<backend>.t
 The `cargo-hax` on `PATH` must be built from this checkout. The driver rejects a release of another version, but it accepts any build from a git checkout, since the commit such a build reports can be older than the build, and records the package version for it.
 
 The Lean backend also needs `rustup` on `PATH`, since charon installs its Rust toolchain through it. Before the tests, the driver extracts a trivial crate and fails the run if that crate does not reach `extracted`, so a tool chain that cannot run, such as charon without `rustup`, is not recorded as a rejection of every test.
+
+## Identifier lists
+
+`fls refresh` regenerates `tests/fls-ids.txt` from the FLS sources at a revision of `rust-lang/fls`; `--check` writes nothing; it prints the rows added and removed against the committed file and exits with code 3 when the regenerated file would differ apart from its revision, including a change of chapter or section order:
+
+```
+cargo run -p test-driver -- tests fls refresh --rev <release>
+cargo run -p test-driver -- tests fls refresh --rev <release> --check
+```
+
+The revision is a release tag of `rust-lang/fls`, one per Rust version, which the list records as `fls-version` beside the commit it names; a commit hash or a branch works too and records no version. The suite tracks the newest release rather than `main`, so that the identifiers move in reviewed steps, except where a chapter was reworked after that release: there the list is vendored from the commit that reworked it and names no version, and the next release subsumes it.
 
 ## Updating the results
 

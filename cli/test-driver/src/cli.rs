@@ -1,7 +1,7 @@
 //! Command-line interface helpers.
 
 use anyhow::{Result, bail};
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use hax_types::cli_options::BackendName;
 use std::{
     env::current_dir,
@@ -22,12 +22,37 @@ pub enum Suite {
     Fls,
 }
 
+/// Maintenance commands that run no test.
+#[derive(Debug, Clone, Subcommand)]
+pub enum Command {
+    /// Identifier lists and coverage of the FLS suite.
+    #[command(subcommand)]
+    Fls(FlsCommand),
+}
+
+#[derive(Debug, Clone, Subcommand)]
+pub enum FlsCommand {
+    /// Regenerate tests/fls-ids.txt from the FLS sources at a commit.
+    Refresh {
+        /// Commit hash or release tag of rust-lang/fls to fetch.
+        #[clap(long)]
+        rev: String,
+        /// Write nothing; print the identifiers added and removed against
+        /// tests/fls-ids.txt and exit with code 3 when the file would change
+        /// apart from its revision.
+        #[clap(long)]
+        check: bool,
+    },
+}
+
 #[derive(Debug, Clone, Parser)]
 /// Test driver for hax.
 #[command(version, about, long_about = None)]
 pub struct Cli {
     /// Root path of the crate that contains the integration tests.
     tests_crate_dir: PathBuf,
+    #[command(subcommand)]
+    command: Option<Command>,
     /// Folder that stores intermediate artifacts produced by the
     /// driver.
     #[clap(long, short, default_value = current_dir().unwrap().join(".hax-tests-cache").into_os_string())]
@@ -62,6 +87,18 @@ pub struct Cli {
 
 impl Cli {
     pub fn canonicalize(&mut self) -> Result<()> {
+        if self.command.is_some() {
+            let suite_flags = [
+                ("--backend", self.backend.is_some()),
+                ("--matching", self.matching.is_some()),
+                ("--update-results", self.update_results),
+                ("--no-verify", self.no_verify),
+                ("--promote-directives", self.promote_directives),
+            ];
+            if let Some((flag, _)) = suite_flags.iter().find(|(_, set)| *set) {
+                bail!("`{flag}` applies to running a suite, not to a subcommand")
+            }
+        }
         match self.suite {
             Suite::Legacy if self.update_results => {
                 bail!("`--update-results` applies to `--suite fls` only")
@@ -83,6 +120,14 @@ impl Cli {
     /// Returns the root of the crate that contains the integration tests.
     pub fn tests_crate_dir(&self) -> PathBuf {
         self.tests_crate_dir.canonicalize().unwrap()
+    }
+    /// The directory of the FLS tests, `<tests>/fls/src`.
+    pub fn fls_dir(&self) -> PathBuf {
+        self.tests_crate_dir().join("fls").join("src")
+    }
+    /// The subcommand to run instead of a suite.
+    pub fn command(&self) -> Option<&Command> {
+        self.command.as_ref()
     }
     /// Returns the folder that stores intermediate artifacts produced by the
     /// driver.

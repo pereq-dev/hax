@@ -4,8 +4,10 @@
 //! compares the observed stages with the results file committed for the
 //! backend.
 
+mod ids;
 mod lean;
 mod package;
+pub mod refresh;
 mod results;
 mod runner;
 pub mod stage;
@@ -22,15 +24,22 @@ use self::{
     test::FlsTest,
 };
 use crate::{
-    cli::Cli,
+    cli::{Cli, FlsCommand},
     helpers::BackendNameExt,
     log::{BackendJobKind, JobKind},
 };
 
+/// Entry point of the `fls` subcommands.
+pub async fn subcommand(options: &Cli, command: FlsCommand) -> Result<()> {
+    match command {
+        FlsCommand::Refresh { rev, check } => refresh::run(options, &rev, check),
+    }
+}
+
 /// Entry point of the FLS suite.
 pub async fn run(options: Cli) -> Result<()> {
     let ctx = FlsContext::new(options)?;
-    let fls_dir = ctx.options.tests_crate_dir().join("fls").join("src");
+    let fls_dir = ctx.options.fls_dir();
     let tests = JobKind::ResolveTests
         .run(async |_| test::discover(&fls_dir))
         .await?;
