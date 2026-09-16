@@ -143,6 +143,21 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."exceptions-and-errors/exceptions-and-errors/result_and_option"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."exceptions-and-errors/panic/assertions"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."exceptions-and-errors/panic/panic_macro"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/arithmetic-expressions/division_overloading"]
 stage = "checked"
 tier = "supported"

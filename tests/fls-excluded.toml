@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "exceptions-and-errors",
   "concurrency",
   "program-structure-and-compilation",
   "unsafety",
@@ -564,4 +563,11 @@ ids = [
   "fls_bv5cj918dqqe", "fls_goe8q52toik2", "fls_j1ewjisx0mc2", "fls_jh4db1p7or0x",
   "fls_o4snu1him277", "fls_RUiFQ17bmRLt", "fls_QGdeRTe0H1Uc", "fls_Hy17LzOFGfOp",
   "fls_jifg2st5bfd6", "fls_opn5n5t2mo3m", "fls_tghgxcju5u2t",
+]
+
+[exceptions-and-errors.out-of-scope]
+reason = "The panic handler and abort are runtime behaviour outside the program; in the value model a panic and an abort are the same fail outcome (the ownership model of the input-language reference)."
+ids = [
+  "fls_xmtt04lw517w", "fls_7bnrbjb0pq5n", "fls_9a1izu3omkbn", "fls_iq6olct3rw4u",
+  "fls_wd2q6ft9yzrg",
 ]

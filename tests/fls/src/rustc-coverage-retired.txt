@@ -113,3 +113,14 @@ holes.rs
 # ownership-and-deconstruction/destructors/drop_impl, ownership-and-deconstruction/passing-conventions/copy_and_move
 drop_trait.rs
 generics.rs
+
+# exceptions-and-errors/panic/panic_macro, exceptions-and-errors/panic/assertions
+abort.rs
+panic_unwind.rs
+unreachable.rs
+assert.rs
+assert-ne.rs
+assert_not.rs
+bad_counter_ids.rs
+issue-83601.rs
+issue-84561.rs
