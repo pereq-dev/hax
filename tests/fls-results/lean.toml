@@ -98,7 +98,22 @@ stage = "aeneas-rejected"
 tier = "supported"
 classification = "planned"
 
+[tests."types-and-traits/function-lifetime-elision/elided_lifetimes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."types-and-traits/function-pointer-types/fn_pointer_call"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/impl-header-lifetime-elision/impl_for_reference"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/impl-header-lifetime-elision/impl_with_anonymous_lifetime"]
 stage = "aeneas-rejected"
 tier = "supported"
 classification = "planned"
@@ -127,6 +142,11 @@ classification = "supported"
 stage = "extracted"
 tier = "unsupported"
 classification = "unsupported"
+
+[tests."types-and-traits/lifetimes/lifetime_annotation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."types-and-traits/never-type/never_type_diverging"]
 stage = "aeneas-rejected"
@@ -163,6 +183,11 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."types-and-traits/static-lifetime-elision/static_str_constant"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."types-and-traits/str-type/str_type"]
 stage = "extracted"
 tier = "supported"
@@ -188,10 +213,55 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."types-and-traits/trait-and-lifetime-bounds/higher_ranked_trait_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/lifetime_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/opt_out_sized_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/trait_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-object-lifetime-elision/boxed_dyn_alias"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
 [tests."types-and-traits/trait-object-types/dyn_dispatch"]
 stage = "aeneas-rejected"
 tier = "supported"
 classification = "planned"
+
+[tests."types-and-traits/traits/auto_trait_bounds"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/traits/send_sync_bounds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/traits/supertrait"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/traits/trait_definition"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."types-and-traits/tuple-types/tuple_type"]
 stage = "checked"
