@@ -783,7 +783,42 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."values/constant-promotion/promoted_borrow"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."values/constant-promotion/promoted_computed_borrow"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."values/constants/constant_item"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."values/constants/unnamed_constant"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."values/references/reference_values"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."values/statics/immutable_static"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."values/statics/static_mut"]
 stage = "aeneas-rejected"
 tier = "unsupported"
 classification = "unsupported"
+
+[tests."values/variables/variable_bindings"]
+stage = "checked"
+tier = "supported"
+classification = "supported"

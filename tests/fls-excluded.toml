@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "values",
   "statements",
   "functions",
   "associated-items",
@@ -277,4 +276,30 @@ fls_bhw2j9wjpf2x = "A function-pointer-to-address cast produces an address, whic
 reason = "Calling a function through a foreign ABI belongs to the foreign function interface, outside the value model."
 ids = [
   "fls_5yeq4oah58dl",
+]
+
+[values.legality]
+reason = "Constraints on constants, statics, and variables that rustc checks before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_6rxwbbhf5tc5", "fls_ka4y2yd100dx", "fls_l1FOH8zt0XRZ", "fls_vnc3ttnid1qr",
+  "fls_vt9tlkd676ql", "fls_37oocZVDne5Y", "fls_b6ods85htuyn", "fls_k0r2c6uq29tu",
+  "fls_k4tyqb1j6zjo", "fls_vgidvfwzm4ks", "fls_yq0hpy4jx2qb", "fls_r9km9f969bu8",
+  "fls_WRpcVF1fLEpr",
+]
+
+[values.out-of-scope]
+reason = "Memory addresses, allocated objects, overlap, and provenance are erased by the value model, which has no addresses."
+ids = [
+  "fls_B5cmkWfD5GNt", "fls_CUJyMj0Sj8NS", "fls_dfr4yqo93fsn", "fls_eoak5mdl6ma",
+  "fls_kaomYy0Ml4Nh", "fls_m6ctqq70vcxr", "fls_rixdyyc525xp", "fls_s231d18x5eay",
+  "fls_8RBNIR0E6pnI", "fls_VWUlxTy0QF9d", "fls_kaPNJ7iIHPro", "fls_1NJhTBN1D2qv",
+  "fls_5MkKtNL9oCsL", "fls_ffh8mAkebORJ", "fls_wnJmQYT7iKQf",
+]
+
+[values.unsafe]
+reason = "Undefined behavior, raw pointers, and mutation of statics need unsafe code, which the value model excludes (the input-language reference)."
+ids = [
+  "fls_6lg0oaaopc26", "fls_oqhQ62mDLckN", "fls_uhwpuv6cx4ip", "fls_xuuFKmm181bs",
+  "fls_c2Guy3fPYaUV", "fls_hrum767l6dte", "fls_k6ues2936pjq", "fls_ezh8aq6fmdvz",
+  "fls_c3DaCLQEBpYQ", "fls_b5wsmii7vz3v",
 ]
