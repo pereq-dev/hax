@@ -778,6 +778,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."program-structure-and-compilation/conditional-compilation/cfg_removed_item"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."program-structure-and-compilation/modules/nested_modules"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."statements/expression-statements/expression_statement"]
 stage = "checked"
 tier = "supported"

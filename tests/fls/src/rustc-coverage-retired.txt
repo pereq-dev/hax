@@ -124,3 +124,8 @@ assert_not.rs
 bad_counter_ids.rs
 issue-83601.rs
 issue-84561.rs
+
+# program-structure-and-compilation/modules/nested_modules, program-structure-and-compilation/conditional-compilation/cfg_removed_item
+no-core.rs
+unused_mod.rs
+auxiliary/unused_mod_helper.rs

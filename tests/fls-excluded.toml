@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "program-structure-and-compilation",
   "unsafety",
   "macros",
   "ffi",
@@ -595,4 +594,19 @@ ids = [
   "fls_tx4b8r6i93n4", "fls_2hqmfwswc6k", "fls_2qkrcd5eovpe", "fls_5ab2sw3gwmt3",
   "fls_906978wtss6n", "fls_cpcd0vexfbhj", "fls_cry1e78gp19q", "fls_jt7rfq9atbiv",
   "fls_jx0784jzxy00", "fls_mjq1l1y0vmz4", "fls_vzuwnpx7mt08", "fls_w2mw833g28eb",
+]
+
+[program-structure-and-compilation.legality]
+reason = "Source files, outline modules, crates, crate imports, compilation roots, and the entry point describe the crate structure that rustc resolves before hax sees the program (the Rust subset of the input-language reference); the suite holds compiling programs only."
+ids = [
+  "fls_4vicosdeaqmp", "fls_ann3cha1xpek", "fls_1aruwps62c4p", "fls_cavwpr1ybk37",
+  "fls_plepew2319g4", "fls_whgv72emrm47", "fls_9ub6ks8qrang", "fls_Mf62VqAhoZ3c",
+  "fls_OyFwBtDGVimT", "fls_RJJmN4tP7j4m", "fls_d9nn4yuiw1ja", "fls_e7jGvXvTsFpC",
+  "fls_h93C3wfbAoz1", "fls_jQqXxPyND1ds", "fls_kQiJPwb2Hjcc", "fls_qwghk79ok5h0",
+  "fls_unxalgMqIr3v", "fls_3bgpc8m8yk4p", "fls_7vz5n3x6jo1s", "fls_d0pa807s5d5h",
+  "fls_ft860vkz0lkc", "fls_k90qtnf8kgu1", "fls_siv8bl6s2ndu", "fls_vfam3wzeAiah",
+  "fls_bsyfxdk3ap1t", "fls_fhiqvgdamq5", "fls_tk8tl2e0a34", "fls_y56RGw3cbFex",
+  "fls_4psnfphsgdek", "fls_a3je4wc53bmo", "fls_bk755pvc1l53", "fls_dp64b08em9BJ",
+  "fls_m7xfrhqif74", "fls_o4fxok23134r", "fls_qq9fzrw4aykd", "fls_sbGnkm8Ephiu",
+  "fls_w8q15zp7kyl0",
 ]
