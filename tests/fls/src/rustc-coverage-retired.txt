@@ -57,3 +57,7 @@ overflow.rs
 # generators are unsupported (the value-model boundary of the input-language reference); no FLS chapter describes them
 coroutine.rs
 yield.rs
+
+# statements/let-statements/let_else
+branch/let-else.rs
+let_else_loop.rs

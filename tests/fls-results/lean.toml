@@ -508,6 +508,26 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."statements/expression-statements/expression_statement"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."statements/let-statements/let_else"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."statements/let-statements/let_statement"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."statements/statements/statement_kinds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."types-and-traits/array-types/array_type"]
 stage = "checked"
 tier = "supported"

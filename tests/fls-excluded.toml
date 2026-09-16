@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "statements",
   "functions",
   "associated-items",
   "implementations",
@@ -302,4 +301,10 @@ ids = [
   "fls_6lg0oaaopc26", "fls_oqhQ62mDLckN", "fls_uhwpuv6cx4ip", "fls_xuuFKmm181bs",
   "fls_c2Guy3fPYaUV", "fls_hrum767l6dte", "fls_k6ues2936pjq", "fls_ezh8aq6fmdvz",
   "fls_c3DaCLQEBpYQ", "fls_b5wsmii7vz3v",
+]
+
+[statements.legality]
+reason = "Constraints on let statements that rustc checks before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_1eBQDZdBuDsN", "fls_1s1UikGU5YQb", "fls_iqar7vvtw22c",
 ]
