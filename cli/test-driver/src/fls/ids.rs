@@ -155,6 +155,23 @@ impl IdList {
         }
         out
     }
+
+    /// One list for the coverage check, keeping the revision of the FLS list.
+    pub fn merged(fls: Self, hax: Self) -> Result<Self> {
+        if let Some(chapter) = hax.chapters.iter().find(|c| fls.chapters.contains(c)) {
+            bail!("chapter `{chapter}` appears in both identifier lists");
+        }
+        let mut paragraphs = fls.paragraphs;
+        paragraphs.extend(hax.paragraphs);
+        let mut chapters = fls.chapters;
+        chapters.extend(hax.chapters);
+        Ok(Self {
+            revision: fls.revision,
+            version: fls.version,
+            chapters,
+            paragraphs,
+        })
+    }
 }
 
 fn row(p: &Paragraph) -> String {
@@ -248,5 +265,29 @@ mod tests {
                 .to_string()
                 .contains("line 1")
         );
+    }
+
+    #[test]
+    fn merged_rejects_shared_chapter() {
+        let a = IdList::from_paragraphs(
+            "r".into(),
+            None,
+            vec![paragraph("fls_a", "hax", "s", false)],
+        );
+        let b = IdList::from_paragraphs(
+            "hand-written".into(),
+            None,
+            vec![paragraph("hax_a", "hax", "s", false)],
+        );
+        assert!(IdList::merged(a.clone(), b.clone()).is_err());
+        let c = IdList::from_paragraphs(
+            "r".into(),
+            None,
+            vec![paragraph("fls_a", "values", "s", false)],
+        );
+        let merged = IdList::merged(c, b).unwrap();
+        assert_eq!(merged.revision, "r");
+        assert_eq!(merged.chapters, ["values", "hax"]);
+        assert_eq!(merged.paragraphs.len(), 2);
     }
 }

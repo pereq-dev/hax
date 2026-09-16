@@ -1,0 +1,32 @@
+# fls-revision: hand-written
+# columns: id	chapter	section	section-title	flags
+hax_attributes	hax	contracts	Contracts	
+hax_decreases	hax	contracts	Contracts	
+hax_ensures	hax	contracts	Contracts	
+hax_ensures_ref	hax	contracts	Contracts	
+hax_future	hax	contracts	Contracts	
+hax_loop_decreases	hax	contracts	Contracts	
+hax_loop_invariant	hax	contracts	Contracts	
+hax_requires	hax	contracts	Contracts	
+hax_assert	hax	logic-and-propositions	Logic and Propositions	
+hax_assert_prop	hax	logic-and-propositions	Logic and Propositions	
+hax_assume	hax	logic-and-propositions	Logic and Propositions	
+hax_debug_assert	hax	logic-and-propositions	Logic and Propositions	
+hax_exists	hax	logic-and-propositions	Logic and Propositions	
+hax_forall	hax	logic-and-propositions	Logic and Propositions	
+hax_implies	hax	logic-and-propositions	Logic and Propositions	
+hax_prop	hax	logic-and-propositions	Logic and Propositions	
+hax_to_prop	hax	logic-and-propositions	Logic and Propositions	
+hax_abstraction	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_concretization	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_int	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_refine_as	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_refinement	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_refinement_type	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_to_int	hax	refinement-and-abstraction	Refinement and Abstraction	
+hax_exclude	hax	controlling-extraction	Controlling Extraction	
+hax_include	hax	controlling-extraction	Controlling Extraction	
+hax_lemma	hax	controlling-extraction	Controlling Extraction	
+hax_opaque	hax	controlling-extraction	Controlling Extraction	
+hax_opaque_type	hax	controlling-extraction	Controlling Extraction	
+hax_transparent	hax	controlling-extraction	Controlling Extraction	

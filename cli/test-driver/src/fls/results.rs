@@ -5,7 +5,7 @@
 use std::{
     collections::{BTreeMap, HashSet},
     fs,
-    path::PathBuf,
+    path::{Path, PathBuf},
 };
 
 use anyhow::{Context as _, Result, bail};
@@ -15,7 +15,7 @@ use serde::Deserialize;
 use super::{
     package::FlsContext,
     runner::{Stages, ToolVersions},
-    stage::{Stage, StageScale, Tier, classify},
+    stage::{Classification, Stage, StageScale, Tier, classify, scale_of},
     test::FlsTest,
 };
 use crate::log::JobKind;
@@ -35,6 +35,7 @@ pub struct ResultsFile {
 /// The committed file as read back; the writer below is the only producer.
 #[derive(Deserialize)]
 struct CommittedFile {
+    backend: String,
     /// Kept in file order, which is the order `cargo hax tools show` reports.
     tools: indexmap::IndexMap<String, toml::Value>,
     #[serde(default)]
@@ -201,6 +202,89 @@ impl ResultsFile {
     }
 }
 
+/// The violations of the committed results files in `results_dir`: every test
+/// with a tier for the backend of a file has an entry of that tier in it, a
+/// reason for the backend if the entry is not classified as supported, and
+/// every entry has such a test.
+pub fn results_violations(results_dir: &Path, tests: &[FlsTest]) -> Result<Vec<String>> {
+    let mut violations = vec![];
+    if !results_dir.is_dir() {
+        return Ok(violations);
+    }
+    let mut files = vec![];
+    for entry in fs::read_dir(results_dir)? {
+        let path = entry?.path();
+        if path.extension().is_some_and(|e| e == "toml") {
+            files.push(path);
+        }
+    }
+    files.sort();
+    for path in files {
+        let Some(committed) = CommittedFile::read(&path)? else {
+            continue;
+        };
+        let backend = <BackendName as clap::ValueEnum>::from_str(&committed.backend, true)
+            .map_err(|e| anyhow::anyhow!("{}: unknown backend: {e}", path.display()))?;
+        violations.extend(entry_violations(
+            &path.display().to_string(),
+            backend,
+            &committed.tests,
+            tests,
+        )?);
+    }
+    Ok(violations)
+}
+
+fn entry_violations(
+    file: &str,
+    backend: BackendName,
+    committed: &BTreeMap<String, CommittedTest>,
+    tests: &[FlsTest],
+) -> Result<Vec<String>> {
+    let scale = scale_of(backend)?;
+    let mut violations = vec![];
+    let mut with_tier = HashSet::new();
+    for test in tests {
+        let Some(tier) = test.tiers.get(&backend) else {
+            continue;
+        };
+        with_tier.insert(test.path.as_str());
+        match committed.get(&test.path) {
+            None => violations.push(format!(
+                "{}: no entry in {file}; run the backend",
+                test.path
+            )),
+            Some(entry) if entry.tier != tier.as_str() => violations.push(format!(
+                "{}: tier `{}` in {file} but `{tier}` in the test; run the backend",
+                test.path, entry.tier
+            )),
+            Some(entry) => {
+                let stage = scale
+                    .parse(&entry.stage)
+                    .with_context(|| format!("{}: in {file}", test.path))?;
+                let classification = classify(*tier, stage);
+                if classification != Classification::Supported
+                    && !test.reasons.contains_key(&backend)
+                {
+                    violations.push(format!(
+                        "{}: classified as `{}` in {file} but has no `@{backend}(reason)`",
+                        test.path,
+                        classification.as_str()
+                    ));
+                }
+            }
+        }
+    }
+    for path in committed.keys() {
+        if !with_tier.contains(path.as_str()) {
+            violations.push(format!(
+                "{path}: entry in {file} without a test with a `@{backend}(tier)` line; run the backend"
+            ));
+        }
+    }
+    Ok(violations)
+}
+
 fn committed_path(ctx: &FlsContext, backend: BackendName) -> PathBuf {
     ctx.options
         .tests_crate_dir()
@@ -261,6 +345,7 @@ pub async fn check(ctx: &FlsContext, file: &ResultsFile, job: JobKind) -> Result
 mod tests {
     use super::*;
     use crate::fls::stage::LEAN;
+    use std::collections::HashMap;
 
     fn result(stage: &str) -> TestResult {
         TestResult {
@@ -286,6 +371,82 @@ mod tests {
         assert_eq!(merged["a"].stage, LEAN.stage("checked"));
         assert_eq!(merged["b"].stage, LEAN.stage("checked"));
         assert_eq!(merged["new"].stage, LEAN.stage("elaborates"));
+    }
+
+    #[test]
+    fn entries_match_the_tests_with_a_tier() {
+        let test = |path: &str, tier: Option<Tier>| FlsTest {
+            path: path.into(),
+            source: PathBuf::new(),
+            fls: vec![],
+            title: "t".into(),
+            no_equiv: None,
+            tiers: tier
+                .map(|t| HashMap::from([(BackendName::Lean, t)]))
+                .unwrap_or_default(),
+            reasons: HashMap::new(),
+            equiv: vec![],
+        };
+        let entry = |tier: &str| CommittedTest {
+            stage: "checked".into(),
+            tier: tier.into(),
+        };
+        let committed = BTreeMap::from([
+            ("ok".to_string(), entry("supported")),
+            ("retiered".to_string(), entry("supported")),
+            ("untiered".to_string(), entry("supported")),
+            ("deleted".to_string(), entry("supported")),
+        ]);
+        let tests = [
+            test("ok", Some(Tier::Supported)),
+            test("retiered", Some(Tier::Unsupported)),
+            test("untiered", None),
+            test("new", Some(Tier::Supported)),
+        ];
+        let violations =
+            entry_violations("lean.toml", BackendName::Lean, &committed, &tests).unwrap();
+        let paths: Vec<&str> = violations
+            .iter()
+            .map(|v| v.split(':').next().unwrap())
+            .collect();
+        assert_eq!(paths, ["retiered", "new", "deleted", "untiered"]);
+    }
+
+    #[test]
+    fn a_gap_needs_a_reason() {
+        let test = |path: &str, reason: Option<&str>| FlsTest {
+            path: path.into(),
+            source: PathBuf::new(),
+            fls: vec![],
+            title: "t".into(),
+            no_equiv: None,
+            tiers: HashMap::from([(BackendName::Lean, Tier::Supported)]),
+            reasons: reason
+                .map(|r| HashMap::from([(BackendName::Lean, r.to_string())]))
+                .unwrap_or_default(),
+            equiv: vec![],
+        };
+        let entry = |stage: &str| CommittedTest {
+            stage: stage.into(),
+            tier: "supported".into(),
+        };
+        let committed = BTreeMap::from([
+            ("explained".to_string(), entry("aeneas-rejected")),
+            ("unexplained".to_string(), entry("aeneas-rejected")),
+            ("supported".to_string(), entry("checked")),
+        ]);
+        let tests = [
+            test("explained", Some("aeneas rejects it")),
+            test("unexplained", None),
+            test("supported", None),
+        ];
+        let violations =
+            entry_violations("lean.toml", BackendName::Lean, &committed, &tests).unwrap();
+        let paths: Vec<&str> = violations
+            .iter()
+            .map(|v| v.split(':').next().unwrap())
+            .collect();
+        assert_eq!(paths, ["unexplained"]);
     }
 
     #[test]

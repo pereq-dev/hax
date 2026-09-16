@@ -4,6 +4,8 @@
 //! compares the observed stages with the results file committed for the
 //! backend.
 
+mod coverage;
+mod exclusions;
 mod ids;
 mod lean;
 mod package;
@@ -33,6 +35,7 @@ use crate::{
 pub async fn subcommand(options: &Cli, command: FlsCommand) -> Result<()> {
     match command {
         FlsCommand::Refresh { rev, check } => refresh::run(options, &rev, check),
+        FlsCommand::Coverage => coverage::run(options).await,
     }
 }
 

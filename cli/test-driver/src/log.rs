@@ -19,6 +19,10 @@ use tokio::sync::{mpsc, oneshot};
 /// Job categorisations used by the renderer implementations.
 pub enum JobKind {
     ResolveTests,
+    /// A subcommand that runs no backend, e.g. the coverage check.
+    Command {
+        name: String,
+    },
     BackendJob {
         kind: BackendJobKind,
         backend: BackendName,
@@ -67,6 +71,7 @@ impl Display for JobKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             JobKind::ResolveTests => write!(f, "discover tests"),
+            JobKind::Command { name } => write!(f, "{name}"),
             JobKind::BackendJob { kind, backend } => match kind {
                 BackendJobKind::CargoHaxSerialize => write!(f, "cargo: {backend}"),
                 BackendJobKind::CargoHaxInto { test } => write!(f, "engine: {backend}/{test}"),
@@ -219,6 +224,7 @@ fn format_duration(duration: Duration) -> String {
 fn format_job_title(job: &JobKind) -> String {
     match job {
         JobKind::ResolveTests => "discover tests".to_string(),
+        JobKind::Command { name } => name.clone(),
         JobKind::BackendJob { kind, backend } => match kind {
             BackendJobKind::CargoHaxSerialize => format!("{backend} metadata"),
             BackendJobKind::CargoHaxInto { test } => format!("{backend}/{test}"),
