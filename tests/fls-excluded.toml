@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "ffi",
   "inline-assembly",
   "hax",
 ]
@@ -614,6 +613,20 @@ reason = "The unsafe operations on statics, unions, and `asm!`, and the rule tha
 ids = [
   "fls_3ra8s1v1vbek", "fls_6ipl0xo5qjyl", "fls_s5nfhBFOk8Bu", "fls_ucghxcnpaq2t",
   "fls_ybnpe7ppq1vh",
+]
+
+[ffi.ffi]
+reason = "The linking attributes, the ABIs beyond `C` and `Rust`, foreign exceptions, and the declaration rules and initialization of external items belong to the foreign function interface; the value model sees an external item only as an opaque declaration (the input-language reference)."
+ids = [
+  "fls_3cgtdk4698hm", "fls_4akfvpq1yg4g", "fls_9d8v0xeyi0f", "fls_k1hiwghzxtfa",
+  "fls_m7x5odt4nb23", "fls_shzmgci4f7o5", "fls_36qrs2fxxvi7", "fls_6rtj6rwqxojh",
+  "fls_7t7yxh94wnbl", "fls_8m7pc3riokst", "fls_CIyK8BYzzo26", "fls_JHlqXjn4Sf07",
+  "fls_LfjvLXvI6TFL", "fls_M4LqHf8hbPA8", "fls_NQAzj5ai1La5", "fls_UippZpUyYpHl",
+  "fls_ccFdnlX5HIYk", "fls_d3nmpc5mtg27", "fls_dbbfqaqa80r8", "fls_j6pqchx27ast",
+  "fls_sxj4vy39sj4g", "fls_tyjs1x4j8ovp", "fls_xrCRprWS13R1", "fls_9div9yusw64h",
+  "fls_juob30rst11r", "fls_l88r9fj82650", "fls_m7tu4w4lk8v", "fls_qwchgvvnp0qe",
+  "fls_rdu4723vp0oo", "fls_8ddsytjr4il6", "fls_H0cg9XMaGz0y", "fls_en2h09ehj0j3",
+  "fls_fo9with6xumo", "fls_tr7purzcldn0", "fls_PBsepNHImJKH",
 ]
 
 [macros.macro-expanded]

@@ -558,6 +558,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."ffi/abi/extern_c_abi"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ffi/external-blocks/extern_block"]
+stage = "elaborates"
+tier = "supported"
+classification = "planned"
+
 [tests."functions/functions/async_function"]
 stage = "aeneas-rejected"
 tier = "unsupported"
