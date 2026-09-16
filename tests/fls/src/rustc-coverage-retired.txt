@@ -13,3 +13,6 @@ mcdc/non_control_flow.rs
 mcdc/inlined_expressions.rs
 # expressions/error-propagation-expression/question_mark
 fn_sig_into_try.rs
+
+# expressions/closure-expressions/closure_expression, expressions/call-expressions/closure_call
+closure_unit_return.rs

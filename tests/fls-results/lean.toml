@@ -18,6 +18,11 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/array-expressions/array_constructors"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/async-blocks/async_block"]
 stage = "aeneas-rejected"
 tier = "unsupported"
@@ -47,6 +52,21 @@ classification = "supported"
 stage = "aeneas-rejected"
 tier = "supported"
 classification = "planned"
+
+[tests."expressions/call-expressions/closure_call"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/call-expressions/function_call"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/closure-expressions/closure_expression"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."expressions/comparison-expressions/comparison_via_trait"]
 stage = "checked"
@@ -113,6 +133,21 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/field-access-expressions/field_access"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/indexing-expressions/index"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/indexing-expressions/index_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/lazy-boolean-expressions/short_circuit"]
 stage = "checked"
 tier = "supported"
@@ -132,6 +167,11 @@ classification = "supported"
 stage = "extracted"
 tier = "supported"
 classification = "planned"
+
+[tests."expressions/method-call-expressions/method_call"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."expressions/method-call-expressions/option_map"]
 stage = "checked"
@@ -177,6 +217,16 @@ classification = "supported"
 stage = "aeneas-rejected"
 tier = "unsupported"
 classification = "unsupported"
+
+[tests."expressions/struct-expressions/struct_construction"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/tuple-expressions/tuple_construction"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."expressions/type-cast-expressions/char_casts"]
 stage = "aeneas-rejected"
