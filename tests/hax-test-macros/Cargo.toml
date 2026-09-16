@@ -1,0 +1,17 @@
+[package]
+name = "hax-test-macros"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+proc-macro = true
+name = "hax_test"
+
+[dependencies]
+proc-macro2 = "1"
+quote = "1"
+syn = { version = "2", features = ["full"] }
+
+# Standalone package, outside the `tests` workspace.
+[workspace]
