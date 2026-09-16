@@ -608,6 +608,46 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."ownership-and-deconstruction/borrowing/implicit_borrows"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/destructors/aggregate_drop_order"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."ownership-and-deconstruction/destructors/drop_impl"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/destructors/observable_drop_order"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."ownership-and-deconstruction/initialization/initialization"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/ownership/single_owner"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/passing-conventions/copy_and_move"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/references/active_references"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."patterns/binding-modes/default_binding_modes"]
 stage = "checked"
 tier = "supported"

@@ -109,3 +109,7 @@ inner_items.rs
 
 # entities-and-resolution/scopes/nested_scopes, statements/statements/statement_kinds
 holes.rs
+
+# ownership-and-deconstruction/destructors/drop_impl, ownership-and-deconstruction/passing-conventions/copy_and_move
+drop_trait.rs
+generics.rs

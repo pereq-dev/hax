@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "ownership-and-deconstruction",
   "exceptions-and-errors",
   "concurrency",
   "program-structure-and-compilation",
@@ -456,6 +455,45 @@ ids = [
   "fls_skexvtpbjknn", "fls_uua0nthq9id", "fls_v03924dr0u0z", "fls_t4ez0zg1m569",
   "fls_u48dtmh97g", "fls_gc3ly8fsodf1", "fls_huznzmkuhdky", "fls_NydVxyb43TH6",
   "fls_ir9i4i2x5gyx", "fls_l82yswg0k3px",
+]
+
+[ownership-and-deconstruction.legality]
+reason = "Borrow checking, lifetime inference, and initialization checking are performed by rustc before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_46910buiwvv9", "fls_cckf6dtkgwb4", "fls_ev4a82fdhwr8", "fls_hqxsuyn285he",
+  "fls_i1ny0k726a4a", "fls_v69rptdjao42", "fls_vg9h6tz6z37w", "fls_568o7nyihndd",
+  "fls_gbqizu6gu6kk", "fls_ovkkxeybumvt", "fls_yhchu2bpil4m", "fls_gq35gqagw35",
+]
+
+[ownership-and-deconstruction.out-of-scope]
+reason = "Drop scopes, their extension, and the drop order describe when drop glue runs; the value model erases drop glue and has no effect at scope exit (the ownership model of the input-language reference)."
+ids = [
+  "fls_6ii5o68vuymj", "fls_gjn2jnsal9gs", "fls_ol2w2292frfi", "fls_y9q0eqr865b3",
+  "fls_16htxf824xbk", "fls_1o9ye6cwoyiq", "fls_1vZFa5mDEbXW", "fls_2peq1tihglnr",
+  "fls_2zwwnzepgmje", "fls_3jtU8grRaMM9", "fls_560437qmeqtr", "fls_5m3u3k6f00bd",
+  "fls_7uav7vkcv4pz", "fls_8cunkfc6x24q", "fls_8r39duatupxw", "fls_Jp4NsK8vYqRc",
+  "fls_Vq8LdN2xWmTs", "fls_asvuef2pc3m0", "fls_bewcu5xceu8i", "fls_ckh8wkq0y5ja",
+  "fls_d5yg6w8gv6aq", "fls_dltmd8e8c5ia", "fls_fnvr5w2wzxns", "fls_gdh6wwvi7ci6",
+  "fls_iHHhlxCiqNWZ", "fls_il09n7sq0a3k", "fls_lbsfhg42yiqy", "fls_m86ljncnmo7j",
+  "fls_n108lvc4otoc", "fls_n6y6brm6pghr", "fls_owqk2fcpvc4s", "fls_ptk6yibqyfzi",
+  "fls_qidma4fpkhb0", "fls_s1wbqld139gz", "fls_swXXkbZGLPKa", "fls_txvxrn6wbyql",
+  "fls_vlbx5ukw5c8l", "fls_vrqgac634wpr", "fls_29y59x8bmw75", "fls_3ycn4u1fe9h",
+  "fls_965wt48ooqyw", "fls_Rj9zhVutfQod", "fls_VDPi1dJzJMUb", "fls_YeeZWqTdMivX",
+  "fls_aq01wjpkxhq9", "fls_eeaJtK4w5gVK", "fls_elGH7HSawMRb", "fls_gjd1ow3l7swe",
+  "fls_iqw0d1l1lj3i", "fls_ju7cpftd8r2g", "fls_kflqez2mtbit", "fls_oodpp3LpXC13",
+  "fls_r8nt0zp8dnyp", "fls_subo2w7ln43q", "fls_wyzau8hhq74d", "fls_xGThCPoTUSAi",
+  "fls_xjw82bujm148", "fls_093YxG6YXQz2", "fls_3i348l3pbtrx", "fls_43yqlxjr3a10",
+  "fls_4sgca9wcl8h0", "fls_7rwo0he8x143", "fls_7yybrl2J37Et", "fls_Et6PqW9nRcVm",
+  "fls_K8whhUwAUVqR", "fls_NpCrm4t03oQg", "fls_W2S2FrkuedYC", "fls_a2m4ibzhgupa",
+  "fls_a5tmilqxdb6f", "fls_a7lsq2kkzkk4", "fls_dhfIPP4yR3Tt", "fls_g07zq3n55094",
+  "fls_gNWXh61ZXXt8", "fls_go3bvd23vzi9", "fls_jwofws3022ar", "fls_n6o1xzjiz8cv",
+  "fls_oe8l81y0wnao", "fls_zQGkVGWIzMQ7", "fls_zxFM7EoE2Xq8",
+]
+
+[ownership-and-deconstruction.unsafe]
+reason = "Aliasing mutable references and borrowing union fields need unsafe code, which the value model excludes (the input-language reference)."
+ids = [
+  "fls_eT1hnLOx6vxk", "fls_kxws4zmaahj6",
 ]
 
 [entities-and-resolution.legality]
