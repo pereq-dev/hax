@@ -1,0 +1,20 @@
+# The FLS tests as modules of one crate, so that `cargo test` runs the Rust
+# half of every `equiv` function. The empty `[workspace]` keeps the crate out
+# of the `tests` workspace.
+[package]
+name = "fls-tests"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+hax-lib = { path = "../../hax-lib" }
+hax-test-macros = { path = "../hax-test-macros" }
+
+[workspace]
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)'] }

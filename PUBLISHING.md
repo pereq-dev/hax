@@ -50,7 +50,7 @@ The rest runs unattended: the crates are published, the release tags pushed, the
 
 ### The version bump
 
-The `Release PR` workflow runs the version bump on a runner and pushes it as a `release/vX.Y.Z` branch. The PR is opened by you rather than by the workflow so that its CI checks run (a PR opened with the workflow token raises no events). The bump is `cargo release LEVEL --workspace --no-publish --no-tag --no-push --execute`: it bumps the version of every crate of the workspace and the versions in `engine/dune-project` and `engine/hax-engine.opam`, and renames the `[Unreleased]` section of `CHANGELOG.md` to the target version. It does not publish anything.
+The `Release PR` workflow runs the version bump on a runner and pushes it as a `release/vX.Y.Z` branch. The PR is opened by you rather than by the workflow so that its CI checks run (a PR opened with the workflow token raises no events). The bump is `cargo release LEVEL --workspace --no-publish --no-tag --no-push --execute`: it bumps the version of every crate of the workspace and the versions in `engine/dune-project`, `engine/hax-engine.opam`, and the `hax` row of `tests/fls-results/lean.toml`, and renames the `[Unreleased]` section of `CHANGELOG.md` to the target version. It does not publish anything.
 
 ### Release candidates
 
