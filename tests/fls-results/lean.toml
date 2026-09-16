@@ -8,11 +8,6 @@ lean = "leanprover/lean4:v4.35.0"
 hax-lean-lib = "v0.3.39"
 aeneas-lean-lib = "build-41977a5"
 
-[tests."expressions/arithmetic-expressions/division_overloading"]
-stage = "checked"
-tier = "supported"
-classification = "supported"
-
 [tests."associated-items/associated-items/associated_constants"]
 stage = "checked"
 tier = "supported"
@@ -94,6 +89,61 @@ tier = "supported"
 classification = "supported"
 
 [tests."attributes/built-in-attributes/lint_attributes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/namespaces/label_lifetime_namespaces"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/namespaces/namespace_separation"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."entities-and-resolution/paths/path_kinds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/preludes/prelude_names"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/resolution/auto_deref_resolution"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/scopes/nested_scopes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/shadowing/prelude_shadowing"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/shadowing/variable_shadowing"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/use-imports/use_imports"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/visibility/visibility_modifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/arithmetic-expressions/division_overloading"]
 stage = "checked"
 tier = "supported"
 classification = "supported"

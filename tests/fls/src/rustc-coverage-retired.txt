@@ -103,3 +103,9 @@ inline.rs
 auxiliary/discard_all_helper.rs
 auxiliary/inline_mixed_helper.rs
 auxiliary/inline_always_with_dead_code.rs
+
+# entities-and-resolution/scopes/nested_scopes
+inner_items.rs
+
+# entities-and-resolution/scopes/nested_scopes, statements/statements/statement_kinds
+holes.rs
