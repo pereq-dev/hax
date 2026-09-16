@@ -458,7 +458,32 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."generics/generic-arguments/generic_arguments"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/generic-parameters/borrow_type_argument"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."generics/generic-parameters/inferred_constant"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."generics/generic-parameters/lifetime_param"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/generic-parameters/type_and_const_parameters"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/where-clauses/where_clause"]
 stage = "checked"
 tier = "supported"
 classification = "supported"

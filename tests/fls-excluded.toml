@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "generics",
   "attributes",
   "entities-and-resolution",
   "ownership-and-deconstruction",
@@ -348,3 +347,22 @@ reason = "Unsafe traits and their implementations belong to unsafe code, which t
 ids = [
   "fls_8pwr7ibvhmhu", "fls_mx5xjcejwa6u",
 ]
+
+[generics.legality]
+reason = "Generic conformance and the other constraints on generic parameters and arguments are checked by rustc before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_2grtygcj8o3", "fls_3qZRBp9j26w3", "fls_4a2qshaf5se7", "fls_62b59qvom3nm",
+  "fls_6j616ydf2mnh", "fls_7epZNsTYNmgE", "fls_Ft5rGeL7QwJM", "fls_dalqke3rznrb",
+  "fls_g2pfrqhmeys8", "fls_hyi2jnp38v1n", "fls_jzfk9fspzqja", "fls_oq76uff9gp0k",
+  "fls_p4yb8EAXlRU0", "fls_sseo6u6pbcki",
+  "fls_u8mqct93yimd", "fls_ua3w16qo9o4", "fls_w9ol06mldwb", "fls_x4s7p2v981r6",
+  "fls_1xgw1dq60quz", "fls_47s8i7pzb9gg", "fls_9n1ejjili06h", "fls_al4dhmqodvwc",
+  "fls_dxMfAI4EZVS5", "fls_ky39fb2vcom6", "fls_ukarc98ceesz", "fls_91bylteu35bi",
+  "fls_CBWyxBJeYeb2", "fls_Kyar0jH9BqeW", "fls_dp3hpvf0fmr8", "fls_gb3mpt5rxjoa",
+  "fls_j6xtrxc6aik", "fls_kdeltu9dsd0d", "fls_ltch5eivxgaa", "fls_mg45zcguxxg5",
+  "fls_us7d30cbwgpz", "fls_w0ozotuwtr9", "fls_ws1h57fk1mkh",
+]
+
+[generics.legality.overrides]
+fls_7epZNsTYNmgE = "Where an inferred constant may be written is a syntactic rule rustc applies before hax sees the program."
+fls_Ft5rGeL7QwJM = "Where an inferred constant may be written is a syntactic rule rustc applies before hax sees the program."

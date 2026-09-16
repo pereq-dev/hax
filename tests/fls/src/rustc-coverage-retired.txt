@@ -74,3 +74,12 @@ auxiliary/executor.rs
 
 # associated-items/associated-items/associated_types, patterns/slice-patterns/slice_pattern
 generic-unused-impl.rs
+
+# generics/generic-parameters/type_and_const_parameters, generics/where-clauses/where_clause
+unused.rs
+branch/generics.rs
+auxiliary/used_crate.rs
+auxiliary/used_inline_crate.rs
+
+# generics/generic-arguments/generic_arguments
+sort_groups.rs
