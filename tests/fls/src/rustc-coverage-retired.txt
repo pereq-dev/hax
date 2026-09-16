@@ -61,3 +61,13 @@ yield.rs
 # statements/let-statements/let_else
 branch/let-else.rs
 let_else_loop.rs
+
+# functions/functions/function_definition
+long_and_wide.rs
+trivial.rs
+ignore_map.rs
+ignore_run.rs
+
+# functions/functions/async_function, expressions/await-expressions/await_expression, types-and-traits/enum-types/zero_variant_enum
+issue-93054.rs
+auxiliary/executor.rs

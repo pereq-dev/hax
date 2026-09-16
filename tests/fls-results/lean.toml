@@ -398,6 +398,36 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."functions/functions/async_function"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."functions/functions/const_function"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/extern_c_function"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/function_definition"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/self_parameter"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/unsafe_function"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."generics/generic-parameters/lifetime_param"]
 stage = "checked"
 tier = "supported"
