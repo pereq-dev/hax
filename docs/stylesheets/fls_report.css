@@ -1,0 +1,42 @@
+/* The status cells of the FLS report: the classification in colour, with its
+   reason on hover. */
+.fls-status {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fls-reason {
+  border-bottom: 1px dotted currentcolor;
+  cursor: help;
+}
+
+.fls-supported {
+  color: #2e7d32;
+}
+
+.fls-planned {
+  color: #b26a00;
+}
+
+/* Out of the input language by design, not a failure. */
+.fls-out-of-scope {
+  color: var(--md-default-fg-color--light);
+}
+
+.fls-unexpected {
+  color: #c62828;
+}
+
+[data-md-color-scheme="slate"] {
+  .fls-supported {
+    color: #81c784;
+  }
+
+  .fls-planned {
+    color: #ffb74d;
+  }
+
+  .fls-unexpected {
+    color: #ef9a9a;
+  }
+}
