@@ -43,6 +43,56 @@ stage = "aeneas-rejected"
 tier = "supported"
 classification = "planned"
 
+[tests."attributes/attribute-cfg-attr/cfg_attr"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-cfg/cfg"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-cold/cold"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-derive/derive"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-inline/inline"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-non-exhaustive/non_exhaustive"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-repr/repr"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-track-caller/track_caller"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attributes/inner_attribute"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/built-in-attributes/lint_attributes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/arithmetic-expressions/integer_arithmetic"]
 stage = "checked"
 tier = "supported"

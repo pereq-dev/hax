@@ -83,3 +83,23 @@ auxiliary/used_inline_crate.rs
 
 # generics/generic-arguments/generic_arguments
 sort_groups.rs
+
+# attributes/attribute-derive/derive, attributes/attribute-inline/inline, attributes/built-in-attributes/lint_attributes
+partial_eq.rs
+inline-dead.rs
+# #[coverage], #[test], and #[bench] are tool and testing attributes, out of scope for the value model
+no_cov_crate.rs
+coverage_attr_closure.rs
+attr/impl.rs
+attr/module.rs
+attr/nested.rs
+attr/off-on-sandwich.rs
+attr/trait-impl-inherit.rs
+bench.rs
+test_harness.rs
+
+# attributes/attribute-inline/inline, generics/generic-parameters/type_and_const_parameters, generics/where-clauses/where_clause, functions/functions/function_definition
+inline.rs
+auxiliary/discard_all_helper.rs
+auxiliary/inline_mixed_helper.rs
+auxiliary/inline_always_with_dead_code.rs
