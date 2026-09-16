@@ -1,0 +1,222 @@
+name: FLS tests
+
+# The FLS test suite: the coverage check and the Rust side of the tests on
+# every pull request, the Lean backend on the tests a pull request changes,
+# and the whole Lean suite weekly and on demand. Any stage that differs from
+# `tests/fls-results/<backend>.toml` fails the backend job, which then leaves
+# the observed file as an artifact. No `push` trigger: the merge queue tests
+# every merge and the weekly run covers `main`.
+on:
+  pull_request:
+  merge_group:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  # Scheduled and dispatched runs get separate groups, since a newly queued
+  # run replaces a pending one of its group; a newer push to a pull request
+  # supersedes the older run.
+  group: fls-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Everything that needs no backend toolchain, in minutes with plain cargo.
+  coverage:
+    name: coverage and Rust side
+    # Its inputs are all versioned, so a scheduled run on `main` would repeat
+    # the check of the merge queue.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Restored on later pushes to the same pull request; a merge-queue
+      # cache would never be restored.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.event_name == 'pull_request' }}
+          workspaces: |
+            . -> target
+            tests/fls -> target
+
+      # The test files are modules declared by generated code, which
+      # `cargo fmt` does not follow, so rustfmt checks them one by one.
+      - name: Format of the test files
+        run: |
+          find tests/fls -name '*.rs' -not -path '*/.*' -not -path 'tests/fls/target/*' -print0 \
+            | xargs -0 rustfmt --edition 2024 --check
+
+      - name: Every paragraph is claimed, excluded, informational, or pending
+        run: cargo run -p test-driver -- tests fls coverage
+
+      - name: Rust side of the equiv oracle, in hax mode
+        run: cargo test --manifest-path tests/fls/Cargo.toml
+
+      # Without `cfg(hax)` from `.cargo/config.toml`, so that the `hax_lib`
+      # assertions are checked.
+      - name: Rust side of the equiv oracle, without hax mode
+        run: cargo test --manifest-path tests/fls/Cargo.toml
+        env:
+          RUSTFLAGS: ""
+
+      - name: Report renderer
+        run: python3 -m unittest discover docs/hooks/fls_report
+
+  # Which tests the Lean job runs: those whose file or results entry a pull
+  # request changes; everything when a file the suite depends on changed, or
+  # on a scheduled or dispatched run; nothing when neither changed.
+  select:
+    name: select tests
+    runs-on: ubuntu-latest
+    outputs:
+      mode: ${{ steps.select.outputs.mode }}
+      matching: ${{ steps.select.outputs.matching }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: select
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          MQ_BASE: ${{ github.event.merge_group.base_sha }}
+        run: |
+          case "$EVENT" in
+            pull_request) base="$PR_BASE" ;;
+            merge_group) base="$MQ_BASE" ;;
+            *) base="" ;;
+          esac
+          if [ -z "$base" ]; then
+            mode=all
+            matching=""
+          else
+            selection="$(.utils/fls-changed-tests.sh "$base")"
+            mode="$(head -n 1 <<<"$selection")"
+            matching="$(tail -n +2 <<<"$selection" | tr '\n' ' ')"
+          fi
+          echo "mode: $mode"
+          echo "matching: $matching"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "matching=$matching" >> "$GITHUB_OUTPUT"
+
+  lean:
+    name: lean backend
+    needs: select
+    if: needs.select.outputs.mode != 'none'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write # the weekly issue
+    steps:
+      - uses: actions/checkout@v4
+
+      # The Lean workspace of the suite holds several GB of Mathlib and
+      # aeneas under `.lake/packages`, fetched on every run without a cache.
+      - name: Free disk space by removing preinstalled packages
+        uses: jlumbroso/free-disk-space@main
+
+      # hax from this checkout, so that the suite exercises the `cargo hax`
+      # users run.
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+
+      - name: Install hax + rustc
+        run: |
+          nix profile install .#rustc
+          nix profile install .
+
+      # For the build of the driver; the extractions use their own target
+      # directory in the suite's cache. Saved on pull requests and on the
+      # weekly run on `main`, whose cache every pull request can restore.
+      - uses: Swatinem/rust-cache@v2
+        with:
+          save-if: ${{ github.event_name != 'merge_group' }}
+
+      - name: Install elan
+        # Bypass elan-init.sh: it does its own curl with no retries, so a
+        # transient 502 from github.com/.../releases/latest/download/...
+        # fails the whole job. Download the tarball ourselves with curl
+        # retries, then run the bundled elan-init binary directly. The
+        # driver copies the `lean-toolchain` of hax-lib into its workspace,
+        # so elan installs the toolchain on first use.
+        run: |
+          set -euo pipefail
+          curl -sSfL --retry 5 --retry-delay 5 --retry-all-errors \
+            -o /tmp/elan.tar.gz \
+            https://github.com/leanprover/elan/releases/latest/download/elan-x86_64-unknown-linux-gnu.tar.gz
+          tar -xzf /tmp/elan.tar.gz -C /tmp
+          /tmp/elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Show the free disk space before the run
+        run: df -h /
+
+      - name: Run the Lean backend of the FLS suite
+        env:
+          MATCHING: ${{ needs.select.outputs.matching }}
+        run: |
+          # $MATCHING expands to `-m <test>` pairs, or to nothing for a full run.
+          # shellcheck disable=SC2086
+          cargo run --release -p test-driver -- tests --suite fls -b lean $MATCHING
+
+      - name: Upload the observed results file
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fls-results-lean
+          path: .hax-tests-cache/fls-results/lean.toml
+          if-no-files-found: ignore
+
+      - name: Put the results diff into the job summary
+        if: failure()
+        run: |
+          observed=.hax-tests-cache/fls-results/lean.toml
+          if [ ! -f "$observed" ]; then
+            echo "The run failed before any results were observed; see the log." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            cat <<'HEAD'
+          ## Observed Lean results differ from `tests/fls-results/lean.toml`
+
+          Download the `fls-results-lean` artifact and copy it over the committed file, or apply this diff:
+
+          ```diff
+          HEAD
+            diff -u tests/fls-results/lean.toml "$observed" || true
+            echo '```'
+          } > results-diff.md
+          cat results-diff.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Update the weekly issue
+        if: failure() && github.event_name == 'schedule' && github.repository == 'pereq-dev/hax'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "The weekly run of the Lean backend of the FLS suite fails: $RUN_URL"
+            echo
+            if [ -f results-diff.md ]; then
+              cat results-diff.md
+            else
+              echo "The run failed before any results were observed; see the log."
+            fi
+            echo
+            echo "This issue is kept current by \`fls_tests.yml\` and closed by the next passing weekly run."
+          } > issue.md
+          .utils/upsert-issue.sh fls-weekly "FLS suite: weekly Lean run fails" issue.md
+
+      - name: Close the weekly issue
+        if: success() && github.event_name == 'schedule' && github.repository == 'pereq-dev/hax'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          .utils/upsert-issue.sh --resolve fls-weekly "The weekly run passes again: $RUN_URL"
