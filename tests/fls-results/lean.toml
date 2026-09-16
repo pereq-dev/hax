@@ -463,6 +463,21 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."implementations/implementations/blanket_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."implementations/implementations/inherent_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."implementations/implementations/trait_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."patterns/binding-modes/default_binding_modes"]
 stage = "checked"
 tier = "supported"
