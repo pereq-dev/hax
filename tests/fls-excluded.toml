@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "associated-items",
   "implementations",
   "generics",
   "attributes",
@@ -322,4 +321,11 @@ ids = [
   "fls_DpTFEHZAABdD", "fls_OR85NVifPwjr", "fls_TMOzb6cYIOlH", "fls_Xdr0bFwxhWiB",
   "fls_ZJJppPfiJRou", "fls_b7FTlWfnX2OI", "fls_eHPWHrvs7ETl", "fls_icdzs1mjh0n4",
   "fls_jOyZh9ujWWHQ", "fls_mjCrvmikm58M", "fls_o4uSLPo00KUg",
+]
+
+[associated-items.legality]
+reason = "Constraints on associated items that rustc checks before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_1zlkeb6fz10j", "fls_2TRwCz38kuRz", "fls_4ftfefcotb4g", "fls_bx7931x4155h",
+  "fls_kl9p3ycl5mzf", "fls_oHxzyaiT7Qm6", "fls_w8nu8suy7t5", "fls_wasocqdnuzd1",
 ]

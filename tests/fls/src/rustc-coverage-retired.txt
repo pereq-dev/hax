@@ -71,3 +71,6 @@ ignore_run.rs
 # functions/functions/async_function, expressions/await-expressions/await_expression, types-and-traits/enum-types/zero_variant_enum
 issue-93054.rs
 auxiliary/executor.rs
+
+# associated-items/associated-items/associated_types, patterns/slice-patterns/slice_pattern
+generic-unused-impl.rs

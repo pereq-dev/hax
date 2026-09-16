@@ -13,6 +13,36 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."associated-items/associated-items/associated_constants"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."associated-items/associated-items/associated_functions"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."associated-items/associated-items/associated_types"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."associated-items/associated-items/generic_associated_type"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."associated-items/associated-items/pin_self_parameter"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."associated-items/associated-items/return_position_impl_trait_in_trait"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
 [tests."expressions/arithmetic-expressions/integer_arithmetic"]
 stage = "checked"
 tier = "supported"
