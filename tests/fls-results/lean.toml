@@ -1083,6 +1083,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."unsafety/unsafety/unsafe_call"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."unsafety/unsafety/unsafe_operations"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
 [tests."values/constant-promotion/promoted_borrow"]
 stage = "checked"
 tier = "supported"

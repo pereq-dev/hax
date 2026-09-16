@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "unsafety",
   "macros",
   "ffi",
   "inline-assembly",
@@ -609,4 +608,11 @@ ids = [
   "fls_4psnfphsgdek", "fls_a3je4wc53bmo", "fls_bk755pvc1l53", "fls_dp64b08em9BJ",
   "fls_m7xfrhqif74", "fls_o4fxok23134r", "fls_qq9fzrw4aykd", "fls_sbGnkm8Ephiu",
   "fls_w8q15zp7kyl0",
+]
+
+[unsafety.unsafe]
+reason = "The unsafe operations on statics, unions, and `asm!`, and the rule that confines unsafe operations to an unsafe context, are outside the value model; `unsafe` blocks and the `unsafe` qualifier are erased (the input-language reference)."
+ids = [
+  "fls_3ra8s1v1vbek", "fls_6ipl0xo5qjyl", "fls_s5nfhBFOk8Bu", "fls_ucghxcnpaq2t",
+  "fls_ybnpe7ppq1vh",
 ]
