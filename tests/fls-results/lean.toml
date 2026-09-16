@@ -48,6 +48,11 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/break-expressions/break_expression"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/break-expressions/labeled_break_outer"]
 stage = "aeneas-rejected"
 tier = "supported"
@@ -98,6 +103,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/continue-expressions/continue_expression"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/continue-expressions/labeled_continue_outer"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
 [tests."expressions/dereference-expression/deref"]
 stage = "checked"
 tier = "supported"
@@ -138,12 +153,32 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/for-loops/for_loop"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/if-expressions/if_else"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/if-let-expressions/if_let"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/indexing-expressions/index"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
 
 [tests."expressions/indexing-expressions/index_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/infinite-loops/infinite_loop"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -167,6 +202,16 @@ classification = "supported"
 stage = "extracted"
 tier = "supported"
 classification = "planned"
+
+[tests."expressions/match-expressions/match_arms"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/match-expressions/match_guard"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."expressions/method-call-expressions/method_call"]
 stage = "checked"
@@ -213,10 +258,25 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/range-expressions/inclusive_range"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/range-expressions/range_structs"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/raw-borrow-expression/raw_borrow"]
 stage = "aeneas-rejected"
 tier = "unsupported"
 classification = "unsupported"
+
+[tests."expressions/return-expressions/return_expression"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
 
 [tests."expressions/struct-expressions/struct_construction"]
 stage = "checked"
@@ -249,6 +309,16 @@ tier = "supported"
 classification = "supported"
 
 [tests."expressions/value-expressions/temporaries"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/while-let-loops/while_let_loop"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/while-loops/while_loop"]
 stage = "checked"
 tier = "supported"
 classification = "supported"

@@ -16,3 +16,38 @@ fn_sig_into_try.rs
 
 # expressions/closure-expressions/closure_expression, expressions/call-expressions/closure_call
 closure_unit_return.rs
+
+# expressions/if-expressions/if_else, expressions/if-let-expressions/if_let
+if.rs
+if_else.rs
+if_not.rs
+conditions.rs
+branch/if.rs
+branch/if-let.rs
+mcdc/if.rs
+mcdc/nested_if.rs
+mcdc/condition-limit.rs
+dead_code.rs
+closure.rs
+closure_bug.rs
+# expressions/match-expressions/match_arms, expressions/match-expressions/match_guard
+simple_match.rs
+branch/match-arms.rs
+branch/match-trivial.rs
+branch/guard.rs
+# expressions/infinite-loops/infinite_loop, expressions/while-loops/while_loop, expressions/for-loops/for_loop
+simple_loop.rs
+while.rs
+branch/while.rs
+branch/no-mir-spans.rs
+loop-break.rs
+loop_break_value.rs
+tight_inf_loop.rs
+loops_branches.rs
+color.rs
+# expressions/break-expressions/labeled_break_outer, expressions/continue-expressions/continue_expression
+nested_loops.rs
+continue.rs
+# expressions/return-expressions/return_expression, expressions/error-propagation-expression/question_mark
+while_early_ret.rs
+try_error_result.rs
