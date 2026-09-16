@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "types-and-traits",
   "patterns",
   "expressions",
   "values",
@@ -39,3 +38,133 @@ ids = ["fls_hil5f7y4xdhe"]
 [items.macro-expanded]
 reason = "Macro invocations in item position are expanded before the program reaches charon; the suite tests the expansion, not the invocation."
 ids = ["fls_s3b1cba9lfj5"]
+
+[types-and-traits.legality]
+reason = "Constraints, static errors, and the inference, unification, coercion, variance, elision, and object safety machinery that rustc applies before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_imr2jx6cbuzq", "fls_pkts1p2dnxo", "fls_acgtczhk8ci0", "fls_yu7r2077n9m7",
+  "fls_s9a36zsrfqew", "fls_g5qle7xzaoif", "fls_hp5frc752dam", "fls_ly183pj4fkgh",
+  "fls_w9xj26ej869w", "fls_wqbuof7kxsrg", "fls_auurdv1zvzb", "fls_r885av95eivp",
+  "fls_vce7w0904du5", "fls_1caus8ybmfli", "fls_I5fN5Fmo5CyK", "fls_JWgSckDtN13c",
+  "fls_ZJG2Q6lJYXhY", "fls_bQhh3zHAKjSu", "fls_hLTnHnZuaHve", "fls_sXZknxozJxtC",
+  "fls_vgNK01SXacnx", "fls_ECjhEI7eCwAj", "fls_ieyqx5vzas2m", "fls_9z8oleh0wdel",
+  "fls_CcoUug6b9ohU", "fls_hJII8XYAtZeY", "fls_s0oy2c8t4yz9", "fls_3abhsuaa8nas",
+  "fls_Vxlr9ZcqiOvY", "fls_gE9VC8JXrl1N", "fls_hBXlJhbhuoHY", "fls_ybyQjFamI1Q5",
+  "fls_drxl7u3etfp9", "fls_rosdkeck5ax2", "fls_njvdevz0xqc0", "fls_p0c62ejo1u1t",
+  "fls_ryvqkcx48u74", "fls_zhle0rb0vhpc", "fls_iu93vpyihrpj", "fls_eddnwlr0rz59",
+  "fls_16ZDp8PaKi5P", "fls_1j1wc3uxs7h6", "fls_2xgq66qp3h95", "fls_3U7Ue6Xzuv9M",
+  "fls_42oj1ekjihq1", "fls_52ymp79ert2", "fls_5dh8c5gg0hmk", "fls_67VZrx6dw68H",
+  "fls_74cug5zfv2wv", "fls_7IsrfUoPXSZU", "fls_8gldjjxbyyb4", "fls_8jad1ztcuxha",
+  "fls_9dpea9ty0c2l", "fls_EoEbldkKBQW0", "fls_Hb95CPyUpCmc", "fls_aie0tr62vhw5",
+  "fls_akko4dmp4nkw", "fls_bnp6or49voxp", "fls_dhksyjrvx9a", "fls_fTy3FVt0fK9g",
+  "fls_g2u1dfhphrrg", "fls_gebpqqqvvklf", "fls_gg3x25qvymmq", "fls_hdo4c849q3lo",
+  "fls_hf0cfkrmt655", "fls_hza5n5eb18ta", "fls_i1m41c4wkfc0", "fls_i221hm7rssik",
+  "fls_ismr7wwvek4q", "fls_j3w9ap9zaqud", "fls_jEZVWlfVPevb", "fls_jkaiBnApJAtt",
+  "fls_k9dag68qpe93", "fls_kcr8npsmy0e5", "fls_keezxl8v4snf", "fls_kq3lv1zbangz",
+  "fls_m6d9qj9q9u1i", "fls_mizmcykgdisb", "fls_mpq64eal9jo3", "fls_nKcqFo7yIDBe",
+  "fls_ni296ev8x9v9", "fls_oksjiq3nmq2k", "fls_pGRLTACDvzv2", "fls_paoh0wttde2z",
+  "fls_rmqcbb5ja4va", "fls_ryvdhkgm7vzj", "fls_so2cgqmawlm7", "fls_tIiw5WkTRNf7",
+  "fls_uu8je75y5pss", "fls_vsax8w6y794m", "fls_w9dx5h7m31sj", "fls_ww16urcjrj6i",
+  "fls_wz2etmkpvxed", "fls_x9933rjecrna", "fls_yvllot5qnc4s", "fls_20pvqqayzqra",
+  "fls_2uv1r0gni1fk", "fls_47u0039t0l8f", "fls_4wbk7pqj010i", "fls_6r3kn0nk5b8o",
+  "fls_7aw3ifbvfgbd", "fls_7ri4jk2dydfn", "fls_8kvme0u4u8r6", "fls_92pwnd1xbp5r",
+  "fls_QB4c6FNKxaPl", "fls_SYnFJBhi0IWj", "fls_agw1aej616vf", "fls_bWHQIL4DSN4S",
+  "fls_bhzmble1itog", "fls_bmh6g3jju7eq", "fls_cnkth59djwgl", "fls_da4w32rsrwxc",
+  "fls_dgoypa3hcxc0", "fls_e3lgrtqb7jwe", "fls_fjc9xev8rcu6", "fls_iqtmhn8flws7",
+  "fls_j8rcy0xvd155", "fls_jmo42qgix5uw", "fls_ju4ypa5ysga0", "fls_ky7ykpufb95t",
+  "fls_n1kh3z8d4q8y", "fls_p3ym3ycrnd5m", "fls_p8hp5y506nam", "fls_r11shke69uu6",
+  "fls_rfjdh79k0wou", "fls_rl9yrdfwnu03", "fls_sr8d5har4s03", "fls_tbt4236igdzb",
+  "fls_tnbga5dl4gz8", "fls_u0e42y7nvn7e", "fls_ulcdetwp6x96", "fls_w15yo8yvuxq3",
+  "fls_wuka4uyo3oj7", "fls_xfqny6bwzsu9", "fls_yoreux8tn65x", "fls_z00wtlna6grk",
+  "fls_zi5311z1w7re", "fls_zst5pa29rpt", "fls_07AIc06bGnZt", "fls_0HHC1iOk5dwz",
+  "fls_0RZ7w0YqmzE3", "fls_0eATa6RtDNtA", "fls_1rnssw39aRWn", "fls_21ay7EUUUmhx",
+  "fls_34AQ9g7xhdUj", "fls_3hv3wxkhjjp1", "fls_4ZT35povCL04", "fls_56J8BlLOuvr4",
+  "fls_5d4hw3gj4w4n", "fls_5jDBPymVKzDv", "fls_5v6TR7oqOwFM", "fls_62OcWZaVN9hh",
+  "fls_67Bf5kR5OtYW", "fls_6GrNr2izovRN", "fls_7ov36fpd9mwe", "fls_8VgAhOgDOk0y",
+  "fls_8edzBBIo7jF7", "fls_97Fxlv2KN6QF", "fls_9GDElCkL1UbH", "fls_9dSltJ6U98Fo",
+  "fls_A1NVYkepoaMk", "fls_A36NBOl1FTCb", "fls_CVfHkJq1PixR", "fls_EWBilpepaDcX",
+  "fls_Esa4ST7lLp8T", "fls_F999gqcBfff9", "fls_FSQqHs8T4bUx", "fls_FojOvB6l3lAh",
+  "fls_Fv8fj9R8prUV", "fls_Gwx0Kfx68DXL", "fls_IoceMi7HfqsK", "fls_J6ydUCCJp1Sn",
+  "fls_J77VeAlD8rsv", "fls_JKZHF3ZDHshw", "fls_JryXiKBIFvF3", "fls_KJsIu1lgVZxP",
+  "fls_KRQxdSav1KBA", "fls_KphY5qHev0Dc", "fls_Kv0dzoMODtdy", "fls_Mcpwyvz47SoG",
+  "fls_NYSzcvf5nQpi", "fls_Nbdth8N0PSRq", "fls_NpwLzJJH9cGw", "fls_O2r51Xrmmj38",
+  "fls_OVVY9CE0pGtJ", "fls_P9uiamxA4HE3", "fls_QDWVv2nTufX7", "fls_QZWTS0Giy3I3",
+  "fls_QaGKt99CmvF6", "fls_RJIeW597XRvS", "fls_SZgixDCAx6PQ", "fls_SZmiJjI43fQL",
+  "fls_Sowatt1V988J", "fls_TAJ3JJwIeDbQ", "fls_Tx4Sx4Qy8y2d", "fls_U46IXItEKMCB",
+  "fls_UFMyHzk6ucsT", "fls_VrpaTruoBwtF", "fls_X8kLC7JwiF0A", "fls_XYY1U9h9HlAa",
+  "fls_YppNCEPMYqWJ", "fls_Z5gKFjZW5rRA", "fls_ZFQhOxO3jpby", "fls_aYJaZXcOVVyk",
+  "fls_aiSI99pbAYqT", "fls_b96Zca6oFn82", "fls_bXQ63GYYDuMp", "fls_be2djziKJw3I",
+  "fls_cPlCLGCcl7EK", "fls_f21GNntBOxaz", "fls_fjV22WcosNnt", "fls_gDalJm1XS0mi",
+  "fls_h3OVuCdsKPhV", "fls_h3mmmIBR72kV", "fls_h8sedxew0d4u", "fls_hH58ftCxBYzm",
+  "fls_hISRWZUuqE4Q", "fls_hPZmcfQiNasT", "fls_htLp5J5ObgNh", "fls_hzXqj6YT1mFr",
+  "fls_ipWTrhF4xakC", "fls_jK2pIVxOmtJ8", "fls_l1G52a0qqEes", "fls_lDkPMB5UI58B",
+  "fls_lUg26vFuSePP", "fls_mCISAdm7sjRs", "fls_nHt0LVSiwTB3", "fls_q1JZZMxqWXCk",
+  "fls_qlovdtcj1v1b", "fls_rT6zpG3cYhaF", "fls_rgC3Iea5p9Kr", "fls_rvj3XspFZ1u3",
+  "fls_sAS3vQpkjksr", "fls_sLCBZ3vG1AWs", "fls_st9onPgDrc8y", "fls_uvvn4usfsbhr",
+  "fls_v5dWGuBKvQSJ", "fls_vQ3tHg9XmDkF", "fls_vYvumjTQH9Xg", "fls_veG2D64fIXvo",
+  "fls_ybvrhh96fc7y", "fls_ygi1ACJ0RkfS", "fls_z2UkZX5Qdmws", "fls_zRdxowO4eDMN",
+  "fls_zgRFKbfdI6ro", "fls_ytn5cdonytyn", "fls_46gd1q80c6bn", "fls_5wlltclogfkw",
+  "fls_72tvfoemwpyy", "fls_aer3gaur7avp", "fls_droy0w5gtqaw", "fls_j7nb34o87l1z",
+  "fls_k1vc9vd8at92", "fls_kqylg31sm5wv", "fls_kwo4cknx0yat", "fls_lrdki56hpc3k",
+  "fls_uixekv82g2e5", "fls_vmLLL82EQasI", "fls_BqLPVaSyyXRG", "fls_OnyR0Wsfk7KI",
+  "fls_sf6zg0ez9hbb", "fls_3rfs58i2kg6l", "fls_4kjxxrsk1igf", "fls_67w6yslr3e25",
+  "fls_7ex941yysuhq", "fls_7pkqgxabojkn", "fls_7qud6i05ze2", "fls_8ohuze7hqtc1",
+  "fls_9ae3idezsths", "fls_AD1IXzsnlwyg", "fls_CvZNYIfnOUcc", "fls_DWPN8DRysgMa",
+  "fls_HqXTVi7gr9wR", "fls_LyvV4pOG7E4l", "fls_RdqV0hI8h8BI", "fls_Uv5CcMHPX79J",
+  "fls_WD6uyTCziRac", "fls_abn5ycx11zpm", "fls_aspdlqluwh9w", "fls_atq2cltx487m",
+  "fls_awJeqcAHn5O3", "fls_df87d44kgwcv", "fls_etgfvgvymn8o", "fls_hpiiwxzg16rj",
+  "fls_hvfyog9ygn6q", "fls_i1vuix3gj9ej", "fls_kbo3e3bosr0m", "fls_ln9pqd4xu5e",
+  "fls_lxfPvK7NDNlj", "fls_mduolmcawb30", "fls_mlf39pl0b931", "fls_n36p6w2a75sm",
+  "fls_ojal3qytkqql", "fls_owp42z12l4lc", "fls_p2II8E6cc9zt", "fls_pN5C4FHWEWdK",
+  "fls_qc6jma5g9vpn", "fls_tOn5oKtp300J", "fls_wpm0p0gtctvi", "fls_xURR0owesaIE",
+  "fls_xkzo7nj40rbn", "fls_xrLYQX7W9OnR", "fls_xw7eo3us0ow4", "fls_y4zmb3vrym7p",
+  "fls_y81gmqweqc9w", "fls_yknymnlsasyw", "fls_z4jo3ojkcu9v", "fls_cD0ZYi23VqWg",
+  "fls_sA4Lqc5o6cX3", "fls_1j204m1wy333", "fls_1jnn9bsb71k7", "fls_2p29p1fvi182",
+  "fls_6km3cbchuxr2", "fls_ac9tdlfwp5et", "fls_crb6m6b3cdwh", "fls_d4u3y82hdadc",
+  "fls_dpudys82dhdc", "fls_g56br27hq2zj", "fls_hsg9kfyvh35m", "fls_ks8wlufmhz6d",
+  "fls_ofqy10q4a9jk", "fls_pjil71kk0r25", "fls_vf7cxiir91ps", "fls_yofbo96tjppf",
+  "fls_37udexenqv3p", "fls_xi86he5vvill", "fls_SHhw6lYHeYyQ", "fls_cglZigwAnASl",
+  "fls_e36Hh4oJvfhv", "fls_lC2rwdPLRwaf", "fls_ptejalcnIQtm", "fls_rGbdKtTijby4",
+  "fls_P2V1DqrdCjCi",
+]
+
+[types-and-traits.out-of-scope]
+reason = "Layout, representation, alignment, and bit patterns are erased by the value model and have no value semantics to observe."
+ids = [
+  "fls_iye7ho2ynyhn", "fls_nuFAwLHOdQBx", "fls_kTGFLFymTWch", "fls_18ke90udyp67",
+  "fls_1pbwigq6f3ha", "fls_395247pkxv48", "fls_7at60xlxm9u4", "fls_7cjbxleo998q",
+  "fls_7jaqx33re3hg", "fls_aQgOFrzAhdsC", "fls_asys0iz6m0md", "fls_bk3nm2n47afu",
+  "fls_e5hivr6m5s3h", "fls_gd7wozpn2ecp", "fls_gt3tkbn4bsa6", "fls_hlbsjggfxnt2",
+  "fls_kdbq02iguzgl", "fls_lwmrljw9m0pb", "fls_muxfn9soi47l", "fls_nmoqk7jo1kzf",
+  "fls_nrqG8i3fmpm4", "fls_nyxnnlwmt5gu", "fls_ozYgHEHFTT5c", "fls_pzi6izljfv0f",
+  "fls_sdrb0k2r18my", "fls_tbe9sc75timc", "fls_uixe1ruv52be", "fls_veotnstzigw2",
+  "fls_wfv5vcxl2lc7", "fls_x8dfw50z9c", "fls_z3i758jshvhx", "fls_3dwtkr7vzha0",
+  "fls_7plbkqlmed0r", "fls_8s1vddh8vdhy", "fls_9dhnanv21y9z", "fls_9q2iqzbup8oy",
+  "fls_b005bktrkrxy", "fls_ergdb18tpx25", "fls_fsbf6ist38ix", "fls_hrsdn21jmgx2",
+  "fls_ml4khttq3w5k", "fls_mpqlyi3lgrfv", "fls_q465p1xuzxi", "fls_qkkc8x2oghst",
+  "fls_3k1tcfxp0g63", "fls_45f57s1gmmh5", "fls_ebs77rxvk9st", "fls_efp1kfgkpba8",
+  "fls_hz012yus6b4g", "fls_k907i6w83s2", "fls_q5akku2idrwh", "fls_r6o1wv76yw6m",
+  "fls_s9c0a0lg6c0p", "fls_slhvf3gmqz4h", "fls_u1zy06510m56", "fls_2npku94ookdn",
+  "fls_6ck71twmnbg5", "fls_7sjkej5otxo", "fls_fa5nkvu07jlp", "fls_gwhceoy0m3or",
+  "fls_h7nvs25rsi0y", "fls_hvkalvr4e2v0", "fls_hydq3pvm00bn", "fls_jr9dykj6rydn",
+  "fls_t2yqmphfd6he", "fls_x2pkmgbp63xx", "fls_y6dwc1ndm395", "fls_yzcdffahxcz",
+  "fls_opz1p1neldsg", "fls_y5qtvbx5m90g",
+]
+
+[types-and-traits.out-of-scope.overrides]
+fls_iye7ho2ynyhn = "The bit patterns of true and false are representation, erased by the value model."
+fls_nuFAwLHOdQBx = "The sign bit of a NaN is not observable through the assumed float model."
+fls_kTGFLFymTWch = "Anonymous return types of async functions belong to async, which the input-language reference places outside the value model."
+
+[types-and-traits.unsafe]
+reason = "Validity and safety invariants are only violated by unsafe code, which the value model excludes (the input-language reference)."
+ids = [
+  "fls_2sd39mj05mb9", "fls_juysxea25owj", "fls_wacoqrtzvrwu", "fls_f046du2fkgr6",
+  "fls_liwnzwu1el1i", "fls_52thmi9hnoks", "fls_5dd7icjcl3nt", "fls_22e8quna7ed5",
+]
+
+[types-and-traits.ffi]
+reason = "C-variadic parameters are outside the value model, and an external function item type differs from a function item type only in the foreign ABI, which the value model erases (the input-language reference)."
+ids = [
+  "fls_sas3ahcshnrh", "fls_B0SMXRqQMS1E", "fls_hbn1l42xmr3h",
+]

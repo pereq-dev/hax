@@ -58,6 +58,11 @@ stage = "extracted"
 tier = "supported"
 classification = "planned"
 
+[tests."types-and-traits/closure-types/closure_send_sync"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."types-and-traits/closure-types/closure_to_fn_pointer"]
 stage = "aeneas-rejected"
 tier = "supported"
@@ -269,6 +274,11 @@ tier = "supported"
 classification = "supported"
 
 [tests."types-and-traits/type-aliases/type_alias"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/type-coercion/implicit_coercions"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
