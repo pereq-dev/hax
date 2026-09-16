@@ -7,16 +7,18 @@ use pest::iterators::{Pair, Pairs};
 WHITESPACE = _{ " " | "\t" }
 NEWLINE = _{ "\n" | "\r\n" }
 
-directive = { SOI ~ (NEWLINE)* ~ (cli | backend_directive | off | fail) ~ (NEWLINE)* ~ EOI }
+directive = { SOI ~ (NEWLINE)* ~ (cli | off | fail | backend_keyed | keyed) ~ (NEWLINE)* ~ EOI }
 
 cli = { "cli" ~ ":" ~ line_text? }
-backend_directive = { "backend" ~ "(" ~ backend ~ ")" ~ ":" ~ line_text? }
 off = { "off" ~ ":" ~ backend ~ ("," ~ backend)* }
 fail = { "fail" ~ "(" ~ fail_kind ~ ")" ~ ":" ~ backend_fail ~ ("," ~ backend_fail)* }
 backend_fail = { backend ~ "(" ~ errcode ~ ("," ~ errcode)* ~ ")" }
+backend_keyed = { backend ~ "(" ~ key ~ ")" ~ ":" ~ line_text? }
+keyed = { key ~ ":" ~ line_text? }
 
 backend = @{ ASCII_ALPHANUMERIC+ ~ ("-" ~ ASCII_ALPHANUMERIC+)* }
 errcode = @{ ASCII_ALPHANUMERIC+ }
+key = @{ ASCII_ALPHA+ ~ ("-" ~ ASCII_ALPHA+)* }
 
 fail_kind = @{ "tc" | "extraction" | "extract" }
 
@@ -29,16 +31,23 @@ pub enum Directive {
     Cli {
         flags: String,
     },
-    Backend {
-        backend: String,
-        value: String,
-    },
     Off {
         backends: Vec<String>,
     },
     Fail {
         kind: FailureKind,
         entries: Vec<FailEntry>,
+    },
+    /// `@<key>: <value>`
+    Keyed {
+        key: String,
+        value: String,
+    },
+    /// `@<backend>(<key>): <value>`
+    BackendKeyed {
+        backend: String,
+        key: String,
+        value: String,
     },
 }
 
@@ -49,6 +58,10 @@ pub struct FailEntry {
     pub backend: String,
     pub errcodes: Vec<String>,
 }
+
+/// Words that start a fixed-form directive. A `keyed` or `backend_keyed` parse
+/// that begins with one of them is a malformed fixed-form directive.
+const RESERVED: &[&str] = &["cli", "off", "fail"];
 
 pub fn parse_directive(input: &str) -> Result<Directive> {
     let mut pairs = DirectivesParser::parse(Rule::directive, input)?;
@@ -63,12 +76,6 @@ fn convert_directive(pair: Pair<Rule>) -> Result<Directive> {
         Rule::cli => Ok(Directive::Cli {
             flags: extract_line_text(first.into_inner()),
         }),
-        Rule::backend_directive => {
-            let mut i = first.into_inner();
-            let backend = i.next().context("backend missing")?.as_str().to_string();
-            let value = extract_line_text(i);
-            Ok(Directive::Backend { backend, value })
-        }
         Rule::off => {
             let backends = first
                 .into_inner()
@@ -90,6 +97,29 @@ fn convert_directive(pair: Pair<Rule>) -> Result<Directive> {
                 .map(parse_backend_fail)
                 .collect::<Result<Vec<_>, _>>()?;
             Ok(Directive::Fail { kind, entries })
+        }
+        Rule::backend_keyed => {
+            let mut i = first.into_inner();
+            let backend = i.next().context("backend missing")?.as_str().to_string();
+            let key = i.next().context("key missing")?.as_str().to_string();
+            if RESERVED.contains(&backend.as_str()) {
+                bail!("malformed `@{backend}` directive");
+            }
+            let value = extract_line_text(i);
+            Ok(Directive::BackendKeyed {
+                backend,
+                key,
+                value,
+            })
+        }
+        Rule::keyed => {
+            let mut i = first.into_inner();
+            let key = i.next().context("key missing")?.as_str().to_string();
+            if RESERVED.contains(&key.as_str()) {
+                bail!("malformed `@{key}` directive");
+            }
+            let value = extract_line_text(i);
+            Ok(Directive::Keyed { key, value })
         }
         _ => bail!("unexpected directive node"),
     }
@@ -119,4 +149,36 @@ fn parse_backend_fail(pair: Pair<Rule>) -> Result<FailEntry> {
         backend: backend.context("backend missing in backend_fail")?,
         errcodes,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn keyed_directives() {
+        assert_eq!(
+            parse_directive("fls: fls_a, fls_b").unwrap(),
+            Directive::Keyed {
+                key: "fls".into(),
+                value: "fls_a, fls_b".into()
+            }
+        );
+        assert_eq!(
+            parse_directive("no-equiv: erased by the value model").unwrap(),
+            Directive::Keyed {
+                key: "no-equiv".into(),
+                value: "erased by the value model".into()
+            }
+        );
+        assert_eq!(
+            parse_directive("lean(tier): unsupported").unwrap(),
+            Directive::BackendKeyed {
+                backend: "lean".into(),
+                key: "tier".into(),
+                value: "unsupported".into()
+            }
+        );
+        assert!(parse_directive("fail(tc): fstar").is_err());
+    }
 }

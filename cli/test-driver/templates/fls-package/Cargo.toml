@@ -1,0 +1,14 @@
+# Template of the cargo package the FLS suite generates for each test file.
+# The empty `[workspace]` keeps cargo from attaching the generated package,
+# which lives inside the repository, to the repository workspace.
+[package]
+name = "{{name}}"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+hax-lib = { path = {{hax_lib}} }
+hax-test-macros = { path = {{hax_test_macros}} }
+
+[workspace]

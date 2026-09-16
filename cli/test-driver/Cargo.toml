@@ -32,6 +32,14 @@ pest = "2.8.2"
 pest_derive = "2.8.2"
 num_cpus = "1.17.0"
 walkdir = "2.5.0"
+regex = "1.11.2"
+similar = "2.7.0"
+syn = { version = "2", features = ["full"] }
+toml = "0.8"
+indexmap = { version = "2", features = ["serde"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
 
 [package.metadata.release]
 release = false

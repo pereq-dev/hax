@@ -33,6 +33,7 @@ use crate::{
 mod cli;
 mod commands;
 mod directives;
+mod fls;
 mod helpers;
 mod log;
 mod promote_directives;
@@ -312,9 +313,36 @@ const DISABLED_BACKENDS: &[BackendName] = &[
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let result = run().await;
+    // Child processes may run in their own process groups, which the
+    // terminal's SIGINT does not reach; dropping the run on a signal kills
+    // them.
+    let result = tokio::select! {
+        result = run() => result,
+        signal = interrupted() => Err(anyhow::anyhow!("interrupted by {signal}")),
+    };
     flush().await;
     result
+}
+
+/// Waits for SIGINT or, on Unix, SIGTERM and returns its name.
+async fn interrupted() -> &'static str {
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{SignalKind, signal};
+        let Ok(mut terminate) = signal(SignalKind::terminate()) else {
+            let _ = tokio::signal::ctrl_c().await;
+            return "SIGINT";
+        };
+        tokio::select! {
+            _ = tokio::signal::ctrl_c() => "SIGINT",
+            _ = terminate.recv() => "SIGTERM",
+        }
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = tokio::signal::ctrl_c().await;
+        "SIGINT"
+    }
 }
 
 async fn run() -> Result<()> {
@@ -328,14 +356,6 @@ async fn run() -> Result<()> {
         )
     })?;
 
-    let backends: Vec<_> = if let Some(backend) = options.backend() {
-        vec![backend]
-    } else {
-        BackendName::iter()
-            .filter(|backend| !DISABLED_BACKENDS.contains(backend))
-            .collect()
-    };
-
     let cache_dir = options.cache_dir();
     tokio::fs::create_dir_all(&cache_dir)
         .await
@@ -346,9 +366,22 @@ async fn run() -> Result<()> {
             )
         })?;
 
+    // The FLS suite reads its tests from the files and never runs the frontend.
+    if options.suite() == cli::Suite::Fls {
+        return fls::run(options).await;
+    }
+
     let tests = JobKind::ResolveTests
         .run(|_| compute_test_modules())
         .await?;
+
+    let backends: Vec<_> = if let Some(backend) = options.backend() {
+        vec![backend]
+    } else {
+        BackendName::iter()
+            .filter(|backend| !DISABLED_BACKENDS.contains(backend))
+            .collect()
+    };
 
     let result = backends
         .iter()

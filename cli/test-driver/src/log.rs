@@ -35,6 +35,10 @@ pub enum BackendJobKind {
     Verification {
         test: String,
     },
+    /// A phase of the FLS suite that spans all tests of a backend, e.g. one `lake build` pass.
+    Phase {
+        name: String,
+    },
     /// The number of backend jobs for a given backend. (each can report a CargoHaxSerialize, a CargoHaxInto and a Verification)
     NumberBackendJobs(usize),
 }
@@ -69,6 +73,7 @@ impl Display for JobKind {
                 BackendJobKind::Verification { test } => {
                     write!(f, "verification: {backend}: {test}")
                 }
+                BackendJobKind::Phase { name } => write!(f, "{backend}: {name}"),
                 BackendJobKind::NumberBackendJobs(_) => Ok(()),
             },
         }
@@ -220,6 +225,7 @@ fn format_job_title(job: &JobKind) -> String {
             BackendJobKind::Verification { test } => {
                 format!("verification {backend}/{test}")
             }
+            BackendJobKind::Phase { name } => format!("{backend}: {name}"),
             BackendJobKind::NumberBackendJobs(_) => backend.to_string(),
         },
     }
@@ -336,13 +342,18 @@ impl ReportRenderer for CiRenderer {
                 match &**result {
                     Ok(_) => {
                         println!("PASS {} ({})", report.job, format_duration(duration));
+                        if !is_test_job(&report.job) {
+                            for message in &messages {
+                                CiRenderer::print_message(message);
+                            }
+                        }
                     }
                     Err(err) => {
                         println!("FAIL {} ({})", report.job, format_duration(duration));
                         for message in &messages {
                             CiRenderer::print_message(message);
                         }
-                        if messages.is_empty() {
+                        if messages.is_empty() || !is_test_job(&report.job) {
                             if let Some(stderr) = &stderr {
                                 CiRenderer::print_labeled_block("stderr", stderr);
                             }
@@ -594,8 +605,10 @@ impl ReportRenderer for TuiRenderer {
                 }
 
                 match &**result {
+                    // Test jobs pass silently; the messages of other jobs,
+                    // such as a summary, are their output.
                     Ok(_) if is_test => self.passed_tests += 1,
-                    Ok(_) => {}
+                    Ok(_) => Self::print_messages(&self.progress, &messages),
                     Err(err) => {
                         let mut line = format!("Error in {}", format_job_title(&report.job));
                         if let Some(duration) = duration {
@@ -604,7 +617,10 @@ impl ReportRenderer for TuiRenderer {
                         out(&self.progress, String::new());
                         out(&self.progress, line.black().on_red().bold().to_string());
                         Self::print_messages(&self.progress, &messages);
-                        if messages.is_empty() {
+                        // The captured output of a test job only repeats what
+                        // its messages say; a failed phase, such as the
+                        // canary, has no other trace of the tool's error.
+                        if messages.is_empty() || !is_test {
                             if let Some(stderr) = &stderr {
                                 Self::print_labeled_block(&self.progress, "stderr", stderr);
                             }

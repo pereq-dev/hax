@@ -226,6 +226,20 @@ pub async fn compute_test_modules() -> Result<Vec<TestModule>> {
                 .with_context(|| format!("internal error: every test module item should have a `module_file`. Found none for {:?}.", helpers::string_of_def_id(&def_id)))?.canonicalize()
                 .context("internal error: cannot canonicalize module path")?;
 
+            for directive in &test_directives {
+                match directive {
+                    TestDirective::SetCli { .. } | TestDirective::Off { .. } => {}
+                    TestDirective::Fls { .. }
+                    | TestDirective::Title { .. }
+                    | TestDirective::NoEquiv { .. }
+                    | TestDirective::Tier { .. }
+                    | TestDirective::Reason { .. } => bail!(
+                        "{}: `{directive}` is not supported by the legacy suite",
+                        module_path.display()
+                    ),
+                }
+            }
+
             let test_module = TestModule {
                 items: vec![(def_id.clone(), item_directives)],
                 def_id,

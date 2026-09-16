@@ -19,7 +19,7 @@ use clap::Parser;
 use hax_frontend_exporter::{AttrArgs, AttributeKind, MetaItemLit};
 use hax_types::cli_options::{BackendName, BackendOptions, Command, Options};
 
-use crate::directives::parser::FailEntry;
+use crate::{directives::parser::FailEntry, fls::stage::Tier};
 
 /// Parses the payload of an `@cli:` directive.
 /// Such a payload is expected to be a valid `cargo hax` CLI command, starting with `into`.
@@ -93,10 +93,41 @@ impl TryFrom<parser::Directive> for Directive {
                     backend_flags,
                 })
             }
-            parser::Directive::Backend { backend, value } => {
-                Self::Test(TestDirective::BackendDirective {
-                    backend: parse_backend_name(&backend)?,
-                    directive: value,
+            parser::Directive::Keyed { key, value } => Self::Test(match key.as_str() {
+                "fls" => TestDirective::Fls {
+                    ids: value
+                        .split(',')
+                        .map(str::trim)
+                        .filter(|s| !s.is_empty())
+                        .map(String::from)
+                        .collect(),
+                },
+                "title" => TestDirective::Title { title: value },
+                "no-equiv" => TestDirective::NoEquiv { reason: value },
+                "tier" | "reason" => {
+                    bail!("`@{key}` must name a backend, e.g. `@lean({key}): ...`")
+                }
+                _ => bail!("unknown directive `@{key}`"),
+            }),
+            parser::Directive::BackendKeyed {
+                backend,
+                key,
+                value,
+            } => {
+                let backend = parse_backend_name(&backend)?;
+                Self::Test(match key.as_str() {
+                    "tier" => TestDirective::Tier {
+                        backend,
+                        tier: value.parse()?,
+                    },
+                    "reason" => TestDirective::Reason {
+                        backend,
+                        reason: value,
+                    },
+                    "fls" | "title" | "no-equiv" => {
+                        bail!("`@{key}` applies to all backends, write `@{key}: ...`")
+                    }
+                    _ => bail!("unknown directive `@{backend}({key})`"),
                 })
             }
             parser::Directive::Off { backends } => Self::Test(TestDirective::Off {
@@ -145,8 +176,12 @@ impl Display for TestDirective {
                     join(backend_flags)
                 )
             }
-            TestDirective::BackendDirective { backend, directive } => {
-                write!(f, "@backend({backend}): {directive}")
+            TestDirective::Fls { ids } => write!(f, "@fls: {}", ids.join(", ")),
+            TestDirective::Title { title } => write!(f, "@title: {title}"),
+            TestDirective::NoEquiv { reason } => write!(f, "@no-equiv: {reason}"),
+            TestDirective::Tier { backend, tier } => write!(f, "@{backend}(tier): {tier}"),
+            TestDirective::Reason { backend, reason } => {
+                write!(f, "@{backend}(reason): {reason}")
             }
             TestDirective::Off { backends } => {
                 write!(
@@ -223,12 +258,21 @@ pub enum TestDirective {
         /// The flags to put on the `cargo hax into <backend>` command.
         backend_flags: Vec<String>,
     },
-    /// e.g. `@backend(fstar): <FSTAR_SPECIFIC_DIRECTIVE>`
-    BackendDirective {
-        /// The name of the backend
+    /// e.g. `@fls: fls_9ucqbbd0s2yo, fls_14i5o3ojzkia` (FLS suite)
+    Fls {
+        /// The specification paragraph identifiers the test covers
+        ids: Vec<String>,
+    },
+    /// e.g. `@title: Tuple struct definition and construction` (FLS suite)
+    Title { title: String },
+    /// e.g. `@no-equiv: lifetimes are erased` (FLS suite)
+    NoEquiv { reason: String },
+    /// e.g. `@lean(tier): supported` (FLS suite)
+    Tier { backend: BackendName, tier: Tier },
+    /// e.g. `@lean(reason): aeneas rejects a break to an outer loop` (FLS suite)
+    Reason {
         backend: BackendName,
-        /// The raw body of the directive
-        directive: String,
+        reason: String,
     },
     /// e.g. `@off: fstar, legacy-lean`
     Off {
