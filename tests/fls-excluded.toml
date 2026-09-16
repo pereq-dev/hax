@@ -9,7 +9,6 @@
 # completes the triage of a chapter removes it from the list and adds its tables.
 
 pending-chapters = [
-  "hax",
 ]
 
 [lexical-elements.lexical]

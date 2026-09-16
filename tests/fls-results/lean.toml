@@ -628,6 +628,156 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."hax/contracts/attributes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/decreases"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/ensures"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/ensures_ref"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/future"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/loop_decreases"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/contracts/loop_invariant"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/contracts/requires"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/exclude"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/include"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/lemma"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/opaque"]
+stage = "elaborates"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/controlling-extraction/opaque_type"]
+stage = "elaborates"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/controlling-extraction/transparent"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/assert"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/logic-and-propositions/assert_prop"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/logic-and-propositions/assume"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/logic-and-propositions/debug_assert"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/exists"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/forall"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/implies"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/prop"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/to_prop"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/refinement-and-abstraction/abstraction"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/refinement-and-abstraction/concretization"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/int"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/refinement-and-abstraction/refine_as"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/refinement"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/refinement_type"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/to_int"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."implementations/implementations/blanket_implementation"]
 stage = "checked"
 tier = "supported"
