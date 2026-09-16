@@ -91,6 +91,8 @@ The whole Lean suite runs weekly and on `workflow_dispatch`; the scheduled run s
 
 When the Lean job fails because the observed stages differ from `tests/fls-results/lean.toml`, the job summary shows the diff and the artifact `fls-results-lean` holds the observed file: download it, copy it over the committed file, and commit, or apply the diff by hand. A change of the tool versions needs a full run, which the selection triggers on its own once the results file header changed.
 
+`fls_drift.yml` runs `fls refresh --check` against the newest release tag of `rust-lang/fls` every month and keeps the issue labeled `fls-drift` open while the vendored identifier list differs; it never writes to the repository. It compares only when the vendored revision is an ancestor of that tag, so a list vendored from a later commit reports no drift until the next release.
+
 ## Updating the results
 
 - `--update-results` rewrites the results file of the backend from the observed stages. Run it without `--matching` when the tool versions changed, so that every test is observed with the current tools. The `hax` row is the version of the checkout, which the release bump rewrites.
