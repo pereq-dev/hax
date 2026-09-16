@@ -1,8 +1,0 @@
--R ./ TODO
--arg -w
--arg all
-
-New_tests_Rustc_coverage__auxiliary__inline_always_with_dead_code_Foo.v
-New_tests_Rustc_coverage__auxiliary__inline_always_with_dead_code_Baz.v
-New_tests_Rustc_coverage__auxiliary__inline_always_with_dead_code_Bar.v
-New_tests_Rustc_coverage__auxiliary__inline_always_with_dead_code.v

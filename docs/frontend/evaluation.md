@@ -136,14 +136,9 @@ The qualitative evaluation aims at identifying what Rust patterns the frontend c
 
 ### Rustc coverage test suite
 
-The Rust compiler (rustc) has extensive test suites that describe various expectations of how it should handle Rust input. One of them is the [coverage test suite](https://rustc-dev-guide.rust-lang.org/tests/compiletest.html#coverage-tests) which contains a set of Rust inputs that is supposed to cover a wide range of Rust constructs. This test suite has been adapted to test hax.
+The Rust compiler (rustc) has extensive test suites that describe various expectations of how it should handle Rust input. One of them is the [coverage test suite](https://rustc-dev-guide.rust-lang.org/tests/compiletest.html#coverage-tests), whose Rust inputs cover a wide range of Rust constructs. Its files were adapted to test hax by compiling them as modules of a Rust crate, checking that `cargo hax json` succeeds on them, and recording the output of the hax-engine backends (F\*, Coq, SSProve, ProVerif and the legacy Lean backend) as snapshots. The suite is retired, and its last state is in the git history. The FLS test suite has a test for each construct it exercised, except generators, which are outside the input language, let chains, crate imports (`extern crate`), the attributes `#[test]` and `#[bench]`, whose items are compiled out of the build hax extracts, and the unstable `#[coverage]`: no FLS test uses a let chain, the suite excludes the FLS paragraphs of crate imports as resolved by rustc and those of `#[test]` as out of scope, and the FLS has none for `#[bench]` and `#[coverage]`. The FLS test suite runs its tests through `cargo hax into lean`, which bypasses the frontend, so neither the frontend check on these inputs nor the backend snapshots have a replacement.
 
-We use the following methodology:
-- The Rust inputs from the test suite have been copied to `tests/src/rustc-coverage/`, and can be updated using a script.
-- A Rust crate structure is built around these source files, to allow hax to handle them. The files that fail `cargo check` are excluded. There are currently 26 excluded (out of 81) tests, mostly because they contain asynchronous code, which requires a runtime file that is missing in our infrastructure.
-- To test hax frontend, we run `cargo hax json`. If the command succeeds, the test is considered successful.
-
-These tests aim at increasing the confidence in the ability of hax frontend to handle Rust inputs covering all of the language constructs. As of today, all tests are handled successfully by hax frontend. However we don't test any requirement on the output (see the following section for tests of hax frontend output quality).
+The FLS test suite tests the Lean backend: one test per construct of the [FLS](https://rust-lang.github.io/fls/), the Rust project's language specification, under `tests/fls`, each with a recorded support tier per backend and, where the construct has an observable value, a semantic oracle on the backend side. Its README in that directory describes how tests are written and run; the manual's support pages (`manual/<backend>/support`) and its FLS coverage page (`manual/fls-coverage`) are generated from the recorded results.
 
 ### Rust printer testing
 

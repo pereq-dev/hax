@@ -51,17 +51,6 @@ Last available AST for this item:
 #[allow(dead_code)]
 #[allow(dead_code, unused, unconditional_recursion)]
 #[feature(register_tool, if_let_guard)]
-#[feature(
-    coverage_attribute,
-    stmt_expr_attributes,
-    custom_inner_attributes,
-    test,
-    yield_expr,
-    coroutines,
-    coroutine_trait,
-    no_core,
-    core_intrinsics
-)]
 #[register_tool(_hax)]
 fn print(
     a: dyn (new_tests::legacy__dyn__lib::t_Printable<alloc::string::t_String>),
