@@ -53,6 +53,11 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."attributes/attribute-cfg/cfg_literals_and_options"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."attributes/attribute-cold/cold"]
 stage = "checked"
 tier = "supported"

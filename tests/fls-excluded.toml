@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "attributes",
   "entities-and-resolution",
   "ownership-and-deconstruction",
   "exceptions-and-errors",
@@ -366,3 +365,96 @@ ids = [
 [generics.legality.overrides]
 fls_7epZNsTYNmgE = "Where an inferred constant may be written is a syntactic rule rustc applies before hax sees the program."
 fls_Ft5rGeL7QwJM = "Where an inferred constant may be written is a syntactic rule rustc applies before hax sees the program."
+
+[attributes.legality]
+reason = "Constraints on where an attribute may apply, the compilation limits, and the module and prelude configuration are checked by rustc before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_1gyg8hfb13n7", "fls_1v9p4vr1nszn", "fls_3y4o8kq58dt8", "fls_6005g57evfbp",
+  "fls_73n30xdcx8e", "fls_e7zusnfka5dt", "fls_jvkgtnulrqgh", "fls_k9p2xrs3dotn",
+  "fls_x860jl4103p", "fls_jwyhky49ssup", "fls_h8yepgchjxv9", "fls_4btm6zwf445a",
+  "fls_6riphqysh0gd", "fls_tsdk8jyajcg", "fls_vetjq9sw84qc", "fls_o55cxc67sya7",
+  "fls_o9p8fa8zhe15", "fls_61vt1r8g51nh", "fls_dfnkzj8ob3uq", "fls_18tcecx4p2wp",
+  "fls_lht4pcezmbxw", "fls_qb6anohvc03k", "fls_c7v2hbdb7g2d", "fls_cmrqxc5oax4r",
+  "fls_tki5k5uo74gw", "fls_kxav9vw59ts4", "fls_lxkd6hdboav4", "fls_qnxihxsvkyf6",
+  "fls_ve1shwjq09pl", "fls_wgwsn7laoju7", "fls_aql3c89840ix", "fls_hkyzdmmdyoin",
+  "fls_oqfrg9tqgaj8", "fls_szvrd79cgzsg", "fls_cez7yxfc376c",
+]
+
+[attributes.out-of-scope]
+reason = "Documentation, linkage, code generation for the target machine, and the runtime configuration of a binary describe no value computation, and the value model erases them; the test harness is compiled out of the build hax extracts."
+ids = [
+  "fls_4xu1rwecd9au", "fls_23huzf3c4arx", "fls_3fxhz0olhbcy", "fls_3vubhygy9jje",
+  "fls_4d31lwzblg91", "fls_56d70gkmin4p", "fls_85ul6x76ew9", "fls_i63y9xnnwq2z",
+  "fls_mhaplbf40j02", "fls_oexj0952o05u", "fls_q4c023zdsfgn", "fls_sn43rofpq6ld",
+  "fls_w9za4moh6gb3", "fls_xkhm1sht2ju5", "fls_xtu3p0kzwn7b", "fls_yic8ksed28no",
+  "fls_k2k10qtn6f0g", "fls_x36c6j1ivbvp", "fls_1T0VYMtG3loD", "fls_406ltkru11tk",
+  "fls_4mhyvwj8pbpk", "fls_5CVTkOoLHAvW", "fls_6d5a375j2775", "fls_72cwAExPDMQ8",
+  "fls_7c31e21g6bdj", "fls_8HPcvIaahaB9", "fls_8PrvVL6dkr31", "fls_91b7nd6qslsb",
+  "fls_9x2on8w44k4f", "fls_AlBD9ckWKecQ", "fls_G4aOoX8a7i7r", "fls_HGKiXfM5fGVo",
+  "fls_HoNwaLtDzwZi", "fls_K6TM6oTLL1BA", "fls_M9ne2sqhRB5L", "fls_NNj4H6A9VTR8",
+  "fls_Qnx9nNiJeIAX", "fls_UPhNSZS89sYr", "fls_VqjfIihpRe9m", "fls_YOW8lcBQ5lNI",
+  "fls_YW7otDxAliSj", "fls_ZrcPWy4pxlTX", "fls_a1jggfetycxh", "fls_agpkz1v3c281",
+  "fls_eglaup5zyfsk", "fls_f0of1395z9pn", "fls_f9ydn049isbv", "fls_fh7i1Pcmqjdm",
+  "fls_g0762ekvl2ah", "fls_gRf8F9PIGySt", "fls_gtoLNHFmmBzd", "fls_hKvaSExdlKgd",
+  "fls_hThb8qn820wJ", "fls_ijsmqk7pgyiz", "fls_jyb5s2r8w1po", "fls_k3szii6nviza",
+  "fls_lxcfj6XCKyMh", "fls_lzl1gpco3osx", "fls_pGHKFrgGlFtg", "fls_pSSIwmUAnUly",
+  "fls_pdyotoq8uqi2", "fls_qZO82VdU5Iz9", "fls_r5KEicrmEGJt", "fls_rilqwazchfpp",
+  "fls_rmbadmoeaoxu", "fls_tkayqh7li81o", "fls_v9gf6selc17l", "fls_vdbjoy6gbk7l",
+  "fls_vv8o31s0zmli", "fls_w02pk6kf9w9e", "fls_xWcGvl83bVWC", "fls_xsdkkfgv0pz6",
+  "fls_xthidh2nyrno", "fls_xx51fjkbgg5g", "fls_yz4itbk700ot", "fls_1ee9qjcgbwme",
+  "fls_1zziddjuzjeq", "fls_2i2g55nqqpc1", "fls_6qig3s3qpj0i", "fls_84a9k0fzmnfk",
+  "fls_BCvJpfQMYEcD", "fls_EzKHtWHmXMAZ", "fls_5b8aewlgeon8", "fls_homoidh8mu1r",
+  "fls_5CGTQTuT0I5v", "fls_8gqun8lma9wz", "fls_WirXqd7UV4M0", "fls_ZEjvn4mmfSct",
+  "fls_iWPw0QFE5TrP", "fls_jzIHzPkJqVm8", "fls_ka66jcu8gir7", "fls_ncyod5gegMqL",
+  "fls_qXii07xWRUoT", "fls_ryz8qy1wdnma", "fls_7mzjahvdzpy5", "fls_go7pfkgpjk2t",
+  "fls_t3c0t3lcnebk", "fls_9m8e59fc1tyh", "fls_qmdylxse9yhu", "fls_bcoq5aus8nkr",
+  "fls_bm5x846zfnb8", "fls_w7dq8gnzel36", "fls_4uykzqpq6svl", "fls_aqzd30s267pt",
+  "fls_c9ckjrq6emdj", "fls_ert22u8rvkxt", "fls_niky8lbkvej9", "fls_o2elhg5w1rj9",
+  "fls_pcs0prrh23y3", "fls_qfuntdm2g184", "fls_ze6cs75y9aft",
+]
+
+[attributes.unsafe]
+reason = "The unsafe attribute and the attributes it wraps belong to unsafe code, which the value model excludes (the input-language reference)."
+ids = [
+  "fls_4d2ArC50kNWL", "fls_3qj3jvmtxvx6", "fls_2oP2nbDPtUg7", "fls_5pjo3nGOxbVw",
+  "fls_NRLgmOXxuljQ", "fls_PhrfxSBvXTPV", "fls_gpxlWbQUNsj8", "fls_pCSew95bKJJ5",
+  "fls_ykpxNByUDyHG", "fls_z5DTDKM9mU3o",
+]
+
+[attributes.unsafe.overrides]
+fls_3qj3jvmtxvx6 = "Calling a function with target features needs an unsafe block or a caller with the same features; the value-model boundary of the input-language reference."
+
+[attributes.ffi]
+reason = "Linking, symbol names, and the foreign function interface are outside the value model."
+ids = [
+  "fls_f21azsygoovw", "fls_josaywt6g3rq", "fls_lglwcbsvi9yj", "fls_mgb1xipm0qwo",
+  "fls_muucfla1s8yn", "fls_q579e97n1m8j", "fls_qk4vkn42c2jh", "fls_rmhlssasdtkj",
+  "fls_ddg0u5lej74x", "fls_vkz8t751gfhk", "fls_r3fwpuuaoeie", "fls_spwr6gf7kpds",
+  "fls_1tdheukgm6ai", "fls_3a3r4jf7hzqr", "fls_3i9ijypnh8nx", "fls_5541q1qoxdpf",
+  "fls_6rohnk4swj6c", "fls_HPl6poXGiAqV", "fls_h9dfs6kzmobp", "fls_iDjcQczFQknm",
+  "fls_o83pf3bcrzma", "fls_rcERq1PfKPJI", "fls_wpqawdpevkj6", "fls_yslpkdngo8hj",
+  "fls_0Athv8KFA5FO", "fls_d00wni4edi8f", "fls_g09jhukl0ez2", "fls_5loqzajiz34m",
+  "fls_cyxk12wuicml", "fls_ASnJJiXWGlKI", "fls_fuv29BIqcawW", "fls_qh5sXG4znAXa",
+  "fls_76ox8n3eef5", "fls_ayhn6g6sgt3h", "fls_I029Rvr5BX5P", "fls_VKuSiswPMll7",
+  "fls_esaew4fqk8mm", "fls_lvnclpxbye9u", "fls_q5swm5meafmx", "fls_k293nzcffks4",
+  "fls_s4ii078wgpk",
+]
+
+[attributes.inline-assembly]
+reason = "Naked functions consist of inline assembly, which the input-language reference places outside the value model."
+ids = [
+  "fls_eOJS3mxa9xgu", "fls_0tYMAQY1V55p", "fls_8eg0iN2diBZt", "fls_H7ccwNk2HGAi",
+  "fls_NCHa4Dc1M6oM", "fls_VUL2qySBvRqy", "fls_WnqgR5OyecIs", "fls_ocOk47SGiRVb",
+  "fls_wGbJrz4OpKKb",
+]
+
+[attributes.macro-expanded]
+reason = "Procedural macros and macro export and import are expanded before the program reaches charon; the suite tests the expansion."
+ids = [
+  "fls_jottio69o9e7", "fls_5i27houut1mu", "fls_b3jobjxmqppy", "fls_c8uqw8p0qrh5",
+  "fls_nowfw1ffhupd", "fls_vsix3pqf519x", "fls_xyhoxm30i7wn", "fls_3ma7zkk6john",
+  "fls_h26iw5wh4lla", "fls_eha2hoey857x", "fls_oq4kyo5z5tj5", "fls_p6jlgmn2sg7j",
+  "fls_skexvtpbjknn", "fls_uua0nthq9id", "fls_v03924dr0u0z", "fls_t4ez0zg1m569",
+  "fls_u48dtmh97g", "fls_gc3ly8fsodf1", "fls_huznzmkuhdky", "fls_NydVxyb43TH6",
+  "fls_ir9i4i2x5gyx", "fls_l82yswg0k3px",
+]
