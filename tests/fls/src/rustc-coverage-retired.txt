@@ -4,3 +4,12 @@
 
 # patterns/patterns/or_pattern, patterns/tuple-patterns/tuple_pattern
 match_or_pattern.rs
+
+# expressions/lazy-boolean-expressions/short_circuit, expressions/negation-expression/negation
+lazy_boolean.rs
+branch/lazy-boolean.rs
+condition/conditions.rs
+mcdc/non_control_flow.rs
+mcdc/inlined_expressions.rs
+# expressions/error-propagation-expression/question_mark
+fn_sig_into_try.rs

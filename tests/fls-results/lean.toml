@@ -8,8 +8,128 @@ lean = "leanprover/lean4:v4.35.0"
 hax-lean-lib = "v0.3.39"
 aeneas-lean-lib = "build-41977a5"
 
+[tests."expressions/arithmetic-expressions/integer_arithmetic"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/arithmetic-expressions/operator_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/async-blocks/async_block"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."expressions/basic-assignment/assignment"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/bit-expressions/bit_operations"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/block-expressions/block_value"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/borrow-expression/borrow"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/break-expressions/labeled_break_outer"]
 stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/comparison-expressions/comparison_via_trait"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/comparison-expressions/integer_comparison"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/compound-assignment-expressions/compound_assignment"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/compound-assignment-expressions/compound_assignment_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/const-blocks/const_block"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/constant-expressions/const_evaluation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/dereference-expression/deref"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/destructuring-assignment/destructuring_assignment"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/diverging-expressions/diverging"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/diverging-expressions/diverging_call"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/diverging-expressions/diverging_loop"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/error-propagation-expression/question_mark"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/expressions/expression_kinds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/lazy-boolean-expressions/short_circuit"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/literal-expressions/byte_string_literal"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/literal-expressions/literals"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/literal-expressions/string_literal"]
+stage = "extracted"
 tier = "supported"
 classification = "planned"
 
@@ -19,6 +139,66 @@ tier = "supported"
 classification = "supported"
 
 [tests."expressions/method-call-expressions/vec_push_len"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/named-blocks/labeled_block_break"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/negation-expression/float_negation"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/negation-expression/negation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/parenthesized-expressions/parenthesized"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/path-expressions/path_to_item"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/place-expressions/place_contexts"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/raw-borrow-expression/raw_borrow"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."expressions/type-cast-expressions/char_casts"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/type-cast-expressions/float_casts"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/type-cast-expressions/integer_casts"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/unsafe-blocks/unsafe_block"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/value-expressions/temporaries"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
