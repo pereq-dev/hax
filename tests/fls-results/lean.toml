@@ -8,12 +8,22 @@ lean = "leanprover/lean4:v4.35.0"
 hax-lean-lib = "v0.3.39"
 aeneas-lean-lib = "build-41977a5"
 
+[tests."expressions/arithmetic-expressions/division_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/arithmetic-expressions/integer_arithmetic"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
 
 [tests."expressions/arithmetic-expressions/operator_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/arithmetic-overflow/overflow_methods"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -28,12 +38,27 @@ stage = "aeneas-rejected"
 tier = "unsupported"
 classification = "unsupported"
 
+[tests."expressions/await-expressions/await_expression"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
 [tests."expressions/basic-assignment/assignment"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
 
 [tests."expressions/bit-expressions/bit_operations"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/bit-expressions/shift_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/block-expressions/block_break_type"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -68,6 +93,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/capture-precision/disjoint_field_capture"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/capturing/closure_capture_modes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/closure-expressions/closure_expression"]
 stage = "checked"
 tier = "supported"
@@ -98,10 +133,30 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/constant-expressions/const_closure"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/constant-expressions/const_contexts"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/constant-expressions/const_evaluation"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
+
+[tests."expressions/constant-expressions/const_expression_forms"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/constant-expressions/const_generic_contexts"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
 
 [tests."expressions/continue-expressions/continue_expression"]
 stage = "checked"
@@ -139,6 +194,11 @@ tier = "supported"
 classification = "planned"
 
 [tests."expressions/error-propagation-expression/question_mark"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/expression-precedence/precedence"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -243,6 +303,11 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/negation-expression/negation_overloading"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/parenthesized-expressions/parenthesized"]
 stage = "checked"
 tier = "supported"
@@ -253,10 +318,20 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."expressions/place-expressions/let_subject_and_base_places"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/place-expressions/place_contexts"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
+
+[tests."expressions/place-expressions/while_let_place_subject"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
 
 [tests."expressions/range-expressions/inclusive_range"]
 stage = "extracted"

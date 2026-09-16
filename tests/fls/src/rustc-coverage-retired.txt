@@ -51,3 +51,9 @@ continue.rs
 # expressions/return-expressions/return_expression, expressions/error-propagation-expression/question_mark
 while_early_ret.rs
 try_error_result.rs
+
+# expressions/arithmetic-overflow/overflow_methods
+overflow.rs
+# generators are unsupported (the value-model boundary of the input-language reference); no FLS chapter describes them
+coroutine.rs
+yield.rs

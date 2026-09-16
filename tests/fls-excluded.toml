@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "expressions",
   "values",
   "statements",
   "functions",
@@ -195,4 +194,87 @@ reason = "Patterns over union values are outside the value model, as `union` is 
 ids = [
   "fls_FhvMzLPRlY7p", "fls_XFKBJZe6k1o2", "fls_dHtV2BPRFVBB", "fls_jwz3arnfkxwn",
   "fls_mu166csowj71", "fls_oq30xkmvyz72", "fls_pfz8xlwezbw1",
+]
+
+[expressions.legality]
+reason = "Constraints and static errors on expressions that rustc checks before hax sees the program, including the operator trait bounds on operand types; the suite holds compiling programs only."
+ids = [
+  "fls_3i7efddbsmn0", "fls_6sc556tz4oxd", "fls_XopG4yS9Q4q1", "fls_b46nyamfqxdu",
+  "fls_fmqar6o1bwqk", "fls_ms9vey2wymqp", "fls_EOkrcIj9CuhV", "fls_DfCne8YWevLE",
+  "fls_PiUS1hF3dv9U", "fls_LuaPBicDlDTT", "fls_YBC8GrIBzZbi", "fls_mq2h4seoxah",
+  "fls_3m4mgqnzqhri", "fls_plcut8vzdwox", "fls_u7gzm6n75rzm", "fls_8fbhreyynhid",
+  "fls_8imzo7agyx0k", "fls_f1puss9t4btz", "fls_fjcv1nm8tlgf", "fls_hrml95g2txcj",
+  "fls_1f4pc612f2a8", "fls_cmowpfrcelke", "fls_fnywefl9nty2", "fls_onutb0b9p9zj",
+  "fls_oo2ynd8e1ys6", "fls_6dgfieyxdan0", "fls_8echqk9po1cf", "fls_hholzcbp5u3n",
+  "fls_qzo1torhv5i3", "fls_x2s6ydvj5zyd", "fls_ynibdcke3etb", "fls_u0gwo0s2l0tn",
+  "fls_3ww5gbk9w4ys", "fls_4bb07tn28ivw", "fls_4uoi6k8r7mvc", "fls_657knnsobdyu",
+  "fls_8tbxq95x06yt", "fls_9oy9zo3x3fy3", "fls_atdpr8be2o2r", "fls_fbgwb3pdfgz",
+  "fls_fjaz4m90cagr", "fls_m942dwwmr2cl", "fls_np33oqrz33mp", "fls_pdgj2xekdead",
+  "fls_row7saf53vwd", "fls_wms3dbwjwyu4", "fls_9gmnjvs83d8o", "fls_by21pey7k423",
+  "fls_qplsh3pdqitq", "fls_x2xu2pynxy1u", "fls_ld7lbvqms5i6", "fls_sb2b8gszzaxq",
+  "fls_2dajkhq58cdp", "fls_90q7krxazc6u", "fls_9370n5xkkzce", "fls_b60omrhc7t73",
+  "fls_bbmm5vir9xos", "fls_c34qwhaq2asm", "fls_dfajs3xaxbv", "fls_gfu267bpl9ql",
+  "fls_j2kmp1fee0g4", "fls_njder5r7y5fg", "fls_pivpdyr4seez", "fls_rclgwzdhfjj",
+  "fls_ZSkcro52q097", "fls_Gr1ixJ9vFjUm", "fls_jTMQa6AJSMpE", "fls_jjnyuU9KIaGy",
+  "fls_qPeOL6ZhXsgH", "fls_r6gWLoNR7JMR", "fls_XEc0cIkpkyzJ", "fls_fkgbin6ydkm4",
+  "fls_d7ofrq3777kq", "fls_7hc8yboeaho0", "fls_3hI7FU42sVyX", "fls_gnupTkuafKNi",
+  "fls_jiykbp51909f", "fls_wzs6kz9ffqzt", "fls_9pl4629t54yq", "fls_mpq7gicosgkt",
+  "fls_r7gzxo16esri", "fls_lEr4iqwdBcbA", "fls_17ag0wzdbxv6", "fls_RPMOAaZ6lflI",
+  "fls_bzhz5wjd90ii", "fls_e02um1gb89d0", "fls_knv1affr2o8t", "fls_5v3j5ghhw8j8",
+  "fls_9uw5pd7kbrx3", "fls_k9pncajmhgk1",
+]
+
+[expressions.out-of-scope]
+reason = "Asynchronous control flow and the evaluation of floating point constants have no reading in the value model."
+ids = [
+  "fls_lSxXWxJn0vMO", "fls_DSy7bPKGzyov", "fls_My6pMgpeFCFg", "fls_3TGpt9OGydQi",
+  "fls_7OkU5RVrAyev", "fls_AAuyKfxLgJ43", "fls_Av4JyT9nMkRp", "fls_Bd9TmL4qVcNs",
+  "fls_Cw2RsH7pVnQx", "fls_DT4N2rr6wpvZ", "fls_Er5TmL9bXwVq", "fls_Fj8QpM3dLsVt",
+  "fls_Kz7NvR2xYpWm", "fls_Lc8EwS5rYpBn", "fls_Pb7MzD4wQkXe", "fls_Qf4VnH8sMxRa",
+  "fls_Rp5HxK8wJqYd", "fls_Vr9MqJ5xNsYd", "fls_Yh2NqT6vLsCk", "fls_Yq4NhC8sRpJm",
+  "fls_Zc6TbK2wLpNd", "fls_gNQBzI92IAir", "fls_kM6dZv3PaNqT",
+]
+
+[expressions.out-of-scope.overrides]
+fls_3TGpt9OGydQi = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_7OkU5RVrAyev = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_AAuyKfxLgJ43 = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Av4JyT9nMkRp = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Bd9TmL4qVcNs = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Cw2RsH7pVnQx = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_DT4N2rr6wpvZ = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Er5TmL9bXwVq = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Fj8QpM3dLsVt = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Kz7NvR2xYpWm = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Lc8EwS5rYpBn = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Pb7MzD4wQkXe = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Qf4VnH8sMxRa = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Rp5HxK8wJqYd = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Vr9MqJ5xNsYd = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Yh2NqT6vLsCk = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Yq4NhC8sRpJm = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_Zc6TbK2wLpNd = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_gNQBzI92IAir = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+fls_kM6dZv3PaNqT = "Match arm guard let patterns (`if let` guards) became stable after the toolchain the suite pins, which still gates them behind `feature(if_let_guard)`, and an FLS test carries no crate-level attribute to enable it."
+
+[expressions.unsafe]
+reason = "Raw pointers, raw borrows, address casts, mutable statics, unions, and the rules that confine unsafe operations to an unsafe context are outside the value model; `unsafe` blocks and the `unsafe` qualifier are erased (the input-language reference)."
+ids = [
+  "fls_od0h3v40kjp6", "fls_6b4rwkrc1ap6", "fls_K7SbApHPmwjM", "fls_ilaqmj3hc5uv",
+  "fls_gz67ju6l7uhn", "fls_8i4jzksxlrw0", "fls_9wgldua1u8yt", "fls_133j6xw8k4qe",
+  "fls_59mpteeczzo", "fls_6hbkvbb1c8aj", "fls_8ccwlliqw9jx", "fls_bhw2j9wjpf2x",
+  "fls_i4zsbbmfa2fl", "fls_i8txki3htx92", "fls_t16yzaxro5ew", "fls_5w9lj5dc84p",
+  "fls_5zceer19mhdu", "fls_mq80i8fof7sx", "fls_raon1c1vrhx7", "fls_ywh3nk6emwmw",
+  "fls_8ljrgdept7s8", "fls_Vani4665hiJY", "fls_an3no949lvfw", "fls_kddnnz8uc15b",
+  "fls_t6xmsm2nk1bc", "fls_7NEEJgKSpQQ8", "fls_fITor3jpmgrl", "fls_kYFd3p06pWWV",
+]
+
+[expressions.unsafe.overrides]
+fls_6hbkvbb1c8aj = "A function-to-address cast produces an address, which the value model does not have."
+fls_bhw2j9wjpf2x = "A function-pointer-to-address cast produces an address, which the value model does not have."
+
+[expressions.ffi]
+reason = "Calling a function through a foreign ABI belongs to the foreign function interface, outside the value model."
+ids = [
+  "fls_5yeq4oah58dl",
 ]
