@@ -129,3 +129,10 @@ issue-84561.rs
 no-core.rs
 unused_mod.rs
 auxiliary/unused_mod_helper.rs
+
+# macros/declarative-macros/macro_rules, macros/macro-invocation/builtin_macros
+macro_in_closure.rs
+closure_macro.rs
+no_spans.rs
+no_spans_if_not.rs
+auxiliary/macro_name_span_helper.rs

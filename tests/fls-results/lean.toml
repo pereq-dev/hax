@@ -633,6 +633,31 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."macros/declarative-macros/macro_rules"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/derive-macros/derive_invocation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/macro-invocation/builtin_macros"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/metavariables/fragment_specifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/repetition/macro_repetition"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."ownership-and-deconstruction/borrowing/implicit_borrows"]
 stage = "checked"
 tier = "supported"

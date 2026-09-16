@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "macros",
   "ffi",
   "inline-assembly",
   "hax",
@@ -615,4 +614,42 @@ reason = "The unsafe operations on statics, unions, and `asm!`, and the rule tha
 ids = [
   "fls_3ra8s1v1vbek", "fls_6ipl0xo5qjyl", "fls_s5nfhBFOk8Bu", "fls_ucghxcnpaq2t",
   "fls_ybnpe7ppq1vh",
+]
+
+[macros.macro-expanded]
+reason = "The macro machinery (matching, transcription, hygiene, procedural macros) runs before the program reaches charon; the suite tests the expansion, not the machinery."
+ids = [
+  "fls_a5uemz2hnbi8", "fls_0j7VOV4ewfeY", "fls_80cOMpIMU2gx", "fls_8o9mcV2KrKac",
+  "fls_BoIGgrFdyhwH", "fls_DFMRwsWI8e5z", "fls_NBbygZwUxjFp", "fls_PxR9vNHsaFnI",
+  "fls_ePyoTeJJ11N0", "fls_lZ8F1zUJju33", "fls_Rdvs8Dz6OUU7", "fls_Sm4qVsHKYLY2",
+  "fls_UIlj6Csow81w", "fls_UnfvR9NB1Nze", "fls_n5TkJKWiDhCD", "fls_yp2XxDv4DzEi",
+  "fls_ejbddhggstd2", "fls_mewfehvgm16r", "fls_pcce9gmjpxba", "fls_vtzuplb1p3s",
+  "fls_8a8qhzjw5hax", "fls_etyo9bmzxby6", "fls_fbgal48cgj44", "fls_j1wsyzip2qb3",
+  "fls_lfmb22bfnrye", "fls_ljkjmegynhiy", "fls_mkl9b38m0sf1", "fls_ofzql79i9if",
+  "fls_ojr30lf6jfx0", "fls_utd3zqczix", "fls_7gcnui9beky", "fls_H5ipqqlH3pJh",
+  "fls_caa16usjxryg", "fls_ef30ropg7dhx", "fls_gr9wugeqyb3b", "fls_ldw75sy5uj7p",
+  "fls_mo00vqm9xfqc", "fls_mobky5ck1mi", "fls_npnze2cg8ae", "fls_w2h4lk6bmht",
+  "fls_3sublbi9bz7k", "fls_4g932k8ueyqp", "fls_78400zh02sdq", "fls_7ugtmobgb2t9",
+  "fls_eb8jxl70wmeh", "fls_eyesmvuwpjn1", "fls_f5qy1pnlbpng", "fls_fku5beu3mr4c",
+  "fls_hhsf1a9p6o55", "fls_knjsslplv5ri", "fls_l3epi1dqpi8o", "fls_rzn48xylk4yj",
+  "fls_y700oif45wum", "fls_417hvhvj2554", "fls_AJmPrhHfZo6J", "fls_mi92etjtpamu",
+  "fls_mpgh22bi8caz", "fls_n8beqlt54rhy", "fls_nNrs4EC3ff5T", "fls_srtqkdceaz5t",
+  "fls_tjn92evtlflq", "fls_ul7nhfyvyzh", "fls_xvemyqj5gc6g", "fls_y20pmwo3v3uu",
+  "fls_z6xfhf71w10a", "fls_zat7kwi5vc5c", "fls_ZmQZ8HQWv77L", "fls_3qzes4lr8yuv",
+  "fls_6h1jqhxzku5v", "fls_77ucvwu6idms", "fls_r6i1ykrhb49j", "fls_r878ysvsy4jb",
+  "fls_1ch299zp8h7", "fls_2zjed913qpvi", "fls_2zu22efr6ncy", "fls_3zdts0fsa36u",
+  "fls_55ptfjlvoo8o", "fls_6annifhk6cd8", "fls_6uuxv91xgmfz", "fls_9fioah171ojx",
+  "fls_b5u47tuu136r", "fls_c76sdvos5xeo", "fls_cz44evkjzv29", "fls_dqroklsaayzb",
+  "fls_finzfb5ljkf8", "fls_g1rml9tavh8v", "fls_ghqjk6xj85ng", "fls_h7x3tc208zpk",
+  "fls_iorqt9q4ie9j", "fls_j2o0f52zyvyb", "fls_k00bck2k8tde", "fls_k6a24sbon5v9",
+  "fls_lzwl4en5wcw0", "fls_mb3yr1j7npv5", "fls_o2exsai4m0gy", "fls_p9eqa17d3dx",
+  "fls_pf0qrz5nadl2", "fls_rb1tu4e7dpma", "fls_s1ccs6jocsgr", "fls_uuey421a8n96",
+  "fls_w5dzv3z4zd5a", "fls_wpi2i6hoj3li", "fls_wtol98rrqka5", "fls_xbuixjt9pum6",
+  "fls_eacyb6jap9ru", "fls_ihcwl6taptas", "fls_iw7322ycvhkc", "fls_jgitbqmyixem",
+  "fls_wbys0m4a1omg", "fls_y21i8062mft0", "fls_y4podc7ee8lf", "fls_yg4c9x7049y4",
+  "fls_zbtwrtcy7pzf", "fls_3axjf28xb1nt", "fls_7eqqk2cj0clr", "fls_7ezc7ncs678f",
+  "fls_dz2mvodl818d", "fls_kx25olky1jov", "fls_puqhytfzfsg6", "fls_uyvnq88y9gk3",
+  "fls_v46v0t2vh6x4", "fls_yxqcr19dig18", "fls_vd3dzvr6re19", "fls_l8j2jiuuao4f",
+  "fls_stseor6tln22", "fls_u11o90szy68s", "fls_40xq8Ri1OMZZ", "fls_tu6kmwm4v9nj",
+  "fls_3zn4dz19nyvq",
 ]
