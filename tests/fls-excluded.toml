@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "patterns",
   "expressions",
   "values",
   "statements",
@@ -167,4 +166,33 @@ ids = [
 reason = "C-variadic parameters are outside the value model, and an external function item type differs from a function item type only in the foreign ABI, which the value model erases (the input-language reference)."
 ids = [
   "fls_sas3ahcshnrh", "fls_B0SMXRqQMS1E", "fls_hbn1l42xmr3h",
+]
+
+[patterns.legality]
+reason = "Constraints and static errors on patterns that rustc checks before hax sees the program; the suite holds compiling programs only."
+ids = [
+  "fls_72JHo343O7jp", "fls_8luyomzppck", "fls_TUanRT7WU14E", "fls_YDVgFaTQwcL8",
+  "fls_kv533rntni1x", "fls_rpvdfmy3n05a", "fls_k1yBTstX7jEE", "fls_twcavjk7iquy",
+  "fls_JP8YSbxSN0Ym", "fls_bv9psmitxfuw", "fls_hF19K8sWU8FF", "fls_t8sjzsif2ilf",
+  "fls_wJ9f906BlBvg", "fls_xz5otkhogn31", "fls_zCswsyuitexI", "fls_2hpuccwh2xml",
+  "fls_5ey5mj8t8knd", "fls_6o995ak4hywq", "fls_8bdOqkO1NuJW", "fls_9kk81isk0mlp",
+  "fls_akf9x5r6e0ta", "fls_s2b5n4snc4d7", "fls_z4js96mchcsv", "fls_5a75a2y43uev",
+  "fls_k9zih9s0oe5h", "fls_195mqijyrnam", "fls_1thgpx95lfg5", "fls_1x0o71kxj3yq",
+  "fls_23be2x50at14", "fls_2tadaatmauzk", "fls_3px4oiweg9dm", "fls_3vgmkm2mzwwy",
+  "fls_4b2hchdzv30u", "fls_4h00oqypa8qg", "fls_as54u97xis8z", "fls_c09jf2vpcr58",
+  "fls_rpo1wimbmzhc", "fls_ta0vdoqmt2k1", "fls_y09fygnglu3n", "fls_4vrnxslad09e",
+  "fls_budf0rpsa4lx", "fls_rco3fwlx2a76", "fls_t1mrijw16k9a", "fls_vo6mtauh4qhb",
+  "fls_9Qw9N87swwNe", "fls_CQ84wkLyrAJv", "fls_F4k6ljuP8Amf", "fls_GjjCDkVJPQS8",
+  "fls_4f3lzw64myhk",
+]
+
+[patterns.legality.overrides]
+fls_akf9x5r6e0ta = "The obsolete range pattern syntax `...` is a hard error since edition 2021."
+fls_s2b5n4snc4d7 = "The obsolete range pattern syntax `...` is a hard error since edition 2021."
+
+[patterns.unsafe]
+reason = "Patterns over union values are outside the value model, as `union` is (the input-language reference)."
+ids = [
+  "fls_FhvMzLPRlY7p", "fls_XFKBJZe6k1o2", "fls_dHtV2BPRFVBB", "fls_jwz3arnfkxwn",
+  "fls_mu166csowj71", "fls_oq30xkmvyz72", "fls_pfz8xlwezbw1",
 ]

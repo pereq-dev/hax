@@ -1,0 +1,6 @@
+# rustc coverage files whose constructs the FLS tests cover, one path per
+# line relative to tests/src/rustc-coverage/. The suite is deleted once the
+# list names every remaining file.
+
+# patterns/patterns/or_pattern, patterns/tuple-patterns/tuple_pattern
+match_or_pattern.rs

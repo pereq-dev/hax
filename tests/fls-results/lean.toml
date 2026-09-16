@@ -28,6 +28,111 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."patterns/binding-modes/default_binding_modes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/identifier-patterns/identifier_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/literal-patterns/char_literal_pattern"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/literal-patterns/literal_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/literal-patterns/negative_literal_pattern"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/parenthesized-patterns/parenthesized_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/path-patterns/path_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/pattern-destructuring/destructuring"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/patterns/or_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/range-patterns/range_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/record-struct-patterns/indexed_deconstructor"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/record-struct-patterns/record_struct_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/reference-patterns/reference_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/refutability/refutable_and_irrefutable"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/rest-patterns/rest_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/rest-patterns/rest_pattern_array_binding"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/slice-patterns/slice_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/slice-patterns/slice_pattern_on_slice"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/tuple-patterns/tuple_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/tuple-struct-patterns/tuple_struct_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/underscore-patterns/underscore_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."types-and-traits/array-types/array_type"]
 stage = "checked"
 tier = "supported"
