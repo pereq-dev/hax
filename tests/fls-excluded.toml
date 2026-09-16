@@ -9,9 +9,7 @@
 # completes the triage of a chapter removes it from the list and adds its tables.
 
 pending-chapters = [
-  "general",
   "lexical-elements",
-  "items",
   "types-and-traits",
   "patterns",
   "expressions",
@@ -33,3 +31,11 @@ pending-chapters = [
   "inline-assembly",
   "hax",
 ]
+
+[items.out-of-scope]
+reason = "Elaboration describes when a declaration takes effect at runtime; the value model has no runtime events to observe."
+ids = ["fls_hil5f7y4xdhe"]
+
+[items.macro-expanded]
+reason = "Macro invocations in item position are expanded before the program reaches charon; the suite tests the expansion, not the invocation."
+ids = ["fls_s3b1cba9lfj5"]
