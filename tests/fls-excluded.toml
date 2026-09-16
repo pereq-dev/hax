@@ -10,7 +10,6 @@
 
 pending-chapters = [
   "lexical-elements",
-  "concurrency",
   "program-structure-and-compilation",
   "unsafety",
   "macros",
@@ -570,4 +569,30 @@ reason = "The panic handler and abort are runtime behaviour outside the program;
 ids = [
   "fls_xmtt04lw517w", "fls_7bnrbjb0pq5n", "fls_9a1izu3omkbn", "fls_iq6olct3rw4u",
   "fls_wd2q6ft9yzrg",
+]
+
+[concurrency.legality]
+reason = "Constraints on Send and Sync types are checked by rustc before hax sees the program."
+ids = [
+  "fls_4ypqdehn7b0v", "fls_zgemofbs5q2x",
+]
+
+[concurrency.out-of-scope]
+reason = "Asynchronous computation compiles to a poll-driven state machine whose suspension points need an execution model (the value-model boundary of the input-language reference)."
+ids = [
+  "fls_7muubin2wn1v", "fls_fte085hi1yqj", "fls_ftzey2156ha", "fls_g40xp4andj5g",
+]
+
+[concurrency.unsafe]
+reason = "A data race is undefined behavior, which needs unsafe code (the value-model boundary of the input-language reference)."
+ids = [
+  "fls_isypweqewe78",
+]
+
+[concurrency.concurrency]
+reason = "Data races and the atomic types belong to the concurrency the value model excludes (the input-language reference)."
+ids = [
+  "fls_tx4b8r6i93n4", "fls_2hqmfwswc6k", "fls_2qkrcd5eovpe", "fls_5ab2sw3gwmt3",
+  "fls_906978wtss6n", "fls_cpcd0vexfbhj", "fls_cry1e78gp19q", "fls_jt7rfq9atbiv",
+  "fls_jx0784jzxy00", "fls_mjq1l1y0vmz4", "fls_vzuwnpx7mt08", "fls_w2mw833g28eb",
 ]

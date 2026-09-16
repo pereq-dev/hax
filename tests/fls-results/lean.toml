@@ -93,6 +93,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."concurrency/atomics/atomic_counter"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."concurrency/send-and-sync/send_sync_bounds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."entities-and-resolution/namespaces/label_lifetime_namespaces"]
 stage = "checked"
 tier = "supported"
