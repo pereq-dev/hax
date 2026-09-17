@@ -272,6 +272,17 @@ class BackendPageTest(unittest.TestCase):
             self.page,
         )
 
+    def test_input_language_links(self):
+        chapters = self.page.split("## Constructs by chapter\n")[1]
+        self.assertIn(
+            "[input-language reference](../input-language/index.md)", chapters
+        )
+        self.assertIn(
+            "[*status*](../input-language/index.md#status-vocabulary)", chapters
+        )
+        planned = self.page.split("## Planned\n")[1]
+        self.assertIn("[input-language reference](../input-language/index.md)", planned)
+
 
 class CoveragePageTest(unittest.TestCase):
     def setUp(self):
@@ -303,6 +314,16 @@ class CoveragePageTest(unittest.TestCase):
         data = synthetic()
         data.pending_chapters = []
         self.assertNotIn("## Pending chapters", report.render_coverage(data))
+
+    def test_input_language_link(self):
+        self.assertIn("[input-language reference](input-language/index.md)", self.page)
+
+    def test_no_input_language_link_without_the_section(self):
+        data = synthetic()
+        data.input_language = False
+        for page in (report.render_coverage(data), report.render_backend(data, "lean")):
+            self.assertIn("input-language reference", page)
+            self.assertNotIn("input-language/index.md", page)
 
     def test_hax_ids_have_no_link(self):
         data = synthetic()
