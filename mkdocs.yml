@@ -65,6 +65,8 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+validation:
+  anchors: warn
 hooks:
   - docs/hooks/fls_report/hook.py
 # The hook sources are build inputs, not pages.
