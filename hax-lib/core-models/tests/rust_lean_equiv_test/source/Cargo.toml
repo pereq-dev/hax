@@ -7,7 +7,7 @@ edition = "2024"
 path = "src/lib.rs"
 
 [dependencies]
-rust-lean-test-macro = { path = "../macro" }
+hax-test-macros = { path = "../../../../../tests/hax-test-macros" }
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(hax)', 'cfg(hax_compilation)', 'cfg(hax_backend_fstar)', 'cfg(hax_backend_legacy_lean)'] }

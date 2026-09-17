@@ -1,7 +1,6 @@
 //! Equivalence tests for `core::result::Result::*`.
 
 use crate::helpers::{Bumped, Keyed, keyed};
-use rust_lean_test_macro::rust_lean_test;
 
 // Local helpers: function-level return-type annotations survive Aeneas
 // extraction even when the variant only pins one of the two type params.
@@ -16,37 +15,37 @@ fn err_u8_u8(e: u8) -> Result<u8, u8> {
 
 // ----- is_ok / is_err --------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_ok_ok_zero() -> bool {
     ok_u8_u8(0).is_ok() == true
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_ok_ok_max() -> bool {
     ok_u8_u8(u8::MAX).is_ok() == true
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_ok_err_zero() -> bool {
     err_u8_u8(0).is_ok() == false
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_ok_err_max() -> bool {
     err_u8_u8(u8::MAX).is_ok() == false
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_err_ok_zero() -> bool {
     ok_u8_u8(0).is_err() == false
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_err_err_zero() -> bool {
     err_u8_u8(0).is_err() == true
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_err_err_max() -> bool {
     err_u8_u8(u8::MAX).is_err() == true
 }
@@ -62,73 +61,73 @@ pub fn test_is_err_err_max() -> bool {
 
 // ----- expect ----------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_expect_ok_zero() -> bool {
     ok_u8_u8(0).expect("msg") == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_expect_ok_max() -> bool {
     ok_u8_u8(u8::MAX).expect("msg") == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_expect_ok_mid() -> bool {
     ok_u8_u8(42).expect("msg") == 42
 }
 
 // ----- unwrap ----------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_ok_zero() -> bool {
     ok_u8_u8(0).unwrap() == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_ok_max() -> bool {
     ok_u8_u8(u8::MAX).unwrap() == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_ok_mid() -> bool {
     ok_u8_u8(7).unwrap() == 7
 }
 
 // ----- unwrap_err ------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_err_err_zero() -> bool {
     err_u8_u8(0).unwrap_err() == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_err_err_max() -> bool {
     err_u8_u8(u8::MAX).unwrap_err() == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_err_err_mid() -> bool {
     err_u8_u8(7).unwrap_err() == 7
 }
 
 // ----- unwrap_or -------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_ok_zero() -> bool {
     ok_u8_u8(0).unwrap_or(99) == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_ok_max() -> bool {
     ok_u8_u8(u8::MAX).unwrap_or(0) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_err_default_zero() -> bool {
     err_u8_u8(99).unwrap_or(0) == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_err_default_max() -> bool {
     err_u8_u8(0).unwrap_or(u8::MAX) == u8::MAX
 }
@@ -137,17 +136,17 @@ pub fn test_unwrap_or_err_default_max() -> bool {
 
 // ----- unwrap_or_default -----------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_default_ok_zero() -> bool {
     ok_u8_u8(0).unwrap_or_default() == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_default_ok_max() -> bool {
     ok_u8_u8(u8::MAX).unwrap_or_default() == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_default_err() -> bool {
     err_u8_u8(u8::MAX).unwrap_or_default() == 0
 }
@@ -174,56 +173,56 @@ pub fn test_unwrap_or_default_err() -> bool {
 
 // ----- ok --------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_ok_ok_zero() -> bool {
     ok_u8_u8(0).ok().unwrap_or(99) == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_ok_ok_max() -> bool {
     ok_u8_u8(u8::MAX).ok().unwrap_or(0) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_ok_err() -> bool {
     err_u8_u8(7).ok().is_none()
 }
 
 // ----- err -------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_err_err_zero() -> bool {
     err_u8_u8(0).err().unwrap_or(99) == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_err_err_max() -> bool {
     err_u8_u8(u8::MAX).err().unwrap_or(0) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_err_ok() -> bool {
     ok_u8_u8(7).err().is_none()
 }
 
 // ----- and -------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_and_ok_ok() -> bool {
     ok_u8_u8(0).and(ok_u8_u8(7)).unwrap_or(99) == 7
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_and_ok_err() -> bool {
     ok_u8_u8(0).and(err_u8_u8(42)).unwrap_err() == 42
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_and_err_ok() -> bool {
     err_u8_u8(99).and(ok_u8_u8(0)).unwrap_err() == 99
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_and_err_err() -> bool {
     err_u8_u8(u8::MAX).and(err_u8_u8(0)).unwrap_err() == u8::MAX
 }
@@ -232,22 +231,22 @@ pub fn test_and_err_err() -> bool {
 
 // ----- or --------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_or_ok_ok() -> bool {
     ok_u8_u8(0).or(ok_u8_u8(99)).unwrap_or(7) == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_or_ok_err() -> bool {
     ok_u8_u8(u8::MAX).or(err_u8_u8(42)).unwrap_or(0) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_or_err_ok() -> bool {
     err_u8_u8(99).or(ok_u8_u8(42)).unwrap_or(0) == 42
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_or_err_err() -> bool {
     err_u8_u8(99).or(err_u8_u8(7)).unwrap_err() == 7
 }
@@ -277,7 +276,7 @@ fn err_outer_u8(e: u8) -> Result<Option<u8>, u8> {
     Err(e)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_transpose_ok_some_zero() -> bool {
     match ok_some_u8(0).transpose() {
         Some(Ok(v)) => v == 0,
@@ -285,7 +284,7 @@ pub fn test_transpose_ok_some_zero() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_transpose_ok_some_max() -> bool {
     match ok_some_u8(u8::MAX).transpose() {
         Some(Ok(v)) => v == u8::MAX,
@@ -293,12 +292,12 @@ pub fn test_transpose_ok_some_max() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_transpose_ok_none() -> bool {
     ok_none_u8().transpose().is_none()
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_transpose_err() -> bool {
     match err_outer_u8(7).transpose() {
         Some(Err(e)) => e == 7,
@@ -322,7 +321,7 @@ fn question_identity(a: Result<u8, u8>) -> Result<u8, u8> {
     Ok(x)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_question_propagates_ok() -> bool {
     match question_identity(ok_u8_u8(7)) {
         Ok(v) => v == 7,
@@ -330,7 +329,7 @@ pub fn test_question_propagates_ok() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_question_propagates_err() -> bool {
     match question_identity(err_u8_u8(3)) {
         Ok(_) => false,
@@ -338,29 +337,29 @@ pub fn test_question_propagates_err() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_expect_err() -> bool {
     err_u8_u8(4).expect_err("expected an error") == 4
 }
 
 // ----- methods newly reachable from Lean -------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_ok_and_true() -> bool {
     ok_u8_u8(7).is_ok_and(|v| v == 7)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_ok_and_false_on_err() -> bool {
     !err_u8_u8(7).is_ok_and(|v| v == 7)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_is_err_and_true() -> bool {
     err_u8_u8(3).is_err_and(|e| e == 3)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_map_ok() -> bool {
     match ok_u8_u8(4).map(|v| v + 1) {
         Ok(v) => v == 5,
@@ -368,7 +367,7 @@ pub fn test_map_ok() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_map_leaves_err() -> bool {
     match err_u8_u8(4).map(|v| v + 1) {
         Ok(_) => false,
@@ -376,27 +375,27 @@ pub fn test_map_leaves_err() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_map_or_ok() -> bool {
     ok_u8_u8(4).map_or(0, |v| v + 1) == 5
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_map_or_err_uses_default() -> bool {
     err_u8_u8(4).map_or(9, |v| v + 1) == 9
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_map_or_else_err_branch() -> bool {
     err_u8_u8(4).map_or_else(|e| e + 1, |v| v) == 5
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_unwrap_or_else_uses_err() -> bool {
     err_u8_u8(4).unwrap_or_else(|e| e + 1) == 5
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_and_then_chains() -> bool {
     match ok_u8_u8(4).and_then(|v| ok_u8_u8(v + 1)) {
         Ok(v) => v == 5,
@@ -404,7 +403,7 @@ pub fn test_and_then_chains() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_and_then_short_circuits() -> bool {
     match err_u8_u8(4).and_then(|v| ok_u8_u8(v + 1)) {
         Ok(_) => false,
@@ -412,7 +411,7 @@ pub fn test_and_then_short_circuits() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_or_else_recovers() -> bool {
     match err_u8_u8(4).or_else(|e| ok_u8_u8(e + 1)) {
         Ok(v) => v == 5,
@@ -420,7 +419,7 @@ pub fn test_or_else_recovers() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_inspect_returns_self() -> bool {
     match ok_u8_u8(4).inspect(|_| ()) {
         Ok(v) => v == 4,
@@ -428,7 +427,7 @@ pub fn test_inspect_returns_self() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_inspect_err_returns_self() -> bool {
     match err_u8_u8(4).inspect_err(|_| ()) {
         Ok(_) => false,
@@ -438,21 +437,21 @@ pub fn test_inspect_err_returns_self() -> bool {
 
 // ----- dictionary-applying tests ---------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_eq_ok_goes_through_the_dictionary() -> bool {
     let a: Result<Keyed, u8> = Ok(keyed(5, 1));
     let b: Result<Keyed, u8> = Ok(keyed(5, 2));
     a == b
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_eq_err_goes_through_the_dictionary() -> bool {
     let a: Result<u8, Keyed> = Err(keyed(5, 1));
     let b: Result<u8, Keyed> = Err(keyed(5, 2));
     a == b
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_eq_ok_differing_keys() -> bool {
     let a: Result<Keyed, u8> = Ok(keyed(5, 1));
     let b: Result<Keyed, u8> = Ok(keyed(6, 1));
@@ -460,14 +459,14 @@ pub fn test_eq_ok_differing_keys() -> bool {
 }
 
 // The mismatch arm never reaches either dictionary.
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_eq_ok_vs_err() -> bool {
     let a: Result<Keyed, Keyed> = Ok(keyed(5, 1));
     let b: Result<Keyed, Keyed> = Err(keyed(5, 1));
     (a == b) == false
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_clone_ok_applies_element_clone() -> bool {
     let a: Result<Bumped, Bumped> = Ok(Bumped(1));
     match a.clone() {
@@ -476,7 +475,7 @@ pub fn test_clone_ok_applies_element_clone() -> bool {
     }
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_clone_err_applies_element_clone() -> bool {
     let a: Result<Bumped, Bumped> = Err(Bumped(1));
     match a.clone() {

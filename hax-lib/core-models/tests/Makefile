@@ -11,7 +11,7 @@ all: client-test equiv-test
 client-test:
 	$(MAKE) -C client_test
 
-# Rust↔Lean equivalence test: cargo runs the `#[rust_lean_test]`
+# Rust↔Lean equivalence test: cargo runs the `#[hax_test::equiv]`
 # functions on the Rust side; Lake evaluates the same functions via the
 # Aeneas extraction and the `#guard`s emitted by `gen_lean_tests.py`.
 equiv-test:

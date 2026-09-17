@@ -6,15 +6,14 @@
 #   surface and the result elaborates against our hand-written shims.
 #
 # - `rust_lean_equiv_test/`: the rust↔lean equivalence framework. The
-#   `source` crate carries `#[rust_lean_test]`-annotated `() -> bool`
-#   functions; the `macro` crate provides the proc-macro that turns each
-#   into a `#[cfg(test)] #[test]` wrapper. The Lean side checks each
-#   function evaluates to `Result.ok true` (see
+#   `source` crate carries `#[hax_test::equiv]`-annotated `() -> bool`
+#   functions; the proc-macro comes from `tests/hax-test-macros` at the
+#   repository root and turns each into a `#[cfg(test)] #[test]` wrapper.
+#   The Lean side checks each function evaluates to `Result.ok true` (see
 #   `rust_lean_equiv_test/gen_lean_tests.py`).
 [workspace]
 resolver = "2"
 members = [
     "client_test",
     "rust_lean_equiv_test/source",
-    "rust_lean_equiv_test/macro",
 ]
