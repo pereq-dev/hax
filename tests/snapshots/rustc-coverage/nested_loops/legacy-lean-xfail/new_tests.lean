@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__nested_loops
 
---  @fail(extraction): ssprove(HAX0001, HAX0001, HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001, HAX0001, HAX0001)
+--  @fail(extraction): ssprove(HAX0001, HAX0001, HAX0001), coq(HAX0001, HAX0001, HAX0001, HAX0001)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do

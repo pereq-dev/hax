@@ -1,0 +1,92 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__lean_tests__lib__NULL_CHAR *)
+const char_lit___x00: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_const_matching *)
+const char_lit__a: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__binops__bitand_bool *)
+fun core__ops__bit__BitAnd__bitand(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__binops__bitor_bool *)
+fun core__ops__bit__BitOr__bitor(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__binops__bitxor_bool *)
+fun core__ops__bit__BitXor__bitxor(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__floats__N *)
+const float_lit__1_x2e0: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__loops__while_loop1 *)
+fun hax_lib__u_internal_loop_decreases(bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__loops__for_loop_with_spec *)
+fun hax_lib__u_internal_loop_invariant(bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__casts__casting_edge_cases *)
+const nat_128: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__monadic__test *)
+const nat_19: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__loops__for_loop_with_spec *)
+const nat_200: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__traits__associated_types__Impl_1__f *)
+const nat_21: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__traits__associated_types__Impl__f *)
+const nat_2121: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__enums__enums *)
+const nat_23: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__casts__casting_edge_cases *)
+const nat_255: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__casts__casting_edge_cases *)
+const nat_256: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__test_before_verbatim_multi_line, new_tests__legacy__lean_tests__lib__traits__default__Easy *)
+const nat_32: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__closure *)
+const nat_41: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__FORTYTWO, new_tests__legacy__lean_tests__lib__associated_types__multiple_associated_types__b, new_tests__legacy__lean_tests__lib__loops__errors__loop4, new_tests__legacy__lean_tests__lib__matching__test_const_matching, new_tests__legacy__lean_tests__lib__structs__miscellaneous__test_tuples, new_tests__legacy__lean_tests__lib__test_before_verbatime_single_line, new_tests__legacy__lean_tests__lib__traits__basic__Impl__f1 *)
+const nat_42: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__casts__casting_edge_cases *)
+const nat_4294967295: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__enums__enums, new_tests__legacy__lean_tests__lib__traits__basic__Impl__f2 *)
+const nat_43: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__constants__C1 *)
+const nat_5678: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__nested_control_flow__complex_nesting *)
+const nat_89: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__constants__C3 *)
+const nat_890: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__casts__casting_edge_cases *)
+const nat_neg_1: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__casts__casting_edge_cases *)
+const nat_neg_128: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__MINUS_FORTYTWO *)
+const nat_neg_42: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__constants__const_parameters__test2 *)
+fun new_tests__legacy__lean_tests__lib__constants__const_parameters__T__f__unextracted_impl(bitstring): bitstring [data].
+(* referenced by: new_tests__legacy__lean_tests__lib__traits__default__T1 *)
+fun new_tests__legacy__lean_tests__lib__traits__default__Easy__dft(bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_const_matching *)
+const string_lit__Hello: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201_x20_x26_x26_x20b_x20_x3d_x3d_x202: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201_x20_x26_x26_x20b_x20_x3d_x3d_x202_x20_x26_x26_x20c_x20_x3d_x3d_x203_x20_x26_x26_x20d_x20_x3d_x3d_x204: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20a_x20_x3d_x3d_x201_x20_x26_x26_x20d_x20_x3d_x3d_x204: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20c_x20_x3d_x3d_x203_x20_x26_x26_x20d_x20_x3d_x3d_x204: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20d_x20_x3d_x3d_x204: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs *)
+const string_lit__assertion_x20failed_x3a_x20f1_x20_x3d_x3d_x201: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs *)
+const string_lit__assertion_x20failed_x3a_x20f1_x20_x3d_x3d_x201_x20_x26_x26_x20f2_x20_x3d_x3d_x202: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs *)
+const string_lit__assertion_x20failed_x3a_x20f1_x20_x3d_x3d_x201_x20_x26_x26_x20f2_x20_x3d_x3d_x202_x20_x26_x26_x20f3_x20_x3d_x3d_x203_x20_x26_x26_x20f4_x20_x3d_x3d_x204: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs *)
+const string_lit__assertion_x20failed_x3a_x20f2_x20_x3d_x3d_x202_x20_x26_x26_x20f4_x20_x3d_x3d_x204: bitstring.
+(* referenced by: new_tests__legacy__lean_tests__lib__matching__test_ellipsis_bare_tuples, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_records, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_structs, new_tests__legacy__lean_tests__lib__matching__test_ellipsis_tuples *)
+const string_lit__assertion_x20failed_x3a_x20true: bitstring.

@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__tight_inf_loop
 
---  @fail(extraction): legacy-lean(HAX0001), proverif(HAX0008), coq(HAX0001), fstar(HAX0001)
+--  @fail(extraction): legacy-lean(HAX0001), coq(HAX0001), fstar(HAX0001)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

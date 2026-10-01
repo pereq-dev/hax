@@ -1,90 +1,51 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(* src: src/legacy/enum-struct-variant/lib.rs:5:0-7:1 new_tests__legacy__enum_struct_variant__lib__Money *)
+fun new_tests__legacy__enum_struct_variant__lib__Money__Money(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__enum_struct_variant__lib__Money__Money__value(
+    new_tests__legacy__enum_struct_variant__lib__Money__Money(v_0)
+  ) = v_0.
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__legacy__enum_struct_variant__lib__t_Money.
-
-fun new_tests__legacy__enum_struct_variant__lib__t_Money_to_bitstring(
-      new_tests__legacy__enum_struct_variant__lib__t_Money
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__enum_struct_variant__lib__t_Money_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__enum_struct_variant__lib__t_Money [typeConverter].
-const new_tests__legacy__enum_struct_variant__lib__t_Money_default_value: new_tests__legacy__enum_struct_variant__lib__t_Money.
-letfun new_tests__legacy__enum_struct_variant__lib__t_Money_default() =
-       new_tests__legacy__enum_struct_variant__lib__t_Money_default_value.
-letfun new_tests__legacy__enum_struct_variant__lib__t_Money_err() =
-       let x = construct_fail() in new_tests__legacy__enum_struct_variant__lib__t_Money_default_value.
-fun new_tests__legacy__enum_struct_variant__lib__Money(nat)
-    : new_tests__legacy__enum_struct_variant__lib__t_Money [data].
-reduc forall new_tests__legacy__enum_struct_variant__lib__f_value: nat;
-    accessor_new_tests__legacy__enum_struct_variant__lib__t_Money_new_tests__legacy__enum_struct_variant__lib__f_value(
-      new_tests__legacy__enum_struct_variant__lib__Money(
-        new_tests__legacy__enum_struct_variant__lib__f_value
-      )
-    ) = new_tests__legacy__enum_struct_variant__lib__f_value.
-
-type new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant.
-
-fun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_to_bitstring(
-      new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant [typeConverter].
-const new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default_value: new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant.
-letfun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default(
-
-       ) =
-       new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default_value.
-letfun new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_err(
-       ) =
-       let x = construct_fail() in new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_default_value.
-fun new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant_Funds(
-      new_tests__legacy__enum_struct_variant__lib__t_Money
-    )
-    : new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant [data].
-reduc forall 
-  new_tests__legacy__enum_struct_variant__lib__f_balance: new_tests__legacy__enum_struct_variant__lib__t_Money
-;
-    accessor_new_tests__legacy__enum_struct_variant__lib__t_EnumWithStructVariant_new_tests__legacy__enum_struct_variant__lib__f_balance(
-      new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant_Funds(
-        new_tests__legacy__enum_struct_variant__lib__f_balance
-      )
-    ) = new_tests__legacy__enum_struct_variant__lib__f_balance.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-
-
+(* src: src/legacy/enum-struct-variant/lib.rs:10:0-12:1 new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant *)
+fun new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds(
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds__balance(
+    new_tests__legacy__enum_struct_variant__lib__EnumWithStructVariant__Funds(v_0)
+  ) = v_0.

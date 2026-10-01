@@ -58,11 +58,7 @@ fn main() {
     };
 
     let files = match &value.backend.backend {
-        Backend::Coq
-        | Backend::Ssprove
-        | Backend::Easycrypt
-        | Backend::ProVerif { .. }
-        | Backend::Lean { .. } => panic!(
+        Backend::Coq | Backend::Ssprove | Backend::Easycrypt | Backend::Lean { .. } => panic!(
             "The Rust engine cannot be called with backend {}.",
             value.backend.backend
         ),
@@ -81,6 +77,12 @@ fn main() {
             return;
         }
         Backend::LegacyLean => backends::apply_backend(backends::legacy_lean::LeanBackend, items),
+        Backend::ProVerif(options) => backends::apply_backend(
+            backends::proverif::ProVerifBackend {
+                options: options.clone(),
+            },
+            items,
+        ),
         Backend::Rust => backends::apply_backend(backends::rust::RustBackend, items),
         Backend::Debugger { interactive } => {
             use hax_rust_engine::debugger::*;

@@ -14,7 +14,8 @@ impl Printable<String> for i32 {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 pub fn print(a: Box<dyn Printable<String>>) {
     println!("{}", a.stringify());
 }

@@ -1,282 +1,289 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
+
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - Closures not supported in ProVerif *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
+
+(*****************************************************************)
+(*  WARNINGS — branches the model may not follow as Rust does.   *)
+(*                                                               *)
+(*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
+(*  the model cannot always evaluate. When it cannot, no arm of  *)
+(*  a `match` is taken (the trace ends) and an `if` takes its    *)
+(*  `else` branch, whatever Rust does. A query about the other   *)
+(*  branch may then hold for lack of any trace.                  *)
+(*                                                               *)
+(*  - 29 × `as` cast modelled as the identity, although it may change the value *)
+(*****************************************************************)
+
+(* src: src/legacy/literals/lib.rs:7:0-39:1 new_tests__legacy__literals__lib__math_integers *)
+letfun new_tests__legacy__literals__lib__math_integers(x: bitstring) =
+  let wildcard = rust_primitives__hax__int__from_machine(nat_3) in
+  let u_neg_dec = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit___x2d340282366920938463463374607431768211455000
+  ) in
+  let u_pos_dec = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit__340282366920938463463374607431768211455000
+  ) in
+  let u_neg_hex = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit___x2d340282366920938463463374607431768211455000
+  ) in
+  let u_pos_hex = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit__340282366920938463463374607431768211455000
+  ) in
+  let u_neg_octal = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit___x2d340282366920938463463374607431768211455000
+  ) in
+  let u_pos_octal = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit__340282366920938463463374607431768211455000
+  ) in
+  let u_neg_bin = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit___x2d340282366920938463463374607431768211455000
+  ) in
+  let u_pos_bin = hax_lib__int__Impl_7__u_unsafe_from_str(
+    string_lit__340282366920938463463374607431768211455000
+  ) in
+  let wildcard_1 = rust_primitives__hax__int__gt(
+    hax_lib__int__Impl_7__u_unsafe_from_str(
+      string_lit___x2d340282366920938463463374607431768211455000
+    ),
+    hax_lib__int__Impl_7__u_unsafe_from_str(string_lit__340282366920938463463374607431768211455000)
+  ) in
+  let wildcard_2 = rust_primitives__hax__int__lt(x, x) in
+  let wildcard_3 = rust_primitives__hax__int__ge(x, x) in
+  let wildcard_4 = rust_primitives__hax__int__le(x, x) in
+  let wildcard_5 = rust_primitives__hax__int__ne(x, x) in
+  let wildcard_6 = rust_primitives__hax__int__eq(x, x) in
+  let wildcard_7 = rust_primitives__hax__int__add(x, x) in
+  let wildcard_8 = rust_primitives__hax__int__sub(x, x) in
+  let wildcard_9 = rust_primitives__hax__int__mul(x, x) in
+  let wildcard_10 = rust_primitives__hax__int__div(x, x) in
+  let wildcard_11 = hax_lib__int__Impl_55__to_i16(x) in
+  let wildcard_12 = hax_lib__int__Impl_57__to_i32(x) in
+  let wildcard_13 = hax_lib__int__Impl_59__to_i64(x) in
+  let wildcard_14 = hax_lib__int__Impl_61__to_i128(x) in
+  let wildcard_15 = hax_lib__int__Impl_63__to_isize(x) in
+  let wildcard_16 = hax_lib__int__Impl_43__to_u16(x) in
+  let wildcard_17 = hax_lib__int__Impl_45__to_u32(x) in
+  let wildcard_18 = hax_lib__int__Impl_47__to_u64(x) in
+  let wildcard_19 = hax_lib__int__Impl_49__to_u128(x) in
+  let wildcard_20 = hax_lib__int__Impl_51__to_usize(x) in
+  hax_lib__int__Impl_41__to_u8(
+    rust_primitives__hax__int__add(x, rust_primitives__hax__int__mul(x, x))
+  ).
+(* src: src/legacy/literals/lib.rs:41:0-43:1 new_tests__legacy__literals__lib__panic_with_msg *)
+letfun new_tests__legacy__literals__lib__panic_with_msg(wildcard: bitstring) = bitstring_err().
+(* src: src/legacy/literals/lib.rs:46:0-48:1 new_tests__legacy__literals__lib__Foo *)
+fun new_tests__legacy__literals__lib__Foo__Foo(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__literals__lib__Foo__Foo__field(
+    new_tests__legacy__literals__lib__Foo__Foo(v_0)
+  ) = v_0.
 
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
 
-type new_tests__legacy__literals__lib__t_Foo.
-
-fun new_tests__legacy__literals__lib__t_Foo_to_bitstring(
-      new_tests__legacy__literals__lib__t_Foo
+(* src: src/legacy/literals/lib.rs:50:0-50:39 new_tests__legacy__literals__lib__CONSTANT *)
+letfun new_tests__legacy__literals__lib__CONSTANT() =
+  new_tests__legacy__literals__lib__Foo__Foo(nat_3).
+(* src: src/legacy/literals/lib.rs:52:0-58:1 new_tests__legacy__literals__lib__numeric *)
+letfun new_tests__legacy__literals__lib__numeric(wildcard: bitstring) =
+  let wildcard_1 = nat_123 in
+  let wildcard_2 = nat_neg_42 in
+  let wildcard_3 = nat_42 in
+  let wildcard_4 = nat_neg_42 in
+  let wildcard_5 = nat_22222222222222222222 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/literals/lib.rs:61:0-74:1 new_tests__legacy__literals__lib__patterns *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__legacy__literals__lib__patterns(wildcard: bitstring) =
+  let wildcard_1 = (let (=nat_2) = nat_1 in rust_primitives__hax__Tuple0__Tuple0()
+  else rust_primitives__hax__Tuple0__Tuple0()) in
+  let wildcard_2 = (let hax__scrut0 = rust_primitives__hax__Tuple2__Tuple2(
+    string_lit__hello,
+    rust_primitives__hax__Tuple2__Tuple2(
+      nat_123,
+      rust_primitives__hax__array_cons(string_lit__a, rust_primitives__hax__array_cons(string_lit__b, rust_primitives__hax__array_nil()))
     )
-    : bitstring [typeConverter].
-fun new_tests__legacy__literals__lib__t_Foo_from_bitstring(bitstring)
-    : new_tests__legacy__literals__lib__t_Foo [typeConverter].
-const new_tests__legacy__literals__lib__t_Foo_default_value: new_tests__legacy__literals__lib__t_Foo.
-letfun new_tests__legacy__literals__lib__t_Foo_default() =
-       new_tests__legacy__literals__lib__t_Foo_default_value.
-letfun new_tests__legacy__literals__lib__t_Foo_err() =
-       let x = construct_fail() in new_tests__legacy__literals__lib__t_Foo_default_value.
-fun new_tests__legacy__literals__lib__Foo(nat)
-    : new_tests__legacy__literals__lib__t_Foo [data].
-reduc forall new_tests__legacy__literals__lib__f_field: nat;
-    accessor_new_tests__legacy__literals__lib__t_Foo_new_tests__legacy__literals__lib__f_field(
-      new_tests__legacy__literals__lib__Foo(
-        new_tests__legacy__literals__lib__f_field
-      )
-    ) = new_tests__legacy__literals__lib__f_field.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__literals__lib__math_integers(x : hax_lib__int__t_Int) =
-       let wildcard21: bitstring:hax_lib__int__t_Int = (
-         hax_lib__abstraction__f_lift(3)
-       ) in
-       let e_neg_dec = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "-340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_pos_dec = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_neg_hex = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "-340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_pos_hex = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_neg_octal = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "-340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_pos_octal = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_neg_bin = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "-340282366920938463463374607431768211455000"
-         )
-       ) in
-       let e_pos_bin = (
-         hax_lib__int__impl_Int__e_unsafe_from_str(
-           "340282366920938463463374607431768211455000"
-         )
-       ) in
-       let wildcard20: bitstring = (
-         core_models__cmp__f_gt(
-           hax_lib__int__impl_Int__e_unsafe_from_str(
-             "-340282366920938463463374607431768211455000"
-           ),
-           hax_lib__int__impl_Int__e_unsafe_from_str(
-             "340282366920938463463374607431768211455000"
-           )
-         )
-       ) in
-       let wildcard19: bitstring = (core_models__cmp__f_lt(x, x)) in
-       let wildcard18: bitstring = (core_models__cmp__f_ge(x, x)) in
-       let wildcard17: bitstring = (core_models__cmp__f_le(x, x)) in
-       let wildcard16: bitstring = (core_models__cmp__f_ne(x, x)) in
-       let wildcard15: bitstring = (core_models__cmp__f_eq(x, x)) in
-       let wildcard14: bitstring = (core_models__ops__arith__f_add(x, x)) in
-       let wildcard13: bitstring = (core_models__ops__arith__f_sub(x, x)) in
-       let wildcard12: bitstring = (core_models__ops__arith__f_mul(x, x)) in
-       let wildcard11: bitstring = (core_models__ops__arith__f_div(x, x)) in
-       let wildcard10: bitstring:nat = (hax_lib__int__impl_Int__to_i16(x)) in
-       let wildcard9: bitstring:nat = (hax_lib__int__impl_Int__to_i32(x)) in
-       let wildcard8: bitstring:nat = (hax_lib__int__impl_Int__to_i64(x)) in
-       let wildcard7: bitstring:nat = (hax_lib__int__impl_Int__to_i128(x)) in
-       let wildcard6: bitstring:nat = (hax_lib__int__impl_Int__to_isize(x)) in
-       let wildcard5: bitstring:nat = (hax_lib__int__impl_Int__to_u16(x)) in
-       let wildcard4: bitstring:nat = (hax_lib__int__impl_Int__to_u32(x)) in
-       let wildcard3: bitstring:nat = (hax_lib__int__impl_Int__to_u64(x)) in
-       let wildcard2: bitstring:nat = (hax_lib__int__impl_Int__to_u128(x)) in
-       let wildcard1: bitstring:nat = (hax_lib__int__impl_Int__to_usize(x)) in
-       hax_lib__int__impl_Int__to_u8(
-         core_models__ops__arith__f_add(x, core_models__ops__arith__f_mul(x, x))
-       ).
-
-letfun new_tests__legacy__literals__lib__panic_with_msg(wildcard22 : bitstring) =
-       bitstring_err().
-
-const new_tests__legacy__literals__lib__v_CONSTANT: new_tests__legacy__literals__lib__t_Foo.
-
-letfun new_tests__legacy__literals__lib__numeric(wildcard28 : bitstring) =
-       let wildcard27: bitstring:nat = (123) in
-       let wildcard26: bitstring:nat = (-42) in
-       let wildcard25: bitstring:nat = (42) in
-       let wildcard24: bitstring:nat = (-42) in
-       let wildcard23: bitstring:nat = (22222222222222222222) in
-       ().
-
-letfun new_tests__legacy__literals__lib__patterns(wildcard32 : bitstring) =
-       let wildcard31: bitstring = (
-         let (=2) = 1 in ()
-         else ()
-       ) in
-       let wildcard30: bitstring = (
-         let (="hello", (=123, e_todo: bitstring)) = ("hello", (123, ["a","b"])) in (
-
-         )
-         else ()
-       ) in
-       let wildcard29: bitstring = (
-         let new_tests__legacy__literals__lib__Foo(=3) = new_tests__legacy__literals__lib__Foo(
-           4
-         ) in ()
-         else ()
-       ) in
-       ().
-
+  ) in
+  let rust_primitives__hax__Tuple2__Tuple2(
+    (=string_lit__hello),
+    rust_primitives__hax__Tuple2__Tuple2((=nat_123), u_todo: bitstring)
+  ) = hax__scrut0 in rust_primitives__hax__Tuple0__Tuple0()
+  else rust_primitives__hax__Tuple0__Tuple0()) in
+  let wildcard_3 = (let hax__scrut1 = new_tests__legacy__literals__lib__Foo__Foo(nat_4) in
+  let new_tests__legacy__literals__lib__Foo__Foo((=nat_3)) = hax__scrut1 in
+    rust_primitives__hax__Tuple0__Tuple0()
+  else rust_primitives__hax__Tuple0__Tuple0()) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/literals/lib.rs:76:0-85:1 new_tests__legacy__literals__lib__casts *)
 letfun new_tests__legacy__literals__lib__casts(
-         x8 : nat, x16 : nat, x32 : nat, x64 : nat, xs : nat
-       ) =
-       let wildcard40: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard39: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard38: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard37: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard36: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard35: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard34: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       let wildcard33: bitstring:nat = (
-         core_models__ops__arith__f_add(
-           core_models__ops__arith__f_add(
-             core_models__ops__arith__f_add(
-               core_models__ops__arith__f_add(x8, x16), x32
-             ),
-             x64
-           ),
-           xs
-         )
-       ) in
-       ().
-
-letfun new_tests__legacy__literals__lib__empty_array(wildcard42 : bitstring) =
-       let wildcard41: bitstring:bitstring = ([]) in
-       ().
-
-letfun new_tests__legacy__literals__lib__fn_pointer_cast(wildcard43 : bitstring) =
-       let f:bitstring = (|x|x) in
-       ().
-
-const new_tests__legacy__literals__lib__null: bitstring.
-
-letfun new_tests__legacy__literals__lib__strings(wildcard55 : bitstring) =
-       let wildcard54: bitstring:bitstring = ("hello") in
-       let wildcard53: bitstring:bitstring = ("hello"world") in
-       let wildcard52: bitstring:bitstring = ("it's") in
-       let wildcard51: bitstring:bitstring = ("back\slash") in
-       let wildcard50: bitstring:bitstring = ("line
-break") in
-       let wildcard49: bitstring:bitstring = ("carriagereturn") in
-       let wildcard48: bitstring:bitstring = ("tab	here") in
-       let wildcard47: bitstring:bitstring = ("null byte") in
-       let wildcard46: bitstring:bitstring = ("bellchar") in
-       let wildcard45: bitstring:bitstring = ("[0m") in
-       let wildcard44: bitstring:bitstring = ("🦀") in
-       ().
-
+  x8: bitstring,
+  x16: bitstring,
+  x32: bitstring,
+  x64: bitstring,
+  xs: bitstring
+) =
+  let wildcard = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(rust_primitives__hax__machine_int__add(x8, x16), x32),
+      x64
+    ),
+    xs
+  ) in
+  let wildcard_1 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(rust_primitives__hax__machine_int__add(x8, x16), x32),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  let wildcard_2 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(
+        rust_primitives__hax__machine_int__add(x8, x16),
+        (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x32
+      ),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  let wildcard_3 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(
+        rust_primitives__hax__machine_int__add(
+          x8,
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x16
+        ),
+        (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x32
+      ),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  let wildcard_4 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(
+        rust_primitives__hax__machine_int__add(
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x8,
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x16
+        ),
+        (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x32
+      ),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  let wildcard_5 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(
+        rust_primitives__hax__machine_int__add(
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x8,
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x16
+        ),
+        (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x32
+      ),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  let wildcard_6 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(
+        rust_primitives__hax__machine_int__add(
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x8,
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x16
+        ),
+        (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x32
+      ),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  let wildcard_7 = rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      rust_primitives__hax__machine_int__add(
+        rust_primitives__hax__machine_int__add(
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x8,
+          (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x16
+        ),
+        (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x32
+      ),
+      (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x64
+    ),
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) xs
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/literals/lib.rs:87:0-89:1 new_tests__legacy__literals__lib__empty_array *)
+letfun new_tests__legacy__literals__lib__empty_array(wildcard: bitstring) =
+  let wildcard_1 = rust_primitives__hax__array_nil() in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/literals/lib.rs:92:0-94:1 new_tests__legacy__literals__lib__fn_pointer_cast *)
+(*  https://github.com/pereq-dev/hax/issues/500 *)
+letfun new_tests__legacy__literals__lib__fn_pointer_cast(wildcard: bitstring) =
+  let f = (bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/literals/lib.rs:97:0-97:24 new_tests__legacy__literals__lib__null *)
+(*  @fail(extraction): ssprove(HAX0001) *)
+letfun new_tests__legacy__literals__lib__null() = char_lit___x00.
+(* src: src/legacy/literals/lib.rs:99:0-111:1 new_tests__legacy__literals__lib__strings *)
+letfun new_tests__legacy__literals__lib__strings(wildcard: bitstring) =
+  let wildcard_1 = string_lit__hello in
+  let wildcard_2 = string_lit__hello_x22world in
+  let wildcard_3 = string_lit__it_x27s in
+  let wildcard_4 = string_lit__back_x5cslash in
+  let wildcard_5 = string_lit__line_x0abreak in
+  let wildcard_6 = string_lit__carriage_x0dreturn in
+  let wildcard_7 = string_lit__tab_x09here in
+  let wildcard_8 = string_lit__null_x00byte in
+  let wildcard_9 = string_lit__bell_x07char in
+  let wildcard_10 = string_lit___x1b_x5b0m in
+  let wildcard_11 = string_lit___xf0_x9f_xa6_x80 in
+  rust_primitives__hax__Tuple0__Tuple0.

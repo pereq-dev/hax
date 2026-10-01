@@ -65,5 +65,40 @@
     "lax": "./hax.py prove --admit",
     "prove": "./hax.py prove",
     "timeout": 180
+  },
+  {
+    "name": "libcrux-psq-proverif",
+    "backend": "proverif",
+    "repository": "celabshq/libcrux",
+    "ref": "proverif-proofs",
+    "directory": "libcrux-psq",
+    "stage": "lax",
+    "extract": "cargo hax -C -p libcrux-psq --features hax-pv ';' into -i '-** +libcrux_psq::handshake::initiator::** +libcrux_psq::handshake::responder::**' proverif --keep-trait-calls 'tls_codec::** libcrux_psq::**::CiphersuiteBase::**'",
+    "lax": "bash proofs/proverif/check-pv.sh --load-only",
+    "prove": "bash proofs/proverif/check-pv.sh",
+    "timeout": 180
+  },
+  {
+    "name": "spqr-proverif",
+    "backend": "proverif",
+    "repository": "cryspen/SparsePostQuantumRatchet",
+    "ref": "proverif-proofs",
+    "directory": ".",
+    "packages": "protobuf-compiler",
+    "stage": "prove",
+    "extract": "python3 hax.py extract-proverif",
+    "prove": "python3 hax.py check-proverif epochs=4",
+    "timeout": 180
+  },
+  {
+    "name": "bertie-proverif",
+    "backend": "proverif",
+    "repository": "cryspen/bertie",
+    "ref": "proverif-proofs",
+    "directory": ".",
+    "stage": "prove",
+    "extract": "./hax-driver.py extract-proverif",
+    "prove": "bash proofs/proverif/check-pv.sh",
+    "timeout": 60
   }
 ]

@@ -20,7 +20,8 @@ let impl: t_Printable i32 Alloc.String.t_String =
     fun (self: i32) -> Alloc.String.f_to_string #i32 #FStar.Tactics.Typeclasses.solve self
   }
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 let print (a: dyn 1 (fun z -> t_Printable z Alloc.String.t_String)) : Prims.unit =
   let args:Alloc.String.t_String =
     f_stringify #(dyn 1 (fun z -> t_Printable z Alloc.String.t_String))

@@ -1,0 +1,38 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__loops__lib__for_loops__composed_range *)
+fun core__iter__traits__iterator__Iterator__chain(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__for_loops__enumerate_chunks, new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice, new_tests__legacy__loops__lib__recognized_loops__enumerated_slice *)
+fun core__iter__traits__iterator__Iterator__enumerate(bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__recognized_loops__range_step_by *)
+fun core__iter__traits__iterator__Iterator__step_by(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__for_loops__nested *)
+fun core__iter__traits__iterator__Iterator__zip(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__control_flow__continue_and_break, new_tests__legacy__loops__lib__control_flow__continue_only *)
+fun core__ops__arith__MulAssign__mul_assign(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__for_loops__enumerate_chunks *)
+fun core__slice__Impl__chunks(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__for_loops__chunks, new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice *)
+fun core__slice__Impl__chunks_exact(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__for_loops__chunks *)
+fun core__slice__iter__Impl_88__remainder(bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice *)
+fun hax_lib__prop__Impl__from_bool(bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__while_loops__while_invariant_decr, new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev *)
+fun hax_lib__u_internal_loop_decreases(bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__recognized_loops__enumerated_chunked_slice, new_tests__legacy__loops__lib__recognized_loops__enumerated_slice, new_tests__legacy__loops__lib__recognized_loops__range, new_tests__legacy__loops__lib__recognized_loops__range_step_by *)
+fun hax_lib__u_internal_loop_invariant(bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__while_loops__while_invariant_decr, new_tests__legacy__loops__lib__while_loops__while_invariant_decr_rev *)
+fun hax_lib__u_internal_while_loop_invariant(bitstring): bitstring.
+(* referenced by: new_tests__legacy__loops__lib__control_flow__bigger_power_2 *)
+const nat_1000000: bitstring.
+(* referenced by: new_tests__legacy__loops__lib__for_loops__composed_range *)
+const nat_50: bitstring.

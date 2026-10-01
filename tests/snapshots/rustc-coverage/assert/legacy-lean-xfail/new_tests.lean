@@ -37,7 +37,7 @@ def might_fail_assert (one_plus_one : u32) :
         (hax_lib.assert (← (left_val ==? right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do

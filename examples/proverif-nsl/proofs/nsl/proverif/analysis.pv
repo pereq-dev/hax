@@ -1,0 +1,71 @@
+(*****************************************)
+(* Top-level processes                   *)
+(*****************************************)
+(* An honest initiator and an honest responder run any number of sessions.
+   The attacker knows their public keys, chooses whom the initiator talks
+   to, and can run sessions with both under keys of its own. A session is
+   identified by its two parties and its session key. *)
+
+event InitiatorCommits(bitstring, bitstring, bitstring).
+event InitiatorDone(bitstring, bitstring, bitstring).
+event ResponderCommits(bitstring, bitstring, bitstring).
+event ResponderDone(bitstring, bitstring, bitstring).
+
+free INITIATOR_SECRET: bitstring [private].
+free RESPONDER_SECRET: bitstring [private].
+
+(* Both roles complete. *)
+query a: bitstring, b: bitstring, k: bitstring; event(InitiatorDone(a, b, k)).
+query a: bitstring, b: bitstring, k: bitstring; event(ResponderDone(a, b, k)).
+(* Each party authenticates the other, session by session. *)
+query a: bitstring, b: bitstring, k: bitstring;
+  inj-event(InitiatorDone(a, b, k)) ==> inj-event(ResponderCommits(a, b, k)).
+query a: bitstring, b: bitstring, k: bitstring;
+  inj-event(ResponderDone(a, b, k)) ==> inj-event(InitiatorCommits(a, b, k)).
+(* The session key of a session between the honest parties is secret: what
+   it encrypts does not leak. *)
+query attacker(INITIATOR_SECRET).
+query attacker(RESPONDER_SECRET).
+
+let Initiator(skA: bitstring, pkB: bitstring) =
+    let pkA = proverif_nsl__PublicKeyEncryption__public_key(skA) in
+    in(c, peer: bitstring);
+    new n: bitstring; new r1: bitstring; new r3: bitstring;
+    let na = proverif_nsl__Nonce__Nonce(n) in
+    let rust_primitives__hax__Tuple2__Tuple2(state, message_1) =
+      proverif_nsl__initiate(skA, peer, na, r1) in
+    out(c, message_1);
+    in(c, message_2: bitstring);
+    let rust_primitives__hax__Tuple2__Tuple2(message_3, key) =
+      proverif_nsl__finish_initiator(state, message_2, r3) in
+    event InitiatorCommits(pkA, peer, key);
+    if peer = pkB then (
+      event InitiatorDone(pkA, peer, key);
+      out(c, message_3);
+      out(c, crypto__aead_enc(key, INITIATOR_SECRET, empty))
+    ) else out(c, message_3).
+
+let Responder(skB: bitstring, pkA: bitstring) =
+    let pkB = proverif_nsl__PublicKeyEncryption__public_key(skB) in
+    in(c, message_1: bitstring);
+    new n: bitstring; new r2: bitstring;
+    let nb = proverif_nsl__Nonce__Nonce(n) in
+    let rust_primitives__hax__Tuple2__Tuple2(state, message_2) =
+      proverif_nsl__respond(skB, nb, message_1, r2) in
+    let peer = proverif_nsl__Responder__Responder__initiator(state) in
+    let na = proverif_nsl__Responder__Responder__initiator_nonce(state) in
+    event ResponderCommits(peer, pkB, proverif_nsl__session_key(na, nb));
+    out(c, message_2);
+    in(c, message_3: bitstring);
+    let key = proverif_nsl__finish_responder(skB, state, message_3) in
+    if peer = pkA then (
+      event ResponderDone(peer, pkB, key);
+      out(c, crypto__aead_enc(key, RESPONDER_SECRET, empty))
+    ).
+
+process
+    new skA: bitstring; new skB: bitstring;
+    let pkA = proverif_nsl__PublicKeyEncryption__public_key(skA) in
+    let pkB = proverif_nsl__PublicKeyEncryption__public_key(skB) in
+    out(c, pkA); out(c, pkB);
+    ((!Initiator(skA, pkB)) | (!Responder(skB, pkA)))

@@ -19,7 +19,6 @@ def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def if_let (input : (core_models.option.Option String)) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -42,7 +41,8 @@ def if_let (input : (core_models.option.Option String)) :
   let _ ← (say "done");
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+--  @fail(extraction): proverif(HAX0001, HAX0001)
 @[spec]
 def if_let_chain
     (a : (core_models.option.Option String))
@@ -59,7 +59,6 @@ def if_let_chain
   let _ ← (say "done");
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

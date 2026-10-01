@@ -184,7 +184,7 @@ def Impl.fmt_hoisted (self : DebugTest) (f : core_models.fmt.Formatter) :
           (core_models.result.Result.Ok rust_primitives.hax.Tuple0.mk);
         (pure (rust_primitives.hax.Tuple2.mk f hax_temp_output))
 
---  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), proverif(HAX0008, HAX0008), ssprove(HAX0001, HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
 @[reducible] instance Impl.AssociatedTypes :
   core_models.fmt.Debug.AssociatedTypes DebugTest
   where
@@ -362,7 +362,7 @@ def Impl_1.fmt_hoisted (self : DisplayTest) (f : core_models.fmt.Formatter) :
           f
           (core_models.result.Result.Err err)))
 
---  @fail(extraction): proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
 @[reducible] instance Impl_1.AssociatedTypes :
   core_models.fmt.Display.AssociatedTypes DisplayTest
   where

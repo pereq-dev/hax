@@ -7,7 +7,6 @@ let say (message: string) : Prims.unit =
   let _:string = Core_models.Hint.black_box #string message in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let let_else (value: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)

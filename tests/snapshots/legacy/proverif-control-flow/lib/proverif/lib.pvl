@@ -1,0 +1,209 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
+
+  These libraries ship with hax.
+
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
+
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
+
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
+
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
+
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
+
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - Let-chains (e.g. `if let .. && let ..`) are not supported. *)
+(*  - Loops containing `return` not supported in ProVerif *)
+(*  - Loops not supported in ProVerif *)
+(*  - Loops not supported in ProVerif *)
+(*  - Let-chains (e.g. `if let .. && let ..`) are not supported. *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
+
+(* src: src/legacy/proverif-control-flow/lib.rs:9:0-14:1 new_tests__legacy__proverif_control_flow__lib__early_return *)
+letfun new_tests__legacy__proverif_control_flow__lib__early_return(x: bitstring) =
+  let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
+  let (=True()) = hax__cond0 in nat_1 else x.
+(* src: src/legacy/proverif-control-flow/lib.rs:16:0-22:1 new_tests__legacy__proverif_control_flow__lib__return_in_match *)
+letfun new_tests__legacy__proverif_control_flow__lib__return_in_match(x: bitstring) =
+  let Some(v) = x in v
+  else let None() = x in nat_0
+  else bitstring_err().
+(* src: src/legacy/proverif-control-flow/lib.rs:24:0-27:1 new_tests__legacy__proverif_control_flow__lib__let_else *)
+letfun new_tests__legacy__proverif_control_flow__lib__let_else(x: bitstring) =
+  let Some(v) = x in v
+  else nat_0.
+(* src: src/legacy/proverif-control-flow/lib.rs:29:0-33:1 new_tests__legacy__proverif_control_flow__lib__question_mark_option *)
+letfun new_tests__legacy__proverif_control_flow__lib__question_mark_option(
+  x: bitstring,
+  y: bitstring
+) =
+  let Some(a) = x in
+    (let Some(b) = y in Some(rust_primitives__hax__machine_int__bitxor(a, b))
+    else let None() = y in None()
+    else bitstring_err())
+  else let None() = x in None()
+  else bitstring_err().
+(* src: src/legacy/proverif-control-flow/lib.rs:35:0-43:1 new_tests__legacy__proverif_control_flow__lib__if_let_chain *)
+letfun new_tests__legacy__proverif_control_flow__lib__if_let_chain(x: bitstring, y: bitstring) =
+  bitstring_err() (* HAX ERROR: Let-chains (e.g. `if let .. && let ..`) are not supported. *).
+(* src: src/legacy/proverif-control-flow/lib.rs:45:0-53:1 new_tests__legacy__proverif_control_flow__lib__nested_for *)
+letfun new_tests__legacy__proverif_control_flow__lib__nested_for(xs: bitstring, ys: bitstring) =
+  let acc_3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    xs
+  )) in let bl__acc0 = (nat_0) in 
+  let rust_primitives__hax__array_cons(x, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
+  let bl__acc1 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    ys
+  )) in let bl__acc0 = (acc_1) in 
+  let rust_primitives__hax__array_cons(y, bl__seq1) = bl__seq0 in (let acc_2 = bl__acc0 in
+  let bl__acc1 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(y, bl__seq2) = bl__seq1 in (let acc_2 = bl__acc1 in
+  let bl__acc2 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(y, bl__seq3) = bl__seq2 in (let acc_2 = bl__acc2 in
+  let bl__acc3 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in hax_loop_unbounded(bl__acc3, bl__seq3) (* more than LOOP_BOUND elements *) else (let rust_primitives__hax__array_nil() = bl__seq3 in bl__acc3 else hax_loop_opaque_seq(bl__acc3, bl__seq3) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq2 in bl__acc2 else hax_loop_opaque_seq(bl__acc2, bl__seq2) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq1 in bl__acc1 else hax_loop_opaque_seq(bl__acc1, bl__seq1) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq0 in bl__acc0 else hax_loop_opaque_seq(bl__acc0, bl__seq0) (* iterator is not a cons-list *)))) in
+  let rust_primitives__hax__array_cons(x, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
+  let bl__acc2 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    ys
+  )) in let bl__acc0 = (acc_1) in 
+  let rust_primitives__hax__array_cons(y, bl__seq1) = bl__seq0 in (let acc_2 = bl__acc0 in
+  let bl__acc1 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(y, bl__seq2) = bl__seq1 in (let acc_2 = bl__acc1 in
+  let bl__acc2 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(y, bl__seq3) = bl__seq2 in (let acc_2 = bl__acc2 in
+  let bl__acc3 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in hax_loop_unbounded(bl__acc3, bl__seq3) (* more than LOOP_BOUND elements *) else (let rust_primitives__hax__array_nil() = bl__seq3 in bl__acc3 else hax_loop_opaque_seq(bl__acc3, bl__seq3) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq2 in bl__acc2 else hax_loop_opaque_seq(bl__acc2, bl__seq2) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq1 in bl__acc1 else hax_loop_opaque_seq(bl__acc1, bl__seq1) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq0 in bl__acc0 else hax_loop_opaque_seq(bl__acc0, bl__seq0) (* iterator is not a cons-list *)))) in
+  let rust_primitives__hax__array_cons(x, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
+  let bl__acc3 = ((let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    ys
+  )) in let bl__acc0 = (acc_1) in 
+  let rust_primitives__hax__array_cons(y, bl__seq1) = bl__seq0 in (let acc_2 = bl__acc0 in
+  let bl__acc1 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(y, bl__seq2) = bl__seq1 in (let acc_2 = bl__acc1 in
+  let bl__acc2 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(y, bl__seq3) = bl__seq2 in (let acc_2 = bl__acc2 in
+  let bl__acc3 = (rust_primitives__hax__machine_int__bitxor(
+    rust_primitives__hax__machine_int__bitxor(acc_2, x),
+    y
+  )) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in hax_loop_unbounded(bl__acc3, bl__seq3) (* more than LOOP_BOUND elements *) else (let rust_primitives__hax__array_nil() = bl__seq3 in bl__acc3 else hax_loop_opaque_seq(bl__acc3, bl__seq3) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq2 in bl__acc2 else hax_loop_opaque_seq(bl__acc2, bl__seq2) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq1 in bl__acc1 else hax_loop_opaque_seq(bl__acc1, bl__seq1) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq0 in bl__acc0 else hax_loop_opaque_seq(bl__acc0, bl__seq0) (* iterator is not a cons-list *)))) in
+  let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in hax_loop_unbounded(bl__acc3, bl__seq3) (* more than LOOP_BOUND elements *) else (let rust_primitives__hax__array_nil() = bl__seq3 in bl__acc3 else hax_loop_opaque_seq(bl__acc3, bl__seq3) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq2 in bl__acc2 else hax_loop_opaque_seq(bl__acc2, bl__seq2) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq1 in bl__acc1 else hax_loop_opaque_seq(bl__acc1, bl__seq1) (* iterator is not a cons-list *))) else (let rust_primitives__hax__array_nil() = bl__seq0 in bl__acc0 else hax_loop_opaque_seq(bl__acc0, bl__seq0) (* iterator is not a cons-list *)))) in
+  acc_3.
+(* src: src/legacy/proverif-control-flow/lib.rs:55:0-64:1 new_tests__legacy__proverif_control_flow__lib__for_break *)
+letfun new_tests__legacy__proverif_control_flow__lib__for_break(xs: bitstring) =
+  (let bl__seq0 = (core__iter__traits__collect__IntoIterator__into_iter(
+    xs
+  )) in let bl__acc0 = (nat_0) in 
+  let rust_primitives__hax__array_cons(x, bl__seq1) = bl__seq0 in (let acc_1 = bl__acc0 in
+  let bl__cf0 = (let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
+  let (=True()) = hax__cond0
+    in core__ops__control_flow__ControlFlow__Break(
+      rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, acc_1)
+    )
+    else core__ops__control_flow__ControlFlow__Continue(
+      rust_primitives__hax__machine_int__bitxor(acc_1, x)
+    )) in
+  let core__ops__control_flow__ControlFlow__Break(bl__brk0) = bl__cf0 in (let rust_primitives__hax__Tuple2__Tuple2(bl__bv0, bl__out0) = bl__brk0 in bl__out0 else bitstring_err())
+  else let core__ops__control_flow__ControlFlow__Continue(bl__acc1) = bl__cf0 in (let rust_primitives__hax__array_cons(x, bl__seq2) = bl__seq1 in (let acc_1 = bl__acc1 in
+  let bl__cf1 = (let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
+  let (=True()) = hax__cond0
+    in core__ops__control_flow__ControlFlow__Break(
+      rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, acc_1)
+    )
+    else core__ops__control_flow__ControlFlow__Continue(
+      rust_primitives__hax__machine_int__bitxor(acc_1, x)
+    )) in
+  let core__ops__control_flow__ControlFlow__Break(bl__brk1) = bl__cf1 in (let rust_primitives__hax__Tuple2__Tuple2(bl__bv1, bl__out1) = bl__brk1 in bl__out1 else bitstring_err())
+  else let core__ops__control_flow__ControlFlow__Continue(bl__acc2) = bl__cf1 in (let rust_primitives__hax__array_cons(x, bl__seq3) = bl__seq2 in (let acc_1 = bl__acc2 in
+  let bl__cf2 = (let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
+  let (=True()) = hax__cond0
+    in core__ops__control_flow__ControlFlow__Break(
+      rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple0__Tuple0, acc_1)
+    )
+    else core__ops__control_flow__ControlFlow__Continue(
+      rust_primitives__hax__machine_int__bitxor(acc_1, x)
+    )) in
+  let core__ops__control_flow__ControlFlow__Break(bl__brk2) = bl__cf2 in (let rust_primitives__hax__Tuple2__Tuple2(bl__bv2, bl__out2) = bl__brk2 in bl__out2 else bitstring_err())
+  else let core__ops__control_flow__ControlFlow__Continue(bl__acc3) = bl__cf2 in (let rust_primitives__hax__array_cons(bl__xh, bl__xt) = bl__seq3 in hax_loop_unbounded(bl__acc3, bl__seq3) (* more than LOOP_BOUND elements *) else (let rust_primitives__hax__array_nil() = bl__seq3 in bl__acc3 else hax_loop_opaque_seq(bl__acc3, bl__seq3) (* iterator is not a cons-list *))) else bitstring_err()) else (let rust_primitives__hax__array_nil() = bl__seq2 in bl__acc2 else hax_loop_opaque_seq(bl__acc2, bl__seq2) (* iterator is not a cons-list *))) else bitstring_err()) else (let rust_primitives__hax__array_nil() = bl__seq1 in bl__acc1 else hax_loop_opaque_seq(bl__acc1, bl__seq1) (* iterator is not a cons-list *))) else bitstring_err()) else (let rust_primitives__hax__array_nil() = bl__seq0 in bl__acc0 else hax_loop_opaque_seq(bl__acc0, bl__seq0) (* iterator is not a cons-list *))).
+(* src: src/legacy/proverif-control-flow/lib.rs:66:0-73:1 new_tests__legacy__proverif_control_flow__lib__for_return *)
+letfun new_tests__legacy__proverif_control_flow__lib__for_return(xs: bitstring) =
+  let hax__scrut0 = (bitstring_err() (* HAX ERROR: Loops containing `return` not supported in ProVerif *)) in
+  let core__ops__control_flow__ControlFlow__Break(ret: bitstring) = hax__scrut0 in ret
+  else let core__ops__control_flow__ControlFlow__Continue(wildcard: bitstring) = hax__scrut0 in
+    nat_0
+  else bitstring_err().
+(* src: src/legacy/proverif-control-flow/lib.rs:75:0-80:1 new_tests__legacy__proverif_control_flow__lib__while_loop *)
+letfun new_tests__legacy__proverif_control_flow__lib__while_loop(x: bitstring) =
+  bitstring_err() (* HAX ERROR: Loops not supported in ProVerif *).
+(* src: src/legacy/proverif-control-flow/lib.rs:82:0-86:1 new_tests__legacy__proverif_control_flow__lib__loop_break_value *)
+letfun new_tests__legacy__proverif_control_flow__lib__loop_break_value(x: bitstring) =
+  rust_primitives__hax__Tuple2__Tuple2(
+    bitstring_err() (* HAX ERROR: Loops not supported in ProVerif *),
+    rust_primitives__hax__Tuple0__Tuple0
+  ).
+(* src: src/legacy/proverif-control-flow/lib.rs:88:0-88:30 new_tests__legacy__proverif_control_flow__lib__A *)
+letfun new_tests__legacy__proverif_control_flow__lib__A() = Some(nat_1).
+(* src: src/legacy/proverif-control-flow/lib.rs:91:0-97:2 new_tests__legacy__proverif_control_flow__lib__CHAINED *)
+(* HAX ERROR: Let-chains (e.g. `if let .. && let ..`) are not supported. *)
+const new_tests__legacy__proverif_control_flow__lib__CHAINED: bitstring.

@@ -252,6 +252,9 @@
           verify-lean = pkgs.mkShell {
             packages = [ pkgs.elan pkgs.gnumake pkgs.just pkgs.git ];
           };
+          verify-proverif = pkgs.mkShell {
+            packages = [ proverif pkgs.gnumake pkgs.just pkgs.git ];
+          };
           fstar = pkgs.mkShell {
             inherit inputsFrom LIBCLANG_PATH DYLD_LIBRARY_PATH;
             shellHook = ''

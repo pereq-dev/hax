@@ -165,6 +165,32 @@ passthrough_attributes! {
     /// refinement type: the use of such a type yields static proof
     /// obligations.
     refinement_type;
+
+    /// β-inline every call to this ProVerif helper at the use site; the
+    /// marked item itself drops out of the extracted model.
+    pv_inline;
+
+    /// Model a Rust function as a uniform-bitstring `extern__<fn>` ProVerif
+    /// letfun, deriving the declaration arity and body-call arguments from the
+    /// annotated function's signature. The symbol is named after the bare
+    /// function name, which two modules can share; pass an explicit name
+    /// (`#[pv_extern("mymod_encrypt")]`) when they do, or the two functions
+    /// become one symbol in the model. Every parameter must be a plain
+    /// identifier.
+    pv_extern;
+
+    /// Shorthand for `#[hax_lib::proverif::replace_body(<lit>)]`, for trivial
+    /// constant stubs such as `#[pv_stub("nat_0")]`.
+    pv_stub;
+
+    /// Declare this function as the one-sided inverse of another, emitting
+    /// `reduc forall x: bitstring; self(other(x)) = x.`.
+    ///
+    /// A ProVerif `reduc` rewrites on *constructors*, so the other function has
+    /// to be one — annotate it `#[hax_lib::pv_constructor]` (or
+    /// `#[hax_lib::opaque]`). Pointing this at a `letfun` produces a `reduc`
+    /// ProVerif rejects.
+    pv_inverse_of;
 }
 
 attribute_macros! {

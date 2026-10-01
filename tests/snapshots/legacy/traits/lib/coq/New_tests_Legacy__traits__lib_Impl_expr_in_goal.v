@@ -24,6 +24,6 @@ Class t_T2 (v_Self : Type) : Type :=
   }.
 Arguments t_T2 (_).
 
-Instance t_T2_1005539373 `{v_U : Type} `{t_T1 (v_U)} `{t_T2 (f_Assoc)} : t_T2 ((v_U)) :=
+Instance t_T2_484397193 `{v_U : Type} `{t_T1 (v_U)} `{t_T2 (f_Assoc)} : t_T2 ((v_U)) :=
   {
   }.

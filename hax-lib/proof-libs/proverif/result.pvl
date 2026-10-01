@@ -1,0 +1,60 @@
+(*****************************************************************)
+(*  hax — ProVerif Result library: the default model             *)
+(*****************************************************************)
+(* Load this file right after `primitives.pvl` for a model        *)
+(* extracted WITHOUT `--result-errors`; `result_errors.pvl` is    *)
+(* the library for the other mode.                                *)
+(*                                                                *)
+(* A `Result<T, E>` is its `Ok` payload. The backend renders      *)
+(* `Ok(x)` as `x`, renders `Err(e)` as `bitstring_err()` (the     *)
+(* trace ends), and drops every match arm and `let` that needs an *)
+(* `Err`. No value is ever an `Err`, so error paths are pruned:   *)
+(* the state space stays small, but a property that depends on an *)
+(* error path cannot be checked in this model. The definitions    *)
+(* below follow the same rule.                                    *)
+(*****************************************************************)
+
+(* Named by the extracted `lib.pvl`, so that it only loads with this file. *)
+const hax_result_model__result: bitstring.
+
+(* `Ok(x)` and `Err(e)` for a hand-written model of a function returning a
+   `Result` (e.g. a `replace_body`); both Result libraries define them. *)
+letfun hax_result_ok(x: bitstring) = x.
+letfun hax_result_err(e: bitstring) = bitstring_err().
+
+letfun core__result__Impl__unwrap(r: bitstring) = r.
+letfun core__result__Impl__expect(r: bitstring, m: bitstring) = r.
+letfun core__result__Impl__unwrap_err(r: bitstring) = bitstring_err().
+letfun core__result__Impl__expect_err(r: bitstring, m: bitstring) = bitstring_err().
+letfun core__result__Impl__unwrap_or(r: bitstring, d: bitstring) = r.
+letfun core__result__Impl__is_ok(r: bitstring) = True().
+letfun core__result__Impl__is_err(r: bitstring) = False().
+letfun core__result__Impl__ok(r: bitstring) = Some(r).
+letfun core__result__Impl__err(r: bitstring) = None().
+(* The closure is opaque, so the mapped payload is too. *)
+fun core__result__Impl__map(bitstring, bitstring): bitstring [data].
+(* These only act on an `Err`, and no value is one. *)
+letfun core__result__Impl__map_err(r: bitstring, f: bitstring) = r.
+letfun core__result__Impl__unwrap_or_else(r: bitstring, f: bitstring) = r.
+
+(* An unknown Option (see `unwrap` in `primitives.pvl`) is read as `Some`. *)
+letfun core__option__Impl__ok_or(o: bitstring, e: bitstring) =
+  let Some(x) = o in x
+  else let None() = o in bitstring_err()
+  else hax_option_payload(o).
+
+(* `Option<Result<T, E>>::transpose`: both sides are an `Option` of the
+   payload. The impl number is the pinned toolchain's; the `proverif-result`
+   test calls it. *)
+letfun core__option__Impl_4__transpose(o: bitstring) = o.
+
+(* Conversions are identity on the payload (see `From::from` in
+   `primitives.pvl`) and never fail. *)
+letfun core__convert__TryInto__try_into(x: bitstring) = x.
+letfun core__convert__TryFrom__try_from(x: bitstring) = x.
+
+(* Fresh randomness, as `RngCore::fill_bytes` in `primitives.pvl`; the
+   `Result` makes the call return `(rng, dest, Ok(()))`. *)
+letfun rand_core__TryRngCore__try_fill_bytes(rng: bitstring, dest: bitstring) =
+  new b: bitstring;
+  rust_primitives__hax__Tuple3__Tuple3(rng, b, rust_primitives__hax__Tuple0__Tuple0).

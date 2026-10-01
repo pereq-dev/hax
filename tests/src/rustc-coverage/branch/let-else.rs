@@ -10,7 +10,6 @@ macro_rules! no_merge {
     };
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn let_else(value: Option<&str>) {
     no_merge!();
 

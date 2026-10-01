@@ -12,16 +12,19 @@
 
 use std::hint::{black_box, unreachable_unchecked};
 
-/// @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 static UNREACHABLE_CLOSURE: fn() = || unsafe { unreachable_unchecked() };
 
-/// @fail(extraction): coq(HAX0008), ssprove(HAX0008), proverif(HAX0008)
+/// @fail(extraction): coq(HAX0008), ssprove(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 fn unreachable_function() {
     unsafe { unreachable_unchecked() }
 }
 
 // Use an intrinsic to more reliably trigger unreachable-propagation.
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 fn unreachable_intrinsic() {
     unsafe { std::intrinsics::unreachable() }
 }

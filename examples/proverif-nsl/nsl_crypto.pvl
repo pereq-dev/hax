@@ -1,0 +1,16 @@
+(* The model of the `PublicKeyEncryption` trait, for every implementation:
+   randomized public-key encryption, whose decryption yields the plaintext
+   only under the secret key of the public key encrypted to, and fails
+   otherwise. The extraction keeps the calls of the trait's items
+   (`keep-trait-calls` in `hax.toml`), so these definitions apply to them. *)
+fun pke_pk(bitstring): bitstring.
+fun pke_enc(bitstring, bitstring, bitstring): bitstring.
+reduc forall sk: bitstring, m: bitstring, r: bitstring;
+  pke_dec(sk, pke_enc(pke_pk(sk), m, r)) = m.
+
+letfun proverif_nsl__PublicKeyEncryption__public_key(sk: bitstring) = pke_pk(sk).
+letfun proverif_nsl__PublicKeyEncryption__encrypt(
+  pk: bitstring, plaintext: bitstring, randomness: bitstring
+) = pke_enc(pk, plaintext, randomness).
+letfun proverif_nsl__PublicKeyEncryption__decrypt(sk: bitstring, ciphertext: bitstring) =
+  pke_dec(sk, ciphertext).

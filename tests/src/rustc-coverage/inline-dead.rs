@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001)
 //! @fail(tc): legacy-lean(1)
 // Regression test for issue #98833.
 //@ compile-flags: -Zinline-mir -Cdebug-assertions=off

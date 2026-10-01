@@ -226,7 +226,7 @@ mod inheritance {
 
 mod default {
 
-    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008), proverif(HAX0008)
+    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008)
     trait Easy {
         fn dft(&self) -> usize {
             32
@@ -241,7 +241,7 @@ mod default {
 
     impl Easy for u32 {}
 
-    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008), fstar(HAX0008)
+    /// @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008)
     trait T1 {
         fn f1(&self) -> usize;
         fn f2(&self) -> usize {
@@ -327,7 +327,6 @@ mod trait_with_constraints {
 }
 
 mod associated_constant {
-    /// @fail(extraction): proverif(HAX0008)
     pub trait Foo {
         const f: bool;
         const x: u8 = 0;
@@ -341,7 +340,6 @@ mod associated_constant {
     }
 
     // https://github.com/pereq-dev/hax/issues/1940
-    /// @fail(extraction): proverif(HAX0008)
     trait Baz {
         const One: u32 = 1;
     }

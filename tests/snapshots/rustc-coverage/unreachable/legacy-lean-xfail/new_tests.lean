@@ -14,7 +14,8 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__unreachable
 
---  @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): proverif(HAX0008)
 def UNREACHABLE_CLOSURE :
   (rust_primitives.hax.Tuple0 -> RustM rust_primitives.hax.Tuple0)
   :=
@@ -28,14 +29,16 @@ def UNREACHABLE_CLOSURE :
       RustM rust_primitives.hax.Tuple0))))
     (by rfl)
 
---  @fail(extraction): coq(HAX0008), ssprove(HAX0008), proverif(HAX0008)
+--  @fail(extraction): coq(HAX0008), ssprove(HAX0008)
+--  @fail(extraction): proverif(HAX0008)
 @[spec]
 def unreachable_function (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (rust_primitives.hax.never_to_any
     (← (core_models.hint.unreachable_unchecked rust_primitives.hax.Tuple0.mk)))
 
---  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): proverif(HAX0008)
 @[spec]
 def unreachable_intrinsic (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

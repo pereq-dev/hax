@@ -3,7 +3,7 @@ module New_tests.Rustc_coverage__while
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let num:i32 = mk_i32 9 in
   Rust_primitives.Hax.while_loop (fun temp_0_ ->

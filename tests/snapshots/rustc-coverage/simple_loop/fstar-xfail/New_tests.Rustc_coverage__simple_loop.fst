@@ -9,7 +9,7 @@ let _ =
   let open Std.Env in
   ()
 
-/// @fail(extraction): fstar(HAX0001), coq(HAX0001, HAX0001), legacy-lean(HAX0001), proverif(HAX0008), ssprove(HAX0001)
+/// @fail(extraction): fstar(HAX0001), coq(HAX0001, HAX0001), legacy-lean(HAX0001), ssprove(HAX0001)
 let main (_: Prims.unit) : (i32 & Prims.unit) =
   let is_true:bool =
     (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args

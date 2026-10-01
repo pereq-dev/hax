@@ -138,7 +138,7 @@ Class t_FooTrait (v_Self : Type) : Type :=
   }.
 Arguments t_FooTrait (_).
 
-Instance t_FooTrait_130684276 : t_FooTrait ((t_Foo)) :=
+Instance t_FooTrait_105704208 : t_FooTrait ((t_Foo)) :=
   {
     implaabbcc_t_FooTrait_f_z := fun  (self : t_Foo)=>
       self;

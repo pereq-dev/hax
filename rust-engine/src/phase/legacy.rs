@@ -125,6 +125,7 @@ make_ocaml_legacy_phase!(
     simplify_match_return,
     simplify_question_marks,
     sort_items,
+    sort_items_namespace_wise,
     specialize,
     traits_specs,
     transform_hax_lib_inline,

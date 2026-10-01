@@ -1,0 +1,24 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__branch__if_let__say *)
+fun core__hint__black_box(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if_let__main *)
+const string_lit__a: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if_let__main *)
+const string_lit__b: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if_let__if_let, new_tests__rustc_coverage__branch__if_let__if_let_chain *)
+const string_lit__done: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if_let__if_let *)
+const string_lit__none: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if_let__if_let_chain *)
+const string_lit__not_x20both: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__if_let__main *)
+const string_lit__x: bitstring.

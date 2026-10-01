@@ -3,7 +3,7 @@ module New_tests.Rustc_coverage__let_else_loop
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001), proverif(HAX0008)
+/// @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001)
 let loopy (cond: bool) : Prims.unit =
   match cond <: bool with
   | true -> ()
@@ -14,7 +14,7 @@ let loopy (cond: bool) : Prims.unit =
     <:
     (Prims.unit & Prims.unit)
 
-/// @fail(extraction): fstar(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008)
+/// @fail(extraction): fstar(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), coq(HAX0001, HAX0001)
 let e_loop_either_way (cond: bool) : Prims.unit =
   match cond <: bool with
   | true ->
@@ -32,7 +32,7 @@ let e_loop_either_way (cond: bool) : Prims.unit =
     <:
     (Prims.unit & Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008, HAX0008), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
+/// @fail(extraction): legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
 let e_if (cond: bool) : Prims.unit =
   if cond
   then

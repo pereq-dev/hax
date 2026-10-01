@@ -16,7 +16,7 @@ The command `cargo hax` accepts the following subcommands:
 
 Note:
 
-* `BACKEND` can be `lean`, `legacy-lean`, `fstar`, `coq`, `pro-verif`, `ssprove` or `easycrypt`. See the [backend overview](https://github.com/pereq-dev/hax#backends) for the maturity of each backend. This manual covers the [Lean](lean/index.md) and [F\*](fstar/index.md) backends.
+* `BACKEND` can be `lean`, `legacy-lean`, `fstar`, `coq`, `proverif`, `ssprove` or `easycrypt`. See the [backend overview](https://github.com/pereq-dev/hax#backends) for the maturity of each backend. This manual covers the [Lean](lean/index.md) and [F\*](fstar/index.md) backends.
 * The subcommands `cargo hax`, `cargo hax into` and `cargo hax into
    <BACKEND>` take options. For instance, you can `cargo hax into
    fstar --z3rlimit 100`. Use `--help` on those subcommands to list

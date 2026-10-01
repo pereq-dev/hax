@@ -1,0 +1,23 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_opaque_branches__lib__seen *)
+fun alloc__collections__vec_deque__Impl_5__contains(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_opaque_branches__lib__compare *)
+(* result destructured as: core__cmp__Ordering__Equal(); core__cmp__Ordering__Greater(); core__cmp__Ordering__Less() *)
+fun core__cmp__Ord__cmp(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_opaque_branches__lib__compare *)
+fun core__cmp__Ordering__Equal(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_opaque_branches__lib__compare *)
+fun core__cmp__Ordering__Greater(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_opaque_branches__lib__compare *)
+fun core__cmp__Ordering__Less(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_opaque_branches__lib__long_message *)
+const nat_64: bitstring.

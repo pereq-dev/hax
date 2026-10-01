@@ -650,6 +650,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "proverif-nsl"
+version = "0.1.0"
+dependencies = [
+ "hax-lib",
+ "libcrux",
+ "rand",
+]
+
+[[package]]
 name = "proverif-psk"
 version = "0.1.0"
 dependencies = [

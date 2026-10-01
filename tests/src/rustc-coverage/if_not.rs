@@ -28,7 +28,6 @@ fn if_not(cond: bool) {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 #[coverage(off)]
 fn main() {
     for _ in 0..8 {

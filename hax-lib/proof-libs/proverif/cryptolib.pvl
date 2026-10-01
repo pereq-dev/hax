@@ -1,0 +1,178 @@
+(*****************************************************************)
+(*  hax — unified symbolic crypto library (cryptolib.pvl)         *)
+(*****************************************************************)
+(* A single, vetted Dolev-Yao model of the standard cryptographic *)
+(* primitives, shared by every hax ProVerif extraction. Protocol   *)
+(* code never re-declares these: each crypto wrapper redirects to  *)
+(* a primitive below with                                          *)
+(*                                                                 *)
+(*   #[hax_lib::proverif::replace_body("crypto__aead_enc(k,m,ad)")] *)
+(*                                                                 *)
+(* so the protocol stays plain Rust (no `${}` antiquotes, no per-  *)
+(* example `fun`/`reduc` blocks) and the trusted model lives once, *)
+(* here, where it can be audited in isolation.                     *)
+(*                                                                 *)
+(* Everything is uniform `bitstring` (the hax ProVerif model): no  *)
+(* `type` declarations, so these names resolve directly against    *)
+(* extracted code. One-way primitives are opaque `fun`s; their     *)
+(* correctness/inverse relations are `reduc` destructors (partial: *)
+(* a forged input simply has no value, modelling unforgeability).  *)
+(*                                                                 *)
+(* Load after primitives.pvl and a Result library:                 *)
+(*   proverif -lib primitives.pvl -lib result.pvl \                *)
+(*            -lib cryptolib.pvl -lib lib.pvl ...                  *)
+(*****************************************************************)
+
+(*===============================================================*)
+(* Hash — one-way, collision-resistant, injective in the term     *)
+(* algebra. `crypto__hash` takes one argument; hash several values *)
+(* by hashing a tuple, and chain a running transcript by hashing   *)
+(* `(old, input)`.                                                 *)
+(*===============================================================*)
+fun crypto__hash(bitstring): bitstring.
+
+(*===============================================================*)
+(* AEAD — authenticated encryption with associated data.          *)
+(*                                                                 *)
+(* Combined form (ciphertext carries the tag): `crypto__aead_enc`  *)
+(* produces an opaque ciphertext; `crypto__aead_dec` is the        *)
+(* partial inverse — it yields the plaintext only for a genuine    *)
+(* ciphertext under the matching key and AAD, so a forgery fails.  *)
+(*===============================================================*)
+(* ASSUMPTION — no nonce, hence DETERMINISTIC: encrypting the same plaintext
+   twice under the same key and AAD yields the SAME term, which the attacker can
+   compare. Real AEAD does not, and nonce misuse cannot be expressed here at
+   all. Use the `_n` variants below for a protocol whose security argument
+   depends on the nonce (or on ciphertexts being unlinkable). *)
+fun crypto__aead_enc(bitstring, bitstring, bitstring): bitstring.   (* key, plaintext, aad -> ciphertext *)
+reduc forall k: bitstring, pt: bitstring, ad: bitstring;
+  crypto__aead_dec(k, crypto__aead_enc(k, pt, ad), ad) = pt.
+(* Result-returning forms of the decryptions; see `crypto__sig_verify_result`. *)
+letfun crypto__aead_dec_result(k: bitstring, ct: bitstring, ad: bitstring) =
+  let pt = crypto__aead_dec(k, ct, ad) in hax_result_ok(pt)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+
+(* Nonce-carrying form. Decryption succeeds only under the matching key, nonce
+   and AAD, and two encryptions under different nonces are distinct terms, so a
+   protocol that reuses a nonce is visible in the model. *)
+fun crypto__aead_enc_n(bitstring, bitstring, bitstring, bitstring): bitstring. (* key, nonce, plaintext, aad -> ct *)
+reduc forall k: bitstring, n: bitstring, pt: bitstring, ad: bitstring;
+  crypto__aead_dec_n(k, n, crypto__aead_enc_n(k, n, pt, ad), ad) = pt.
+letfun crypto__aead_dec_n_result(k: bitstring, n: bitstring, ct: bitstring, ad: bitstring) =
+  let pt = crypto__aead_dec_n(k, n, ct, ad) in hax_result_ok(pt)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+
+(* Detached form (separate ciphertext + tag on the wire), e.g.    *)
+(* libcrux `encrypt_detached` / PSQ.                              *)
+fun crypto__aead_ct(bitstring, bitstring, bitstring): bitstring.    (* key, plaintext, aad -> ciphertext *)
+fun crypto__aead_tag(bitstring, bitstring, bitstring): bitstring.   (* key, plaintext, aad -> tag *)
+reduc forall k: bitstring, pt: bitstring, ad: bitstring;
+  crypto__aead_dec_detached(k, crypto__aead_ct(k, pt, ad), crypto__aead_tag(k, pt, ad), ad) = pt.
+letfun crypto__aead_dec_detached_result(k: bitstring, ct: bitstring, tag: bitstring, ad: bitstring) =
+  let pt = crypto__aead_dec_detached(k, ct, tag, ad) in hax_result_ok(pt)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+
+(*===============================================================*)
+(* KDF / HKDF — one-way key derivation.                           *)
+(*===============================================================*)
+fun crypto__kdf(bitstring, bitstring): bitstring.            (* ikm, info -> okm *)
+fun crypto__hkdf_extract(bitstring, bitstring): bitstring.   (* salt, ikm -> prk *)
+fun crypto__hkdf_expand(bitstring, bitstring): bitstring.    (* prk, info -> okm *)
+
+(*===============================================================*)
+(* Diffie-Hellman — `crypto__dh_pub(sk)` is the public key,        *)
+(* `crypto__dh_shared(sk, pk)` the shared secret, related by the   *)
+(* standard commutativity equation.                                *)
+(*===============================================================*)
+fun crypto__dh_pub(bitstring): bitstring.
+fun crypto__dh_shared(bitstring, bitstring): bitstring.      (* my_sk, peer_pk -> shared *)
+equation forall x: bitstring, y: bitstring;
+  crypto__dh_shared(x, crypto__dh_pub(y)) = crypto__dh_shared(y, crypto__dh_pub(x)).
+
+(*===============================================================*)
+(* KEM (e.g. ML-KEM / Kyber) — encapsulate a fresh shared secret   *)
+(* `ss` to a public key; only the secret-key holder decapsulates.  *)
+(* `ss` is chosen fresh by the caller (`new ss; ...`) so each       *)
+(* encapsulation is distinct.                                       *)
+(*                                                                 *)
+(* `crypto__kem_decaps` rejects implicitly, as ML-KEM does: an     *)
+(* invalid ciphertext yields a key only the secret-key holder can   *)
+(* compute, and the caller carries on. `crypto__kem_decaps_explicit`*)
+(* fails instead, for a KEM that reports invalid ciphertexts.       *)
+(*===============================================================*)
+fun crypto__kem_pk(bitstring): bitstring.                    (* sk -> pk *)
+fun crypto__kem_encaps(bitstring, bitstring): bitstring.     (* pk, ss -> ciphertext *)
+reduc forall sk: bitstring, ss: bitstring;
+  crypto__kem_decaps_explicit(sk, crypto__kem_encaps(crypto__kem_pk(sk), ss)) = ss.
+fun crypto__kem_reject(bitstring, bitstring): bitstring.     (* sk, ciphertext -> rejection key *)
+letfun crypto__kem_decaps(sk: bitstring, ct: bitstring) =
+  let ss = crypto__kem_decaps_explicit(sk, ct) in ss
+  else crypto__kem_reject(sk, ct).
+
+(*===============================================================*)
+(* Signatures (EUF-CMA) — `crypto__vk_of(sk)` is the verification  *)
+(* key. A signature does not hide its message: `crypto__sig_message`*)
+(* recovers it.                                                    *)
+(*                                                                 *)
+(* Two verification forms. `crypto__sig_verify` is a partial       *)
+(* destructor: on a forgery it has no value, so the trace DIES.     *)
+(* `crypto__sig_verify_result` models a Rust `verify` returning a   *)
+(* `Result<(), _>`: `Ok(())` on a genuine signature, and `Err(())`  *)
+(* on a forgery. Under the default Result model producing an `Err`  *)
+(* ends the trace, so both forms agree there; with                  *)
+(* `--result-errors` the `Err(())` is a value the caller can branch *)
+(* on (match it with `Err(_)`).                                     *)
+(*===============================================================*)
+fun crypto__vk_of(bitstring): bitstring.                     (* sk -> vk *)
+fun crypto__sign(bitstring, bitstring): bitstring.           (* sk, message -> signature *)
+reduc forall sk: bitstring, m: bitstring;
+  crypto__sig_message(crypto__sign(sk, m)) = m.
+reduc forall sk: bitstring, m: bitstring;
+  crypto__sig_verify(crypto__vk_of(sk), m, crypto__sign(sk, m)) =
+    rust_primitives__hax__Tuple0__Tuple0.
+letfun crypto__sig_verify_result(vk: bitstring, m: bitstring, sg: bitstring) =
+  let u = crypto__sig_verify(vk, m, sg) in
+    hax_result_ok(rust_primitives__hax__Tuple0__Tuple0)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+
+(*===============================================================*)
+(* MAC / HMAC — `crypto__mac` is the tag; `crypto__mac_verify`     *)
+(* succeeds (returns unit) only for a genuine tag.                 *)
+(*===============================================================*)
+fun crypto__mac(bitstring, bitstring): bitstring.            (* key, message -> tag *)
+reduc forall k: bitstring, m: bitstring;
+  crypto__mac_verify(k, m, crypto__mac(k, m)) = rust_primitives__hax__Tuple0__Tuple0.
+(* Result-returning form; see the note on `crypto__sig_verify_result` above. *)
+letfun crypto__mac_verify_result(k: bitstring, m: bitstring, t: bitstring) =
+  let u = crypto__mac_verify(k, m, t) in
+    hax_result_ok(rust_primitives__hax__Tuple0__Tuple0)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+
+(*===============================================================*)
+(* Serialization — invertible wire encoding.                      *)
+(*                                                                 *)
+(* Single serializer per protocol: `crypto__serialize(x)` is an    *)
+(* injective encoding; `crypto__deserialize` recovers the payload. *)
+(* A protocol with ONE wire format (e.g. proverif-psk) redirects   *)
+(* its serializer/parser straight to these.                        *)
+(*===============================================================*)
+fun crypto__serialize(bitstring): bitstring.                 (* payload -> bytes *)
+reduc forall x: bitstring;
+  crypto__deserialize(crypto__serialize(x)) = x.
+(* Result-returning form, for a parser that returns a `Result`. *)
+letfun crypto__deserialize_result(b: bitstring) =
+  let x = crypto__deserialize(b) in hax_result_ok(x)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+
+(* Tagged variant — for a protocol with SEVERAL distinct wire      *)
+(* formats. Model serializer `f(x)` as `crypto__serialize_tagged   *)
+(* (tag_f, x)` and its parser as `crypto__deserialize_tagged       *)
+(* (tag_f, bytes)`; the per-format `tag_f` is a distinct nullary   *)
+(* constant, which keeps the formats' encodings from unifying.     *)
+(* (Each `tag_f` must be declared by the using protocol.)          *)
+fun crypto__serialize_tagged(bitstring, bitstring): bitstring.   (* tag, payload -> bytes *)
+reduc forall t: bitstring, x: bitstring;
+  crypto__deserialize_tagged(t, crypto__serialize_tagged(t, x)) = x.
+letfun crypto__deserialize_tagged_result(t: bitstring, b: bitstring) =
+  let x = crypto__deserialize_tagged(t, b) in hax_result_ok(x)
+  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).

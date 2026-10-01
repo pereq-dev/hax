@@ -1,6 +1,7 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001)
 //! @fail(tc): fstar(2)
 #![allow(dead_code, unused_assignments, unused_must_use, unused_variables)]
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 
 fn foo<T>(x: T) {
     let mut i = 0;
@@ -9,7 +10,7 @@ fn foo<T>(x: T) {
         i += 1;
     }
 }
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 
 fn unused_template_func<T>(x: T) {
     let mut i = 0;

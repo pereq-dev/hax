@@ -23,6 +23,9 @@ pub use pretty_ast::PrettyAst;
 
 pub mod render_view;
 
+pub mod source_map;
+pub use source_map::SourceMap;
+
 /// A resugaring is an erased mapper visitor with a name.
 /// A resugaring is a *local* transformation on the AST that produces exclusively `ast::resugared` nodes.
 /// Any involved or non-local transformation should be a phase, not a resugaring.
@@ -44,6 +47,9 @@ pub trait Resugaring: for<'a> dyn_compatible::AstVisitorMut<'a> {
 pub trait Printer: Sized + PrettyAst<Span> + Default + HasLinkedItemGraph {
     /// The name of the printer
     const NAME: &'static str = <Self as PrettyAst<Span>>::NAME;
+
+    /// Target page width handed to the `pretty` layout algorithm.
+    const RENDER_WIDTH: usize = 80;
 }
 
 /// Getter and setter for `LinkedItemGraph`, useful for printers.
@@ -53,10 +59,6 @@ pub trait HasLinkedItemGraph {
     /// Set a `LinkedItemGraph`.
     fn with_linked_item_graph(self, graph: std::rc::Rc<LinkedItemGraph>) -> Self;
 }
-
-#[derive(Clone, Debug, serde::Serialize, serde::Deserialize)]
-/// Placeholder type for sourcemaps.
-pub struct SourceMap;
 
 /// Helper trait to print AST fragments.
 pub trait Print<T>
@@ -82,12 +84,13 @@ where
     where
         T: ToDocument<Self, Span>,
     {
-        let doc_builder = fragment.to_document(self).into_doc();
-        (
-            doc_builder.deref().pretty(80).to_string(),
-            SourceMap,
-            fragment,
-        )
+        let doc = fragment.to_document(self).into_doc();
+        let mut renderer = source_map::SpanPositionRenderer::default();
+        // Printers never emit `Doc::fail`, so rendering cannot fail.
+        let _ = doc
+            .deref()
+            .render_raw(<Self as Printer>::RENDER_WIDTH, &mut renderer);
+        (renderer.out, renderer.positions, fragment)
     }
 
     fn print(&mut self, fragment: T) -> (String, SourceMap)

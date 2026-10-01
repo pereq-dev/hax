@@ -33,7 +33,8 @@ def Impl.stringify_hoisted (self : i32) : RustM alloc.string.String := do
 instance Impl : Printable i32 alloc.string.String where
   stringify := (Impl.stringify_hoisted)
 
---  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): proverif(HAX0008)
 @[spec]
 def print (a : sorry) : RustM rust_primitives.hax.Tuple0 := do
   let args : (rust_primitives.hax.Tuple1 alloc.string.String) :=

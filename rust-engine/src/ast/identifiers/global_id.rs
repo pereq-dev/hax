@@ -444,6 +444,27 @@ impl GlobalId {
         }
     }
 
+    /// Whether `namespace` matches this identifier: its crate name followed by
+    /// the named segments of its definition path, where an unnamed segment
+    /// (e.g. an `impl` block) is only matched by a glob.
+    pub fn matches_namespace(self, namespace: &hax_types::cli_options::Namespace) -> bool {
+        let def_id = match self.0.get() {
+            GlobalIdInner::Concrete(concrete_id) => &concrete_id.def_id.def_id,
+            GlobalIdInner::Tuple(tuple_id) => &tuple_id.as_concreteid().def_id.def_id,
+            GlobalIdInner::FreshModule(_) => return false,
+        };
+        let path: Vec<Option<&str>> = std::iter::once(Some(def_id.krate.as_str()))
+            .chain(def_id.path.iter().map(|item| match &item.data {
+                DefPathItem::TypeNs(s)
+                | DefPathItem::ValueNs(s)
+                | DefPathItem::MacroNs(s)
+                | DefPathItem::LifetimeNs(s) => Some(s.as_str()),
+                _ => None,
+            }))
+            .collect();
+        namespace.matches_segments(&path)
+    }
+
     /// Debug printing of identifiers, for testing purposes only.
     /// Prints path in a Rust-like way, as a `::` separated dismabiguated path.
     pub fn to_debug_string(self) -> String {

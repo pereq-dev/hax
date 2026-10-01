@@ -14,7 +14,6 @@
 // points or bytes.
 /// @fail(extraction): ssprove(HAX0001)
 
-/// @fail(extraction): proverif(HAX0008)
 fn main() {
     for _İ in 'А'..='Я' { /* Я */ }
 

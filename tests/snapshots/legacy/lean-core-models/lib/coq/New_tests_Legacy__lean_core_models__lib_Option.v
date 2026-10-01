@@ -26,7 +26,7 @@ Inductive t_E : Type :=
 | E_C : t_u32 -> _.
 
 
-Instance t_Default_711697014 : t_Default ((t_S)) :=
+Instance t_Default_15029380 : t_Default ((t_S)) :=
   {
     implaabbcc_t_Default_f_default := fun  (_ : unit)=>
       S ((42 : t_u32));

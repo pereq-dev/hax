@@ -14,7 +14,6 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__guard
 
---  @fail(extraction): proverif(HAX0008, HAX0008)
 @[spec]
 def branch_match_guard (x : (core_models.option.Option u32)) :
     RustM rust_primitives.hax.Tuple0 := do

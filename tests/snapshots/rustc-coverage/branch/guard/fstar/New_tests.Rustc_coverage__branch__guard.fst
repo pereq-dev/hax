@@ -3,7 +3,6 @@ module New_tests.Rustc_coverage__branch__guard
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let branch_match_guard (x: Core_models.Option.t_Option u32) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)

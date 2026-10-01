@@ -1,0 +1,350 @@
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
+
+  These libraries ship with hax.
+
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
+
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
+
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
+
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
+
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
+
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - use of a const generic parameter as a value *)
+(*  - use of a const generic parameter as a value *)
+(*  - use of a const generic parameter as a value *)
+(*  - read of a field of a struct the model does not declare (e.g. an opaque or external one) *)
+(*  - use of the default trait item `double_tag`, which the impl does not override *)
+(*  - use of the default trait item `double_tag`, which the impl does not override *)
+(*  - use of the trait item `tag` that resolves to no impl of the crate (e.g. on a generic type) *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
+
+(*****************************************************************)
+(*  WARNINGS — branches the model may not follow as Rust does.   *)
+(*                                                               *)
+(*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
+(*  the model cannot always evaluate. When it cannot, no arm of  *)
+(*  a `match` is taken (the trace ends) and an `if` takes its    *)
+(*  `else` branch, whatever Rust does. A query about the other   *)
+(*  branch may then hold for lack of any trace.                  *)
+(*                                                               *)
+(*  - 4 × `as` cast modelled as the identity, although it may change the value *)
+(*  - 2 × `size_of` or `align_of` modelled without its type argument, so that it is the same for every type *)
+(*****************************************************************)
+
+(* src: src/legacy/proverif-expressions/lib.rs:10:0-12:1 new_tests__legacy__proverif_expressions__lib__array_literal *)
+letfun new_tests__legacy__proverif_expressions__lib__array_literal(a: bitstring, b: bitstring) =
+  rust_primitives__hax__array_cons(a, rust_primitives__hax__array_cons(b, rust_primitives__hax__array_cons(a, rust_primitives__hax__array_nil()))).
+(* src: src/legacy/proverif-expressions/lib.rs:14:0-16:1 new_tests__legacy__proverif_expressions__lib__array_repeat *)
+letfun new_tests__legacy__proverif_expressions__lib__array_repeat(a: bitstring) =
+  rust_primitives__hax__repeat(a, nat_4).
+(* src: src/legacy/proverif-expressions/lib.rs:18:0-20:1 new_tests__legacy__proverif_expressions__lib__index *)
+letfun new_tests__legacy__proverif_expressions__lib__index(xs: bitstring, i: bitstring) =
+  core__ops__index__Index__index(xs, i).
+(* src: src/legacy/proverif-expressions/lib.rs:22:0-24:1 new_tests__legacy__proverif_expressions__lib__slice *)
+letfun new_tests__legacy__proverif_expressions__lib__slice(xs: bitstring) =
+  core__ops__index__Index__index(xs, core__ops__range__Range__Range(nat_1, nat_3)).
+(* src: src/legacy/proverif-expressions/lib.rs:26:0-28:1 new_tests__legacy__proverif_expressions__lib__length *)
+letfun new_tests__legacy__proverif_expressions__lib__length(xs: bitstring) =
+  core__slice__Impl__len(xs).
+(* src: src/legacy/proverif-expressions/lib.rs:30:0-32:1 new_tests__legacy__proverif_expressions__lib__Inner *)
+fun new_tests__legacy__proverif_expressions__lib__Inner__Inner(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_expressions__lib__Inner__Inner__b(
+    new_tests__legacy__proverif_expressions__lib__Inner__Inner(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-expressions/lib.rs:34:0-37:1 new_tests__legacy__proverif_expressions__lib__Outer *)
+fun new_tests__legacy__proverif_expressions__lib__Outer__Outer(
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_expressions__lib__Outer__Outer__a(
+    new_tests__legacy__proverif_expressions__lib__Outer__Outer(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_expressions__lib__Outer__Outer__c(
+    new_tests__legacy__proverif_expressions__lib__Outer__Outer(v_0, v_1)
+  ) = v_1.
+(* src: src/legacy/proverif-expressions/lib.rs:39:0-41:1 new_tests__legacy__proverif_expressions__lib__nested_projection *)
+letfun new_tests__legacy__proverif_expressions__lib__nested_projection(o: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Inner__Inner__b(
+    new_tests__legacy__proverif_expressions__lib__Outer__Outer__a(o)
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:43:0-46:1 new_tests__legacy__proverif_expressions__lib__field_assign *)
+letfun new_tests__legacy__proverif_expressions__lib__field_assign(o: bitstring, x: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Outer__Outer(
+    new_tests__legacy__proverif_expressions__lib__Outer__Outer__a(o),
+    x
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:48:0-51:1 new_tests__legacy__proverif_expressions__lib__nested_field_assign *)
+letfun new_tests__legacy__proverif_expressions__lib__nested_field_assign(
+  o: bitstring,
+  x: bitstring
+) =
+  new_tests__legacy__proverif_expressions__lib__Outer__Outer(
+    new_tests__legacy__proverif_expressions__lib__Inner__Inner(x),
+    new_tests__legacy__proverif_expressions__lib__Outer__Outer__c(o)
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:53:0-55:1 new_tests__legacy__proverif_expressions__lib__set_c *)
+letfun new_tests__legacy__proverif_expressions__lib__set_c(o: bitstring, x: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Outer__Outer(
+    new_tests__legacy__proverif_expressions__lib__Outer__Outer__a(o),
+    x
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:57:0-60:1 new_tests__legacy__proverif_expressions__lib__through_mut_ref *)
+letfun new_tests__legacy__proverif_expressions__lib__through_mut_ref(o: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Outer__Outer__c(
+    new_tests__legacy__proverif_expressions__lib__set_c(o, nat_7)
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:62:0-62:20 new_tests__legacy__proverif_expressions__lib__Pair *)
+fun new_tests__legacy__proverif_expressions__lib__Pair__Pair(
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_expressions__lib__Pair__Pair__0(
+    new_tests__legacy__proverif_expressions__lib__Pair__Pair(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_expressions__lib__Pair__Pair__1(
+    new_tests__legacy__proverif_expressions__lib__Pair__Pair(v_0, v_1)
+  ) = v_1.
+(* src: src/legacy/proverif-expressions/lib.rs:64:0-66:1 new_tests__legacy__proverif_expressions__lib__swap *)
+letfun new_tests__legacy__proverif_expressions__lib__swap(p: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Pair__Pair(
+    new_tests__legacy__proverif_expressions__lib__Pair__Pair__1(p),
+    new_tests__legacy__proverif_expressions__lib__Pair__Pair__0(p)
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:68:0-71:1 new_tests__legacy__proverif_expressions__lib__Code *)
+fun new_tests__legacy__proverif_expressions__lib__Code__A(): bitstring [data].
+fun new_tests__legacy__proverif_expressions__lib__Code__B(): bitstring [data].
+(* src: src/legacy/proverif-expressions/lib.rs:68:0-71:1 new_tests__legacy__proverif_expressions__lib__Code__A__AnonConst *)
+letfun new_tests__legacy__proverif_expressions__lib__Code__A__AnonConst() = nat_1.
+(* src: src/legacy/proverif-expressions/lib.rs:68:0-71:1 new_tests__legacy__proverif_expressions__lib__Code__B__AnonConst *)
+letfun new_tests__legacy__proverif_expressions__lib__Code__B__AnonConst() = nat_20.
+(* src: src/legacy/proverif-expressions/lib.rs:68:0-71:1 new_tests__legacy__proverif_expressions__lib__Code_cast_to_repr *)
+letfun new_tests__legacy__proverif_expressions__lib__Code_cast_to_repr(x: bitstring) =
+  let new_tests__legacy__proverif_expressions__lib__Code__A() = x in
+    new_tests__legacy__proverif_expressions__lib__Code__A__AnonConst()
+  else let new_tests__legacy__proverif_expressions__lib__Code__B() = x in
+    new_tests__legacy__proverif_expressions__lib__Code__B__AnonConst()
+  else bitstring_err().
+(* src: src/legacy/proverif-expressions/lib.rs:73:0-75:1 new_tests__legacy__proverif_expressions__lib__discriminant *)
+letfun new_tests__legacy__proverif_expressions__lib__discriminant(c: bitstring) =
+  (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) new_tests__legacy__proverif_expressions__lib__Code_cast_to_repr(
+    c
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:77:0-79:1 new_tests__legacy__proverif_expressions__lib__cast *)
+letfun new_tests__legacy__proverif_expressions__lib__cast(x: bitstring) =
+  (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x.
+(* src: src/legacy/proverif-expressions/lib.rs:81:0-91:1 new_tests__legacy__proverif_expressions__lib__literals *)
+letfun new_tests__legacy__proverif_expressions__lib__literals(wildcard: bitstring) =
+  rust_primitives__hax__Tuple7__Tuple7(
+    nat_340282366920938463463374607431768211455,
+    nat_neg_9223372036854775808,
+    char_lit___x27,
+    string_lit__quote_x20_x22_x20_x28_x2a_x20not_x20a_x20comment_x20_x2a_x29,
+    float_lit__neg_1_x2e5,
+    rust_primitives__hax__array_cons(nat_97, rust_primitives__hax__array_cons(nat_98, rust_primitives__hax__array_nil())),
+    nat_122
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:93:0-97:1 new_tests__legacy__proverif_expressions__lib__operators *)
+letfun new_tests__legacy__proverif_expressions__lib__operators(
+  a: bitstring,
+  b: bitstring,
+  c: bitstring
+) =
+  let x = rust_primitives__hax__machine_int__bitor(
+    rust_primitives__hax__machine_int__bitand(a, b),
+    rust_primitives__hax__machine_int__bitxor(
+      rust_primitives__hax__machine_int__shl(a, nat_1),
+      rust_primitives__hax__machine_int__not_kw(b)
+    )
+  ) in
+  let y = rust_primitives__hax__machine_int__eq(
+    rust_primitives__hax__machine_int__rem(a, nat_3),
+    rust_primitives__hax__machine_int__div(b, nat_2)
+  ) in
+  let hax__cond0 = (let hax__cond1 = core__ops__bit__Not__not_kw(c) in
+  let (=True()) = hax__cond1
+    in (let hax__cond2 = rust_primitives__hax__machine_int__ne(x, a) in
+    let (=True()) = hax__cond2
+      in True()
+      else let (=False()) = hax__cond2
+      in y
+      else logical_or_opaque(hax__cond2))
+    else let (=False()) = hax__cond1
+    in False()
+    else logical_and_opaque(hax__cond1)) in
+  let (=True()) = hax__cond0
+    in rust_primitives__hax__machine_int__le(a, b)
+    else let (=False()) = hax__cond0
+    in False()
+    else logical_and_opaque(hax__cond0).
+(* src: src/legacy/proverif-expressions/lib.rs:99:0-101:1 new_tests__legacy__proverif_expressions__lib__neg *)
+letfun new_tests__legacy__proverif_expressions__lib__neg(x: bitstring) =
+  rust_primitives__arithmetic__neg(x).
+(* src: src/legacy/proverif-expressions/lib.rs:111:4-113:5 new_tests__legacy__proverif_expressions__lib__Impl__eq *)
+letfun new_tests__legacy__proverif_expressions__lib__Impl__eq(self: bitstring, other: bitstring) =
+  let hax__cond0 = rust_primitives__hax__machine_int__eq(
+    new_tests__legacy__proverif_expressions__lib__Pair__Pair__0(self),
+    new_tests__legacy__proverif_expressions__lib__Pair__Pair__0(other)
+  ) in
+  let (=True()) = hax__cond0
+    in rust_primitives__hax__machine_int__eq(
+      new_tests__legacy__proverif_expressions__lib__Pair__Pair__1(self),
+      new_tests__legacy__proverif_expressions__lib__Pair__Pair__1(other)
+    )
+    else let (=False()) = hax__cond0
+    in False()
+    else logical_and_opaque(hax__cond0).
+(* src: src/legacy/proverif-expressions/lib.rs:103:0-108:1 new_tests__legacy__proverif_expressions__lib__struct_eq *)
+letfun new_tests__legacy__proverif_expressions__lib__struct_eq(a: bitstring, b: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Impl__eq(a, b).
+(* src: src/legacy/proverif-expressions/lib.rs:149:0-151:1 new_tests__legacy__proverif_expressions__lib__generic_const *)
+letfun new_tests__legacy__proverif_expressions__lib__generic_const(xs: bitstring) =
+  bitstring_err() (* HAX ERROR: use of a const generic parameter as a value *).
+(* src: src/legacy/proverif-expressions/lib.rs:153:0-155:1 new_tests__legacy__proverif_expressions__lib__call_generic_const *)
+letfun new_tests__legacy__proverif_expressions__lib__call_generic_const(wildcard: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__generic_const(
+    rust_primitives__hax__array_cons(nat_1, rust_primitives__hax__array_cons(nat_2, rust_primitives__hax__array_cons(nat_3, rust_primitives__hax__array_nil())))
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:157:0-159:1 new_tests__legacy__proverif_expressions__lib__shadow_literal_name *)
+letfun new_tests__legacy__proverif_expressions__lib__shadow_literal_name(nat_3_v0: bitstring) =
+  rust_primitives__hax__machine_int__add(nat_3_v0, nat_3).
+(* src: src/legacy/proverif-expressions/lib.rs:161:0-161:22 new_tests__legacy__proverif_expressions__lib__GLOBAL *)
+letfun new_tests__legacy__proverif_expressions__lib__GLOBAL() = nat_5.
+(* src: src/legacy/proverif-expressions/lib.rs:163:0-165:1 new_tests__legacy__proverif_expressions__lib__read_static *)
+letfun new_tests__legacy__proverif_expressions__lib__read_static(wildcard: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__GLOBAL().
+(* src: src/legacy/proverif-expressions/lib.rs:169:0-171:1 new_tests__legacy__proverif_expressions__lib__label *)
+letfun new_tests__legacy__proverif_expressions__lib__label(wildcard: bitstring) =
+  bitstring_err() (* HAX ERROR: use of a const generic parameter as a value *).
+(* src: src/legacy/proverif-expressions/lib.rs:173:0-175:1 new_tests__legacy__proverif_expressions__lib__labels_differ *)
+letfun new_tests__legacy__proverif_expressions__lib__labels_differ(wildcard: bitstring) =
+  rust_primitives__hax__machine_int__eq(
+    new_tests__legacy__proverif_expressions__lib__label(rust_primitives__hax__Tuple0__Tuple0),
+    new_tests__legacy__proverif_expressions__lib__label(rust_primitives__hax__Tuple0__Tuple0)
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:177:0-177:27 new_tests__legacy__proverif_expressions__lib__Buf *)
+fun new_tests__legacy__proverif_expressions__lib__Buf__Buf(): bitstring [data].
+(* src: src/legacy/proverif-expressions/lib.rs:180:4-180:25 new_tests__legacy__proverif_expressions__lib__Impl_3__LEN *)
+(* HAX ERROR: use of a const generic parameter as a value *)
+(* nullary const applied as a function *)
+fun new_tests__legacy__proverif_expressions__lib__Impl_3__LEN(bitstring): bitstring.
+(* src: src/legacy/proverif-expressions/lib.rs:183:0-185:1 new_tests__legacy__proverif_expressions__lib__buf_len *)
+letfun new_tests__legacy__proverif_expressions__lib__buf_len(wildcard: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Impl_3__LEN(nat_4).
+(* src: src/legacy/proverif-expressions/lib.rs:188:0-190:1 new_tests__legacy__proverif_expressions__lib__widen *)
+letfun new_tests__legacy__proverif_expressions__lib__widen(x: bitstring) = x.
+(* src: src/legacy/proverif-expressions/lib.rs:194:0-196:1 new_tests__legacy__proverif_expressions__lib__narrow_roundtrip *)
+letfun new_tests__legacy__proverif_expressions__lib__narrow_roundtrip(x: bitstring) =
+  rust_primitives__hax__machine_int__eq(
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x,
+    x
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:198:0-200:1 new_tests__legacy__proverif_expressions__lib__sign_change *)
+letfun new_tests__legacy__proverif_expressions__lib__sign_change(x: bitstring) =
+  rust_primitives__hax__machine_int__eq(
+    (* HAX WARNING: `as` cast modelled as the identity, although it may change the value *) x,
+    nat_255
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:203:0-206:1 new_tests__legacy__proverif_expressions__lib__range_bounds *)
+letfun new_tests__legacy__proverif_expressions__lib__range_bounds(a: bitstring, b: bitstring) =
+  let r = core__ops__range__Range__Range(a, b) in
+  rust_primitives__hax__Tuple2__Tuple2(
+    core__ops__range__Range__Range__start(r),
+    core__ops__range__Range__Range__end(r)
+  ).
+
+(* src: src/legacy/proverif-expressions/lib.rs:214:0-216:1 new_tests__legacy__proverif_expressions__lib__read_hidden *)
+letfun new_tests__legacy__proverif_expressions__lib__read_hidden(h: bitstring) =
+  bitstring_err() (* HAX ERROR: read of a field of a struct the model does not declare (e.g. an opaque or external one) *).
+(* src: src/legacy/proverif-expressions/lib.rs:219:0-221:1 new_tests__legacy__proverif_expressions__lib__range_literal *)
+letfun new_tests__legacy__proverif_expressions__lib__range_literal(a: bitstring, b: bitstring) =
+  core__ops__range__Range__Range(a, b).
+(* src: src/legacy/proverif-expressions/lib.rs:224:0-227:1 new_tests__legacy__proverif_expressions__lib__tuple_field_assign *)
+letfun new_tests__legacy__proverif_expressions__lib__tuple_field_assign(
+  t: bitstring,
+  x: bitstring
+) = rust_primitives__hax__Tuple2__Tuple2(rust_primitives__hax__Tuple2__Tuple2__0(t), x).
+(* src: src/legacy/proverif-expressions/lib.rs:230:0-233:1 new_tests__legacy__proverif_expressions__lib__update_index *)
+letfun new_tests__legacy__proverif_expressions__lib__update_index(xs: bitstring, x: bitstring) =
+  rust_primitives__hax__monomorphized_update_at__update_at_usize(xs, nat_0, x).
+(* src: src/legacy/proverif-expressions/lib.rs:235:0-238:1 new_tests__legacy__proverif_expressions__lib__update_range_to *)
+letfun new_tests__legacy__proverif_expressions__lib__update_range_to(xs: bitstring, ys: bitstring) =
+  rust_primitives__hax__monomorphized_update_at__update_at_range_to(
+    xs,
+    core__ops__range__RangeTo__RangeTo(nat_2),
+    core__slice__Impl__copy_from_slice(
+      core__ops__index__Index__index(xs, core__ops__range__RangeTo__RangeTo(nat_2)),
+      ys
+    )
+  ).
+(* src: src/legacy/proverif-expressions/lib.rs:242:0-244:1 new_tests__legacy__proverif_expressions__lib__sizes *)
+letfun new_tests__legacy__proverif_expressions__lib__sizes(wildcard: bitstring) =
+  rust_primitives__hax__machine_int__eq(
+    (* HAX WARNING: `size_of` or `align_of` modelled without its type argument, so that it is the same for every type *) core__mem__size_of(
+      rust_primitives__hax__Tuple0__Tuple0
+    ),
+    (* HAX WARNING: `size_of` or `align_of` modelled without its type argument, so that it is the same for every type *) core__mem__size_of(
+      rust_primitives__hax__Tuple0__Tuple0
+    )
+  ).
+
+(* src: src/legacy/proverif-expressions/lib.rs:127:4-127:23 new_tests__legacy__proverif_expressions__lib__Impl_1__TAG *)
+letfun new_tests__legacy__proverif_expressions__lib__Impl_1__TAG() = nat_42.
+(* src: src/legacy/proverif-expressions/lib.rs:131:4-131:22 new_tests__legacy__proverif_expressions__lib__Impl_2__TAG *)
+letfun new_tests__legacy__proverif_expressions__lib__Impl_2__TAG() = nat_7.
+(* src: src/legacy/proverif-expressions/lib.rs:132:4-134:5 new_tests__legacy__proverif_expressions__lib__Impl_2__tag *)
+letfun new_tests__legacy__proverif_expressions__lib__Impl_2__tag(self: bitstring) =
+  new_tests__legacy__proverif_expressions__lib__Inner__Inner__b(self).
+(* src: src/legacy/proverif-expressions/lib.rs:137:0-139:1 new_tests__legacy__proverif_expressions__lib__default_method *)
+letfun new_tests__legacy__proverif_expressions__lib__default_method(p: bitstring) =
+  bitstring_err() (* HAX ERROR: use of the default trait item `double_tag`, which the impl does not override *).
+(* src: src/legacy/proverif-expressions/lib.rs:141:0-143:1 new_tests__legacy__proverif_expressions__lib__overridden_default *)
+letfun new_tests__legacy__proverif_expressions__lib__overridden_default(i: bitstring) =
+  bitstring_err() (* HAX ERROR: use of the default trait item `double_tag`, which the impl does not override *).
+(* src: src/legacy/proverif-expressions/lib.rs:145:0-147:1 new_tests__legacy__proverif_expressions__lib__impl_trait_param *)
+letfun new_tests__legacy__proverif_expressions__lib__impl_trait_param(t: bitstring) =
+  bitstring_err() (* HAX ERROR: use of the trait item `tag` that resolves to no impl of the crate (e.g. on a generic type) *).

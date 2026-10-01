@@ -19,7 +19,7 @@ fn test_const_matching(x: u32, c: char, s: &str, b: bool) -> u32 {
     return x + c + s + b;
 }
 
-/// @fail(extraction): proverif(HAX0008), fstar(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): fstar(HAX0008), ssprove(HAX0008), coq(HAX0008)
 fn test_binding_subpattern_matching(x: (u8, (u8, u8))) -> u8 {
     match x {
         (0, pair @ (a, b)) => a + b + pair.0 + pair.1,

@@ -468,7 +468,6 @@ end new_tests.legacy__lean_tests__lib.ite
 
 namespace new_tests.legacy__lean_tests__lib.loops
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def loop1 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let x : u32 := (0 : u32);
@@ -481,7 +480,6 @@ def loop1 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
       (fun x i => (do (x +? i) : RustM u32)));
   (pure x)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def loop2 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
   let x : u32 := (0 : u32);
@@ -510,7 +508,6 @@ def loop2 (_ : rust_primitives.hax.Tuple0) : RustM u32 := do
     | (core_models.ops.control_flow.ControlFlow.Continue  x) => do (pure x)
 
 --  For-loop with a spec
---  @fail(extraction): proverif(HAX0008)
 def for_loop_with_spec (y : u64) : RustM u64 := do
   let x : u64 := y;
   let x : u64 ←
@@ -543,7 +540,7 @@ def for_loop_with_spec.spec (y : u64) :
 }
 
 --  while-loop
---  @fail(extraction): coq(HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
 def while_loop1 (s : u32) : RustM u32 := do
   let x : u32 := s;
   let x : u32 ←
@@ -577,7 +574,6 @@ inductive Error : Type
 | Foo : Error
 | Bar : u32 -> Error
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def loop3 (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result u32 Error) := do
@@ -609,7 +605,6 @@ def loop3 (_ : rust_primitives.hax.Tuple0) :
     | (core_models.ops.control_flow.ControlFlow.Continue  x) => do
       (pure (core_models.result.Result.Ok x))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def loop4 (_ : rust_primitives.hax.Tuple0) :
     RustM
@@ -669,7 +664,7 @@ def test_const_matching (x : u32) (c : Char) (s : String) (b : Bool) :
     match b with | true => do (pure (42 : u32)) | false => do (pure (0 : u32));
   ((← ((← (x +? c)) +? s)) +? b)
 
---  @fail(extraction): proverif(HAX0008), fstar(HAX0008), ssprove(HAX0008), coq(HAX0008)
+--  @fail(extraction): fstar(HAX0008), ssprove(HAX0008), coq(HAX0008)
 @[spec]
 def test_binding_subpattern_matching
     (x : (rust_primitives.hax.Tuple2 u8 (rust_primitives.hax.Tuple2 u8 u8))) :
@@ -1706,7 +1701,7 @@ end new_tests.legacy__lean_tests__lib.traits.inheritance
 
 namespace new_tests.legacy__lean_tests__lib.traits.default
 
---  @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008), proverif(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008)
 class Easy.AssociatedTypes (Self : Type) where
 
 class Easy (Self : Type)
@@ -1726,7 +1721,7 @@ instance Impl : Easy usize where
 
 instance Impl_1 : Easy u32 where
 
---  @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008), fstar(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008), fstar(HAX0008)
 class T1.AssociatedTypes (Self : Type) where
 
 class T1 (Self : Type)
@@ -1898,7 +1893,6 @@ end new_tests.legacy__lean_tests__lib.traits.trait_with_constraints
 
 namespace new_tests.legacy__lean_tests__lib.traits.associated_constant
 
---  @fail(extraction): proverif(HAX0008)
 class Foo.AssociatedTypes (Self : Type) where
 
 class Foo (Self : Type)
@@ -1920,7 +1914,6 @@ instance Impl : Foo Bar where
   f := (Impl.f_hoisted)
   x := (Impl.x_hoisted)
 
---  @fail(extraction): proverif(HAX0008)
 class Baz.AssociatedTypes (Self : Type) where
 
 class Baz (Self : Type)

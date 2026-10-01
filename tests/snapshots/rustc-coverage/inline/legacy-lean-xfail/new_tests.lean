@@ -39,7 +39,7 @@ def swap
     (rust_primitives.hax.monomorphized_update_at.update_at_usize xs j t);
   (pure xs)
 
---  @fail(extraction): proverif(HAX0008), ssprove(HAX0001)
+--  @fail(extraction): ssprove(HAX0001)
 @[spec]
 def display
     (T : Type)
@@ -83,7 +83,6 @@ def error (_ : rust_primitives.hax.Tuple0) :
       (← (core_models.fmt.rt.Impl_1.new_const ((1 : usize))
         (RustArray.ofVec #v["error"]))))))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def permutate
     (T : Type)

@@ -19,7 +19,7 @@ Inductive t_E (v_T : Type) : Type :=
 Arguments E_C1 {_}.
 Arguments E_C2 {_}.
 
-Instance t_Default_835270120 `{v_T : Type} `{t_Default (v_T)} : t_Default ((t_E ((v_T)))) :=
+Instance t_Default_505279592 `{v_T : Type} `{t_Default (v_T)} : t_Default ((t_E ((v_T)))) :=
   {
     implaabbcc_t_Default_f_default := fun  (_ : unit)=>
       E_C2 (f_default (tt));

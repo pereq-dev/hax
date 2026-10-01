@@ -18,7 +18,7 @@ let swap
   let xs:t_Slice v_T = Rust_primitives.Hax.Monomorphized_update_at.update_at_usize xs j t in
   xs
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0001)
+/// @fail(extraction): ssprove(HAX0001)
 let display
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Fmt.t_Display v_T)
@@ -75,7 +75,6 @@ let error (_: Prims.unit) : Prims.unit =
       <:
       Rust_primitives.Hax.t_Never)
 
-/// @fail(extraction): proverif(HAX0008)
 let rec permutate
       (#v_T: Type0)
       (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: Core_models.Marker.t_Copy v_T)

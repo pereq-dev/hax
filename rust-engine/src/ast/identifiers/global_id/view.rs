@@ -406,7 +406,8 @@ impl PathSegmentPayload {
             DefKind::Use => UnnamedPathSegmentPayload::Use,
             DefKind::ForeignMod => UnnamedPathSegmentPayload::Foreign,
             DefKind::AnonConst => UnnamedPathSegmentPayload::AnonConst,
-            DefKind::InlineConst => UnnamedPathSegmentPayload::InlineConst,
+            // Path-wise, a rustc-promoted constant behaves like an inline one.
+            DefKind::InlineConst | DefKind::PromotedConst => UnnamedPathSegmentPayload::InlineConst,
             DefKind::OpaqueTy => UnnamedPathSegmentPayload::Opaque,
             DefKind::GlobalAsm => UnnamedPathSegmentPayload::GlobalAsm,
             DefKind::Impl { .. } => UnnamedPathSegmentPayload::Impl,
@@ -445,6 +446,7 @@ impl PathSegmentPayload {
             | DefKind::ForeignMod
             | DefKind::AnonConst
             | DefKind::InlineConst
+            | DefKind::PromotedConst
             | DefKind::OpaqueTy
             | DefKind::GlobalAsm
             | DefKind::Impl { .. }
@@ -453,7 +455,6 @@ impl PathSegmentPayload {
 
             DefKind::TyParam
             | DefKind::ConstParam
-            | DefKind::PromotedConst
             | DefKind::LifetimeParam
             | DefKind::SyntheticCoroutineBody => error_dummy_value(
                 "PathSegmentPayload::from_def_id, kinds should never appear",
@@ -689,6 +690,7 @@ impl PathSegment {
             DefKind::ForeignMod => AnyKind::Foreign,
             DefKind::Macro { .. } => AnyKind::Macro,
             DefKind::AnonConst => AnyKind::AnonConst,
+            DefKind::InlineConst | DefKind::PromotedConst => AnyKind::InlineConst,
             DefKind::OpaqueTy => AnyKind::Opaque,
             DefKind::GlobalAsm => AnyKind::GlobalAsm,
             DefKind::Closure => AnyKind::Closure,

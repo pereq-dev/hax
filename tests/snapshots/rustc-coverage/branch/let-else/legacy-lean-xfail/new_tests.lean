@@ -19,7 +19,6 @@ def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def let_else (value : (core_models.option.Option String)) :
     RustM rust_primitives.hax.Tuple0 := do

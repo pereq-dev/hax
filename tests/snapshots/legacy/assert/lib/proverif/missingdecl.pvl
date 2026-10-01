@@ -1,0 +1,16 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__assert__lib__asserts *)
+fun core__panicking__AssertKind__Ne(): bitstring [data].
+(* referenced by: new_tests__legacy__assert__lib__asserts *)
+const string_lit__assertion_x20failed_x3a_x20_x7b_x20assert_x21_x28true_x29_x3b_x201_x20_x3d_x3d_x201_x20_x7d: bitstring.
+(* referenced by: new_tests__legacy__assert__lib__asserts *)
+const string_lit__assertion_x20failed_x3a_x20true: bitstring.

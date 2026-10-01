@@ -19,7 +19,7 @@ Class t_SuperTrait (v_Self : Type) `{t_Clone (v_Self)} : Type :=
   }.
 Arguments t_SuperTrait (_) {_}.
 
-Instance t_SuperTrait_834120111 : t_SuperTrait ((t_i32)) :=
+Instance t_SuperTrait_739811706 : t_SuperTrait ((t_i32)) :=
   {
     implaabbcc_t_SuperTrait_f_function_of_super_trait := fun  (self : t_i32)=>
       cast (impl_i32__abs (self));
@@ -98,7 +98,7 @@ Definition f `{v_T : Type} `{t_Foo (v_T)} (x : v_T) : unit :=
 Definition g `{v_T : Type} `{t_Foo (v_T)} (x : f_AssocType) : t_u32 :=
   f_function_of_super_trait (x).
 
-Instance t_Foo_690839081 : t_Foo ((unit)) :=
+Instance t_Foo_679300317 : t_Foo ((unit)) :=
   {
     implaabbcc_t_Foo_f_AssocType := t_i32;
     implaabbcc_t_Foo_f_N := (32 : t_usize);

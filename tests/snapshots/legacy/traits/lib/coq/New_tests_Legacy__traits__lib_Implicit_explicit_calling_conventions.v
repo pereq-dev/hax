@@ -29,7 +29,7 @@ Class t_Trait (v_Self : Type) (v_TypeArg : Type) (v_ConstArg : t_usize) : Type :
   }.
 Arguments t_Trait (_) (_) (_).
 
-Instance t_Trait_542493048 `{v_TypeArg : Type} `{v_ConstArg : t_usize} : t_Trait ((unit)) ((v_TypeArg)) (v_ConstArg) :=
+Instance t_Trait_160851149 `{v_TypeArg : Type} `{v_ConstArg : t_usize} : t_Trait ((unit)) ((v_TypeArg)) (v_ConstArg) :=
   {
     implaabbcc_t_Trait_f_method := fun  (self : unit) (value_TypeArg : v_TypeArg) (value_Type : t_Type ((v_TypeArg)) (v_ConstArg))=>
       tt;

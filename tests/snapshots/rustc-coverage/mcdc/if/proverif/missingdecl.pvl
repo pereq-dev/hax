@@ -1,0 +1,26 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__mcdc__if__say *)
+fun core__hint__black_box(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_check_a, new_tests__rustc_coverage__mcdc__if__mcdc_check_b, new_tests__rustc_coverage__mcdc__if__mcdc_check_both, new_tests__rustc_coverage__mcdc__if__mcdc_check_neither *)
+const string_lit__a_x20and_x20b: bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_nested_if *)
+const string_lit__a_x20or_x20b: bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_nested_if *)
+const string_lit__b_x20and_x20c: bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_nested_if *)
+const string_lit__neither_x20a_x20nor_x20b: bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_check_a, new_tests__rustc_coverage__mcdc__if__mcdc_check_b, new_tests__rustc_coverage__mcdc__if__mcdc_check_both, new_tests__rustc_coverage__mcdc__if__mcdc_check_neither *)
+const string_lit__not_x20both: bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision, new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision *)
+const string_lit__pass: bitstring.
+(* referenced by: new_tests__rustc_coverage__mcdc__if__mcdc_check_not_tree_decision, new_tests__rustc_coverage__mcdc__if__mcdc_check_tree_decision *)
+const string_lit__reject: bitstring.

@@ -7,7 +7,6 @@ let say (message: string) : Prims.unit =
   let _:string = Core_models.Hint.black_box #string message in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let if_let (input: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -34,7 +33,8 @@ let if_let (input: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit = say "done" in
   ()
 
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+/// @fail(extraction): proverif(HAX0001, HAX0001)
 let if_let_chain (a b: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit =
     if
@@ -53,7 +53,6 @@ let if_let_chain (a b: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit = say "done" in
   ()
 
-/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008)
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     if_let (Core_models.Option.Option_Some "x" <: Core_models.Option.t_Option string)

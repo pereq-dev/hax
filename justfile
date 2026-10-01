@@ -99,6 +99,13 @@ verify-lean MATCHING='':
   set -euo pipefail
   make -C tests/verify/lean -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
 
+# Parse-check the committed ProVerif snapshots. The optional argument narrows to
+# snapshots whose path matches, e.g. `just verify-proverif legacy/tuples`.
+verify-proverif MATCHING='':
+  #!/usr/bin/env bash
+  set -euo pipefail
+  make -C tests/verify/proverif -Otarget -j "$(nproc)" --keep-going MATCHING='{{MATCHING}}'
+
 # Run hax tests
 test *FLAGS:
   cargo run --release --bin test-driver -- ./tests {{FLAGS}}

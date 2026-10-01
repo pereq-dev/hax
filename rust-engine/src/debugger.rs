@@ -159,7 +159,7 @@ impl State {
     fn items(&self) -> Vec<Item> {
         let mut items = self.initial_items.clone();
         let phases = self.requests.iter().flat_map(|msg| match msg {
-            Request::ApplyPhase(phase) => Some(*phase),
+            Request::ApplyPhase(phase) => Some(phase.clone()),
             _ => None,
         });
         for phase in phases {

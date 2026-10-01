@@ -22,7 +22,7 @@ Record S_record : Type :=
 #[export] Instance settable_S_record : Settable _ :=
   settable! (Build_S_record) <S_f_f1>.
 
-Instance t_Default_696546604 : t_Default ((t_S)) :=
+Instance t_Default_737668931 : t_Default ((t_S)) :=
   {
     implaabbcc_t_Default_f_default := fun  (_ : unit)=>
       S ((0 : t_usize));

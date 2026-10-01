@@ -47,7 +47,8 @@ Note: the error was labeled with context `reject_Dyn`.
 
 Last available AST for this item:
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 #[allow(dead_code)]
 #[allow(dead_code, unused, unconditional_recursion)]
 #[feature(register_tool, if_let_guard)]

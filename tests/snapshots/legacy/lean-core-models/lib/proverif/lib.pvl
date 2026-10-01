@@ -1,370 +1,240 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - Closures not supported in ProVerif *)
+(*  - call of a function value through the `Fn` traits *)
+(*  - call of a function value through the `Fn` traits *)
+(*  - call of a function value through the `Fn` traits *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
+(* src: src/legacy/lean-core-models/result.rs:6:0-9:1 new_tests__legacy__lean_core_models__lib__result__E1 *)
+fun new_tests__legacy__lean_core_models__lib__result__E1__C1(): bitstring [data].
+fun new_tests__legacy__lean_core_models__lib__result__E1__C2(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__result__E1__C2__0(
+    new_tests__legacy__lean_core_models__lib__result__E1__C2(v_0)
+  ) = v_0.
 
-type new_tests__legacy__lean_core_models__lib__result__t_E1.
+(* src: src/legacy/lean-core-models/result.rs:11:0-14:1 new_tests__legacy__lean_core_models__lib__result__E2 *)
+fun new_tests__legacy__lean_core_models__lib__result__E2__C1(): bitstring [data].
+fun new_tests__legacy__lean_core_models__lib__result__E2__C2(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__result__E2__C2__0(
+    new_tests__legacy__lean_core_models__lib__result__E2__C2(v_0)
+  ) = v_0.
+(* src: src/legacy/lean-core-models/result.rs:16:0-43:1 new_tests__legacy__lean_core_models__lib__result__tests *)
+letfun new_tests__legacy__lean_core_models__lib__result__tests(wildcard: bitstring) =
+  let v1 = nat_1 in
+  let v2 = bitstring_err() in
+  let f = (bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)) in
+  let v5 = core__result__Impl__map(
+    nat_1,
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let v6 = core__result__Impl__map_or(nat_1, nat_9, f) in
+  let v7 = core__result__Impl__map_or_else(
+    nat_1,
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *),
+    f
+  ) in
+  let v8 = (let hax__ok = nat_0 in hax__ok) in
+  let v9 = core__result__Impl__is_ok(v1) in
+  let v10 = core__result__Impl__is_err(v1) in
+  let v11 = core__result__Impl__and_then(
+    v1,
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let v12 = core__result__Impl__unwrap(nat_0) in
+  let v13 = core__result__Impl__expect(nat_0, string_lit__Should_x20be_x20Ok) in
+  let hax__scrut0 = core__result__Impl__map(v1, f) in
+  let hoist2 = hax__scrut0 in
+    let hoist1 = v2 in rust_primitives__hax__machine_int__add(hoist2, hoist1).
 
-fun new_tests__legacy__lean_core_models__lib__result__t_E1_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__result__t_E1
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__result__t_E1_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__result__t_E1 [typeConverter].
-const new_tests__legacy__lean_core_models__lib__result__t_E1_default_value: new_tests__legacy__lean_core_models__lib__result__t_E1.
-letfun new_tests__legacy__lean_core_models__lib__result__t_E1_default() =
-       new_tests__legacy__lean_core_models__lib__result__t_E1_default_value.
-letfun new_tests__legacy__lean_core_models__lib__result__t_E1_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__result__t_E1_default_value.
-fun new_tests__legacy__lean_core_models__lib__result__E1_C1()
-    : new_tests__legacy__lean_core_models__lib__result__t_E1 [data].
-
-fun new_tests__legacy__lean_core_models__lib__result__E1_C2(nat)
-    : new_tests__legacy__lean_core_models__lib__result__t_E1 [data].
-reduc forall new_tests__legacy__lean_core_models__lib__result__0: nat;
-    accessor_new_tests__legacy__lean_core_models__lib__result__t_E1_new_tests__legacy__lean_core_models__lib__result__0(
-      new_tests__legacy__lean_core_models__lib__result__E1_C2(
-        new_tests__legacy__lean_core_models__lib__result__0
-      )
-    ) = new_tests__legacy__lean_core_models__lib__result__0.
-
-type new_tests__legacy__lean_core_models__lib__result__t_E2.
-
-fun new_tests__legacy__lean_core_models__lib__result__t_E2_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__result__t_E2
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__result__t_E2_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__result__t_E2 [typeConverter].
-const new_tests__legacy__lean_core_models__lib__result__t_E2_default_value: new_tests__legacy__lean_core_models__lib__result__t_E2.
-letfun new_tests__legacy__lean_core_models__lib__result__t_E2_default() =
-       new_tests__legacy__lean_core_models__lib__result__t_E2_default_value.
-letfun new_tests__legacy__lean_core_models__lib__result__t_E2_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__result__t_E2_default_value.
-fun new_tests__legacy__lean_core_models__lib__result__E2_C1()
-    : new_tests__legacy__lean_core_models__lib__result__t_E2 [data].
-
-fun new_tests__legacy__lean_core_models__lib__result__E2_C2(nat)
-    : new_tests__legacy__lean_core_models__lib__result__t_E2 [data].
-reduc forall new_tests__legacy__lean_core_models__lib__result__0: nat;
-    accessor_new_tests__legacy__lean_core_models__lib__result__t_E2_new_tests__legacy__lean_core_models__lib__result__0(
-      new_tests__legacy__lean_core_models__lib__result__E2_C2(
-        new_tests__legacy__lean_core_models__lib__result__0
-      )
-    ) = new_tests__legacy__lean_core_models__lib__result__0.
-
-type new_tests__legacy__lean_core_models__lib__phantom__t_Bar.
-
-fun new_tests__legacy__lean_core_models__lib__phantom__t_Bar_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__phantom__t_Bar
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__phantom__t_Bar_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__phantom__t_Bar [typeConverter].
-const new_tests__legacy__lean_core_models__lib__phantom__t_Bar_default_value: new_tests__legacy__lean_core_models__lib__phantom__t_Bar.
-letfun new_tests__legacy__lean_core_models__lib__phantom__t_Bar_default() =
-       new_tests__legacy__lean_core_models__lib__phantom__t_Bar_default_value.
-letfun new_tests__legacy__lean_core_models__lib__phantom__t_Bar_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__phantom__t_Bar_default_value.
-fun new_tests__legacy__lean_core_models__lib__phantom__Bar(
-      core_models__marker__t_PhantomData_of_v_F
-    )
-    : new_tests__legacy__lean_core_models__lib__phantom__t_Bar [data].
-reduc forall 
-  new_tests__legacy__lean_core_models__lib__phantom__f_e_phantom: core_models__marker__t_PhantomData_of_v_F
-;
-    accessor_new_tests__legacy__lean_core_models__lib__phantom__t_Bar_new_tests__legacy__lean_core_models__lib__phantom__f_e_phantom(
-      new_tests__legacy__lean_core_models__lib__phantom__Bar(
-        new_tests__legacy__lean_core_models__lib__phantom__f_e_phantom
-      )
-    ) = new_tests__legacy__lean_core_models__lib__phantom__f_e_phantom.
-
-type new_tests__legacy__lean_core_models__lib__option__t_S.
-
-fun new_tests__legacy__lean_core_models__lib__option__t_S_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__option__t_S
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__option__t_S_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__option__t_S [typeConverter].
-const new_tests__legacy__lean_core_models__lib__option__t_S_default_value: new_tests__legacy__lean_core_models__lib__option__t_S.
-letfun new_tests__legacy__lean_core_models__lib__option__t_S_default() =
-       new_tests__legacy__lean_core_models__lib__option__t_S_default_value.
-letfun new_tests__legacy__lean_core_models__lib__option__t_S_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__option__t_S_default_value.
-fun new_tests__legacy__lean_core_models__lib__option__S(nat)
-    : new_tests__legacy__lean_core_models__lib__option__t_S [data].
-reduc forall new_tests__legacy__lean_core_models__lib__option__f_f1: nat;
-    accessor_new_tests__legacy__lean_core_models__lib__option__t_S_new_tests__legacy__lean_core_models__lib__option__f_f1(
-      new_tests__legacy__lean_core_models__lib__option__S(
-        new_tests__legacy__lean_core_models__lib__option__f_f1
-      )
-    ) = new_tests__legacy__lean_core_models__lib__option__f_f1.
-
-type new_tests__legacy__lean_core_models__lib__option__t_E.
-
-fun new_tests__legacy__lean_core_models__lib__option__t_E_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__option__t_E
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__option__t_E_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__option__t_E [typeConverter].
-const new_tests__legacy__lean_core_models__lib__option__t_E_default_value: new_tests__legacy__lean_core_models__lib__option__t_E.
-letfun new_tests__legacy__lean_core_models__lib__option__t_E_default() =
-       new_tests__legacy__lean_core_models__lib__option__t_E_default_value.
-letfun new_tests__legacy__lean_core_models__lib__option__t_E_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__option__t_E_default_value.
-fun new_tests__legacy__lean_core_models__lib__option__E_C(nat)
-    : new_tests__legacy__lean_core_models__lib__option__t_E [data].
-reduc forall new_tests__legacy__lean_core_models__lib__option__0: nat;
-    accessor_new_tests__legacy__lean_core_models__lib__option__t_E_new_tests__legacy__lean_core_models__lib__option__0(
-      new_tests__legacy__lean_core_models__lib__option__E_C(
-        new_tests__legacy__lean_core_models__lib__option__0
-      )
-    ) = new_tests__legacy__lean_core_models__lib__option__0.
-
-type new_tests__legacy__lean_core_models__lib__default__structs__t_S.
-
-fun new_tests__legacy__lean_core_models__lib__default__structs__t_S_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__default__structs__t_S
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__default__structs__t_S_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__default__structs__t_S [typeConverter].
-const new_tests__legacy__lean_core_models__lib__default__structs__t_S_default_value: new_tests__legacy__lean_core_models__lib__default__structs__t_S.
-letfun new_tests__legacy__lean_core_models__lib__default__structs__t_S_default() =
-       new_tests__legacy__lean_core_models__lib__default__structs__t_S_default_value.
-letfun new_tests__legacy__lean_core_models__lib__default__structs__t_S_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__default__structs__t_S_default_value.
-fun new_tests__legacy__lean_core_models__lib__default__structs__S(nat)
-    : new_tests__legacy__lean_core_models__lib__default__structs__t_S [data].
-reduc forall 
-  new_tests__legacy__lean_core_models__lib__default__structs__f_f1: nat
-;
-    accessor_new_tests__legacy__lean_core_models__lib__default__structs__t_S_new_tests__legacy__lean_core_models__lib__default__structs__f_f1(
-      new_tests__legacy__lean_core_models__lib__default__structs__S(
-        new_tests__legacy__lean_core_models__lib__default__structs__f_f1
-      )
-    ) = new_tests__legacy__lean_core_models__lib__default__structs__f_f1.
-
-type new_tests__legacy__lean_core_models__lib__default__enums__t_E.
-
-fun new_tests__legacy__lean_core_models__lib__default__enums__t_E_to_bitstring(
-      new_tests__legacy__lean_core_models__lib__default__enums__t_E
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__lean_core_models__lib__default__enums__t_E_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__lean_core_models__lib__default__enums__t_E [typeConverter].
-const new_tests__legacy__lean_core_models__lib__default__enums__t_E_default_value: new_tests__legacy__lean_core_models__lib__default__enums__t_E.
-letfun new_tests__legacy__lean_core_models__lib__default__enums__t_E_default() =
-       new_tests__legacy__lean_core_models__lib__default__enums__t_E_default_value.
-letfun new_tests__legacy__lean_core_models__lib__default__enums__t_E_err() =
-       let x = construct_fail() in new_tests__legacy__lean_core_models__lib__default__enums__t_E_default_value.
-fun new_tests__legacy__lean_core_models__lib__default__enums__E_C1(nat)
-    : new_tests__legacy__lean_core_models__lib__default__enums__t_E [data].
-reduc forall new_tests__legacy__lean_core_models__lib__default__enums__0: nat;
-    accessor_new_tests__legacy__lean_core_models__lib__default__enums__t_E_new_tests__legacy__lean_core_models__lib__default__enums__0(
-      new_tests__legacy__lean_core_models__lib__default__enums__E_C1(
-        new_tests__legacy__lean_core_models__lib__default__enums__0
-      )
-    ) = new_tests__legacy__lean_core_models__lib__default__enums__0.
-fun new_tests__legacy__lean_core_models__lib__default__enums__E_C2(v_T)
-    : new_tests__legacy__lean_core_models__lib__default__enums__t_E [data].
-reduc forall new_tests__legacy__lean_core_models__lib__default__enums__0: v_T;
-    accessor_new_tests__legacy__lean_core_models__lib__default__enums__t_E_new_tests__legacy__lean_core_models__lib__default__enums__0(
-      new_tests__legacy__lean_core_models__lib__default__enums__E_C2(
-        new_tests__legacy__lean_core_models__lib__default__enums__0
-      )
-    ) = new_tests__legacy__lean_core_models__lib__default__enums__0.
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__lean_core_models__lib__result__tests(
-         wildcard2 : bitstring
-       ) =
-       let v1 = (1) in
-       let v2 = (nat_err()) in
-       let f = (|x|core_models__ops__arith__f_add(x, 1)) in
-       let v5 = (
-         core_models__result__impl__map(
-           1, |v|core_models__ops__arith__f_add(v, 1)
-         )
-       ) in
-       let v6 = (core_models__result__impl__map_or(1, 9, f)) in
-       let v7 = (
-         core_models__result__impl__map_or_else(1, |wildcard1: bitstring|10, f)
-       ) in
-       let v8 = (
-         core_models__result__impl__map_err(
-           0,
-           |e|let new_tests__legacy__lean_core_models__lib__result__E1_C1() = e in new_tests__legacy__lean_core_models__lib__result__E2_C1(
-
-           )
-           else let new_tests__legacy__lean_core_models__lib__result__E1_C2(x) = e in new_tests__legacy__lean_core_models__lib__result__E2_C2(
-             core_models__ops__arith__f_add(x, 1)
-           )
-         )
-       ) in
-       let v9 = (core_models__result__impl__is_ok(v1)) in
-       let v10 = (core_models__result__impl__is_err(v1)) in
-       let v11 = (
-         core_models__result__impl__and_then(
-           v1, |x|core_models__ops__arith__f_add(x, 1)
-         )
-       ) in
-       let v12 = (core_models__result__impl__unwrap(0)) in
-       let v13 = (core_models__result__impl__expect(0, "Should be Ok")) in
-       let hoist2 = core_models__result__impl__map(v1, f) in let hoist1 = v2 in (
-         let v3 = (core_models__ops__arith__f_add(hoist2, hoist1)) in
-         v3
-       )
-       else nat_err()
-       else nat_err().
-
-letfun new_tests__legacy__lean_core_models__lib__phantom__impl__new(
-         wildcard3 : bitstring
-       ) =
-       new_tests__legacy__lean_core_models__lib__phantom__Bar(
-         core_models__marker__PhantomData()
-       ).
-
-letfun new_tests__legacy__lean_core_models__lib__option__test(
-         wildcard8 : bitstring
-       ) =
-       let o1 = (Some(nat_to_bitstring(4))) in
-       let o2:Option = (None()) in
-       let o3 = (
-         core_models__option__impl__is_some_and(
-           o1, |x|core_models__cmp__f_eq(x, 0)
-         )
-       ) in
-       let o3 = (
-         core_models__option__impl__is_none_or(
-           o1, |x|core_models__cmp__f_eq(x, 0)
-         )
-       ) in
-       let o4 = (core_models__option__impl__unwrap(Some(nat_to_bitstring(0)))) in
-       let o5 = (
-         core_models__option__impl__unwrap_or(Some(nat_to_bitstring(0)), 9)
-       ) in
-       let o6 = (
-         core_models__option__impl__unwrap_or_else(
-           Some(nat_to_bitstring(0)), |wildcard7: bitstring|9
-         )
-       ) in
-       let o7 = (core_models__option__impl__unwrap_or_default(None())) in
-       let o8 = (
-         core_models__option__impl__map(
-           Some(nat_to_bitstring(0)), |x|core_models__ops__arith__f_add(x, 1)
-         )
-       ) in
-       let o9 = (
-         core_models__option__impl__map_or(
-           Some(nat_to_bitstring(1)), 9, |x|core_models__ops__arith__f_add(x, 1)
-         )
-       ) in
-       let o10 = (
-         core_models__option__impl__map_or_else(
-           Some(nat_to_bitstring(2)),
-           |wildcard6: bitstring|9,
-           |x|core_models__ops__arith__f_add(x, 1)
-         )
-       ) in
-       let o11 = (
-         core_models__option__impl__ok_or(
-           Some(nat_to_bitstring(3)),
-           new_tests__legacy__lean_core_models__lib__option__E_C(0)
-         )
-       ) in
-       let o12 = (
-         core_models__option__impl__ok_or_else(
-           Some(nat_to_bitstring(1)),
-           |wildcard5: bitstring|new_tests__legacy__lean_core_models__lib__option__E_C(
-             1
-           )
-         )
-       ) in
-       let o13 = (
-         core_models__option__impl__and_then(
-           None(), |x|Some(nat_to_bitstring(x))
-         )
-       ) in
-       let (wildcard4: bitstring, v_out: Option) = (
-         core_models__option__impl__take(
-           Some(
-             new_tests__legacy__lean_core_models__lib__option__t_S_to_bitstring(
-               new_tests__legacy__lean_core_models__lib__option__S(9)
-             )
-           )
-         )
-       ) in
-       let o14 = (v_out) in
-       let o15 = (core_models__option__impl__is_some(Some(nat_to_bitstring(1)))) in
-       let o16 = (core_models__option__impl__is_none(Some(nat_to_bitstring(2)))) in
-       let o17 = (
-         core_models__option__impl__expect(
-           Some(nat_to_bitstring(3)), "Should be Some"
-         )
-       ) in
-       let o18 = (core_models__option__impl__unwrap(Some(nat_to_bitstring(4)))) in
-       ().
-
-letfun new_tests__legacy__lean_core_models__lib__default__structs__test(
-         wildcard9 : bitstring
-       ) =
-       core_models__default__f_default(()).
-
-letfun new_tests__legacy__lean_core_models__lib__function__test(
-         wildcard11 : bitstring
-       ) =
-       let ff_1_ = (|wildcard10: bitstring|9) in
-       let ff_2_ = (|x,y|core_models__ops__arith__f_add(x, y)) in
-       let ff_2_tuple = (|(x: nat, y: nat)|core_models__ops__arith__f_add(x, y)) in
-       core_models__ops__arith__f_add(
-         core_models__ops__arith__f_add(
-           core_models__ops__function__f_call(ff_1_, (0)),
-           core_models__ops__function__f_call(ff_2_, (1, 2))
-         ),
-         core_models__ops__function__f_call(ff_2_tuple, ((1, 2)))
-       ).
-
+(* src: src/legacy/lean-core-models/phantom.rs:9:0-11:1 new_tests__legacy__lean_core_models__lib__phantom__Bar *)
+fun new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar__u_phantom(
+    new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(v_0)
+  ) = v_0.
+(* src: src/legacy/lean-core-models/phantom.rs:14:4-16:5 new_tests__legacy__lean_core_models__lib__phantom__Impl__new_kw *)
+letfun new_tests__legacy__lean_core_models__lib__phantom__Impl__new_kw(wildcard: bitstring) =
+  new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(
+    core__marker__PhantomData__PhantomData()
+  ).
+(* src: src/legacy/lean-core-models/option.rs:5:0-7:1 new_tests__legacy__lean_core_models__lib__option__S *)
+fun new_tests__legacy__lean_core_models__lib__option__S__S(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__option__S__S__f1(
+    new_tests__legacy__lean_core_models__lib__option__S__S(v_0)
+  ) = v_0.
+(* src: src/legacy/lean-core-models/option.rs:9:0-11:1 new_tests__legacy__lean_core_models__lib__option__E *)
+fun new_tests__legacy__lean_core_models__lib__option__E__C(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__option__E__C__0(
+    new_tests__legacy__lean_core_models__lib__option__E__C(v_0)
+  ) = v_0.
+(* src: src/legacy/lean-core-models/option.rs:14:4-16:5 new_tests__legacy__lean_core_models__lib__option__Impl__default *)
+letfun new_tests__legacy__lean_core_models__lib__option__Impl__default(wildcard: bitstring) =
+  new_tests__legacy__lean_core_models__lib__option__S__S(nat_42).
+(* src: src/legacy/lean-core-models/option.rs:19:0-48:1 new_tests__legacy__lean_core_models__lib__option__test *)
+letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstring) =
+  let o1 = Some(nat_4) in
+  let o2 = None() in
+  let o3 = core__option__Impl__is_some_and(
+    o1,
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let o3_1 = core__option__Impl__is_none_or(
+    o1,
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let o4 = core__option__Impl__unwrap(Some(nat_0)) in
+  let o5 = core__option__Impl__unwrap_or(Some(nat_0), nat_9) in
+  let o6 = core__option__Impl__unwrap_or_else(
+    Some(nat_0),
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let o7 = core__option__Impl__unwrap_or_default(None()) in
+  let o8 = (let hax__scrut0 = Some(nat_0) in
+  let Some(x_2) = hax__scrut0 in Some(rust_primitives__hax__machine_int__add(x_2, nat_1))
+  else let None() = hax__scrut0 in None()
+  else bitstring_err()) in
+  let o9 = core__option__Impl__map_or(
+    Some(nat_1),
+    nat_9,
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let o10 = core__option__Impl__map_or_else(
+    Some(nat_2),
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *),
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let o11 = core__option__Impl__ok_or(
+    Some(nat_3),
+    new_tests__legacy__lean_core_models__lib__option__E__C(nat_0)
+  ) in
+  let o12 = core__option__Impl__ok_or_else(
+    Some(nat_1),
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let o13 = core__option__Impl__and_then(
+    None(),
+    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+  ) in
+  let rust_primitives__hax__Tuple2__Tuple2(
+    wildcard_4: bitstring,
+    out_kw: bitstring
+  ) = core__option__Impl__take(
+    Some(new_tests__legacy__lean_core_models__lib__option__S__S(nat_9))
+  ) in (let o15 = core__option__Impl__is_some(Some(nat_1)) in
+  let o16 = core__option__Impl__is_none(Some(nat_2)) in
+  let o17 = core__option__Impl__expect(Some(nat_3), string_lit__Should_x20be_x20Some) in
+  let o18 = core__option__Impl__unwrap(Some(nat_4)) in
+  rust_primitives__hax__Tuple0__Tuple0) else bitstring_err().
+(* src: src/legacy/lean-core-models/default.rs:7:4-9:5 new_tests__legacy__lean_core_models__lib__default__structs__S *)
+fun new_tests__legacy__lean_core_models__lib__default__structs__S__S(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__default__structs__S__S__f1(
+    new_tests__legacy__lean_core_models__lib__default__structs__S__S(v_0)
+  ) = v_0.
+(* src: src/legacy/lean-core-models/default.rs:12:8-14:9 new_tests__legacy__lean_core_models__lib__default__structs__Impl__default *)
+letfun new_tests__legacy__lean_core_models__lib__default__structs__Impl__default(
+  wildcard: bitstring
+) = new_tests__legacy__lean_core_models__lib__default__structs__S__S(nat_0).
+(* src: src/legacy/lean-core-models/default.rs:17:4-19:5 new_tests__legacy__lean_core_models__lib__default__structs__test *)
+letfun new_tests__legacy__lean_core_models__lib__default__structs__test(wildcard: bitstring) =
+  new_tests__legacy__lean_core_models__lib__default__structs__Impl__default(
+    rust_primitives__hax__Tuple0__Tuple0
+  ).
+(* src: src/legacy/lean-core-models/default.rs:24:4-27:5 new_tests__legacy__lean_core_models__lib__default__enums__E *)
+fun new_tests__legacy__lean_core_models__lib__default__enums__E__C1(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__default__enums__E__C1__0(
+    new_tests__legacy__lean_core_models__lib__default__enums__E__C1(v_0)
+  ) = v_0.
+fun new_tests__legacy__lean_core_models__lib__default__enums__E__C2(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__lean_core_models__lib__default__enums__E__C2__0(
+    new_tests__legacy__lean_core_models__lib__default__enums__E__C2(v_0)
+  ) = v_0.
+(* src: src/legacy/lean-core-models/default.rs:30:8-32:9 new_tests__legacy__lean_core_models__lib__default__enums__Impl__default *)
+letfun new_tests__legacy__lean_core_models__lib__default__enums__Impl__default(
+  wildcard: bitstring
+) =
+  new_tests__legacy__lean_core_models__lib__default__enums__E__C2(
+    core__default__Default__default(rust_primitives__hax__Tuple0__Tuple0)
+  ).
+(* src: src/legacy/lean-core-models/function.rs:4:0-9:1 new_tests__legacy__lean_core_models__lib__function__test *)
+letfun new_tests__legacy__lean_core_models__lib__function__test(wildcard: bitstring) =
+  let f_1 = (bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)) in
+  let f_2 = (bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)) in
+  let f_2_tuple = (bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)) in
+  rust_primitives__hax__machine_int__add(
+    rust_primitives__hax__machine_int__add(
+      bitstring_err() (* HAX ERROR: call of a function value through the `Fn` traits *),
+      bitstring_err() (* HAX ERROR: call of a function value through the `Fn` traits *)
+    ),
+    bitstring_err() (* HAX ERROR: call of a function value through the `Fn` traits *)
+  ).

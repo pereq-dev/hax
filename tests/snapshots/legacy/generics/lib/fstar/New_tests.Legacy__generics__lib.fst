@@ -13,7 +13,6 @@ let dup
   <:
   (v_T & v_T)
 
-/// @fail(extraction): proverif(HAX0008)
 let foo (v_LEN: usize) (arr: t_Array usize v_LEN) : usize =
   let acc:usize = v_LEN +! mk_usize 9 in
   let acc:usize =

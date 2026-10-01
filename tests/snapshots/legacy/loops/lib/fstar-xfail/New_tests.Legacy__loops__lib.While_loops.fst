@@ -3,7 +3,7 @@ module New_tests.Legacy__loops__lib.While_loops
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001), proverif(HAX0008)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
 let f (_: Prims.unit) : u8 =
   let x:u8 = mk_u8 0 in
   let x:u8 =
@@ -24,7 +24,7 @@ let f (_: Prims.unit) : u8 =
   in
   x +! mk_u8 12
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 let while_invariant_decr (_: Prims.unit) : u8 =
   let x:u8 = mk_u8 0 in
   let x:u8 =
@@ -45,7 +45,7 @@ let while_invariant_decr (_: Prims.unit) : u8 =
   in
   x +! mk_u8 12
 
-/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 let while_invariant_decr_rev (_: Prims.unit) : u8 =
   let x:u8 = mk_u8 0 in
   let x:u8 =

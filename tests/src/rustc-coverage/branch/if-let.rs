@@ -10,7 +10,6 @@ macro_rules! no_merge {
     };
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn if_let(input: Option<&str>) {
     no_merge!();
 
@@ -22,7 +21,8 @@ fn if_let(input: Option<&str>) {
     say("done");
 }
 
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), proverif(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001)
+/// @fail(extraction): proverif(HAX0001, HAX0001)
 fn if_let_chain(a: Option<&str>, b: Option<&str>) {
     if let Some(x) = a
         && let Some(y) = b
@@ -41,7 +41,6 @@ fn say(message: &str) {
 }
 
 #[coverage(off)]
-/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008)
 fn main() {
     if_let(Some("x"));
     if_let(Some("x"));

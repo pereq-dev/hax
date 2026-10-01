@@ -20,8 +20,9 @@ namespace new_tests.legacy__cli__interface_only__lib
 -- 
 --  Expressions within type are still extracted, as well as pre- and
 --  post-conditions.
---  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008)
 --  @fail(extraction): legacy-lean(HAX0008, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008)
 def f (x : u8) : RustM (RustArray u8 4) := do (pure sorry)
 
 set_option hax_mvcgen.specset "bv" in

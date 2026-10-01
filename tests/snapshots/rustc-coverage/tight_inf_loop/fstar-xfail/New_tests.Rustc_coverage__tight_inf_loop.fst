@@ -3,7 +3,7 @@ module New_tests.Rustc_coverage__tight_inf_loop
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): legacy-lean(HAX0001), proverif(HAX0008), coq(HAX0001), fstar(HAX0001)
+/// @fail(extraction): legacy-lean(HAX0001), coq(HAX0001), fstar(HAX0001)
 let main (_: Prims.unit) : Prims.unit =
   if false
   then

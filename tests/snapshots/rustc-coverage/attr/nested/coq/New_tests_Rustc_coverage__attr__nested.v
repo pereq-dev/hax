@@ -67,7 +67,7 @@ Class t_MyTrait (v_Self : Type) : Type :=
   }.
 Arguments t_MyTrait (_).
 
-Instance t_MyTrait_542174606 : t_MyTrait ((t_MyOuter)) :=
+Instance t_MyTrait_825111665 : t_MyTrait ((t_MyOuter)) :=
   {
     implaabbcc_t_MyTrait_f_trait_method := fun  (self : t_MyOuter)=>
       let _ := do_stuff (tt) in
@@ -81,7 +81,7 @@ Record C_f_trait_method__impl_MyTrait_for_MyOuter__MyMiddle_record : Type :=
 #[export]
 Notation "'Build_t__f_trait_method__impl_MyTrait_for_MyOuter__MyMiddle_MyMiddle_record'" := Build_C_f_trait_method__impl_MyTrait_for_MyOuter__MyMiddle_record.
 
-Instance t_MyTrait_878801736 : t_MyTrait ((f_trait_method__impl_MyTrait_for_MyOuter__t_MyMiddle)) :=
+Instance t_MyTrait_881370855 : t_MyTrait ((f_trait_method__impl_MyTrait_for_MyOuter__t_MyMiddle)) :=
   {
     implaabbcc_t_MyTrait_f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method := fun  (self : f_trait_method__impl_MyTrait_for_MyOuter__t_MyMiddle)=>
       let _ := do_stuff (tt) in
@@ -95,7 +95,7 @@ Record C_f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__MyInner
 #[export]
 Notation "'Build_t__f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__MyInner_MyInner_record'" := Build_C_f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__MyInner_record.
 
-Instance t_MyTrait_64697696 : t_MyTrait ((f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__t_MyInner)) :=
+Instance t_MyTrait_796639778 : t_MyTrait ((f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__t_MyInner)) :=
   {
     implaabbcc_t_MyTrait_f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__f_trait_method := fun  (self : f_trait_method__impl_MyTrait_for_MyOuter__f_trait_method__impl__t_MyInner)=>
       let _ := do_stuff (tt) in

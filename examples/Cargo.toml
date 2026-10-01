@@ -10,6 +10,7 @@ members = [
     "sha256",
     "kyber_compress",
     "proverif-psk",
+    "proverif-nsl",
     "anodized",
 ]
 resolver = "2"

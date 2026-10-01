@@ -3,7 +3,6 @@ module New_tests.Legacy__loops__lib.Recognized_loops
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008)
 let range (_: Prims.unit) : (u64 & Prims.unit) =
   let count:u64 = mk_u64 0 in
   Rust_primitives.Hax.Folds.fold_range (mk_u8 0)
@@ -22,7 +21,6 @@ let range (_: Prims.unit) : (u64 & Prims.unit) =
   <:
   (u64 & Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008)
 let range_step_by (_: Prims.unit) : (u64 & Prims.unit) =
   let count:u64 = mk_u64 0 in
   Rust_primitives.Hax.Folds.fold_range_step_by (mk_u8 0)
@@ -42,7 +40,6 @@ let range_step_by (_: Prims.unit) : (u64 & Prims.unit) =
   <:
   (u64 & Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008)
 let enumerated_slice (#v_T: Type0) (slice: t_Slice v_T) : (u64 & Prims.unit) =
   let count:u64 = mk_u64 0 in
   Rust_primitives.Hax.Folds.fold_enumerated_slice slice
@@ -60,7 +57,6 @@ let enumerated_slice (#v_T: Type0) (slice: t_Slice v_T) : (u64 & Prims.unit) =
   <:
   (u64 & Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008)
 let enumerated_chunked_slice (#v_T: Type0) (slice: t_Slice v_T) : (u64 & Prims.unit) =
   let count:u64 = mk_u64 0 in
   Rust_primitives.Hax.Folds.fold_enumerated_chunked_slice (mk_usize 3)

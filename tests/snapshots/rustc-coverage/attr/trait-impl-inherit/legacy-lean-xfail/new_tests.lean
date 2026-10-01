@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__attr__trait_impl_inherit
 
---  @fail(extraction): ssprove(HAX0008), proverif(HAX0008), fstar(HAX0008), coq(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), fstar(HAX0008), coq(HAX0008)
 class T.AssociatedTypes (Self : Type) where
 
 class T (Self : Type)

@@ -1,0 +1,16 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__branch__generics__print_size *)
+fun core__mem__size_of(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__generics__print_size *)
+const string_lit__size_x20_x3c_x3d_x204_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__branch__generics__print_size *)
+const string_lit__size_x20_x3e_x204_x0a: bitstring.

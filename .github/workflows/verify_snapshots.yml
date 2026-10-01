@@ -14,9 +14,14 @@ concurrency:
 jobs:
   changes:
     runs-on: ubuntu-latest
+    # `paths-filter` lists the pull request's files through the API.
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       fstar: ${{ github.event_name == 'pull_request' && steps.filter.outputs.fstar || 'true' }}
       lean: ${{ github.event_name == 'pull_request' && steps.filter.outputs.lean || 'true' }}
+      proverif: ${{ github.event_name == 'pull_request' && steps.filter.outputs.proverif || 'true' }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -37,6 +42,14 @@ jobs:
               - 'tests/snapshots/**/legacy-lean/**'
               - 'hax-lib/proof-libs/legacy-lean/**'
               - 'tests/verify/lean/**'
+              - 'justfile'
+              - 'flake.nix'
+              - 'flake.lock'
+              - '.github/workflows/verify_snapshots.yml'
+            proverif:
+              - 'tests/snapshots/**/proverif/**'
+              - 'hax-lib/proof-libs/proverif/**'
+              - 'tests/verify/proverif/**'
               - 'justfile'
               - 'flake.nix'
               - 'flake.lock'
@@ -75,15 +88,31 @@ jobs:
       - name: Type-check the Lean snapshots
         run: nix develop .#verify-lean --command just verify-lean
 
+  proverif:
+    name: proverif
+    needs: changes
+    if: needs.changes.outputs.proverif == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v15
+        with:
+          name: hax
+          skipPush: true
+
+      - name: Parse-check the ProVerif snapshots
+        run: nix develop .#verify-proverif --command just verify-proverif
+
   result:
     name: result
-    needs: [changes, fstar, lean]
+    needs: [changes, fstar, lean, proverif]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Check the results
         env:
-          RESULTS: ${{ needs.changes.result }} ${{ needs.fstar.result }} ${{ needs.lean.result }}
+          RESULTS: ${{ needs.changes.result }} ${{ needs.fstar.result }} ${{ needs.lean.result }} ${{ needs.proverif.result }}
         run: |
           echo "$RESULTS"
           for result in $RESULTS; do

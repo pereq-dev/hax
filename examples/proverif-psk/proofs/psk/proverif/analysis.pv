@@ -5,7 +5,7 @@
 event InitiatorFinished(bitstring).
 event ResponderFinished(bitstring). 
 
-free PSK: proverif_psk__t_KeyIv [private].
+free PSK: bitstring [private].
 free SECRET_PAYLOAD: bitstring [private].
 
 query initiator_result: bitstring; event(InitiatorFinished(initiator_result)).
@@ -14,16 +14,16 @@ query responder_result: bitstring; event(ResponderFinished(responder_result)).
 query attacker(PSK).
 query attacker(SECRET_PAYLOAD).
 
-let Initiator(psk: proverif_psk__t_KeyIv) =
+let Initiator(psk: bitstring) =
     new ikm: bitstring;
-    let (initiator_message: proverif_psk__t_Message, response_key: proverif_psk__t_KeyIv) = proverif_psk__initiate(ikm, psk) in
+    let rust_primitives__hax__Tuple2__Tuple2(initiator_message, response_key) = proverif_psk__initiate(ikm, psk) in
     out(c, initiator_message);
-    in(c, response_message: proverif_psk__t_Message);
+    in(c, response_message: bitstring);
     let response = proverif_psk__finish(response_message, response_key) in
     event InitiatorFinished(response).
 
-let Responder(psk: proverif_psk__t_KeyIv, payload: bitstring) =
-    in(c, initiator_message: proverif_psk__t_Message);
+let Responder(psk: bitstring, payload: bitstring) =
+    in(c, initiator_message: bitstring);
     let response_message = proverif_psk__respond(
          psk,
          payload,

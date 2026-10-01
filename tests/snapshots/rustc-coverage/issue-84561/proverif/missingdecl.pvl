@@ -1,0 +1,37 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__issue_84561__Impl__fmt *)
+(* result destructured as: rust_primitives__hax__Tuple2__Tuple2(_, _) *)
+fun core__fmt__Impl_11__write_fmt(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+fun core__panicking__AssertKind__Ne(): bitstring [data].
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+fun std__env__args(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test2__call_print, new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit___empty: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test2 *)
+const string_lit__called_x20from_x20call_x5fdebug_x3a_x20: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test1, new_tests__rustc_coverage__issue_84561__test2 *)
+const string_lit__debug_x20is_x20enabled_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit__false_x20message: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit__this_x20assert_x20should_x20fail: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit__this_x20assert_x20should_x20not_x20be_x20reached: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit__true_x20message: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__Impl__fmt *)
+const string_lit__try_x20and_x20succeed: bitstring.
+(* referenced by: new_tests__rustc_coverage__issue_84561__test3 *)
+const string_lit__with_x20a_x20message: bitstring.

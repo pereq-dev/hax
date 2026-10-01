@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001)
 //! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments)]
 //@ failure-status: 101
@@ -10,7 +11,7 @@ fn might_panic(should_panic: bool) {
         println!("Don't Panic");
     }
 }
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 
 fn main() -> Result<(), u8> {
     let mut countdown = 10;

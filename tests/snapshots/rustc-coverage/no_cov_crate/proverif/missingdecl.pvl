@@ -1,0 +1,22 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__no_cov_crate__main *)
+fun std__env__args(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner *)
+const string_lit__absolutely_x20not_x20covered_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__no_cov_crate__add_coverage_1, new_tests__rustc_coverage__no_cov_crate__add_coverage_2, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner *)
+const string_lit__called_x20and_x20covered_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1, new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered, new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered *)
+const string_lit__called_x20but_x20not_x20covered_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called *)
+const string_lit__not_x20called_x20and_x20not_x20covered_x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called *)
+const string_lit__not_x20called_x20but_x20covered_x0a: bitstring.

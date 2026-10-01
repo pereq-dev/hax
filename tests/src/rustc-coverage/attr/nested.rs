@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001)
 //! @fail(tc): fstar(2)
 #![feature(coverage_attribute, stmt_expr_attributes)]
 //@ edition: 2021

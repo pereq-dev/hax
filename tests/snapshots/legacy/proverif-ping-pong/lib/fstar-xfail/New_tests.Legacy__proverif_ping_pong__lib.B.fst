@@ -29,7 +29,6 @@ let read_ping (e_state: t_B0) (msg: New_tests.Legacy__proverif_ping_pong__lib.t_
     <:
     Core_models.Result.t_Result t_B1 Hax_lib_protocol.t_ProtocolError
 
-/// @fail(extraction): proverif(HAX0008)
 let read_ping_alt (e_state: t_B0) (msg: New_tests.Legacy__proverif_ping_pong__lib.t_Message)
     : Core_models.Result.t_Result t_B1alt Hax_lib_protocol.t_ProtocolError =
   match

@@ -1,0 +1,24 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__inner_items__main__in_mod__IN_MOD_CONST *)
+const nat_1000: bitstring.
+(* referenced by: new_tests__rustc_coverage__inner_items__main *)
+const nat_101: bitstring.
+(* referenced by: new_tests__rustc_coverage__inner_items__main__IN_CONST *)
+const nat_1234: bitstring.
+(* referenced by: new_tests__rustc_coverage__inner_items__main__InTrait *)
+fun new_tests__rustc_coverage__inner_items__main__InTrait__trait_func(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__inner_items__main *)
+fun std__env__args(bitstring): bitstring.
+(* referenced by: new_tests__rustc_coverage__inner_items__main__in_func *)
+const string_lit___x0a: bitstring.
+(* referenced by: new_tests__rustc_coverage__inner_items__main__in_func *)
+const string_lit__c_x20_x3d_x20: bitstring.

@@ -1,0 +1,11 @@
+[package]
+name = "proverif-nsl"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hax-lib.workspace = true
+libcrux = "=0.0.2-pre.2"
+
+[dev-dependencies]
+rand = { version = "0.8" }

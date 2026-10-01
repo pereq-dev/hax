@@ -3,7 +3,8 @@ module New_tests.Rustc_coverage__unreachable
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): ssprove(HAX0008), proverif(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 let v_UNREACHABLE_CLOSURE:  Prims.unit -> Prims.unit =
   fun temp_0_ ->
     let _:Prims.unit = temp_0_ in
@@ -11,13 +12,15 @@ let v_UNREACHABLE_CLOSURE:  Prims.unit -> Prims.unit =
         <:
         Rust_primitives.Hax.t_Never)
 
-/// @fail(extraction): coq(HAX0008), ssprove(HAX0008), proverif(HAX0008)
+/// @fail(extraction): coq(HAX0008), ssprove(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 let unreachable_function (_: Prims.unit) : Prims.unit =
   Rust_primitives.Hax.never_to_any (Core_models.Hint.unreachable_unchecked ()
       <:
       Rust_primitives.Hax.t_Never)
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 let unreachable_intrinsic (_: Prims.unit) : Prims.unit =
   Rust_primitives.Hax.never_to_any (Core_models.Intrinsics.unreachable ()
       <:

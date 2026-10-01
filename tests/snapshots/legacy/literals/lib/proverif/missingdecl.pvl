@@ -1,0 +1,76 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__literals__lib__null *)
+const char_lit___x00: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_41__to_u8(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_43__to_u16(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_45__to_u32(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_47__to_u64(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_49__to_u128(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_51__to_usize(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_55__to_i16(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_57__to_i32(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_59__to_i64(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_61__to_i128(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_63__to_isize(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+fun hax_lib__int__Impl_7__u_unsafe_from_str(bitstring): bitstring.
+(* referenced by: new_tests__legacy__literals__lib__numeric, new_tests__legacy__literals__lib__patterns *)
+const nat_123: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__numeric *)
+const nat_22222222222222222222: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__numeric *)
+const nat_42: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__numeric *)
+const nat_neg_42: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+const string_lit__340282366920938463463374607431768211455000: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit___x1b_x5b0m: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__math_integers *)
+const string_lit___x2d340282366920938463463374607431768211455000: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit___xf0_x9f_xa6_x80: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__patterns *)
+const string_lit__a: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__patterns *)
+const string_lit__b: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__back_x5cslash: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__bell_x07char: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__carriage_x0dreturn: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__patterns, new_tests__legacy__literals__lib__strings *)
+const string_lit__hello: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__hello_x22world: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__it_x27s: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__line_x0abreak: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__null_x00byte: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__strings *)
+const string_lit__tab_x09here: bitstring.
+(* referenced by: new_tests__legacy__literals__lib__panic_with_msg *)
+const string_lit__with_x20msg: bitstring.

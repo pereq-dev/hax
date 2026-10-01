@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001)
 #![feature(coverage_attribute)]
 //@ edition: 2021
 

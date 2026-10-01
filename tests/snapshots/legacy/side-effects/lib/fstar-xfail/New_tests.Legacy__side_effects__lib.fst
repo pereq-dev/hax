@@ -8,7 +8,6 @@ let add3 (x y z: u32) : u32 =
   Core_models.Num.impl_u32__wrapping_add (Core_models.Num.impl_u32__wrapping_add x y <: u32) z
 
 /// Exercise local mutation with control flow and loops
-/// @fail(extraction): proverif(HAX0008)
 let local_mutation (x: u32) : u32 =
   let y:u32 = mk_u32 0 in
   let x:u32 = Core_models.Num.impl_u32__wrapping_add x (mk_u32 1) in
@@ -357,7 +356,7 @@ type t_Foo = {
 }
 
 /// Test assignation on non-trivial places
-/// @fail(extraction): proverif(HAX0002, HAX0002, HAX0002, HAX0002), coq(HAX0002, HAX0002), ssprove(HAX0001)
+/// @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0001)
 let assign_non_trivial_lhs (foo: t_Foo) : t_Foo =
   let foo:t_Foo = { foo with f_x = true } <: t_Foo in
   let foo:t_Foo = { foo with f_bar = { foo.f_bar with f_a = true } <: t_Bar } <: t_Foo in

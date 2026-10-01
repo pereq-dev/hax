@@ -1,0 +1,5 @@
+[scenario.nsl]
+backend = "proverif"
+# `nsl_crypto.pvl` models the public-key encryption once for every
+# implementation, so its calls stay calls of the trait's items.
+keep-trait-calls = ["proverif_nsl::PublicKeyEncryption::**"]

@@ -228,6 +228,7 @@ impl BackendTestContext {
         let output = match self.backend {
             BackendName::Fstar => run_fstar(true, dir.clone()).await?,
             BackendName::LegacyLean => run_lean(dir.clone()).await?,
+            BackendName::ProVerif => run_proverif(dir.clone()).await?,
             _ => unreachable!(),
         };
         if output.error_code != 0 {

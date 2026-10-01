@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001)
 //! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments)]
 //@ compile-flags: -Coverflow-checks=yes
@@ -14,7 +15,7 @@ fn might_overflow(to_add: u32) -> u32 {
     println!("continuing after overflow check");
     result
 }
-/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 
 fn main() -> Result<(), u8> {
     let mut countdown = 10;

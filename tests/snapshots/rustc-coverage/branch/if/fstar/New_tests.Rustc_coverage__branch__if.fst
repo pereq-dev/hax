@@ -7,7 +7,6 @@ let say (message: string) : Prims.unit =
   let _:string = Core_models.Hint.black_box #string message in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let branch_not (a: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -40,7 +39,6 @@ let branch_not (a: bool) : Prims.unit =
     let _:Prims.unit = say "not not not a" in
     ()
 
-/// @fail(extraction): proverif(HAX0008)
 let branch_not_as (a: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -72,7 +70,6 @@ let branch_not_as (a: bool) : Prims.unit =
     let _:Prims.unit = say "not not (a as bool)" in
     ()
 
-/// @fail(extraction): proverif(HAX0008)
 let branch_and (a b: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -95,7 +92,6 @@ let branch_and (a b: bool) : Prims.unit =
     let _:Prims.unit = say "not both" in
     ()
 
-/// @fail(extraction): proverif(HAX0008)
 let branch_or (a b: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -118,7 +114,6 @@ let branch_or (a b: bool) : Prims.unit =
     let _:Prims.unit = say "neither" in
     ()
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let _:Prims.unit =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array

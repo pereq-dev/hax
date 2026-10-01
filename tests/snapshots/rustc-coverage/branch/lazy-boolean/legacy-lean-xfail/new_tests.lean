@@ -14,7 +14,6 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__lazy_boolean
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -31,7 +30,6 @@ def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box Bool c);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -48,7 +46,6 @@ def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box Bool c);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def chain (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -73,7 +70,6 @@ def chain (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box Bool d);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def nested_mixed (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -96,7 +92,6 @@ def nested_mixed (x : u32) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box Bool d);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008, HAX0008)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM

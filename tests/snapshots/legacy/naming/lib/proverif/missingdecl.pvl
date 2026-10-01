@@ -1,0 +1,26 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__f *)
+const nat_104: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__f, new_tests__legacy__naming__lib__ambiguous_names__f_expand *)
+const nat_123: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__f *)
+const nat_205: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__f *)
+const nat_306: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__debug *)
+const string_lit___x0a: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__debug *)
+const string_lit___x5b: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__ambiguous_names__debug *)
+const string_lit___x5d_x20a_x3d: bitstring.
+(* referenced by: new_tests__legacy__naming__lib__functions_defined_in_trait_impls__Impl_1__eq, new_tests__legacy__naming__lib__functions_defined_in_trait_impls__Impl__eq *)
+const string_lit__explicit_x20panic: bitstring.

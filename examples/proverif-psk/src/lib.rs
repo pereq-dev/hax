@@ -41,6 +41,9 @@ pub struct Message(aead::Tag, Vec<u8>);
 pub struct KeyIv(libcrux::aead::Key, libcrux::aead::Iv);
 
 /* Wire formats */
+// Serialization is an injective encoding, so the model makes it a constructor,
+// and deserialization its inverse: `deserialize_key_iv(serialize_key_iv(k))` is
+// `k`, and deserializing anything else fails.
 #[hax::pv_constructor]
 fn serialize_key_iv(key_iv: &KeyIv) -> Vec<u8> {
     let mut result = Vec::new();
@@ -52,17 +55,15 @@ fn serialize_key_iv(key_iv: &KeyIv) -> Vec<u8> {
     result
 }
 
-#[hax::proverif::replace(
-    "reduc forall k: $:{KeyIv}; ${deserialize_key_iv}(${serialize_key_iv}(k)) = k."
-)]
+#[hax::pv_inverse_of(serialize_key_iv)]
 fn deserialize_key_iv(bytes: &[u8]) -> Result<KeyIv, Error> {
     let iv = aead::Iv::new(&bytes[..12])?;
     let key = aead::Key::from_slice(Algorithm::Chacha20Poly1305, &bytes[12..])?;
     Ok(KeyIv(key, iv))
 }
 
-/* Cryptographic functions */
-#[hax::pv_constructor]
+/* Cryptographic functions — redirected to `cryptolib.pvl` */
+#[hax::proverif::replace_body("crypto__kdf(ikm, info)")]
 fn derive_key_iv(ikm: &[u8], info: &[u8]) -> Result<KeyIv, Error> {
     let key_iv_bytes =
         libcrux::hkdf::expand(libcrux::hkdf::Algorithm::Sha256, ikm, info, AEAD_KEY_NONCE)?;
@@ -75,16 +76,14 @@ fn derive_key_iv(ikm: &[u8], info: &[u8]) -> Result<KeyIv, Error> {
     Ok(KeyIv(key, iv))
 }
 
-#[hax::proverif::replace("fun ${encrypt} ($:{KeyIv}, bitstring): $:{Message}.")]
+#[hax::proverif::replace_body("crypto__aead_enc(key_iv, message, empty)")]
 pub fn encrypt(key_iv: &KeyIv, message: &[u8]) -> Result<Message, Error> {
     let (tag, ctxt) =
         libcrux::aead::encrypt_detached(&key_iv.0, message, aead::Iv(key_iv.1 .0), EMPTY_AAD)?;
     Ok(Message(tag, ctxt))
 }
 
-#[hax::proverif::replace(
-    "reduc forall m: bitstring, k: $:{KeyIv}; ${decrypt}(k, ${encrypt}(k, m)) = m."
-)]
+#[hax::proverif::replace_body("crypto__aead_dec(key_iv, message, empty)")]
 fn decrypt(key_iv: &KeyIv, message: Message) -> Result<Vec<u8>, Error> {
     libcrux::aead::decrypt_detached(
         &key_iv.0,

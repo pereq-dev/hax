@@ -75,10 +75,17 @@ impl std::convert::From<String> for Namespace {
 
 impl Namespace {
     pub fn matches(&self, path: &Vec<String>) -> bool {
-        fn aux(pattern: &[NamespaceChunk], path: &[String]) -> bool {
+        let path: Vec<Option<&str>> = path.iter().map(|s| Some(s.as_str())).collect();
+        self.matches_segments(&path)
+    }
+
+    /// Whether the namespace matches `path`, whose `None` segments (e.g. `impl`
+    /// blocks) only a glob matches.
+    pub fn matches_segments(&self, path: &[Option<&str>]) -> bool {
+        fn aux(pattern: &[NamespaceChunk], path: &[Option<&str>]) -> bool {
             match (pattern, path) {
                 ([], []) => true,
-                ([NamespaceChunk::Exact(x), pattern @ ..], [y, path @ ..]) => {
+                ([NamespaceChunk::Exact(x), pattern @ ..], [Some(y), path @ ..]) => {
                     x == y && aux(pattern, path)
                 }
                 ([NamespaceChunk::Glob(Glob::One), pattern @ ..], [_, path @ ..]) => {
@@ -91,7 +98,7 @@ impl Namespace {
                 _ => false,
             }
         }
-        aux(self.chunks.as_slice(), path.as_slice())
+        aux(self.chunks.as_slice(), path)
     }
 }
 

@@ -8,7 +8,6 @@ let v_申し訳ございません (_: Prims.unit) : bool = Core_models.Hint.blac
 let v_サビ (_: Prims.unit) : Prims.unit = ()
 
 /// @fail(extraction): ssprove(HAX0001)
-/// @fail(extraction): proverif(HAX0008)
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Ops.Range.t_RangeInclusive

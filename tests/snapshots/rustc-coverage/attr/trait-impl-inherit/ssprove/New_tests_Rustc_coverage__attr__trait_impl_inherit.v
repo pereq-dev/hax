@@ -37,7 +37,7 @@ Note: the error was labeled with context `reject_TraitItemDefault`.
 
 Last available AST for this item:
 
-/** @fail(extraction): ssprove(HAX0008), proverif(HAX0008), fstar(HAX0008), coq(HAX0008)*/#[feature(coverage_attribute)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
+/** @fail(extraction): ssprove(HAX0008), fstar(HAX0008), coq(HAX0008)*/#[feature(coverage_attribute)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]trait t_T<Self_>{#[feature(coverage_attribute)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]fn f_f((self: Self)) -> tuple0{{let _: tuple0 = {std::io::stdio::e_print(core_models::fmt::rt::impl_1__new_const::<generic_value!(todo)>(["default\n"]))};{let _: tuple0 = {Tuple0};Tuple0}}}} todo(item)*)
 

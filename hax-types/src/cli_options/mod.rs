@@ -128,6 +128,23 @@ pub struct ProVerifOptions {
         allow_hyphen_values(true)
     )]
     pub assume_items: Vec<InclusionClause>,
+
+    /// Model `Result::Err` values. By default, a `Result<T, E>` is
+    /// modelled by its `Ok` payload alone and producing an `Err` ends
+    /// the trace: error paths are pruned, which keeps the state space
+    /// small. With this flag, `Ok` and `Err` are kept as constructors,
+    /// so error paths stay reachable. The extracted model then needs
+    /// `result_errors.pvl` instead of `result.pvl`.
+    #[arg(long)]
+    pub result_errors: bool,
+
+    /// Trait items whose calls hax keeps as calls of the trait item,
+    /// rather than of the impl they dispatch to, so that a hand-written
+    /// library can model them once for every impl. This flag expects a
+    /// space-separated list of Rust paths, whose chunks can be globs
+    /// (e.g. `tls_codec::**`).
+    #[arg(long, value_delimiter = ' ')]
+    pub keep_trait_calls: Vec<String>,
 }
 
 impl ProVerifOptions {
@@ -135,12 +152,19 @@ impl ProVerifOptions {
     /// --dry-run` prints it. Lives next to the fields so a new or renamed
     /// option is reflected here.
     pub fn flags(&self) -> Vec<String> {
-        if self.assume_items.is_empty() {
-            return Vec::new();
+        let mut flags = Vec::new();
+        if !self.assume_items.is_empty() {
+            flags.push("--assume-items".to_string());
+            flags.extend(self.assume_items.iter().map(ToString::to_string));
         }
-        std::iter::once("--assume-items".to_string())
-            .chain(self.assume_items.iter().map(ToString::to_string))
-            .collect()
+        if self.result_errors {
+            flags.push("--result-errors".to_string());
+        }
+        if !self.keep_trait_calls.is_empty() {
+            flags.push("--keep-trait-calls".to_string());
+            flags.extend(self.keep_trait_calls.iter().cloned());
+        }
+        flags
     }
 }
 
@@ -328,7 +352,7 @@ pub enum Backend {
     /// Use the EasyCrypt backend (warning: work in progress!)
     Easycrypt,
     /// Use the ProVerif backend (warning: work in progress!)
-    #[clap(alias("proverif"))]
+    #[clap(name = "proverif", alias = "pro-verif")]
     ProVerif(ProVerifOptions),
     /// Use the Rust backend (warning: work in progress!)
     #[clap(hide = true)]
@@ -1002,12 +1026,23 @@ mod tests {
     fn proverif_flags_render_every_field() {
         let options = ProVerifOptions {
             assume_items: vec![parse_inclusion_clause("+**::bar").unwrap()],
+            result_errors: true,
+            keep_trait_calls: vec!["tls_codec::**".to_string()],
         };
-        let ProVerifOptions { assume_items } = &options;
+        let ProVerifOptions {
+            assume_items,
+            result_errors: _,
+            keep_trait_calls,
+        } = &options;
         let flags = options.flags().join(" ");
         assert!(flags.contains("--assume-items"), "{flags}");
         for clause in assume_items {
             assert!(flags.contains(&clause.to_string()), "{flags}");
+        }
+        assert!(flags.contains("--result-errors"), "{flags}");
+        assert!(flags.contains("--keep-trait-calls"), "{flags}");
+        for path in keep_trait_calls {
+            assert!(flags.contains(path.as_str()), "{flags}");
         }
     }
 

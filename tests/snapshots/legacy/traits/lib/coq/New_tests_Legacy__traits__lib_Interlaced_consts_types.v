@@ -29,7 +29,7 @@ Class t_Foo (v_Self : Type) (v_FooConst : t_usize) (v_FooType : Type) : Type :=
   }.
 Arguments t_Foo (_) (_) (_).
 
-Instance t_Foo_245196348 `{v_FooConst : t_usize} `{v_FooType : Type} `{v_SelfType : Type} : t_Foo ((v_SelfType)) (v_FooConst) ((v_FooType)) :=
+Instance t_Foo_979985315 `{v_FooConst : t_usize} `{v_FooType : Type} `{v_SelfType : Type} : t_Foo ((v_SelfType)) (v_FooConst) ((v_FooType)) :=
   {
     implaabbcc_t_Foo_f_fun := fun  (x : t_Array (v_FooType) (v_FooConst)) (y : t_Array (v_FunType) (v_FunConst))=>
       tt;
