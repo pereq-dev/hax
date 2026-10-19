@@ -643,6 +643,116 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."inline-assembly/macros-asm-global-asm-and-naked-asm/asm_block"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."lexical-elements/boolean-literals/boolean_literals"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/byte-literals/byte_literals"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/character-literals/char_literals"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/character-literals/unicode_char_literals"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/comments/comments"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/comments/doc_comments"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/float-literals/float_literals"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/identifiers/raw_identifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/identifiers/unicode_identifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/integer-literals/integer_radixes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/integer-literals/integer_suffixes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/integer-literals/unsuffixed_integer_inference"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/keywords/keyword_case"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/raw-byte-string-literals/raw_byte_string"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/raw-c-string-literals/raw_c_string"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/raw-string-literals/raw_string"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-byte-string-literals/byte_string_escapes"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-c-string-literals/c_string"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-string-literals/string_continuation"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-string-literals/string_escapes"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/weak-keywords/weak_keywords"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."macros/declarative-macros/macro_rules"]
 stage = "checked"
 tier = "supported"

@@ -136,3 +136,6 @@ closure_macro.rs
 no_spans.rs
 no_spans_if_not.rs
 auxiliary/macro_name_span_helper.rs
+
+# lexical-elements/identifiers/unicode_identifiers, lexical-elements/character-literals/unicode_char_literals
+unicode.rs
