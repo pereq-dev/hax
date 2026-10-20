@@ -125,19 +125,20 @@ meta def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Le
               (mkAppN fs[i]! (newDecls[i]!.filter (!·.isLet)|>.map (mkFVar ·.fvarId)))
       newHypGoalProofs := newHypGoalProofs.push newHypGoalProof
 
-    -- Assign proofs to goals
+    -- Assign proofs to goals. If there are no `newHypGoals`, the program has no successful
+    -- execution path, so `hyp` is contradictory: `newHyp` becomes `∀ (p : Prop), p`, the
+    -- `n = 0` instance of the type above.
     trace `Hax.hax_mvcgen_at fun () => m!"assign proofs to goals"
-    if !newHypGoals.isEmpty then
-      let newHypInst ← inferType newHypGoalProofs[0]!
-      trace `Hax.hax_mvcgen_at fun () => m!"assign newHyp {newHypInst}"
-      newHyp.mvarId!.assign newHypInst
-      for i in [0:newHypGoals.size] do
-        trace `Hax.hax_mvcgen_at fun () => m!"assign newHypGoal {i}"
-        newHypGoals[i]!.assign newHypGoalProofs[i]!
-    else
-      trace `Hax.hax_mvcgen_at fun () =>  m!"hax_mvcgen at: no mvar VCs generated, only side conditions: {sideGoals}"
-      if hax_mvcgen.warnings.get (← getOptions) then
-        logWarning m!"hax_mvcgen at: no mvar VCs generated, only side conditions."
+    let newHypInst ←
+      if newHypGoals.isEmpty then
+        withLocalDeclD `p (mkSort .zero) fun p => mkForallFVars #[p] p
+      else
+        inferType newHypGoalProofs[0]!
+    trace `Hax.hax_mvcgen_at fun () => m!"assign newHyp {newHypInst}"
+    newHyp.mvarId!.assign newHypInst
+    for i in [0:newHypGoals.size] do
+      trace `Hax.hax_mvcgen_at fun () => m!"assign newHypGoal {i}"
+      newHypGoals[i]!.assign newHypGoalProofs[i]!
 
     -- Discharge side goals with `mvcgen`'s trivial discharger:
     trace `Hax.hax_mvcgen_at fun () => m!"discharge side goals"
@@ -148,12 +149,6 @@ meta def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Le
       trace `Hax.hax_mvcgen_at fun () => m!"hax_mvcgen at: nontrivial side goals generated: {sideGoalsList}"
       if hax_mvcgen.warnings.get (← getOptions) then
         logWarning m!"hax_mvcgen at: nontrivial side goals generated."
-
-    -- TODO: if everything worked correctly, this should not happen:
-    if newHypGoals.isEmpty then
-      return [← mainGoal.clear hyp.fvarId]
-
-
 
     -- Replace old `hyp` with `newHyp`, using `newHypProof`.
     mainGoal.withContext do
