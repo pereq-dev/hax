@@ -1,0 +1,7 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+New_tests_Legacy__hoisting__lib_While_condition.v
+New_tests_Legacy__hoisting__lib_Issue_2336_.v
+New_tests_Legacy__hoisting__lib.v

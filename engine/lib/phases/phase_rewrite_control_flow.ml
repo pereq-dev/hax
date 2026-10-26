@@ -86,6 +86,13 @@ module Make (F : Features.T) =
             | Loop loop ->
                 let return_inside = has_cf#visit_expr false loop.body in
                 let new_body = self#visit_expr true loop.body in
+                let kind =
+                  match loop.kind with
+                  | WhileLoop { condition; witness } ->
+                      WhileLoop
+                        { condition = self#visit_expr false condition; witness }
+                  | kind -> kind
+                in
                 let loop_expr =
                   {
                     e with
@@ -93,6 +100,7 @@ module Make (F : Features.T) =
                       Loop
                         {
                           loop with
+                          kind;
                           body = { new_body with typ = loop.body.typ };
                         };
                   }

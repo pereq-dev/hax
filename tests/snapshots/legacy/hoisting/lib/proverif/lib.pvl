@@ -1,0 +1,430 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun new_tests__legacy__hoisting__lib__while_condition__local_let(
+         wildcard1 : bitstring
+       ) =
+       let n = (0) in
+       let n = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |n| {
+ {
+ let y: int = { core_models::num::impl_u8__wrapping_add(n, 1) };
+ (if core_models::cmp::f_lt(y, 4) {
+ {
+ let n: int = { core_models::ops::arith::f_add(n, 1) };
+ n
+ }
+ } else {
+ {
+..."
+         )
+       ) in
+       n.
+
+letfun new_tests__legacy__hoisting__lib__while_condition__local_mut(
+         wildcard2 : bitstring
+       ) =
+       let n = (0) in
+       let n = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |n| {
+ {
+ let y: int = { n };
+ {
+ let y: int = { core_models::num::impl_u8__wrapping_add(y, 1) };
+ {
+ let hoist8: bool = { core_models::cmp::f_lt(y, 4) };
+ (if hoist8 {
+ {
+ let n: int = { ..."
+         )
+       ) in
+       n.
+
+letfun new_tests__legacy__hoisting__lib__while_condition__inner_loop(n : nat) =
+       let i = (0) in
+       let i = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |i| {
+ {
+ let k: int = { 0 };
+ {
+ let k: int = {
+ {
+ (for z in (core_models::iter::traits::collect::f_into_iter(core_models::ops::range::Range {
+ f_start: 0,
+ f_end: i,
+ })) {
+ |k| {
+ {
+ l..."
+         )
+       ) in
+       i.
+
+letfun new_tests__legacy__hoisting__lib__while_condition__dec(x : nat) =
+       let (x: nat, hax_temp_output: bool) = (
+         if core_models__cmp__f_eq(x, 0)
+         then ((x, false))
+         else (
+           let x = (core_models__ops__arith__f_sub(x, 1)) in
+           (x, true)
+         )
+       ) in
+       (x, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__while_condition__mut_ref(
+         wildcard3 : bitstring
+       ) =
+       let x = (3) in
+       let n = (0) in
+       let (n: nat, x: nat) = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |Tuple2(n, x)| {
+ {
+ let Tuple2(tmp0, out): tuple2<int, bool> = {
+ new_tests::legacy__hoisting__lib::while_condition::dec(x)
+ };
+ {
+ let x: int = { tmp0 };
+ {
+ let hoist15: bool = { out };..."
+         )
+       ) in
+       n.
+
+letfun new_tests__legacy__hoisting__lib__while_condition__assign(
+         wildcard4 : bitstring
+       ) =
+       let n = (0) in
+       let n = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |n| {
+ {
+ let n: int = { core_models::ops::arith::f_add(n, 1) };
+ {
+ let hoist18: bool = { core_models::cmp::f_lt(n, 4) };
+ (if hoist18 {
+ n
+ } else {
+ {
+ #[note("rhs.typ=int")]
+ let hoist..."
+         )
+       ) in
+       n.
+
+letfun new_tests__legacy__hoisting__lib__while_condition__fallible(b : bool) =
+       if b then (true) else (bool_err()).
+
+letfun new_tests__legacy__hoisting__lib__while_condition__question_mark(
+         wildcard5 : bitstring
+       ) =
+       let n = (0) in
+       let n = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |n| {
+ (match (new_tests::legacy__hoisting__lib::while_condition::fallible(
+ core_models::cmp::f_lt(n, 4),
+ )) {
+ core_models::result::Result_Ok(hoist21) => {
+ (if hoist21 {
+ {
+ let n: int..."
+         )
+       ) in
+       n.
+
+letfun new_tests__legacy__hoisting__lib__while_condition__cclosure_return(
+         n : nat
+       ) =
+       let i = (0) in
+       let i = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Loop] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "{
+ (loop {
+ |i| {
+ {
+ let c: arrow!(int -> bool) = {
+ (|x| {
+ {
+ let _: tuple0 = {
+ (if core_models::cmp::f_eq(x, 3) {
+ {
+ let hoist24: rust_primitives::hax::t_Never = {
+ (return false)
+ };
+ rust_prim..."
+         )
+       ) in
+       i.
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___change(value : bool) =
+       let value = (true) in
+       let hax_temp_output = (false) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___or_mut_ref(
+         first : bool, value : bool
+       ) =
+       let (value: bool, hax_temp_output: bool) = (
+         if first
+         then ((value, true))
+         else (
+           let (tmp0: bool, v_out: bool) = (
+             new_tests__legacy__hoisting__lib__issue_2336___change(value)
+           ) in
+           let value = (tmp0) in
+           (value, v_out)
+         )
+       ) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___and_mut_ref(
+         first : bool, value : bool
+       ) =
+       let (value: bool, hax_temp_output: bool) = (
+         if first
+         then
+           (let (tmp0: bool, v_out: bool) = (
+              new_tests__legacy__hoisting__lib__issue_2336___change(value)
+            ) in
+            let value = (tmp0) in
+            (value, v_out))
+         else ((value, false))
+       ) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___or_assign(first : bool) =
+       let x = (0) in
+       let x = (
+         if first
+         then (x)
+         else (
+           let x = (1) in
+           x
+         )
+       ) in
+       x.
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___fallible(b : bool) =
+       if b then (true) else (bool_err()).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___or_question_mark(
+         first : bool
+       ) =
+       let hoist1 = (
+         if first
+         then (true)
+         else (
+           let ok = new_tests__legacy__hoisting__lib__issue_2336___fallible(
+             false
+           ) in ok
+           else bool_err()
+         )
+       ) in
+       hoist1.
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___or_return(first : bool) =
+       let wildcard6: bitstring = (
+         if first
+         then (true)
+         else (
+           let hoist2 = (todo return;) in
+           bool_err()
+         )
+       ) in
+       0.
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___and_local_let(
+         i : nat, v : bitstring, value : bool
+       ) =
+       let (value: bool, hax_temp_output: bool) = (
+         if core_models__cmp__f_lt(i, core_models__slice__impl__len(v))
+         then
+           (let x = (core_models__ops__index__f_index(v, i)) in
+            if core_models__cmp__f_gt(x, 0)
+            then ((value, true))
+            else (
+              let (tmp0: bool, v_out: bool) = (
+                new_tests__legacy__hoisting__lib__issue_2336___change(value)
+              ) in
+              let value = (tmp0) in
+              (value, v_out)
+            ))
+         else ((value, false))
+       ) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___if_condition(
+         first : bool, value : bool
+       ) =
+       let (value: bool, hoist3: bool) = (
+         if first
+         then ((value, true))
+         else (
+           let (tmp0: bool, v_out: bool) = (
+             new_tests__legacy__hoisting__lib__issue_2336___change(value)
+           ) in
+           let value = (tmp0) in
+           (value, v_out)
+         )
+       ) in
+       let hax_temp_output = (if hoist3 then (1) else (0)) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___match_guard(
+         o : Option, value : bool
+       ) =
+       let (value: bool, hax_temp_output: nat) = (
+         rust_primitives__hax__failure(
+           "Explicit rejection by a phase in the Hax engine:
+a node of kind [Match_guard] have been found in the AST
+
+Note: the error was labeled with context `reject_not_in_ProVerif`.
+",
+           "(match (o) {
+ core_models::option::Option_Some(
+ x,
+ ) if let true = (if core_models::cmp::f_gt(x, 3) {
+ true
+ } else {
+ {
+ let Tuple2(tmp0, out): tuple2<bool, bool> = {
+ new_tests::legacy__hoisting__..."
+         )
+       ) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___pure_operands(
+         a : bool, b : bool, c : nat
+       ) =
+       a && b || core_models__cmp__f_gt(c, 3).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___left_mut_ref(
+         second : bool, value : bool
+       ) =
+       let (tmp0: bool, v_out: bool) = (
+         new_tests__legacy__hoisting__lib__issue_2336___change(value)
+       ) in
+       let value = (tmp0) in
+       let hoist4 = (v_out) in
+       let hax_temp_output = (hoist4 || second) in
+       (value, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___both_mut_refs(
+         a : bool, b : bool
+       ) =
+       let (tmp0: bool, v_out: bool) = (
+         new_tests__legacy__hoisting__lib__issue_2336___change(a)
+       ) in
+       let a = (tmp0) in
+       let hoist5 = (v_out) in
+       let (b: bool, hax_temp_output: bool) = (
+         if hoist5
+         then
+           (let (tmp0: bool, v_out: bool) = (
+              new_tests__legacy__hoisting__lib__issue_2336___change(b)
+            ) in
+            let b = (tmp0) in
+            (b, v_out))
+         else ((b, false))
+       ) in
+       (a, b, hax_temp_output).
+
+letfun new_tests__legacy__hoisting__lib__issue_2336___chained(
+         first : bool, second : bool, value : bool
+       ) =
+       let (value: bool, hax_temp_output: bool) = (
+         if first || second
+         then ((value, true))
+         else (
+           let (tmp0: bool, v_out: bool) = (
+             new_tests__legacy__hoisting__lib__issue_2336___change(value)
+           ) in
+           let value = (tmp0) in
+           (value, v_out)
+         )
+       ) in
+       (value, hax_temp_output).
+

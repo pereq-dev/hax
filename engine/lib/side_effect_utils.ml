@@ -213,7 +213,7 @@ struct
     let lets_of_bindings (bindings : (pat * expr) list) (body : expr) : expr =
       List.fold_right ~init:body ~f:let_of_binding bindings
 
-    let collect_and_hoist_effects_object =
+    let collect_and_hoist_effects_object ~reject_effectful_while_conditions =
       object (self)
         (* inherit [_] expr_mapreduce *)
         inherit [_] Visitors.mapreduce as super
@@ -221,6 +221,34 @@ struct
 
         (* method visit_t _ x = (x, m#zero) *)
         (* method visit_mutability _ _ x = (x, m#zero) *)
+
+        method private hoist_app (env : CollectContext.t) (e : expr)
+            ~generic_args ~trait ~bounds_impls (visited : (expr * t) list) =
+          HoistSeq.many env visited (fun l effects ->
+              let f, args =
+                match l with
+                | f :: args -> (f, args)
+                | _ -> HoistSeq.err_hoist_invariant e.span Stdlib.__LOC__
+              in
+              ( { e with e = App { f; args; generic_args; trait; bounds_impls } },
+                effects ))
+
+        method private hoist_if (env : CollectContext.t) (e : expr)
+            (cond : expr * t) (then_ : unit -> expr * t)
+            (else_ : (unit -> expr * t) option) =
+          HoistSeq.one env cond (fun cond effects ->
+              let then_, { lbs = lbs_then; effects = ethen } = then_ () in
+              let else_, { lbs = lbs_else; effects = eelse } =
+                match Option.map ~f:(fun else_ -> else_ ()) else_ with
+                | Some (else_, eelse) -> (Some else_, eelse)
+                | None -> (None, m#zero)
+              in
+              let then_ = lets_of_bindings lbs_then then_ in
+              let else_ = Option.map ~f:(lets_of_bindings lbs_else) else_ in
+              let effects =
+                m#plus (m#plus (no_lbs ethen) (no_lbs eelse)) effects
+              in
+              ({ e with e = If { cond; then_; else_ } }, effects))
 
         (* Collecting effects bottom up *)
         method! visit_lhs (env : CollectContext.t) lhs =
@@ -286,13 +314,62 @@ struct
                         m#plus ceffect effects ))
               | None -> (e, ceffect))
           | Loop { body; kind; state; label; witness; control_flow } ->
+              (* a while condition is evaluated at each iteration: its
+                 bindings stay in it *)
+              let kind, condition_effects =
+                match kind with
+                | WhileLoop { condition; witness } ->
+                    let span = condition.span in
+                    let locals =
+                      object
+                        inherit [_] Visitors.reduce
+                        inherit [_] U.Sets.Local_ident.monoid as _m
+                        method! visit_pat () p = U.Reducers.variables_of_pat p
+                      end
+                        #visit_expr () condition
+                    in
+                    let has_return =
+                      object
+                        inherit [_] Visitors.reduce as super
+                        method zero = false
+                        method plus = ( || )
+
+                        method! visit_expr' () e =
+                          match e with
+                          | Return _ -> true
+                          | _ -> super#visit_expr' () e
+                      end
+                        #visit_expr
+                        () condition
+                    in
+                    let condition, { lbs; effects } =
+                      self#visit_expr env condition
+                    in
+                    let effects = SideEffects.without_rw_vars locals effects in
+                    if
+                      reject_effectful_while_conditions
+                      && (has_return
+                         || not (SideEffects.reads_local_mut_only effects))
+                    then
+                      Diagnostics.SpanFreeError.raise ~span:(Span.to_thir span)
+                        (Span.owner_hint span) (Phase HoistSideEffects)
+                        (Unimplemented
+                           {
+                             issue_id = Some (MyInt64.of_int 2337);
+                             details =
+                               Some
+                                 "Side effects in the condition of a while \
+                                  loop are not supported";
+                           });
+                    ( WhileLoop
+                        { condition = lets_of_bindings lbs condition; witness },
+                      no_lbs effects )
+                | kind -> (kind, m#zero)
+              in
               let kind' =
                 match kind with
-                | UnconditionalLoop -> []
                 | ForLoop { it; _ } -> [ self#visit_expr env it ]
-                | WhileLoop { condition; _ } ->
-                    [ self#visit_expr env condition ]
-                | _ -> .
+                | _ -> []
               in
               let state' =
                 Option.map
@@ -305,11 +382,11 @@ struct
               HoistSeq.many env kind_state (fun l effects ->
                   let kind =
                     match (l, kind) with
-                    | condition :: ([ _ ] | []), WhileLoop { witness; _ } ->
-                        WhileLoop { condition; witness }
                     | it :: ([ _ ] | []), ForLoop { pat; witness; _ } ->
                         ForLoop { pat; witness; it }
-                    | ([ _ ] | []), UnconditionalLoop -> UnconditionalLoop
+                    | ([ _ ] | []), ((UnconditionalLoop | WhileLoop _) as kind)
+                      ->
+                        kind
                     | _, ForIndexLoop _ -> .
                     | _ -> HoistSeq.err_hoist_invariant e.span Stdlib.__LOC__
                   in
@@ -328,7 +405,9 @@ struct
                   let body_effects =
                     no_lbs { body_effects with continue = None; break = None }
                   in
-                  let effects = m#plus effects body_effects in
+                  let effects =
+                    m#plus (m#plus effects condition_effects) body_effects
+                  in
                   let body = lets_of_bindings lbs body in
                   ( {
                       e with
@@ -337,35 +416,35 @@ struct
                     },
                     effects ))
           | If { cond; then_; else_ } ->
-              HoistSeq.one env (self#visit_expr env cond) (fun cond effects ->
-                  let then_, { lbs = lbs_then; effects = ethen } =
-                    self#visit_expr env then_
-                  in
-                  let else_, { lbs = lbs_else; effects = eelse } =
-                    match Option.map ~f:(self#visit_expr env) else_ with
-                    | Some (else_, eelse) -> (Some else_, eelse)
-                    | None -> (None, m#zero)
-                  in
-                  let then_ = lets_of_bindings lbs_then then_ in
-                  let else_ = Option.map ~f:(lets_of_bindings lbs_else) else_ in
-                  let effects =
-                    m#plus (m#plus (no_lbs ethen) (no_lbs eelse)) effects
-                  in
-                  ({ e with e = If { cond; then_; else_ } }, effects))
+              self#hoist_if env e (self#visit_expr env cond)
+                (fun () -> self#visit_expr env then_)
+                (Option.map else_ ~f:(fun else_ () -> self#visit_expr env else_))
+          | App
+              {
+                f = { e = GlobalVar (`Primitive (LogicalOp op)); _ } as f;
+                args = [ lhs; rhs ];
+                generic_args;
+                trait;
+                bounds_impls;
+              } ->
+              let lhs = self#visit_expr env lhs in
+              let ((rhs', { lbs; effects }) as rhs) = self#visit_expr env rhs in
+              if List.is_empty lbs && SideEffects.reads_local_mut_only effects
+              then
+                self#hoist_app env e ~generic_args ~trait ~bounds_impls
+                  [ (f, m#zero); lhs; rhs ]
+              else
+                (* `rhs` is only evaluated when `lhs` does not decide *)
+                let lit b = ({ rhs' with e = Literal (Bool b) }, m#zero) in
+                let then_, else_ =
+                  match op with And -> (rhs, lit false) | Or -> (lit true, rhs)
+                in
+                self#hoist_if env e lhs
+                  (fun () -> then_)
+                  (Some (fun () -> else_))
           | App { f; args; generic_args; trait; bounds_impls } ->
-              HoistSeq.many env
+              self#hoist_app env e ~generic_args ~trait ~bounds_impls
                 (List.map ~f:(self#visit_expr env) (f :: args))
-                (fun l effects ->
-                  let f, args =
-                    match l with
-                    | f :: args -> (f, args)
-                    | _ -> HoistSeq.err_hoist_invariant e.span Stdlib.__LOC__
-                  in
-                  ( {
-                      e with
-                      e = App { f; args; generic_args; trait; bounds_impls };
-                    },
-                    effects ))
           | Literal _ -> (e, m#zero)
           | Block { e; safety_mode; witness } ->
               HoistSeq.one env (self#visit_expr env e) (fun e effects ->
@@ -499,9 +578,13 @@ struct
           | Quote _ -> (e, m#zero)
       end
 
-    let collect_and_hoist_effects (e : expr) : expr * SideEffects.t =
+    (** [reject_effectful_while_conditions] raises an error on a while loop
+        whose condition has side effects. *)
+    let collect_and_hoist_effects ?(reject_effectful_while_conditions = false)
+        (e : expr) : expr * SideEffects.t =
       let e, { lbs; effects } =
-        collect_and_hoist_effects_object#visit_expr CollectContext.empty e
+        (collect_and_hoist_effects_object ~reject_effectful_while_conditions)
+          #visit_expr CollectContext.empty e
       in
       (lets_of_bindings lbs e, effects)
   end
@@ -540,7 +623,8 @@ struct
   open ID
 
   let dexpr (expr : A.expr) : B.expr =
-    Hoist.collect_and_hoist_effects expr |> fst |> dexpr
+    Hoist.collect_and_hoist_effects ~reject_effectful_while_conditions:true expr
+    |> fst |> dexpr
 
   [%%inline_defs "Item.*"]
 

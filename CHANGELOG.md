@@ -26,6 +26,10 @@ F* backend and library:
 Changes to the hax-lib crate:
  - The Rust semantics of `implies` is no longer reversed
 
+Changes to the OCaml engine:
+ - Evaluate the right operand of `&&` and `||` only when needed (#2336)
+ - Evaluate the `let`s of a `while` condition at each iteration
+
 ### Changed
 
 Lean backend and library:
@@ -45,6 +49,10 @@ Lean backend and library:
 F* backend and library:
  - Breaking: the fields `f_start` and `f_end` of `t_RangeInclusive` are now
    `f_start_` and `f_end_`
+
+Changes to the OCaml engine:
+ - Breaking: `while` loops whose condition has side effects, such as
+   `while f(&mut x)` or `while f()?`, are rejected (#2337)
 
 ## [0.4.2] - 2026-10-01
 
