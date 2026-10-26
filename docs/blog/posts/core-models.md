@@ -65,7 +65,7 @@ specifically for each backend. This approach had many issues:
   translation. Keeping up with upstream updates of core is challenging.
 - We extended the models *on-demand*, when we stumbled upon missing entries in
   real proof campaigns, or when hax users reported missing definitions. The
-  models where always somewhat incomplete.
+  models were always somewhat incomplete.
 
 One natural idea to address all these would be to directly extract the Rust
 `core` and `alloc` crates using the same toolchain. However, `core` is an
