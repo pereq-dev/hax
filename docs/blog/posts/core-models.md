@@ -17,7 +17,7 @@ Specifically for Rust, almost all crates depend on the functions and type
 definitions coming from `core` and `alloc` libraries. Any Rust verification
 pipeline, like hax, needs to model them in some way. While they are written in
 Rust, those libraries are highly optimized and intertwined with the compiler,
-making them a hassle to handle. A typical workaround is to exclude those library
+making them a hassle to handle. A typical workaround is to exclude those libraries
 from the translation, and provide directly in the backend (Lean, F\*, etc) a
 model of what they are doing. Such model is crucially part of the *Trusted
 Computing Base* (TCB).
