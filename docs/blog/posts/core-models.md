@@ -78,7 +78,7 @@ content of `core` and only reason about simpler model of the library.
 
 ## Presenting hax's *core-models*
 
-The key idea of hax approach to handling core is surprisingly simple: we provide
+The key idea of hax's approach to handling core is surprisingly simple: we provide
 a model of `core` written in Rust. This model depends on a small, well
 identified set of primitives (integers, sequences, strings, etc), called
 *rust-primitives*. This has several benefits:
