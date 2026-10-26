@@ -51,11 +51,12 @@ def local_mutation (x : u32) : RustM u32 := do
             (rust_primitives.hax.Tuple2.mk x y)
             (3 : u32)))
         | 13 => do
+          let hoist6 : u32 := x;
           let x : u32 ← (core_models.num.Impl_8.wrapping_add x (1 : u32));
           (pure (rust_primitives.hax.Tuple2.mk
             (rust_primitives.hax.Tuple2.mk x y)
             (← (add3
-              x
+              hoist6
               (← (core_models.num.Impl_8.wrapping_add (123 : u32) x))
               x))))
         | _ => do

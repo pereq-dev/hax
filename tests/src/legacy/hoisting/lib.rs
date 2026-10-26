@@ -180,3 +180,54 @@ mod while_condition {
         i
     }
 }
+
+/// Hoisted expressions are evaluated before later side effects.
+mod evaluation_order {
+    fn add(a: u8, b: u8) -> u8 {
+        a.wrapping_add(b)
+    }
+
+    fn bump(v: &mut u8) -> u8 {
+        *v = v.wrapping_add(1);
+        1
+    }
+
+    fn set(v: &mut u8) -> u8 {
+        *v = 7;
+        2
+    }
+
+    fn read_then_assign() -> u8 {
+        let mut v = 0u8;
+        add(v, {
+            v = 5;
+            1
+        })
+    }
+
+    fn read_then_mut_ref(v: &mut u8) -> u8 {
+        add(*v, bump(v))
+    }
+
+    fn two_mut_refs(a: &mut u8, b: &mut u8) -> u8 {
+        add(bump(a), set(b))
+    }
+}
+
+/// Issue #1734: hoisted `let`s do not shadow variables of the enclosing scope.
+mod issue_1734 {
+    fn hoisted_let(x: u8) -> u8 {
+        ({
+            let x = 9;
+            0
+        }) + x
+    }
+
+    fn hoisted_let_rhs(x: u8) -> u8 {
+        let y = {
+            let x = x.wrapping_add(1);
+            x.wrapping_mul(2)
+        };
+        y.wrapping_add(x)
+    }
+}

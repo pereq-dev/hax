@@ -40,9 +40,10 @@ let local_mutation (x: u32) : u32 =
         let y:u32 = Core_models.Num.impl_u32__wrapping_add x y in
         (x, y <: (u32 & u32)), mk_u32 3 <: ((u32 & u32) & u32)
       | Rust_primitives.Integers.MkInt 13 ->
+        let hoist6:u32 = x in
         let x:u32 = Core_models.Num.impl_u32__wrapping_add x (mk_u32 1) in
         (x, y <: (u32 & u32)),
-        add3 x (Core_models.Num.impl_u32__wrapping_add (mk_u32 123) x <: u32) x
+        add3 hoist6 (Core_models.Num.impl_u32__wrapping_add (mk_u32 123) x <: u32) x
         <:
         ((u32 & u32) & u32)
       | _ -> (x, y <: (u32 & u32)), mk_u32 0 <: ((u32 & u32) & u32)

@@ -243,3 +243,66 @@ def fallible (b : Bool) : RustM (core_models.result.Result Bool u8) := do
 
 end new_tests.legacy__hoisting__lib.while_condition
 
+
+namespace new_tests.legacy__hoisting__lib.evaluation_order
+
+@[spec]
+def add (a : u8) (b : u8) : RustM u8 := do
+  (core_models.num.Impl_6.wrapping_add a b)
+
+@[spec]
+def bump (v : u8) : RustM (rust_primitives.hax.Tuple2 u8 u8) := do
+  let v : u8 ← (core_models.num.Impl_6.wrapping_add v (1 : u8));
+  let hax_temp_output : u8 := (1 : u8);
+  (pure (rust_primitives.hax.Tuple2.mk v hax_temp_output))
+
+@[spec]
+def set (v : u8) : RustM (rust_primitives.hax.Tuple2 u8 u8) := do
+  let v : u8 := (7 : u8);
+  let hax_temp_output : u8 := (2 : u8);
+  (pure (rust_primitives.hax.Tuple2.mk v hax_temp_output))
+
+@[spec]
+def read_then_assign (_ : rust_primitives.hax.Tuple0) : RustM u8 := do
+  let v : u8 := (0 : u8);
+  let hoist10 : u8 := v;
+  let v : u8 := (5 : u8);
+  (add hoist10 (1 : u8))
+
+@[spec]
+def read_then_mut_ref (v : u8) : RustM (rust_primitives.hax.Tuple2 u8 u8) := do
+  let hoist12 : u8 := v;
+  let ⟨tmp0, out⟩ ← (bump v);
+  let v : u8 := tmp0;
+  let hax_temp_output : u8 ← (add hoist12 out);
+  (pure (rust_primitives.hax.Tuple2.mk v hax_temp_output))
+
+@[spec]
+def two_mut_refs (a : u8) (b : u8) :
+    RustM (rust_primitives.hax.Tuple3 u8 u8 u8) := do
+  let ⟨tmp0, out⟩ ← (bump a);
+  let a : u8 := tmp0;
+  let hoist14 : u8 := out;
+  let ⟨tmp0, out⟩ ← (set b);
+  let b : u8 := tmp0;
+  let hax_temp_output : u8 ← (add hoist14 out);
+  (pure (rust_primitives.hax.Tuple3.mk a b hax_temp_output))
+
+end new_tests.legacy__hoisting__lib.evaluation_order
+
+
+namespace new_tests.legacy__hoisting__lib.issue_1734
+
+@[spec]
+def hoisted_let (x : u8) : RustM u8 := do
+  let x_1 : i32 := (9 : i32);
+  ((0 : u8) +? x)
+
+@[spec]
+def hoisted_let_rhs (x : u8) : RustM u8 := do
+  let x_1 : u8 ← (core_models.num.Impl_6.wrapping_add x (1 : u8));
+  let y : u8 ← (core_models.num.Impl_6.wrapping_mul x_1 (2 : u8));
+  (core_models.num.Impl_6.wrapping_add y x)
+
+end new_tests.legacy__hoisting__lib.issue_1734
+

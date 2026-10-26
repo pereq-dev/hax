@@ -578,15 +578,208 @@ struct
           | Quote _ -> (e, m#zero)
       end
 
+    (** Renames local identifiers, including assigned ones. *)
+    let rename_locals (f : Local_ident.t -> Local_ident.t) =
+      object
+        inherit [_] Visitors.map
+        method! visit_local_ident () v = f v
+        method! visit_Local_ident__t () v = f v
+      end
+
+    (** Gives each binding of [e] its own id, resolving uses by name, as Rust
+        does. Returns the result and a function restoring the original ids. *)
+    let unique_binders (e : expr) : expr * (expr -> expr) =
+      let originals = Hashtbl.create (module Int) in
+      let fresh (v : Local_ident.t) : Local_ident.t =
+        let n = -2 - Hashtbl.length originals in
+        Hashtbl.set originals ~key:n ~data:v.id;
+        { v with id = Local_ident.mk_id (fst v.id) n }
+      in
+      let bind env (pat : pat) =
+        let renaming =
+          U.Reducers.variables_of_pat pat
+          |> Set.to_list
+          |> List.map ~f:(fun v -> (v, fresh v))
+        in
+        let pat =
+          (rename_locals (fun v ->
+               List.Assoc.find renaming ~equal:[%eq: Local_ident.t] v
+               |> Option.value ~default:v))
+            #visit_pat
+            () pat
+        in
+        ( pat,
+          List.fold renaming ~init:env ~f:(fun env (_, (v : Local_ident.t)) ->
+              Map.set env ~key:v.name ~data:v) )
+      in
+      let binds env pats =
+        List.fold_map pats ~init:env ~f:(fun env pat ->
+            let pat, env = bind env pat in
+            (env, pat))
+      in
+      let e =
+        object (self)
+          inherit [_] Visitors.map as super
+
+          method! visit_local_ident env v =
+            Map.find env v.name |> Option.value ~default:v
+
+          method! visit_Local_ident__t env v = self#visit_local_ident env v
+
+          method! visit_expr env e =
+            match e.e with
+            | Let { monadic; lhs; rhs; body } ->
+                let rhs = self#visit_expr env rhs in
+                let lhs, env = bind env lhs in
+                let body = self#visit_expr env body in
+                { e with e = Let { monadic; lhs; rhs; body } }
+            | Closure { params; body; captures } ->
+                let captures = List.map ~f:(self#visit_expr env) captures in
+                let env, params = binds env params in
+                let body = self#visit_expr env body in
+                { e with e = Closure { params; body; captures } }
+            | Loop ({ kind; state; body; _ } as loop) ->
+                let state, env_state =
+                  match state with
+                  | Some ({ init; bpat; _ } as state) ->
+                      let init = self#visit_expr env init in
+                      let bpat, env = bind env bpat in
+                      (Some { state with init; bpat }, env)
+                  | None -> (None, env)
+                in
+                let kind, env =
+                  match kind with
+                  | ForLoop { pat; it; witness } ->
+                      let it = self#visit_expr env it in
+                      let pat, env = bind env_state pat in
+                      (ForLoop { pat; it; witness }, env)
+                  | WhileLoop { condition; witness } ->
+                      ( WhileLoop
+                          {
+                            condition = self#visit_expr env_state condition;
+                            witness;
+                          },
+                        env_state )
+                  | UnconditionalLoop -> (UnconditionalLoop, env_state)
+                  | ForIndexLoop _ -> .
+                in
+                let body = self#visit_expr env body in
+                { e with e = Loop { loop with kind; state; body } }
+            | _ -> super#visit_expr env e
+
+          method! visit_arm' env { arm_pat; body; guard } =
+            let arm_pat, env = bind env arm_pat in
+            let guard, env =
+              match guard with
+              | Some { guard = IfLet { lhs; rhs; witness }; span } ->
+                  let rhs = self#visit_expr env rhs in
+                  let lhs, env = bind env lhs in
+                  (Some { guard = IfLet { lhs; rhs; witness }; span }, env)
+              | None -> (None, env)
+            in
+            { arm_pat; body = self#visit_expr env body; guard }
+        end
+          #visit_expr
+          (Map.empty (module String))
+          e
+      in
+      let restore =
+        (rename_locals (fun v ->
+             match Hashtbl.find originals (snd v.id) with
+             | Some id -> { v with id }
+             | None -> v))
+          #visit_expr
+          ()
+      in
+      (e, restore)
+
+    (** Renames the bindings that capture a use of another variable with the
+        same name, as hoisting may move a binding over such a use. *)
+    let rename_capturing_bindings (e : expr) : expr =
+      let bind env pats =
+        Set.fold (U.Reducers.variables_of_pats pats) ~init:env
+          ~f:(fun env (v : Local_ident.t) -> Map.set env ~key:v.name ~data:v)
+      in
+      let capturing =
+        object (self)
+          inherit [_] Visitors.reduce as super
+          inherit [_] U.Sets.Local_ident.monoid as _m
+
+          method! visit_Local_ident__t env v =
+            match Map.find env v.name with
+            | Some v' when not ([%eq: Local_ident.t] v v') ->
+                Set.singleton (module Local_ident) v'
+            | _ -> Set.empty (module Local_ident)
+
+          method! visit_expr env e =
+            match e.e with
+            | LocalVar v -> self#visit_Local_ident__t env v
+            | Let { lhs; rhs; body; _ } ->
+                Set.union (self#visit_expr env rhs)
+                  (self#visit_expr (bind env [ lhs ]) body)
+            | Closure { params; body; _ } ->
+                self#visit_expr (bind env params) body
+            | Loop { kind; state; body; _ } ->
+                let outer =
+                  (match kind with ForLoop { it; _ } -> [ it ] | _ -> [])
+                  @ (Option.map ~f:(fun s -> s.init) state |> Option.to_list)
+                in
+                let inner =
+                  (match kind with
+                    | WhileLoop { condition; _ } -> [ condition ]
+                    | _ -> [])
+                  @ [ body ]
+                in
+                let env' =
+                  bind env
+                    ((match kind with ForLoop { pat; _ } -> [ pat ] | _ -> [])
+                    @ (Option.map ~f:(fun s -> s.bpat) state |> Option.to_list)
+                    )
+                in
+                Set.union_list
+                  (module Local_ident)
+                  (List.map ~f:(self#visit_expr env) outer
+                  @ List.map ~f:(self#visit_expr env') inner)
+            | _ -> super#visit_expr env e
+
+          method! visit_arm env arm =
+            super#visit_arm (bind env [ arm.arm.arm_pat ]) arm
+        end
+      in
+      let capturing =
+        capturing#visit_expr (Map.empty (module String)) e |> Set.to_list
+      in
+      if List.is_empty capturing then e
+      else
+        let names =
+          U.Reducers.collect_local_idents#visit_expr () e
+          |> Set.map (module String) ~f:(fun (v : Local_ident.t) -> v.name)
+          |> ref
+        in
+        let rec fresh (v : Local_ident.t) i =
+          let name = v.name ^ "_" ^ Int.to_string i in
+          if Set.mem !names name then fresh v (i + 1)
+          else (
+            names := Set.add !names name;
+            { v with name })
+        in
+        let renaming = List.map capturing ~f:(fun v -> (v, fresh v 1)) in
+        (rename_locals (fun v ->
+             List.Assoc.find renaming ~equal:[%eq: Local_ident.t] v
+             |> Option.value ~default:v))
+          #visit_expr
+          () e
+
     (** [reject_effectful_while_conditions] raises an error on a while loop
         whose condition has side effects. *)
     let collect_and_hoist_effects ?(reject_effectful_while_conditions = false)
         (e : expr) : expr * SideEffects.t =
+      let e, restore = unique_binders e in
       let e, { lbs; effects } =
         (collect_and_hoist_effects_object ~reject_effectful_while_conditions)
           #visit_expr CollectContext.empty e
       in
-      (lets_of_bindings lbs e, effects)
+      (lets_of_bindings lbs e |> rename_capturing_bindings |> restore, effects)
   end
 end
 

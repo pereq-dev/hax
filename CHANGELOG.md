@@ -29,6 +29,9 @@ Changes to the hax-lib crate:
 Changes to the OCaml engine:
  - Evaluate the right operand of `&&` and `||` only when needed (#2336)
  - Evaluate the `let`s of a `while` condition at each iteration
+ - Keep reads of a variable before a later mutation of it in the same
+   expression
+ - Rename hoisted `let`s that would shadow another variable (#1734)
 
 ### Changed
 
