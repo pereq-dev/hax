@@ -26,7 +26,7 @@ Yet, writing backend specific models is time-consuming, error-prone, hard to
 review, test and extend. This post present hax's solution to this problem: we
 write the models of `core` and `alloc` directly in rust, providing an equivalent
 but simpler implementation. Being in Rust, this model can be heavily tested
-against the real `core` library, using a variety of rust testing tools (see
+against the real `core` library, using a variety of Rust testing tools (see
 below), can be extracted to various backends, factoring out the modeling effort,
 and can be reviewed at the rust level, improving the overall confidence.
 
