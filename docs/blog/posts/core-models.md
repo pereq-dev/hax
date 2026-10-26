@@ -23,7 +23,7 @@ model of what they are doing. Such model is crucially part of the *Trusted
 Computing Base* (TCB).
 
 Yet, writing backend specific models is time-consuming, error-prone, hard to
-review, test and extend. This post present hax' solution to this problem: we
+review, test and extend. This post present hax's solution to this problem: we
 write the models of `core` and `alloc` directly in rust, providing an equivalent
 but simpler implementation. Being in Rust, this model can be heavily tested
 against the real `core` library, using a variety of rust testing tools (see
