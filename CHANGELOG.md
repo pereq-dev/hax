@@ -27,6 +27,7 @@ Changes to the hax-lib crate:
  - The Rust semantics of `implies` is no longer reversed
 
 Lean backend and library:
+ - Support `for` loops over inclusive ranges (#1862)
  - Legacy Lean: support `for` loops over inclusive integer ranges (#1862)
 
 F* backend and library:

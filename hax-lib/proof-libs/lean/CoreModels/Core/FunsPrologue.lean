@@ -223,11 +223,76 @@ def ops.range.Range.Insts.CoreIterTraitsIteratorIterator {A : Type _}
   next := IteratorRange.next StepInst
 }
 
+/-- The `Iterator::next` implementation for `core::ops::range::RangeInclusive<A>`,
+    parameterised over the `Step` dictionary. As in std, `end` is yielded by
+    setting `exhausted` rather than by stepping past it, which may overflow. -/
+def IteratorRangeInclusive.next {A : Type _} (StepInst : iter.range.Step A) :
+    ops.range.RangeInclusive A → RustM ((Option A) × ops.range.RangeInclusive A) :=
+  fun range => do
+  if range.exhausted then .ok (Option.none, range) else
+  let cmp ← StepInst.corecmpPartialOrdInst.partial_cmp range.start_ range.end_
+  match cmp with
+  | Option.some core.cmp.Ordering.Less =>
+    let cur ← StepInst.cloneCloneInst.clone range.start_
+    let next? ← StepInst.forward_checked cur 1#usize
+    match next? with
+    | Option.none      => .fail .panic
+    | Option.some next => .ok (Option.some cur, { range with start_ := next })
+  | Option.some core.cmp.Ordering.Equal =>
+    let cur ← StepInst.cloneCloneInst.clone range.start_
+    .ok (Option.some cur, { range with exhausted := true })
+  | _ => .ok (Option.none, range)
+
+abbrev ops.range.RangeInclusive.Insts.CoreIterTraitsIteratorIterator.next :=
+  @IteratorRangeInclusive.next
+
+def ops.range.RangeInclusive.Insts.CoreIterTraitsIteratorIterator {A : Type _}
+    (StepInst : iter.range.Step A) :
+    iter.traits.iterator.Iterator (ops.range.RangeInclusive A) A := {
+  next := IteratorRangeInclusive.next StepInst
+}
+
 def ops.range.Range.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Type _}
     (StepInst : iter.range.Step A) :
     iter.traits.double_ended.DoubleEndedIterator (ops.range.Range A) A := {
   iteratorIteratorInst := ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst
   next_back := IteratorRange.next_back StepInst
+}
+
+/-- `Iterator::count` for `core::ops::range::RangeInclusive<A>`: one more than
+    `Step::steps_between`, or `0` when the range is empty. -/
+def ops.range.RangeInclusive.Insts.CoreIterTraitsIteratorIterator.count {A : Type _}
+    (StepInst : iter.range.Step A) (range : ops.range.RangeInclusive A) : RustM Usize := do
+  if range.exhausted then ok 0#usize else
+  let le ← StepInst.corecmpPartialOrdInst.le range.start_ range.end_
+  if le then do
+    let (steps, _) ← StepInst.steps_between range.start_ range.end_
+    steps + 1#usize
+  else ok 0#usize
+
+/-- `next_back` for `RangeInclusive<A>`, the mirror of `IteratorRangeInclusive.next`. -/
+def IteratorRangeInclusive.next_back {A : Type _} (StepInst : iter.range.Step A) :
+    ops.range.RangeInclusive A → RustM ((Option A) × ops.range.RangeInclusive A) :=
+  fun range => do
+  if range.exhausted then .ok (Option.none, range) else
+  let cmp ← StepInst.corecmpPartialOrdInst.partial_cmp range.start_ range.end_
+  match cmp with
+  | Option.some core.cmp.Ordering.Less =>
+    let cur ← StepInst.cloneCloneInst.clone range.end_
+    let prev? ← StepInst.backward_checked cur 1#usize
+    match prev? with
+    | Option.none      => .fail .panic
+    | Option.some prev => .ok (Option.some cur, { range with end_ := prev })
+  | Option.some core.cmp.Ordering.Equal =>
+    let cur ← StepInst.cloneCloneInst.clone range.end_
+    .ok (Option.some cur, { range with exhausted := true })
+  | _ => .ok (Option.none, range)
+
+def ops.range.RangeInclusive.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Type _}
+    (StepInst : iter.range.Step A) :
+    iter.traits.double_ended.DoubleEndedIterator (ops.range.RangeInclusive A) A := {
+  iteratorIteratorInst := ops.range.RangeInclusive.Insts.CoreIterTraitsIteratorIterator StepInst
+  next_back := IteratorRangeInclusive.next_back StepInst
 }
 
 /-- [core::cmp::impls::{core::cmp::PartialOrd<&0 (B)> for &1 (A)}::lt]:
