@@ -65,6 +65,7 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
     let _ = [()].into_iter();
     let _: u16 = 6u8.into();
     let _ = 1..2;
+    let _ = 1..=2;
     let _ = 1..;
     let _ = ..;
     let _ = ..1;
@@ -235,6 +236,9 @@ mod hax {
         fn fold_range() {}
         fn fold_range_cf() {}
         fn fold_range_return() {}
+        fn fold_range_inclusive() {}
+        fn fold_range_inclusive_cf() {}
+        fn fold_range_inclusive_return() {}
         fn fold_range_step_by() {}
         fn fold_range_step_by_cf() {}
         fn fold_range_step_by_return() {}

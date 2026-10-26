@@ -123,6 +123,78 @@ let rec fold_range_return
          fold_range_return (start +! mk_int 1) end_ inv acc f
   else Core_models.Ops.Control_flow.ControlFlow_Continue acc
 
+(**** `start..=end_` *)
+/// `inv acc i` holds before the iteration on `i`, up to `end_ + 1` after the
+/// loop. When `end_` is the largest value of its type, `end_ + 1` does not
+/// exist, and the invariant gives nothing about the state after the loop.
+unfold let fold_range_inclusive_wf_index (#u: inttype)
+  (start: int_t u) (end_: int_t u) (i: int)
+  = i >= v start /\ i <= v end_ + 1
+
+let rec fold_range_inclusive
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (inv: acc_t -> (i:int_t u{fold_range_inclusive_wf_index start end_ (v i)}) -> Type0)
+  (init: acc_t {~(range_empty start end_) ==> inv init start})
+  (f: (acc:acc_t -> i:int_t u {v start <= v i /\ v i <= v end_ /\ inv acc i}
+                 -> acc':acc_t {v i < maxint u ==> inv acc' (mk_int (v i + 1))}))
+  : Tot (result: acc_t {if range_empty start end_ then result == init
+                        else (v end_ < maxint u ==> inv result (mk_int (v end_ + 1)))})
+        (decreases v end_ - v start)
+  = if v start < v end_
+    then fold_range_inclusive (start +! mk_int 1) end_ inv (f init start) f
+    else if v start = v end_ then f init start
+    else init
+
+let rec fold_range_inclusive_cf
+  (#acc_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (inv: acc_t -> (i:int_t u{fold_range_inclusive_wf_index start end_ (v i)}) -> Type0)
+  (acc: acc_t {~(range_empty start end_) ==> inv acc start})
+  (f: (acc:acc_t -> i:int_t u {v start <= v i /\ v i <= v end_ /\ inv acc i}
+                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (unit & acc_t) acc_t))
+                    {
+                      let acc = match tuple with
+                        | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc)
+                        | Core_models.Ops.Control_flow.ControlFlow_Continue acc -> acc in
+                      v i < maxint u ==> inv acc (mk_int (v i + 1))}))
+: Tot (res: acc_t{if range_empty start end_ then res == acc
+                 else (v end_ < maxint u ==>
+                       (exists (final: int_t u). v start <= v final /\ v final <= v end_ + 1 /\ inv res final))})
+ (decreases v end_ - v start)
+  =
+  if v start <= v end_
+  then match f acc start with
+       | Core_models.Ops.Control_flow.ControlFlow_Break ((), acc) -> acc
+       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
+         if v start < v end_
+         then fold_range_inclusive_cf (start +! mk_int 1) end_ inv acc f
+         else acc
+  else acc
+
+let rec fold_range_inclusive_return
+  (#acc_t: Type0) (#ret_t: Type0) (#u: inttype)
+  (start: int_t u)
+  (end_: int_t u)
+  (inv: acc_t -> (i:int_t u{fold_range_inclusive_wf_index start end_ (v i)}) -> Type0)
+  (acc: acc_t )
+  (f: (acc:acc_t -> i:int_t u {v start <= v i /\ v i <= v end_}
+                  -> tuple:((Core_models.Ops.Control_flow.t_ControlFlow (Core_models.Ops.Control_flow.t_ControlFlow ret_t (unit & acc_t))) acc_t)
+                    ))
+: Tot (Core_models.Ops.Control_flow.t_ControlFlow ret_t acc_t) (decreases v end_ - v start)
+  =
+  if v start <= v end_
+  then match f acc start with
+       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Break res) -> Core_models.Ops.Control_flow.ControlFlow_Break res
+       | Core_models.Ops.Control_flow.ControlFlow_Break (Core_models.Ops.Control_flow.ControlFlow_Continue ((), res)) -> Core_models.Ops.Control_flow.ControlFlow_Continue res
+       | Core_models.Ops.Control_flow.ControlFlow_Continue acc ->
+         if v start < v end_
+         then fold_range_inclusive_return (start +! mk_int 1) end_ inv acc f
+         else Core_models.Ops.Control_flow.ControlFlow_Continue acc
+  else Core_models.Ops.Control_flow.ControlFlow_Continue acc
+
 (**** `s.enumerate()` *)
 /// Fold function that is generated for `for` loops iterating on
 /// `s.enumerate()`-like iterators

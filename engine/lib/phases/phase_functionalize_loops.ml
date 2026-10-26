@@ -89,6 +89,7 @@ struct
 
     type iterator =
       | Range of { start : B.expr; end_ : B.expr }
+      | RangeInclusive of { start : B.expr; end_ : B.expr }
       | Slice of B.expr
       | ChunksExact of { size : B.expr; slice : B.expr }
       | Enumerate of iterator
@@ -121,7 +122,12 @@ struct
       let f_eq n = Global_ident.eq_name n f in
       let one_arg () = match args with [ x ] -> Some x | _ -> None in
       let two_args () = match args with [ x; y ] -> Some (x, y) | _ -> None in
-      if f_eq Core__iter__traits__iterator__Iterator__step_by then
+      if f_eq Core__ops__range__Impl_7__new then
+        let* start, end_ = two_args () in
+        match start.typ with
+        | TInt _ -> Some (RangeInclusive { start; end_ })
+        | _ -> None
+      else if f_eq Core__iter__traits__iterator__Iterator__step_by then
         let* it, n = two_args () in
         let* it = as_iterator it in
         Some (StepBy { n; it })
@@ -194,6 +200,16 @@ struct
                 Rust_primitives__hax__folds__fold_range_return
             | Some BreakOnly -> Rust_primitives__hax__folds__fold_range_cf
             | None -> Rust_primitives__hax__folds__fold_range
+          in
+          Some (fold_op, [ start; end_ ], start.typ)
+      | RangeInclusive { start; end_ } ->
+          let fold_op =
+            match cf with
+            | Some BreakOrReturn ->
+                Rust_primitives__hax__folds__fold_range_inclusive_return
+            | Some BreakOnly ->
+                Rust_primitives__hax__folds__fold_range_inclusive_cf
+            | None -> Rust_primitives__hax__folds__fold_range_inclusive
           in
           Some (fold_op, [ start; end_ ], start.typ)
       | _ -> None

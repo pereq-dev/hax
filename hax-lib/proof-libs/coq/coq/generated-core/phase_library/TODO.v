@@ -41,3 +41,8 @@ Fixpoint build_range (l : nat) (f : nat) (a : list t_usize) : list t_usize :=
   end.
 
 Definition fold_range {A : Type} (l : t_usize) (u : t_usize) (_ : A -> t_usize -> bool) (x : A) (f : A -> t_usize -> A) : A := List.fold_left f (build_range (unary_from_int (U64_f_v (usize_0 l))) (unary_from_int (U64_f_v (usize_0 (Sub_f_sub u l)))) nil) x.
+
+Definition fold_range_inclusive {A : Type} (l : t_usize) (u : t_usize) (_ : A -> t_usize -> bool) (x : A) (f : A -> t_usize -> A) : A :=
+  let lo := unary_from_int (U64_f_v (usize_0 l)) in
+  let hi := unary_from_int (U64_f_v (usize_0 u)) in
+  List.fold_left f (build_range lo (if Nat.leb lo hi then S (Nat.sub hi lo) else 0%nat) nil) x.
