@@ -74,7 +74,7 @@ hard-to-support Rust features, and is highly optimized.
 
 Overall, even if hax could extract `core`, the resulting backend library would
 be hard to use in proofs and reason about. There is value in abstracting the
-content of core and only reason about simpler model of the library.
+content of `core` and only reason about simpler model of the library.
 
 ## Presenting hax's *core-models*
 
