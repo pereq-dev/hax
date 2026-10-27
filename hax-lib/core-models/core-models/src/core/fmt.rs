@@ -28,10 +28,6 @@ macro_rules! debug_struct_field_finish {
 }
 
 impl Formatter {
-    pub fn write_str(&mut self, data: &str) -> Result {
-        Result::Ok(())
-    }
-
     // The `debug_*_finish` family is what `#[derive(Debug)]` expands to. The
     // model's `Formatter` renders nothing, so they all succeed without reading
     // their arguments. Real `core` takes the values as `&dyn Debug`; the model
@@ -237,7 +233,12 @@ impl<'a> Arguments<'a> {}
 impl<'a> Arguments<'a> {}
 impl<'a> Arguments<'a> {}
 impl<'a> Arguments<'a> {}
-impl<'a> Arguments<'a> {}
+impl<'a> Formatter {
+    /// See [`std::fmt::Formatter::write_str`]
+    pub fn write_str(&mut self, data: &str) -> Result {
+        Result::Ok(())
+    }
+}
 impl<'a> Arguments<'a> {
     fn write_fmt(f: &mut Formatter, args: Arguments) -> Result {
         Result::Ok(())
