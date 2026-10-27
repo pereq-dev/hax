@@ -552,7 +552,7 @@ structure iter.traits.iterator.IteratorMethods (Self : Type _)
     RustM B
   all : forall {F : Type} (coreopsfunctionFnMutPTuplePBoolInst :
     core.ops.function.FnMut F Self_Clause0_Item Bool), Self → F → RustM
-    Bool
+    (Bool × Self)
   map : forall {O : Type} {F : Type} (coreopsfunctionFnMutPTupleFPInst :
     core.ops.function.FnMut F Self_Clause0_Item O), Self → F → RustM
     (iter.adapters.map.Map Self F)
@@ -596,17 +596,17 @@ structure iter.traits.iterator.IteratorMethods (Self : Type _)
     Self_Clause0_Item), Self → U → RustM (iter.adapters.chain.Chain Self U)
   any : forall {F : Type} (coreopsfunctionFnMutPTuplePBoolInst :
     core.ops.function.FnMut F Self_Clause0_Item Bool), Self → F → RustM
-    Bool
-  find : forall {P : Type} (coreopsfunctionFnMutPTupleSharedPBoolInst :
+    (Bool × Self)
+  find : forall {P : Type} (coreopsfunctionFnMutPTupleShared0PBoolInst :
     core.ops.function.FnMut P Self_Clause0_Item Bool), Self → P → RustM
-    (option.Option Self_Clause0_Item)
+    ((option.Option Self_Clause0_Item) × Self)
   find_map : forall {B : Type} {F : Type}
     (coreopsfunctionFnMutPTupleFOptionInst : core.ops.function.FnMut F
-    Self_Clause0_Item (option.Option B)), Self → F → RustM (option.Option
-    B)
+    Self_Clause0_Item (option.Option B)), Self → F → RustM ((option.Option
+    B) × Self)
   position : forall {P : Type} (coreopsfunctionFnMutPTuplePBoolInst :
     core.ops.function.FnMut P Self_Clause0_Item Bool), Self → P → RustM
-    (option.Option Std.Usize)
+    ((option.Option Std.Usize) × Self)
   count : Self → RustM Std.Usize
   nth : Self → Std.Usize → RustM (option.Option Self_Clause0_Item)
   last : Self → RustM (option.Option Self_Clause0_Item)

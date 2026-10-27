@@ -9032,14 +9032,16 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
-      bool
+      (v_Self & bool)
     -> Type0;
   f_all:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure bool (f_all_pre #v_F #i1 x0 x1) (fun result -> f_all_post #v_F #i1 x0 x1 result);
+    -> Prims.Pure (v_Self & bool)
+        (f_all_pre #v_F #i1 x0 x1)
+        (fun result -> f_all_post #v_F #i1 x0 x1 result);
   f_map_pre:
       #v_O: Type0 ->
       #v_F: Type0 ->
@@ -9295,14 +9297,16 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
-      bool
+      (v_Self & bool)
     -> Type0;
   f_any:
       #v_F: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure bool (f_any_pre #v_F #i1 x0 x1) (fun result -> f_any_post #v_F #i1 x0 x1 result);
+    -> Prims.Pure (v_Self & bool)
+        (f_any_pre #v_F #i1 x0 x1)
+        (fun result -> f_any_post #v_F #i1 x0 x1 result);
   f_find_pre:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
@@ -9314,14 +9318,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
-      t_Option (_super_i0).f_Item
+      (v_Self & t_Option (_super_i0).f_Item)
     -> Type0;
   f_find:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_P
-    -> Prims.Pure (t_Option (_super_i0).f_Item)
+    -> Prims.Pure (v_Self & t_Option (_super_i0).f_Item)
         (f_find_pre #v_P #i1 x0 x1)
         (fun result -> f_find_post #v_P #i1 x0 x1 result);
   f_find_map_pre:
@@ -9337,7 +9341,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       v_Self ->
       v_F ->
-      t_Option v_B
+      (v_Self & t_Option v_B)
     -> Type0;
   f_find_map:
       #v_B: Type0 ->
@@ -9345,7 +9349,7 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_F (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_F
-    -> Prims.Pure (t_Option v_B)
+    -> Prims.Pure (v_Self & t_Option v_B)
         (f_find_map_pre #v_B #v_F #i1 x0 x1)
         (fun result -> f_find_map_post #v_B #v_F #i1 x0 x1 result);
   f_position_pre:
@@ -9359,14 +9363,14 @@ class t_IteratorMethods (v_Self: Type0) = {
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       v_Self ->
       v_P ->
-      t_Option usize
+      (v_Self & t_Option usize)
     -> Type0;
   f_position:
       #v_P: Type0 ->
       {| i1: Core_models.Ops.Function.t_FnMut v_P (_super_i0).f_Item |} ->
       x0: v_Self ->
       x1: v_P
-    -> Prims.Pure (t_Option usize)
+    -> Prims.Pure (v_Self & t_Option usize)
         (f_position_pre #v_P #i1 x0 x1)
         (fun result -> f_position_post #v_P #i1 x0 x1 result);
   f_count_pre:v_Self -> Type0;
@@ -9515,7 +9519,7 @@ let impl__from__iterator
           Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
         (self: v_I)
         (f: v_F)
-        (out1: bool)
+        (out1: (v_I & bool))
         ->
         true);
     f_all
@@ -9530,7 +9534,8 @@ let impl__from__iterator
         ->
         let (tmp0: v_I), (out: bool) = iter_all #v_I #v_F self f in
         let self:v_I = tmp0 in
-        out);
+        let hax_temp_output:bool = out in
+        self, hax_temp_output <: (v_I & bool));
     f_map_pre
     =
     (fun
@@ -9924,7 +9929,7 @@ let impl__from__iterator
           Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
         (self: v_I)
         (f: v_F)
-        (out1: bool)
+        (out1: (v_I & bool))
         ->
         true);
     f_any
@@ -9939,7 +9944,8 @@ let impl__from__iterator
         ->
         let (tmp0: v_I), (out: bool) = iter_any #v_I #v_F self f in
         let self:v_I = tmp0 in
-        out);
+        let hax_temp_output:bool = out in
+        self, hax_temp_output <: (v_I & bool));
     f_find_pre
     =
     (fun
@@ -9960,7 +9966,7 @@ let impl__from__iterator
           Core_models.Ops.Function.t_FnMut v_P i0.f_Item)
         (self: v_I)
         (predicate: v_P)
-        (out1: t_Option i0.f_Item)
+        (out1: (v_I & t_Option i0.f_Item))
         ->
         true);
     f_find
@@ -9975,7 +9981,8 @@ let impl__from__iterator
         ->
         let (tmp0: v_I), (out: t_Option i0.f_Item) = iter_find #v_I #v_P self predicate in
         let self:v_I = tmp0 in
-        out);
+        let hax_temp_output:t_Option i0.f_Item = out in
+        self, hax_temp_output <: (v_I & t_Option i0.f_Item));
     f_find_map_pre
     =
     (fun
@@ -9998,7 +10005,7 @@ let impl__from__iterator
           Core_models.Ops.Function.t_FnMut v_F i0.f_Item)
         (self: v_I)
         (f: v_F)
-        (out1: t_Option v_B)
+        (out1: (v_I & t_Option v_B))
         ->
         true);
     f_find_map
@@ -10014,7 +10021,8 @@ let impl__from__iterator
         ->
         let (tmp0: v_I), (out: t_Option v_B) = iter_find_map #v_I #v_B #v_F self f in
         let self:v_I = tmp0 in
-        out);
+        let hax_temp_output:t_Option v_B = out in
+        self, hax_temp_output <: (v_I & t_Option v_B));
     f_position_pre
     =
     (fun
@@ -10035,7 +10043,7 @@ let impl__from__iterator
           Core_models.Ops.Function.t_FnMut v_P i0.f_Item)
         (self: v_I)
         (predicate: v_P)
-        (out1: t_Option usize)
+        (out1: (v_I & t_Option usize))
         ->
         true);
     f_position
@@ -10050,7 +10058,8 @@ let impl__from__iterator
         ->
         let (tmp0: v_I), (out: t_Option usize) = iter_position #v_I #v_P self predicate in
         let self:v_I = tmp0 in
-        out);
+        let hax_temp_output:t_Option usize = out in
+        self, hax_temp_output <: (v_I & t_Option usize));
     f_count_pre = (fun (self: v_I) -> true);
     f_count_post = (fun (self: v_I) (out: usize) -> true);
     f_count = (fun (self: v_I) -> iter_count #v_I self);

@@ -582,6 +582,14 @@ pub fn slice_iter_map_count(x: &[u8]) -> usize {
     x.iter().map(|b| b.wrapping_add(1)).count()
 }
 
+pub fn slice_iter_all(x: &[u8]) -> bool {
+    x.iter().all(|b| *b > 0)
+}
+
+pub fn slice_iter_any(x: &[u8]) -> bool {
+    x.iter().any(|b| *b == 3)
+}
+
 // --- generic receivers: force the dictionary-passing `.default` form ---
 
 // PARKED — a GENERIC receiver makes aeneas emit a record-field projection
