@@ -745,18 +745,18 @@ pub fn generate(
     // generation.
     if !lean_dir.join("lakefile.lean").exists() {
         let lakefile = lean_dir.join("lakefile.toml");
-        if absent_or_empty(&lakefile) {
-            if let Some(path) = aeneas_local_path {
-                HaxMessage::GenericWarning {
-                    message: format!(
-                        "aeneas resolves to the local binary {}; pinning the aeneas Lean \
-                         library to the default {} in the generated lakefile",
-                        path.display(),
-                        pins.aeneas_rev
-                    ),
-                }
-                .report(message_format, None);
+        if absent_or_empty(&lakefile)
+            && let Some(path) = aeneas_local_path
+        {
+            HaxMessage::GenericWarning {
+                message: format!(
+                    "aeneas resolves to the local binary {}; pinning the aeneas Lean \
+                     library to the default {} in the generated lakefile",
+                    path.display(),
+                    pins.aeneas_rev
+                ),
             }
+            .report(message_format, None);
         }
         error |= write_if_absent(
             &lakefile,

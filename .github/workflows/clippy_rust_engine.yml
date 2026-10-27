@@ -1,4 +1,4 @@
-name: Linting for the Rust engine
+name: Linting for the Rust engine and cargo-hax
 
 on:
   pull_request:
@@ -16,6 +16,9 @@ jobs:
     - name: Install clippy
       run: |
         rustup component add clippy
-    - name: Run clippy
+    - name: Run clippy on the Rust engine
       run: |
         cargo clippy -p hax-rust-engine -- -D warnings --no-deps
+    - name: Run clippy on cargo-hax
+      run: |
+        cargo clippy -p cargo-hax --no-deps --all-targets -- -D warnings

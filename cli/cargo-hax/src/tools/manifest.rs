@@ -58,6 +58,7 @@ impl ToolVersions {
         self.0.iter().map(|(version, _)| version.as_str())
     }
 
+    #[cfg(test)]
     pub fn iter(&self) -> impl Iterator<Item = (&String, &BTreeMap<String, ArtifactEntry>)> {
         self.0
             .iter()

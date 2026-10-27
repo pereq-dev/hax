@@ -124,12 +124,13 @@ fn extract(
     }
 
     if scope.is_empty() {
-        return Err(format!(
+        return Err(
             "no scenarios in scope. Declare extraction configurations as \
              `[scenario.<name>]` tables in a `hax.toml` next to Cargo.toml \
              (workspace root or member crate); see the hax manual \
              (docs/manual/tools.md)"
-        ));
+                .to_string(),
+        );
     }
 
     if !packages.is_empty() {
@@ -148,7 +149,7 @@ fn extract(
     // name in scope; an unmatched name is an error and nothing runs. A
     // repeated name (or two names matching the same scenario) runs it once.
     let selected: Vec<&ResolvedScenario> = if names.is_empty() {
-        scope.iter().copied().collect()
+        scope.to_vec()
     } else {
         let mut selected: Vec<&ResolvedScenario> = Vec::new();
         let mut taken: std::collections::BTreeSet<usize> = std::collections::BTreeSet::new();
