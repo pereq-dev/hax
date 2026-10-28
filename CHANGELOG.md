@@ -33,7 +33,14 @@ Changes to the hax-lib crate:
 Changes to the frontend:
  - Impls now list the bounds on the generic parameters of their trait as parent bounds (#1554)
 
+Lean backend and library:
+ - `v.iter().all(..)` and `v.iter().any(..)` on slices no longer fail with an
+   unknown constant
+
 F* backend and library:
+ - `Iterator::{all, any, find, find_map, position}` now take `&mut self` as in
+   std and return the advanced iterator with their result, matching extracted
+   call sites
  - `Formatter::write_str` is now `Core_models.Fmt.impl_11__write_str`, the name
    extracted client code calls, instead of `impl_Formatter__write_str`
 

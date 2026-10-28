@@ -447,6 +447,16 @@ abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.fold
   iter.traits.iterator.Iterator.fold.default
     (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FoldFnInst
 
+abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.all
+    {T F : Type _} (FnInst : core.ops.function.FnMut F T Bool) :=
+  iter.traits.iterator.Iterator.all.default
+    (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FnInst
+
+abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.any
+    {T F : Type _} (FnInst : core.ops.function.FnMut F T Bool) :=
+  iter.traits.iterator.Iterator.any.default
+    (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FnInst
+
 -- Map<I, F>
 abbrev iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator.fold
     {I O F Clause0_Item B G : Type _}

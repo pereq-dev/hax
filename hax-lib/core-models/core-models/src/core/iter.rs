@@ -29,7 +29,7 @@ pub mod traits {
         #[hax_lib::attributes]
         pub(crate) trait IteratorMethods: Iterator {
             fn fold<B, F: FnMut(B, Self::Item) -> B>(self, init: B, f: F) -> B;
-            fn all<F: FnMut(Self::Item) -> bool>(self, f: F) -> bool;
+            fn all<F: FnMut(Self::Item) -> bool>(&mut self, f: F) -> bool;
             fn map<O, F: FnMut(Self::Item) -> O>(self, f: F) -> Map<Self, F>
             where
                 Self: Sized;
@@ -80,10 +80,10 @@ pub mod traits {
             fn chain<U: Iterator<Item = Self::Item>>(self, other: U) -> Chain<Self, U>
             where
                 Self: Sized;
-            fn any<F: FnMut(Self::Item) -> bool>(self, f: F) -> bool;
-            fn find<P: FnMut(&Self::Item) -> bool>(self, predicate: P) -> Option<Self::Item>;
-            fn find_map<B, F: FnMut(Self::Item) -> Option<B>>(self, f: F) -> Option<B>;
-            fn position<P: FnMut(Self::Item) -> bool>(self, predicate: P) -> Option<usize>;
+            fn any<F: FnMut(Self::Item) -> bool>(&mut self, f: F) -> bool;
+            fn find<P: FnMut(&Self::Item) -> bool>(&mut self, predicate: P) -> Option<Self::Item>;
+            fn find_map<B, F: FnMut(Self::Item) -> Option<B>>(&mut self, f: F) -> Option<B>;
+            fn position<P: FnMut(Self::Item) -> bool>(&mut self, predicate: P) -> Option<usize>;
             fn count(self) -> usize;
             fn nth(self, n: usize) -> Option<Self::Item>;
             fn last(self) -> Option<Self::Item>;
@@ -288,8 +288,8 @@ pub mod traits {
                 iter_fold(self, init, f)
             }
 
-            fn all<F: FnMut(I::Item) -> bool>(mut self, f: F) -> bool {
-                iter_all(&mut self, f)
+            fn all<F: FnMut(I::Item) -> bool>(&mut self, f: F) -> bool {
+                iter_all(self, f)
             }
 
             fn map<O, F: FnMut(I::Item) -> O>(self, f: F) -> Map<I, F> {
@@ -360,20 +360,20 @@ pub mod traits {
                 Chain::new(self, other)
             }
 
-            fn any<F: FnMut(Self::Item) -> bool>(mut self, f: F) -> bool {
-                iter_any(&mut self, f)
+            fn any<F: FnMut(Self::Item) -> bool>(&mut self, f: F) -> bool {
+                iter_any(self, f)
             }
 
-            fn find<P: FnMut(&Self::Item) -> bool>(mut self, predicate: P) -> Option<Self::Item> {
-                iter_find(&mut self, predicate)
+            fn find<P: FnMut(&Self::Item) -> bool>(&mut self, predicate: P) -> Option<Self::Item> {
+                iter_find(self, predicate)
             }
 
-            fn find_map<B, F: FnMut(Self::Item) -> Option<B>>(mut self, f: F) -> Option<B> {
-                iter_find_map(&mut self, f)
+            fn find_map<B, F: FnMut(Self::Item) -> Option<B>>(&mut self, f: F) -> Option<B> {
+                iter_find_map(self, f)
             }
 
-            fn position<P: FnMut(Self::Item) -> bool>(mut self, predicate: P) -> Option<usize> {
-                iter_position(&mut self, predicate)
+            fn position<P: FnMut(Self::Item) -> bool>(&mut self, predicate: P) -> Option<usize> {
+                iter_position(self, predicate)
             }
 
             fn count(self) -> usize {
