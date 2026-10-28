@@ -7,21 +7,40 @@ let
   # Crate readmes are compiled in as rustdoc crate docs via
   # `#![doc = include_str!("../README.md")]`.
   is-crate-readme = path: builtins.match ".*/README[.]md" path != null;
+  workspace = (builtins.fromTOML (builtins.readFile ../Cargo.toml)).workspace;
+  is-in = dirs: relative:
+    lib.any (dir: relative == dir || lib.hasPrefix "${dir}/" relative) dirs;
+  # The workspace members and the files at the repository root, without the
+  # trees the workspace excludes.
+  is-workspace-path = relative:
+    (is-in workspace.members relative || !(lib.hasInfix "/" relative)
+      || is-in [ ".cargo" ] relative) && !(is-in workspace.exclude relative);
+  source-filter = path: type:
+    is-workspace-path (lib.removePrefix "${toString ./..}/" path)
+    && ((builtins.isNull
+      (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
+      && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
+        || is-crate-readme path)
+      && (craneLib.filterCargoSources path type || is-webapp-static-asset path
+        || is-crate-readme path))
+      || !(builtins.isNull (builtins.match ".*/renamings" path)));
   buildInputs = lib.optionals stdenv.isDarwin [ libiconv zlib.dev ];
   binaries = [ hax hax-engine.bin rustc gcc hax_rust_engine ] ++ buildInputs;
   commonArgs = {
     version = "0.0.1";
-    src = lib.cleanSourceWith {
-      src = craneLib.path ./..;
-      filter = path: type:
-        (builtins.isNull
-        (builtins.match ".*/(tests|examples|docs|proof-libs)/.*" path)
-        && (builtins.isNull (builtins.match ".*[.](md|svg)" path)
-          || is-crate-readme path)
-        && (craneLib.filterCargoSources path type
-          || is-webapp-static-asset path
-          || is-crate-readme path))
-        || !(builtins.isNull (builtins.match ".*/renamings" path));
+    # Filesets hold no empty directories, so that adding a directory outside
+    # the kept trees does not affect the source hash. The result is passed as
+    # a plain store path, as crane otherwise collects the dependency build's
+    # `Cargo.toml` files from the unfiltered tree.
+    src = craneLib.path {
+      name = "source";
+      path = "${lib.fileset.toSource {
+        root = ./..;
+        fileset = lib.fileset.fromSource (lib.cleanSourceWith {
+          src = ./..;
+          filter = source-filter;
+        });
+      }}";
     };
     inherit buildInputs doCheck;
     cargoExtraArgs = "--locked";
@@ -60,8 +79,7 @@ let
     (builtins.fromTOML
       (builtins.readFile (../. + "/${member}/Cargo.toml"))).package.name)
     (builtins.filter (member: member != "cli/cargo-hax")
-      (builtins.fromTOML
-        (builtins.readFile ../Cargo.toml)).workspace.default-members);
+      workspace.default-members);
   hax_driver_and_libs = craneLib.buildPackage (commonArgs // {
     inherit cargoArtifacts pname;
     doInstallCargoArtifacts = true;
@@ -120,8 +138,7 @@ let
     CI = "true";
     cargoBuildCommand = "true";
     checkPhaseCargoCommand = ''
-      TESTS_DIR=tests                      && rmdir "$TESTS_DIR"
-      cp -r --no-preserve=mode   ${../tests}        "$TESTS_DIR"
+      cp -r --no-preserve=mode ${../tests} tests
 
       cp ${../justfile} justfile
 
