@@ -583,6 +583,14 @@ pub fn run(
         message_format,
     );
 
+    // Work on the package files is hax's own, not charon's or aeneas', so its
+    // failures are reported under a step of its own.
+    HaxMessage::Step {
+        verb: "Preparing".to_string(),
+        target: "hax package".to_string(),
+    }
+    .report(message_format, None);
+
     // Runs before the clearing below, which would destroy the files it
     // rescues. Like the clearing, the `Assumptions/` wiring is extraction
     // behavior, not scaffolding, so it stays active under
@@ -715,6 +723,16 @@ pub fn run(
         report_error_output(&all_lines, &lean_dir, verbose, message_format);
     } else if verbose > 0 {
         report_output(&all_lines, message_format);
+    }
+
+    // After a failed aeneas run, failures to write the package are part of
+    // that failure and stay under the aeneas step.
+    if output.status.success() {
+        HaxMessage::Step {
+            verb: "Running".to_string(),
+            target: "hax packaging".to_string(),
+        }
+        .report(message_format, None);
     }
 
     // Failures to write package or `Assumptions/` files are reported where
