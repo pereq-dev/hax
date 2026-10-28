@@ -80,9 +80,10 @@ pub struct Cli {
     #[clap(long, short)]
     backend: Option<BackendName>,
     /// Only run tests whose name contains the given string; in the FLS
-    /// suite, the test at the given path or the tests under it.
+    /// suite, the test at the given path or the tests under it. May be given
+    /// several times; a test runs when it matches any of them.
     #[clap(long, short)]
-    matching: Option<String>,
+    matching: Vec<String>,
     /// Skip verification (F* / Lean type-checking) and only run extraction.
     #[clap(long)]
     no_verify: bool,
@@ -93,7 +94,7 @@ impl Cli {
         if self.command.is_some() {
             let suite_flags = [
                 ("--backend", self.backend.is_some()),
-                ("--matching", self.matching.is_some()),
+                ("--matching", !self.matching.is_empty()),
                 ("--update-results", self.update_results),
                 ("--no-verify", self.no_verify),
                 ("--promote-directives", self.promote_directives),
@@ -158,16 +159,25 @@ impl Cli {
         self.backend
     }
 
-    pub fn matching(&self) -> Option<&str> {
-        self.matching.as_deref()
+    /// Whether `--matching` selects the test with this name: no value given,
+    /// or any value a substring of the name.
+    pub fn selects(&self, name: &str) -> bool {
+        self.matching.is_empty() || self.matching.iter().any(|m| name.contains(m.as_str()))
     }
 
     /// Whether `--matching` selects the test at this path: no value given, or
-    /// the value the path itself or one of its leading directories.
+    /// any value the path itself or one of its leading directories.
     pub fn selects_path(&self, path: &str) -> bool {
+        self.matching.is_empty() || self.matching.iter().any(|m| path_matches(m, path))
+    }
+
+    /// The `--matching` values that select none of these paths.
+    pub fn unmatched_paths(&self, paths: &[&str]) -> Vec<&str> {
         self.matching
-            .as_deref()
-            .is_none_or(|m| path_matches(m, path))
+            .iter()
+            .filter(|m| !paths.iter().any(|path| path_matches(m, path)))
+            .map(String::as_str)
+            .collect()
     }
 
     pub fn no_verify(&self) -> bool {
@@ -208,10 +218,31 @@ mod tests {
 
     #[test]
     fn selects_path_matches_whole_segments() {
-        let cli = Cli::parse_from(["test-driver", "tests", "-m", "values/statics"]);
+        let cli = Cli::parse_from([
+            "test-driver",
+            "tests",
+            "-m",
+            "patterns/rest-patterns/rest_pattern",
+            "-m",
+            "expressions/",
+            "-m",
+            "values/statics",
+        ]);
+        assert!(cli.selects_path("patterns/rest-patterns/rest_pattern"));
+        assert!(!cli.selects_path("patterns/rest-patterns/rest_pattern_array_binding"));
+        assert!(cli.selects_path("expressions/loop-expressions/loop"));
         assert!(cli.selects_path("values/statics/accepted"));
         assert!(!cli.selects_path("values/statics-and-more/accepted"));
-        let cli = Cli::parse_from(["test-driver", "tests", "-m", "expressions/"]);
-        assert!(cli.selects_path("expressions/loop-expressions/loop"));
+    }
+    #[test]
+    fn unmatched_paths_names_values_without_a_test() {
+        let cli = Cli::parse_from(["test-driver", "tests", "-m", "expresions/", "-m", "values/"]);
+        assert_eq!(
+            cli.unmatched_paths(&[
+                "expressions/loop-expressions/loop",
+                "values/statics/accepted"
+            ]),
+            ["expresions/"]
+        );
     }
 }

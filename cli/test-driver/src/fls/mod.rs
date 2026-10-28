@@ -15,7 +15,7 @@ mod runner;
 pub mod stage;
 mod test;
 
-use anyhow::Result;
+use anyhow::{Result, ensure};
 use hax_types::cli_options::BackendName;
 
 use self::{
@@ -46,6 +46,14 @@ pub async fn run(options: Cli) -> Result<()> {
     let tests = JobKind::ResolveTests
         .run(async |_| test::discover(&fls_dir))
         .await?;
+    // A `--matching` value that names no test is most likely a typo.
+    let paths: Vec<&str> = tests.iter().map(|test| test.path.as_str()).collect();
+    let unmatched = ctx.options.unmatched_paths(&paths);
+    ensure!(
+        unmatched.is_empty(),
+        "--matching selects no FLS test: {}",
+        unmatched.join(", ")
+    );
 
     // Without `--backend`, the suite runs the Lean backend only until an
     // engine runner exists.

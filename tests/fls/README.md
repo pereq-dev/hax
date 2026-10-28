@@ -28,7 +28,7 @@ From the repository root, with `cargo-hax` and the backend toolchain on `PATH`:
 cargo run -p test-driver -- tests --suite fls -b lean
 ```
 
-The observed stage of every test is compared with `tests/fls-results/<backend>.toml`; any difference fails the run and prints the diff. `--matching <path>` restricts the run to the test at that path, such as `<chapter>/<section>/<name>`, or to the tests under it, such as `<chapter>/`; `--no-verify` stops after extraction and skips the comparison.
+The observed stage of every test is compared with `tests/fls-results/<backend>.toml`; any difference fails the run and prints the diff. `--matching <path>` restricts the run to the test at that path, such as `<chapter>/<section>/<name>`, or to the tests under it, such as `<chapter>/`; it may be given several times, and a test runs when it matches any of the values. A value that matches no test fails the run. `--no-verify` stops after extraction and skips the comparison.
 
 The `cargo-hax` on `PATH` must be built from this checkout. The driver rejects a release of another version, but it accepts any build from a git checkout, since the commit such a build reports can be older than the build, and records the package version for it.
 

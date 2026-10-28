@@ -403,11 +403,7 @@ async fn run() -> Result<()> {
                 tests: tests
                     .iter()
                     .filter(|test| !test.off().contains(&backend))
-                    .filter(|test| {
-                        options
-                            .matching()
-                            .map_or(true, |m| test.module_name.contains(m))
-                    })
+                    .filter(|test| options.selects(&test.module_name))
                     .cloned()
                     .collect(),
                 options: options.clone(),
