@@ -45,30 +45,8 @@ F* backend and library:
    extracted client code calls, instead of `impl_Formatter__write_str`
 
 ProVerif backend and library:
- - Add ProVerif as a new backend, running on the Rust engine: printer, phases and
-   resugarings, with source spans and a printer sourcemap. Comes with the
-   `proverif-psk` and `proverif-nsl` examples and an analysis harness
- - Add the ProVerif crypto-abstraction macros of `hax-lib` (`proverif::replace_body`,
-   `pv_inline`, `pv_stub`, `pv_extern`, `pv_inverse_of`), and ship the symbolic model
-   they target (`primitives.pvl`, `cryptolib.pvl`)
- - Add nonce-carrying AEAD (`crypto__aead_enc_n`/`_dec_n`) and result-returning
-   signature/MAC verification (`crypto__sig_verify_result`,
-   `crypto__mac_verify_result`) to `cryptolib.pvl`, for protocols whose argument
-   depends on the nonce or that branch on a verification failure
- - Add `--result-errors` (and the `result-errors` scenario key), which keeps
-   `Err` values and their match arms in the model. By default a `Result` is its
-   `Ok` payload and producing an `Err` ends the trace. The two models ship as
-   `result.pvl` and `result_errors.pvl`, and a model only loads with its own
- - Add `--keep-trait-calls` (and the `keep-trait-calls` scenario key), which
-   keeps calls of the given trait items for a hand-written library to model
- - Mark an incomplete extraction in the model itself: an `INCOMPLETE MODEL`
-   banner listing what could not be expressed, and a
-   `hax_extraction_error__<crate>` query that every ProVerif run reports as
-   failing, since ProVerif answers a query it cannot reach with "true"
- - Support `--assume-items` and `#[hax_lib::pv_handwritten]`, which drop the
-   body of the selected items so that a hand-written model can replace it
- - Mark the branches a model may not follow as Rust does with `HAX WARNING`
-   comments, listed in a `WARNINGS` banner
+ - Breaking: full re-implementation of the backend under the Rust engine. The library
+   scope and its interface with extracted code is also refactored.
 
 ### Changed
 
