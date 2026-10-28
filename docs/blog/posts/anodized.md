@@ -35,8 +35,10 @@ An [example](https://github.com/cryspen/hax/tree/main/examples/anodized) is avai
 ```rust
 use anodized::spec;
 
-#[spec(requires: x <= u8::MAX / 2)]
-#[spec(ensures: *output == 2 * x)]
+#[spec(
+    requires: x <= u8::MAX / 2,
+    ensures: *output == 2 * x,
+)]
 fn double(x: u8) -> u8 {
     x + x
 }
