@@ -25,7 +25,7 @@ fn test() {
 }
 
 mod trait_constants {
-    // https://github.com/cryspen/hax/issues/1928
+    // https://github.com/pereq-dev/hax/issues/1928
     trait Foo {
         const F : u32;
     }

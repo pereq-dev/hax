@@ -100,7 +100,7 @@ Here are some resources for learning more about hax:
  - [Is hax-verified code guaranteed to be correct?](https://hax.cryspen.com/manual/faq/trust/)
  - Other [specifications](https://github.com/hacspec/specs) of cryptographic protocols.
 
-Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/cryspen/hax/discussions). For bugs, file an [Issue](https://github.com/cryspen/hax/issues).
+Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/pereq-dev/hax/discussions). For bugs, file an [Issue](https://github.com/pereq-dev/hax/issues).
 
 ## Usage
 
@@ -162,7 +162,7 @@ Aeneas and Charon themselves need no install step: hax downloads pre-built binar
 To use an unreleased version of `cargo-hax`, install it from a checkout:
 
 ```bash
-git clone https://github.com/cryspen/hax.git && cd hax
+git clone https://github.com/pereq-dev/hax.git && cd hax
 cargo install --locked --path cli/cargo-hax
 ```
 
@@ -186,9 +186,9 @@ The F\*, Rocq/Coq, ProVerif, SSProve, EasyCrypt, and legacy Lean backends need t
 
 Prerequisites: a C compiler, [`opam`](https://opam.ocaml.org/), [`rustup`](https://rustup.rs/), [`nodejs`](https://nodejs.org/), and [`jq`](https://jqlang.github.io/jq/).
 
-1. Clone this repo: `git clone https://github.com/cryspen/hax.git && cd hax`
+1. Clone this repo: `git clone https://github.com/pereq-dev/hax.git && cd hax`
 2. Create (or use an existing) opam *switch* by running `opam switch create hax 5.4.1`
-3. Run the [setup.sh](https://github.com/cryspen/hax/blob/main/setup.sh) script: `./setup.sh`
+3. Run the [setup.sh](https://github.com/pereq-dev/hax/blob/main/setup.sh) script: `./setup.sh`
 4. Run `cargo hax --help`
 
 Note: Please make sure that `$HOME/.cargo/bin` is in your `$PATH`, as
@@ -198,15 +198,15 @@ that is where `setup.sh` will install hax.
 
 Prerequisites: the [Nix package manager](https://nixos.org/) with [flakes](https://wiki.nixos.org/wiki/Flakes) enabled, e.g. installed via the [Determinate Nix Installer](https://github.com/DeterminateSystems/nix-installer).
 
-Install hax with `nix profile install github:cryspen/hax`.
+Install hax with `nix profile install github:pereq-dev/hax`.
 
-Alternatively, run hax on a crate without installing it (from the crate's folder): `nix run github:cryspen/hax -- into <backend>`. To speed up builds with the [hax binary cache](https://app.cachix.org/cache/hax), run `cachix use hax`.
+Alternatively, run hax on a crate without installing it (from the crate's folder): `nix run github:pereq-dev/hax -- into <backend>`. To speed up builds with the [hax binary cache](https://app.cachix.org/cache/hax), run `cachix use hax`.
 
 #### Docker
 
 Prerequisites: [Docker](https://docs.docker.com/get-started/get-docker/).
 
-1. Clone this repo: `git clone https://github.com/cryspen/hax.git && cd hax`
+1. Clone this repo: `git clone https://github.com/pereq-dev/hax.git && cd hax`
 2. Build the docker image: `docker build -f .docker/Dockerfile . -t hax`
 3. Get a shell: `docker run -it --rm -v /some/dir/with/a/crate:/work hax bash`
 
@@ -215,13 +215,13 @@ Inside the container, hax is invoked as `cargo-hax` instead of `cargo hax`.
 
 ## Supported Subset of the Rust Language
 
-hax intends to support full Rust, with one exception that promotes a functional style: mutable references (aka `&mut T`) are forbidden on return types and when aliasing (see https://github.com/cryspen/hax/issues/420).
+hax intends to support full Rust, with one exception that promotes a functional style: mutable references (aka `&mut T`) are forbidden on return types and when aliasing (see https://github.com/pereq-dev/hax/issues/420).
 
-Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
+Each unsupported Rust feature is documented as an issue labeled [`unsupported-rust`](https://github.com/pereq-dev/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust). When the issue is labeled [`wontfix-v1`](https://github.com/pereq-dev/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1), that means we don't plan on supporting that feature soon.
 
 Quicklinks:
- - [🔨 Rejected rust we want to support](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
- - [💭 Rejected rust we don't plan to support in v1](https://github.com/cryspen/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
+ - [🔨 Rejected rust we want to support](https://github.com/pereq-dev/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+-label%3Awontfix%2Cwontfix-v1);
+ - [💭 Rejected rust we don't plan to support in v1](https://github.com/pereq-dev/hax/issues?q=is%3Aissue+is%3Aopen+label%3Aunsupported-rust+label%3Awontfix%2Cwontfix-v1).
 
 ## Publications & Other material
 
@@ -238,7 +238,7 @@ Quicklinks:
 
 ## Contributing
 
-Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/cryspen/hax/discussions), or file an [issue](https://github.com/cryspen/hax/issues) to discuss your contribution. The contribution guidelines are described in [CONTRIBUTING.md](./CONTRIBUTING.md), including the [development setup](./CONTRIBUTING.md#development), the structure of the repository, and the build commands.
+Before starting any work please join the [Zulip chat][chat-link], start a [discussion on Github](https://github.com/pereq-dev/hax/discussions), or file an [issue](https://github.com/pereq-dev/hax/issues) to discuss your contribution. The contribution guidelines are described in [CONTRIBUTING.md](./CONTRIBUTING.md), including the [development setup](./CONTRIBUTING.md#development), the structure of the repository, and the build commands.
 
 
 [chat-link]: https://hacspec.zulipchat.com

@@ -35,7 +35,7 @@ defaults:
 jobs:
   sweep:
     name: mutants (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -92,7 +92,7 @@ jobs:
   report:
     name: survivors common to both cfgs
     needs: sweep
-    if: github.repository == 'cryspen/hax' && always() && needs.sweep.result != 'skipped'
+    if: github.repository == 'pereq-dev/hax' && always() && needs.sweep.result != 'skipped'
     runs-on: ubuntu-latest
     permissions:
       contents: read

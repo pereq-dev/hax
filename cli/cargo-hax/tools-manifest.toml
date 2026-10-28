@@ -21,129 +21,129 @@
 # here, the nightly run verifies the defaults and checks the rest still resolve.
 
 # ---- aeneas -----------------------------------------------------------------
-# Provenance: pre-built archives published by the cryspen/aeneas fork's
+# Provenance: pre-built archives published by the pereq-dev/aeneas fork's
 # releases (upstream: AeneasVerif/aeneas): `nightly-YYYY.MM.DD-<shortsha>`
 # tags from the scheduled nightly builds, `build-<shortsha>` tags from
 # on-demand builds of a specific commit. Archives are flat, with the
 # executable at the archive root.
 
 [tools.aeneas."nightly-2026.07.21-52fd438".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-x86_64.tar.gz"
 sha256 = "5efe308ae41bd195b17bd40d64efef83510698657c8e3964af45827a788d209d"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.07.21-52fd438".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-linux-aarch64.tar.gz"
 sha256 = "53b2907dc12c3b92b30a43fab6f146b1b8f41ef1257f89a675823d5a0cdf9b2f"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.07.21-52fd438".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.07.21-52fd438/aeneas-macos-aarch64.tar.gz"
 sha256 = "791ea4a091f02aa628375a796c76ef33b161fb19d0a45c830aa22af18c74d3d5"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.04-8125bcf".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-linux-x86_64.tar.gz"
 sha256 = "18c467bbf415f02e8ab24960084f05ea81eaa2103c2284ff081c74b8e8223220"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.04-8125bcf".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-linux-aarch64.tar.gz"
 sha256 = "f64e8ad17b41a00d8d514114a2e0533551641f5910396631047e053b0370f145"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.04-8125bcf".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.04-8125bcf/aeneas-macos-aarch64.tar.gz"
 sha256 = "5094612d66e58f091bd5fb2b549a70af989a39cce369c59e2a9a099dd58cd081"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.18-ae2f343".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-linux-x86_64.tar.gz"
 sha256 = "cbc7f4865e62c9929be3ee6ff21fae84a4b37f0d90033759ad367392b9e78ee3"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.18-ae2f343".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-linux-aarch64.tar.gz"
 sha256 = "6be2852c4b4790bb7395229e7bf8ac622591d9477bea8af44cf920f9e3f778fb"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.18-ae2f343".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.18-ae2f343/aeneas-macos-aarch64.tar.gz"
 sha256 = "324a0bfda891a0196af186645cc5eb219ee29b833415eb567085b75ee4cf9e62"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.24-f8a0eb8".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-x86_64.tar.gz"
 sha256 = "e268e3c18e9d024821b8144ccce388ae335dd6a800913da3f0018532390e1a85"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.24-f8a0eb8".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-linux-aarch64.tar.gz"
 sha256 = "7fb030721d5f052fcf6578af6a3d0d61e5e89cf7e1dc0272e2b98520b6ad37fa"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.08.24-f8a0eb8".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.08.24-f8a0eb8/aeneas-macos-aarch64.tar.gz"
 sha256 = "6c25dc83c77df970550ce50b1071cdbe265324df99f038532853291c580f1b93"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.09.03-6852e64".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-linux-x86_64.tar.gz"
 sha256 = "ab069d2ed036afcc6456fd497b6428e708cd3afa1c5e0607152b54ff56efaf16"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.09.03-6852e64".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-linux-aarch64.tar.gz"
 sha256 = "037b68ab50fadee3dd961a4547a0754c90d34961cb4cb9edba326d33271edc87"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.09.03-6852e64".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.09.03-6852e64/aeneas-macos-aarch64.tar.gz"
 sha256 = "6da3ec50ffad504cc9b97f39f55e79a5af1efe811b27471f9383aaa07b41d3de"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."build-183e4f0".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/build-183e4f0/aeneas-linux-x86_64.tar.gz"
 sha256 = "9d3670021746fa911f7e6d767c521e521d03c3bf51cec0176a18f3f06faea44d"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."build-183e4f0".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/build-183e4f0/aeneas-linux-aarch64.tar.gz"
 sha256 = "ee913f37e247b01f5c473166811efe31246347eef09f288f863e322f2a510ece"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."build-183e4f0".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/build-183e4f0/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/build-183e4f0/aeneas-macos-aarch64.tar.gz"
 sha256 = "dd6be33b9f21a8bcfd089f4da9b36ad89be3848d877d812b8ca1ea0f28be86ca"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.10.19-bee38e7".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.10.19-bee38e7/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.10.19-bee38e7/aeneas-linux-x86_64.tar.gz"
 sha256 = "7b3b9d5a7b64e6fe945ec80600e731097d9e72fd0385021c40c2ce21c2a14c62"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.10.19-bee38e7".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.10.19-bee38e7/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.10.19-bee38e7/aeneas-linux-aarch64.tar.gz"
 sha256 = "dc15e8cbcaf89447f96edefab079e31a04cdfde6c6131c7fc306d9cfc348f821"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."nightly-2026.10.19-bee38e7".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/nightly-2026.10.19-bee38e7/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/nightly-2026.10.19-bee38e7/aeneas-macos-aarch64.tar.gz"
 sha256 = "ebc801a4c8259f093392d587a608a065a1b98e9d01d1f0318aadf5dc37c852d2"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."build-41977a5".linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/build-41977a5/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/build-41977a5/aeneas-linux-x86_64.tar.gz"
 sha256 = "0a52d71765eba8b95b2983dd63765a497d4ee210160c664192622d7b8f3a9525"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."build-41977a5".linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/build-41977a5/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/build-41977a5/aeneas-linux-aarch64.tar.gz"
 sha256 = "c7839cf4acc24ac7f7b1b79e2432bfc8d87b4ae435db9b21f20dee43d6f6a02b"
 entry_points = { aeneas = "aeneas" }
 
 [tools.aeneas."build-41977a5".macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/build-41977a5/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/build-41977a5/aeneas-macos-aarch64.tar.gz"
 sha256 = "a6b23e9681ebbbfb95797ffa0bee11f5e8054e84f27a23789da579f39e07f0ea"
 entry_points = { aeneas = "aeneas" }
 
@@ -246,19 +246,19 @@ entry_points = { charon = "charon", charon-driver = "charon-driver" }
 # after this release of hax): `{version}` is substituted with the requested
 # version, the download is not checksum-verified, and a warning is printed.
 # The aeneas template points at the repository the defaults come from
-# (the cryspen fork); versions published only upstream are not reachable
+# (the pereq-dev fork); versions published only upstream are not reachable
 # through it.
 
 [fallback.aeneas.linux-x86_64]
-url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-linux-x86_64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/{version}/aeneas-linux-x86_64.tar.gz"
 entry_points = { aeneas = "aeneas" }
 
 [fallback.aeneas.linux-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-linux-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/{version}/aeneas-linux-aarch64.tar.gz"
 entry_points = { aeneas = "aeneas" }
 
 [fallback.aeneas.macos-aarch64]
-url = "https://github.com/cryspen/aeneas/releases/download/{version}/aeneas-macos-aarch64.tar.gz"
+url = "https://github.com/pereq-dev/aeneas/releases/download/{version}/aeneas-macos-aarch64.tar.gz"
 entry_points = { aeneas = "aeneas" }
 
 [fallback.charon.linux-x86_64]

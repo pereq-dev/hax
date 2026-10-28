@@ -23,7 +23,7 @@ Definition double_sum '(_ : unit) : t_i32 :=
       let hoist7 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
-This is discussed in issue https://github.com/hacspec/hax/issues/15.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/15.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `CfIntoMonads`.
 "%string : string)) (("(break (Tuple0))"%string : string)) in
@@ -46,7 +46,7 @@ Definition double_sum2 '(_ : unit) : t_i32 :=
       let hoist8 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
-This is discussed in issue https://github.com/hacspec/hax/issues/15.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/15.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `CfIntoMonads`.
 "%string : string)) (("(break (Tuple0))"%string : string)) in
@@ -92,7 +92,7 @@ Definition bigger_power_2_ (x : t_i32) : t_i32 :=
   let pow := failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
@@ -142,7 +142,7 @@ Definition nested '(_ : unit) : t_i32 :=
         let hoist16 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
-This is discussed in issue https://github.com/hacspec/hax/issues/15.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/15.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `CfIntoMonads`.
 "%string : string)) (("(break (Tuple0))"%string : string)) in
@@ -210,7 +210,7 @@ Note: the error was labeled with context `reject_Continue`.
       let hoist18 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
-This is discussed in issue https://github.com/hacspec/hax/issues/15.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/15.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `CfIntoMonads`.
 "%string : string)) (("(break (Tuple0))"%string : string)) in

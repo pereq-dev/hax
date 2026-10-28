@@ -9,7 +9,7 @@ pub struct TryFromSliceError;
 #[cfg_attr(hax_backend_fstar, hax_lib::exclude)]
 struct Array<T, const N: usize>([T; N]);
 
-// Array impls to get the right disambiguator (https://github.com/cryspen/hax/issues/828)
+// Array impls to get the right disambiguator (https://github.com/pereq-dev/hax/issues/828)
 impl<T> Array<T, 0> {}
 impl<T> Array<T, 0> {}
 impl<T> Array<T, 0> {}
@@ -110,7 +110,7 @@ where
 }
 
 /// Mirrors the `Index<I>` impl above; without it, writing through a range does
-/// not extract (cryspen/hax#2174). Lean-only, like the slice impl it delegates to.
+/// not extract (pereq-dev/hax#2174). Lean-only, like the slice impl it delegates to.
 #[cfg(not(hax_backend_fstar))]
 #[hax_lib::attributes]
 #[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]

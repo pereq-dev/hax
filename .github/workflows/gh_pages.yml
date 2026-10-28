@@ -11,7 +11,7 @@ on:
 jobs:
   # Build job
   build:
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     steps:
       # A call from the `release` workflow runs on the release tag; the site
@@ -60,7 +60,7 @@ jobs:
           path: result/
   # Deploy job
   deploy:
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     needs: build
     permissions:
       pages: write      # to deploy to Pages

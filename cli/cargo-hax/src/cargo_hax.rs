@@ -400,7 +400,7 @@ fn run_engine(
 /// then this function taints the hax version with the hash of the
 /// current executable. This makes sure cargo doesn't cache across
 /// different versions of hax, for more information see
-/// https://github.com/hacspec/hax/issues/801.
+/// https://github.com/pereq-dev/hax/issues/801.
 fn get_hax_version() -> String {
     let mut version = hax_types::HAX_VERSION.to_string();
     if env!("HAX_GIT_IS_DIRTY") == "true" {
@@ -439,7 +439,7 @@ fn get_hax_rustc_driver_path(message_format: MessageFormat) -> PathBuf {
                       `cargo-hax` installation does not provide: only `cargo hax into lean`, \
                       `cargo hax extract` for Lean scenarios, and `cargo hax tools` are \
                       available. To use the other commands, install the full toolchain as \
-                      documented at https://github.com/cryspen/hax#for-all-backends."
+                      documented at https://github.com/pereq-dev/hax#for-all-backends."
                 .into(),
         }
         .report(message_format, None);

@@ -70,7 +70,7 @@ mod rewrite_self {
                 "hax: an associated type of `Self` cannot be used in the signature of a \
                  trait method carrying a specification. Attach the specification to the \
                  implementations instead. See \
-                 https://github.com/cryspen/hax/issues/2089.",
+                 https://github.com/pereq-dev/hax/issues/2089.",
             ));
         }
 

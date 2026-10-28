@@ -70,7 +70,7 @@ let e_internal_while_loop_invariant (_: Hax_lib.Prop.t_Prop) : Prims.unit = ()
 
 (* item error backend: The mutation of this &mut is not allowed here.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/420.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/420.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `DirectAndMut`.
 

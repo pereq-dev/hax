@@ -629,7 +629,7 @@ where
             let s = &s.with_base(Base {
                 // Rust doesn't enforce bounds on generic parameters in type aliases. Thus, when
                 // translating type aliases, we need to disable trait resolution errors. For more
-                // details, please see https://github.com/hacspec/hax/issues/707.
+                // details, please see https://github.com/pereq-dev/hax/issues/707.
                 silence_resolution_errors: true,
                 ..s.base()
             });

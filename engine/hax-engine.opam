@@ -8,9 +8,9 @@ maintainer: ["Hax Authors"]
 authors: ["Hax Authors"]
 license: "Apache-2.0"
 tags: ["topics" "rust" "verification"]
-homepage: "https://github.com/hacspec/hax"
+homepage: "https://github.com/pereq-dev/hax"
 doc: "https://hacspec.org/hax/"
-bug-reports: "https://github.com/hacspec/hax/issues"
+bug-reports: "https://github.com/pereq-dev/hax/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.0"}
@@ -52,7 +52,7 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/hacspec/hax.git"
+dev-repo: "git+https://github.com/pereq-dev/hax.git"
 depexts: [
   ["nodejs"] {}
 ]

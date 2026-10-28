@@ -33,6 +33,10 @@ Changes to the hax-lib crate:
 Changes to the frontend:
  - Impls now list the bounds on the generic parameters of their trait as parent bounds (#1554)
 
+F* backend and library:
+ - `Formatter::write_str` is now `Core_models.Fmt.impl_11__write_str`, the name
+   extracted client code calls, instead of `impl_Formatter__write_str`
+
 ### Changed
 
 Lean backend and library:

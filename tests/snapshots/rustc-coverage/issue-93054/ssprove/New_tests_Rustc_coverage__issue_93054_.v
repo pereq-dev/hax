@@ -50,7 +50,7 @@ Equations foo2 (never : both t_Never) : both (t_Failure (both 'bool)) :=
     failure (ret_both (something is not implemented yet.
 Got type `Coroutine`: coroutines are not supported by hax
 
-This is discussed in issue https://github.com/hacspec/hax/issues/924.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/924.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
  : chString)) (ret_both ( : chString)) : both (t_Failure (both 'bool)).

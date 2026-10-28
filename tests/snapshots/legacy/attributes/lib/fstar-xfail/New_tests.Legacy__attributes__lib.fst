@@ -55,7 +55,7 @@ type t_Foo = {
   f_z:f_z: u32{b2t (((f_y +! f_x <: u32) +! f_z <: u32) >. mk_u32 3 <: bool)}
 }
 
-/// Regression test for https://github.com/cryspen/hax/issues/899: a refinement
+/// Regression test for https://github.com/pereq-dev/hax/issues/899: a refinement
 /// on a struct field may mention a const generic (here `LEN`), both in a field
 /// type and in the refinement formula itself.
 type t_FooConstGeneric (v_LEN: usize) = {

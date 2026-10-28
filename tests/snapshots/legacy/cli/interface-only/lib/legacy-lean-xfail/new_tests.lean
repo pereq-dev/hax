@@ -44,7 +44,7 @@ def Impl.from_hoisted sorry : RustM Bar := do (pure Bar.mk)
 
 --  Non-inherent implementations are extracted, their bodies are not
 --  dropped. This might be a bit surprising: see
---  https://github.com/hacspec/hax/issues/616.
+--  https://github.com/pereq-dev/hax/issues/616.
 @[reducible] instance Impl.AssociatedTypes :
   core_models.convert.From.AssociatedTypes Bar rust_primitives.hax.Tuple0
   where

@@ -798,7 +798,7 @@ struct
 
       method literal_Bool x1 = string (if x1 then "true" else "false")
 
-      (* This is wrong for non-ASCII chars: https://github.com/cryspen/hax/issues/1953 *)
+      (* This is wrong for non-ASCII chars: https://github.com/pereq-dev/hax/issues/1953 *)
       method literal_Char x1 =
         string "\""
         ^^ string (Char.escaped (String.get x1 0))

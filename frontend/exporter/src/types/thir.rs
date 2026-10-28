@@ -668,7 +668,7 @@ pub enum ExprKind {
         value: Expr,
     },
     /// Resugared macros calls. This is deprecated: see
-    /// <https://github.com/hacspec/hax/issues/145>.
+    /// <https://github.com/pereq-dev/hax/issues/145>.
     If {
         if_then_scope: Scope,
         cond: Expr,

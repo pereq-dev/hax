@@ -23,7 +23,7 @@ Definition while_cond '(_ : unit) : (t_i32*unit) :=
   (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
@@ -48,7 +48,7 @@ Definition while_cond_not '(_ : unit) : (t_i32*unit) :=
   (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
@@ -73,7 +73,7 @@ Definition while_op_and '(_ : unit) : ((t_i32*t_i32)*unit) :=
   (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
@@ -96,7 +96,7 @@ Definition while_op_or '(_ : unit) : ((t_i32*t_i32)*unit) :=
   (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{

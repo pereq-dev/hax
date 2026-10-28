@@ -193,7 +193,7 @@ let empty_array (_: Prims.unit) : Prims.unit =
   in
   ()
 
-/// https://github.com/hacspec/hax/issues/500
+/// https://github.com/pereq-dev/hax/issues/500
 let fn_pointer_cast (_: Prims.unit) : Prims.unit =
   let (f: (u32 -> u32)): u32 -> u32 = fun x -> x in
   ()

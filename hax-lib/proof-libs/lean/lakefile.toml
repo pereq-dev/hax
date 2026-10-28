@@ -1,5 +1,5 @@
 name = "hax"
-version = "0.3.36"
+version = "0.3.38"
 defaultTargets = ["Hax", "CoreModels"]
 
 [[lean_lib]]
@@ -15,5 +15,5 @@ name = "Tests"
 
 [[require]]
 name = "aeneas"
-git = { url = "https://github.com/cryspen/aeneas", subDir = "backends/lean" }
+git = { url = "https://github.com/pereq-dev/aeneas", subDir = "backends/lean" }
 rev = "41977a5c4d200838c3db2997e962f2e2d079ab68"

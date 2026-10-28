@@ -35,7 +35,7 @@ Equations accept_7_conditions (bool_arr : both (nseq 'bool 7)) : both 'unit :=
     failure (ret_both (something is not implemented yet.
 Pat:Array
 
-This is discussed in issue https://github.com/hacspec/hax/issues/804.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/804.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
  : chString)) (ret_both ( : chString)) : both 'unit.

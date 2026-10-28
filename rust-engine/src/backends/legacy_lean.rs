@@ -252,7 +252,7 @@ impl LeanPrinter {
     }
 
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
-    /// and projector ids. TODO: https://github.com/cryspen/hax/issues/1660
+    /// and projector ids. TODO: https://github.com/pereq-dev/hax/issues/1660
     pub fn render_id(&self, id: &GlobalId) -> String {
         let id = if !self.is_hax_core_models_extraction_mode() && id.krate() == "core" {
             id.rename_krate("core_models")
@@ -268,20 +268,20 @@ impl LeanPrinter {
             .path
             .last()
             // TODO: Should be ensured by the rendering engine; see
-            // https://github.com/cryspen/hax/issues/1660
+            // https://github.com/pereq-dev/hax/issues/1660
             .expect("Segments should always be non-empty")
             .clone()
     }
 
     /// Inject an identifier in before-last position while rendering
-    /// TODO: use `DefIdInner::kind` for this instead (https://github.com/cryspen/hax/issues/1877)
+    /// TODO: use `DefIdInner::kind` for this instead (https://github.com/pereq-dev/hax/issues/1877)
     pub fn render_with_injection(&self, id: &GlobalId, injection: &String) -> String {
         let rendered = self.render(&id.view());
         let (last, butlast) = rendered
             .path
             .split_last()
             // TODO: Should be ensured by the rendering engine; see
-            // https://github.com/cryspen/hax/issues/1660
+            // https://github.com/pereq-dev/hax/issues/1660
             .expect("Segments should always be non-empty");
         let path: Vec<String> = butlast
             .iter()
@@ -427,7 +427,7 @@ const _: () = {
                 params.iter().map(|param| {
                     let Ty(ty_kind) = &param.ty;
                     // We need to print arguments of type `Tuple0` as `⟨⟩` instead of `_`
-                    // https://github.com/cryspen/hax/issues/1856
+                    // https://github.com/pereq-dev/hax/issues/1856
                     if let TyKind::App { head, .. } = **ty_kind
                         && let Some(global_id::TupleId::Type { length: 0 }) = head.expect_tuple()
                     {
@@ -1073,7 +1073,7 @@ const _: () = {
                                 "let",
                                 line!(),
                                 // TODO: Improve treatment of patterns in general. see
-                                // https://github.com/cryspen/hax/issues/1712
+                                // https://github.com/pereq-dev/hax/issues/1712
                                 match *lhs.kind.clone() {
                                     PatKind::Ascription { .. } =>
                                         docs![lhs, reflow!(" : "), &lhs.ty],
@@ -1292,7 +1292,7 @@ const _: () = {
                     }
                 }
                 PatKind::Error(_) => {
-                    // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672
+                    // TODO : Should be made unreachable by https://github.com/pereq-dev/hax/pull/1672
                     text!("sorry")
                 }
             }
@@ -1388,7 +1388,7 @@ const _: () = {
         }
 
         fn local_id(&self, local_id: &LocalId) -> DocBuilder<A> {
-            // TODO: should be done by name rendering, see https://github.com/cryspen/hax/issues/1630
+            // TODO: should be done by name rendering, see https://github.com/pereq-dev/hax/issues/1630
             docs![Self::escape(&local_id.0)]
         }
 
@@ -1551,7 +1551,7 @@ const _: () = {
                         .group()
                         .nest(INDENT)
                     }
-                    // TODO: use a resugaring, see https://github.com/cryspen/hax/issues/1668
+                    // TODO: use a resugaring, see https://github.com/pereq-dev/hax/issues/1668
                     else if *is_struct {
                         // Structures
                         let Some(variant) = variants.first() else {
@@ -1792,7 +1792,7 @@ const _: () = {
                                 hardline!(),
                                 items.iter().filter(|item| {!(
                                     // TODO: should be treated directly by name rendering, see :
-                                    // https://github.com/cryspen/hax/issues/1646
+                                    // https://github.com/pereq-dev/hax/issues/1646
                                     item.ident.is_precondition() || item.ident.is_postcondition() ||
                                     // Associated types are encoded in a separate type class.
                                     matches!(item.kind, TraitItemKind::Type(_))
@@ -1906,7 +1906,7 @@ const _: () = {
                                 items.iter().filter(|item| {
                                     !(
                                         // TODO: should be treated directly by name rendering, see :
-                                        // https://github.com/cryspen/hax/issues/1646
+                                        // https://github.com/pereq-dev/hax/issues/1646
                                         item.ident.is_precondition() || item.ident.is_postcondition() ||
                                         // Associated types are encoded into a separate type class
                                         matches!(item.kind, ImplItemKind::Type { .. })
@@ -2186,7 +2186,7 @@ const _: () = {
         }
 
         fn error_node(&self, _error_node: &ErrorNode) -> DocBuilder<A> {
-            // TODO : Should be made unreachable by https://github.com/cryspen/hax/pull/1672
+            // TODO : Should be made unreachable by https://github.com/pereq-dev/hax/pull/1672
             text!("sorry")
         }
 

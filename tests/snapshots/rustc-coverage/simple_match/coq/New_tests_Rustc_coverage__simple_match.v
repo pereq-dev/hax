@@ -28,7 +28,7 @@ Definition main '(_ : unit) : (unit*unit) :=
     failure (("something is not implemented yet.
 Sorry, Hax does not support declare-first let bindings (see https://doc.rust-lang.org/rust-by-example/variable_bindings/declare.html) for now.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/156.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/156.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
 "%string : string)) ((""%string : string))),tt).

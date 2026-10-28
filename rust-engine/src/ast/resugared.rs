@@ -47,7 +47,7 @@ pub enum ResugaredItemKind {
 
 /// Resugared variants for expressions. This represent extra printing-only expressions, see [`super::ExprKind::Resugared`].
 #[derive_group_for_ast]
-// TODO: drop `clippy::large_enum_variant` when https://github.com/cryspen/hax/issues/1666 is addressed.
+// TODO: drop `clippy::large_enum_variant` when https://github.com/pereq-dev/hax/issues/1666 is addressed.
 #[allow(clippy::large_enum_variant)]
 pub enum ResugaredExprKind {
     /// A tuple constructor.

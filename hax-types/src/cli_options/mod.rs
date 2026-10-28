@@ -522,7 +522,7 @@ pub struct BackendOptions<E: Extension> {
     /// synonyms can ommit generic bounds, which are ususally
     /// necessary in the hax backends, leading to typechecking
     /// errors. For more details see
-    /// https://github.com/hacspec/hax/issues/708.
+    /// https://github.com/pereq-dev/hax/issues/708.
     #[arg(long)]
     pub extract_type_aliases: bool,
 

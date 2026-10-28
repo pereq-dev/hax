@@ -672,7 +672,7 @@ struct
   let pliteral (e : Ast.literal) =
     match e with
     | String s -> SSP.AST.Const_string s
-    (* This is wrong for non-ASCII chars: https://github.com/cryspen/hax/issues/1953 *)
+    (* This is wrong for non-ASCII chars: https://github.com/pereq-dev/hax/issues/1953 *)
     | Char c -> SSP.AST.Const_char (Char.to_int (String.get c 0))
     | Int { value; kind; _ } -> SSP.AST.Const_int (value, pint_kind kind)
     | Float _ -> failwith "Float: todo"

@@ -8,7 +8,7 @@
    "inherited": false,
    "dir": "../../../../../hax-lib/proof-libs/lean",
    "configFile": "lakefile.toml"},
-  {"url": "https://github.com/cryspen/aeneas",
+  {"url": "https://github.com/pereq-dev/aeneas",
    "type": "git",
    "subDir": "backends/lean",
    "scope": "",

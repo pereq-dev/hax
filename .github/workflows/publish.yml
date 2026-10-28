@@ -23,7 +23,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.repository == 'cryspen/hax' && github.ref == 'refs/heads/main'
+    if: github.repository == 'pereq-dev/hax' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     # Requires an approval by a second maintainer and is restricted to `main`;

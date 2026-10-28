@@ -309,11 +309,11 @@ pub enum GenericParamKind<Body: IsBody> {
         /// On use site, Rust always give us all the generic
         /// parameters, no matter the defaultness. This information is
         /// thus not so useful. At the same time, as discussed in
-        /// https://github.com/hacspec/hax/issues/310, extracting this
+        /// https://github.com/pereq-dev/hax/issues/310, extracting this
         /// default type causes failures when querying Rust for trait
         /// resolution. We thus decided to disable this feature. If
         /// this default type information is useful to you, please
-        /// open an issue on https://github.com/hacspec/hax.
+        /// open an issue on https://github.com/pereq-dev/hax.
         #[map(x.map(|_ty| ()))]
         default: Option<()>,
         synthetic: bool,
@@ -660,7 +660,7 @@ pub enum ItemKind<Body: IsBody> {
         #[map({
             // Rust doesn't enforce bounds on generic parameters in type aliases. Thus, when
             // translating type aliases, we need to disable trait resolution errors. For more
-            // details, please see https://github.com/hacspec/hax/issues/707.
+            // details, please see https://github.com/pereq-dev/hax/issues/707.
             let s = &s.with_base(Base { silence_resolution_errors: true, ..s.base() });
             x.sinto(s)
         })]

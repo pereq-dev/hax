@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   test:
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     permissions:
       contents: read
       issues: write

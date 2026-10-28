@@ -95,7 +95,7 @@ type t_Bar = | Bar : t_Bar
 
 /// Non-inherent implementations are extracted, their bodies are not
 /// dropped. This might be a bit surprising: see
-/// https://github.com/hacspec/hax/issues/616.
+/// https://github.com/pereq-dev/hax/issues/616.
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: Core_models.Convert.t_From t_Bar Prims.unit =
   {

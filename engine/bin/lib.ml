@@ -157,7 +157,7 @@ let run (options : Types.engine_options) : Types.output =
               ^ [%show: Types.backend] backend
               ^ "`. This backend uses the newer rust engine. Please report \
                  this issue on our GitHub repository: \
-                 https://github.com/cryspen/hax."))
+                 https://github.com/pereq-dev/hax."))
   in
   {
     diagnostics = List.map ~f:Diagnostics.to_thir_diagnostic diagnostics;

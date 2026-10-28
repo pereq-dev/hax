@@ -850,7 +850,7 @@ pub mod vec {
             seq_to_slice(&self.0)
         }
         // Returns `&mut [T]`, which the F* backend cannot model (HAX0003/HAX0010,
-        // hacspec/hax#420). Only the `cfg(not(hax_backend_fstar))` `Vec` block gets
+        // pereq-dev/hax#420). Only the `cfg(not(hax_backend_fstar))` `Vec` block gets
         // it, and only `DerefMut for Vec` (same gating) uses it.
         pub fn as_mut_slice(&mut self) -> &mut [T] {
             seq_to_slice_mut(&mut self.0)
@@ -1003,7 +1003,7 @@ pub mod vec {
     }
 
     // Excluded from the F* backend to match `core::ops::DerefMut`, which is not
-    // extracted there (HAX0003, hacspec/hax#420); aeneas/lean/native keep it.
+    // extracted there (HAX0003, pereq-dev/hax#420); aeneas/lean/native keep it.
     #[cfg(not(hax_backend_fstar))]
     #[hax_lib::attributes]
     impl<T> core::ops::DerefMut for Vec<T> {

@@ -1,6 +1,6 @@
 # hax frontend exporter
 
-The frontend of [hax](https://github.com/cryspen/hax): a library that hooks into the Rust compiler and exports its internal typed abstract syntax tree [THIR](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
+The frontend of [hax](https://github.com/pereq-dev/hax): a library that hooks into the Rust compiler and exports its internal typed abstract syntax tree [THIR](https://rustc-dev-guide.rust-lang.org/thir.html) as JSON.
 It mirrors the internal types of the Rust compiler as self-contained, serializable data types, translated via the `SInto` trait.
 
 ## Special core extraction mode

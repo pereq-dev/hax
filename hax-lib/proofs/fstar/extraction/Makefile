@@ -11,7 +11,7 @@
 #  2. `cargo`, `rustup`, `hax` and `jq` to be installed and in PATH.
 #
 #  3. the extracted Cargo crate to have "hax-lib" as a dependency:
-#     `hax-lib = { version = "0.1.0-pre.1", git = "https://github.com/cryspen/hax"}`
+#     `hax-lib = { version = "0.1.0-pre.1", git = "https://github.com/pereq-dev/hax"}`
 #
 # Optionally, you can set `HACL_HOME`.
 #

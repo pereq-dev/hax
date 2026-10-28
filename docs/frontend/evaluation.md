@@ -85,7 +85,7 @@ explains roughly half of these issues.
 
 The errors shown in **red**, however, are directly related to hax. The
 binder-related panics are a [known
-bug](https://github.com/cryspen/hax/issues/1046). Additionally, the stack
+bug](https://github.com/pereq-dev/hax/issues/1046). Additionally, the stack
 overflow errors occur due to specific code paths in the Rust compiler being
 incorrectly triggered by hax. Ultimately, only **1.6%** of crates encounter such
 hax-specific bugs.

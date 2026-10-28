@@ -25,7 +25,7 @@ pub fn test_index_range_to_full() -> bool {
 
 // ----- IndexMut --------------------------------------------------------------
 //
-// The write-back offsets of `<[T; N] as IndexMut<I>>::index_mut` (cryspen/hax#2174).
+// The write-back offsets of `<[T; N] as IndexMut<I>>::index_mut` (pereq-dev/hax#2174).
 
 #[rust_lean_test]
 pub fn test_index_mut_range_middle() -> bool {

@@ -338,7 +338,7 @@ module Make (F : Features.T) = struct
                         };
                   }
             (* Match scrutinees need to be ascribed as well
-               (see https://github.com/hacspec/hax/issues/1207).*)
+               (see https://github.com/pereq-dev/hax/issues/1207).*)
             | Match { scrutinee; arms } ->
                 { e with e = Match { scrutinee = ascribe scrutinee; arms } }
             | _ ->

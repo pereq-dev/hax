@@ -28,7 +28,7 @@ From Core Require Import Core.
 Definition block_on `{v_F : Type} `{t_Future (v_F)} (future : v_F) : f_Output :=
   failure (("The mutation of this &mut is not allowed here.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/420.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/420.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `DirectAndMut`.
 "%string : string)) (("{

@@ -39,13 +39,13 @@ Definition if_let_chain (a : t_Option ((string))) (b : t_Option ((string))) : un
     andb (failure (("something is not implemented yet.
 Let-chains (e.g. `if let .. && let ..`) are not supported.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/2018.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/2018.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
 "%string : string)) ((""%string : string))) (failure (("something is not implemented yet.
 Let-chains (e.g. `if let .. && let ..`) are not supported.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/2018.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/2018.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
 "%string : string)) ((""%string : string)))

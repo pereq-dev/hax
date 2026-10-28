@@ -9,10 +9,10 @@ module%inlined_contents Make (F : Features.T) = struct
 
   type id_order = int
 
-  (* TODO: Swap to Concrete_ident see: https://github.com/hacspec/hax/issues/375 *)
+  (* TODO: Swap to Concrete_ident see: https://github.com/pereq-dev/hax/issues/375 *)
   type pre_data = concrete_ident list Map.M(String).t
 
-  (* TODO: Swap to Concrete_ident see: https://github.com/hacspec/hax/issues/375 *)
+  (* TODO: Swap to Concrete_ident see: https://github.com/pereq-dev/hax/issues/375 *)
   type analysis_data =
     (Local_ident.t list * (U.TypedLocalIdent.t * id_order) list)
     (* external mut_vars and new variables (e.g. needs def / local) *)

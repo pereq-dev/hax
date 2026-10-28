@@ -34,7 +34,7 @@ Equations main (_ : both 'unit) : both 'unit :=
   main _  :=
     failure (ret_both (The bindings ["countdown"] cannot be mutated here: they don't belong to the closure scope, and this is not allowed.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/1060.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/1060.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `LocalMutation`.
  : chString)) (ret_both ({

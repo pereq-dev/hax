@@ -155,7 +155,7 @@ let c_attrs : Thir.attribute list -> attrs = List.filter_map ~f:c_attr
 let c_item_attrs (attrs : Thir.item_attributes) : attrs =
   (* TODO: This is a quite coarse approximation, we need to reflect
      that parent/self structure in our AST. See
-     https://github.com/hacspec/hax/issues/123. *)
+     https://github.com/pereq-dev/hax/issues/123. *)
   let self = c_attrs attrs.attributes in
   let parent =
     c_attrs attrs.parent_attributes
@@ -1875,7 +1875,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
               (* TODO: introduce a Kind.TraitImplItem or
                  something. Otherwise we have to assume every
                  backend will see traits and impls as
-                 records. See https://github.com/hacspec/hax/issues/271. *)
+                 records. See https://github.com/pereq-dev/hax/issues/271. *)
               let ii_ident =
                 Concrete_ident.of_def_id ~value:false item.owner_id
               in

@@ -61,7 +61,7 @@ impl<T> Option<T> {
     }
 
     /// See [`std::option::Option::as_mut`]
-    // The `ref mut` binding trips hax's `&mut` restriction (HAX0003, hacspec/hax#420),
+    // The `ref mut` binding trips hax's `&mut` restriction (HAX0003, pereq-dev/hax#420),
     // so this is excluded from the F* backend; aeneas/lean/native keep it.
     #[cfg(not(hax_backend_fstar))]
     pub fn as_mut(&mut self) -> Option<&mut T> {

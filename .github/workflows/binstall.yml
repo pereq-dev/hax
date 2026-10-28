@@ -32,7 +32,7 @@ jobs:
   # The platforms the release workflow builds archives for, read from the file
   # both workflows share, so a release is tested on every platform it ships.
   targets:
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.targets.outputs.matrix }}

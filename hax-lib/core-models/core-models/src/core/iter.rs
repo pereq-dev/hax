@@ -713,7 +713,7 @@ pub mod adapters {
         use super::super::traits::iterator::Iterator;
         use crate::option::Option;
         /// See [`std::iter::Flatten`]
-        #[hax_lib::fstar::before("noeq")] // https://github.com/cryspen/hax/issues/1810
+        #[hax_lib::fstar::before("noeq")] // https://github.com/pereq-dev/hax/issues/1810
         pub struct Flatten<I: Iterator>
         where
             I::Item: Iterator,

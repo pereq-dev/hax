@@ -39,7 +39,7 @@ Instance t_From_238018732 `{v_T : Type} `{t_Foo (v_T)} : t_From ((t_W ((v_T)))) 
       failure (("something is not implemented yet.
 Pat:Array
 
-This is discussed in issue https://github.com/hacspec/hax/issues/804.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/804.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
 "%string : string)) ((""%string : string));

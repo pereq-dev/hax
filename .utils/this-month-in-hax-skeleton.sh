@@ -8,8 +8,8 @@ set -e
 # Go to the folder of blog posts
 cd $(git rev-parse --show-toplevel)/docs/blog/posts/this-month-in-hax
 
-# By default, use `cryspen/hax`, and the month and year from two weeks ago
-repo="--repo cryspen/hax"
+# By default, use `pereq-dev/hax`, and the month and year from two weeks ago
+repo="--repo pereq-dev/hax"
 month=$(date -d "14 days ago" +'%m')
 year=$(date -d "14 days ago" +'%Y')
 
@@ -115,7 +115,7 @@ assignees: $(handle_of $author)
 
 This is an auto-generated issue for the "This Month in hax" blog series.
 
-Branch [\`$BRANCH\`](https://github.com/cryspen/hax/tree/$BRANCH) have been created with the following template:
+Branch [\`$BRANCH\`](https://github.com/pereq-dev/hax/tree/$BRANCH) have been created with the following template:
 \`\`\`md
 $(echo "$BLOG_POST")
 \`\`\`

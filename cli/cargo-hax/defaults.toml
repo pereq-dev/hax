@@ -19,7 +19,7 @@ lean = "leanprover/lean4:v4.35.0"
 # The Lean library that extracted code builds against. This is a tag in
 # `cryspen/hax-lean`, pushed by `.github/workflows/deploy_hax_lean.yml`; it
 # must match `version` in `hax-lib/proof-libs/lean/lakefile.toml`.
-hax-lean-lib = "v0.3.36"
+hax-lean-lib = "v0.3.38"
 
 # The default opaque set for proof scenarios: trait impls that are
 # routinely derived but rarely worth translating. Applied to every Lean

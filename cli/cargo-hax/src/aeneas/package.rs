@@ -22,7 +22,7 @@ use std::path::{Path, PathBuf};
 /// The source repository of the aeneas Lean proof library: the repository
 /// the managed aeneas binaries are built from, so a resolved aeneas
 /// version doubles as the library's rev.
-const AENEAS_REPO: &str = "https://github.com/cryspen/aeneas";
+const AENEAS_REPO: &str = "https://github.com/pereq-dev/aeneas";
 
 /// The source repository of the `hax` Lean proof library.
 const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";

@@ -24,6 +24,6 @@ let impl (#v_T: Type0) (#[FStar.Tactics.Typeclasses.tcresolve ()] i0: t_Foo v_T)
     f_from
     =
     fun (from: t_Array i0.f_Assoc (mk_usize 1)) ->
-      Rust_primitives.Hax.failure "something is not implemented yet.\nPat:Array\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/804.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
+      Rust_primitives.Hax.failure "something is not implemented yet.\nPat:Array\n\nThis is discussed in issue https://github.com/pereq-dev/hax/issues/804.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
         ""
   }

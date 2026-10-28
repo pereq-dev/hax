@@ -13,7 +13,7 @@ let impl_Never__bar (self: t_Never) : Prims.unit =
 /// @fail(extraction): fstar(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001), coq(HAX0001)
 /// @fail(extraction): proverif(HAX0001)
 let foo2 (never: t_Never) : Rust_primitives.Hax.t_Failure "" =
-  Rust_primitives.Hax.failure "something is not implemented yet.\nGot type `Coroutine`: coroutines are not supported by hax\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/924.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
+  Rust_primitives.Hax.failure "something is not implemented yet.\nGot type `Coroutine`: coroutines are not supported by hax\n\nThis is discussed in issue https://github.com/pereq-dev/hax/issues/924.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
     ""
 
 let make (_: Prims.unit) : Core_models.Option.t_Option t_Never =

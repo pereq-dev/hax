@@ -27,7 +27,7 @@
    "inputRev": "v4.35.0",
    "inherited": false,
    "configFile": "lakefile.lean"},
-  {"url": "https://github.com/cryspen/aeneas",
+  {"url": "https://github.com/pereq-dev/aeneas",
    "type": "git",
    "subDir": "backends/lean",
    "scope": "",

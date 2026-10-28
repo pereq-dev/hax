@@ -193,7 +193,7 @@ check-examples:
   just _ensure_command_in_path rg "ripgrep (https://github.com/BurntSushi/ripgrep)"
   just _ensure_command_in_path sd "sd (https://github.com/chmln/sd)"
   diff -U0 \
-      <(gh issue -R hacspec/hax list --label 'marked-unimplemented' --json number,closed -L 200 \
+      <(gh issue -R pereq-dev/hax list --label 'marked-unimplemented' --json number,closed -L 200 \
            | jq '.[] | select(.closed | not) | .number' | sort -u) \
       <(rg 'issue_id:(\d+)' -Ior '$1' | sort -u) \
       | rg '^[+-]\d' \

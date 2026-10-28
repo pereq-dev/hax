@@ -1,4 +1,4 @@
-//! Regression test for https://github.com/cryspen/hax/issues/2026.
+//! Regression test for https://github.com/pereq-dev/hax/issues/2026.
 //!
 //! The item quote macros `hax_lib::<backend>::{before,after,replace}` expand to
 //! two things: an `AssociatedItem` marker attribute on the decorated item, and a

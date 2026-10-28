@@ -1,5 +1,5 @@
 //! Bounds on the generic parameters of a trait are parent bounds of its impls,
-//! just like its supertraits (https://github.com/cryspen/hax/issues/1554).
+//! just like its supertraits (https://github.com/pereq-dev/hax/issues/1554).
 //! @off: coq, ssprove, proverif
 
 #![allow(dead_code)]

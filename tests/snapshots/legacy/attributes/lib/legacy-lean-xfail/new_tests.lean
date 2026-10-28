@@ -194,7 +194,7 @@ structure Foo where
   y : u32
   z : u32
 
---  Regression test for https://github.com/cryspen/hax/issues/899: a refinement
+--  Regression test for https://github.com/pereq-dev/hax/issues/899: a refinement
 --  on a struct field may mention a const generic (here `LEN`), both in a field
 --  type and in the refinement formula itself.
 structure FooConstGeneric (LEN : usize) where

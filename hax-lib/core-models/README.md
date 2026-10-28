@@ -10,7 +10,7 @@ A model of Rust's `core` and `alloc` libraries, packaged as:
    downstream Aeneas-extracted Lean projects to depend on as a drop-in
    `core` model.
 3. An **F\* library** extracted from the same crates by
-   [hax](https://github.com/cryspen/hax) into
+   [hax](https://github.com/pereq-dev/hax) into
    [`../proof-libs/fstar/core`](../proof-libs/fstar/core), where the
    generated files sit alongside hand-written F\* models.
 4. A **test suite** (`tests/`) split into two surfaces:

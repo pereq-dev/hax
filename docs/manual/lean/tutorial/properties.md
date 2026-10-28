@@ -47,7 +47,7 @@ Finally, rerun `lake build` to verify the proof.
 
 ## See more examples
 The property that we prove above demonstrates a very simple case of a proof using hax and Lean. For a more complex example, have a look at the
-[`examples`](https://github.com/cryspen/hax/tree/main/examples) 
+[`examples`](https://github.com/pereq-dev/hax/tree/main/examples) 
 section of hax. 
 
 

@@ -85,7 +85,7 @@ Note: the error was labeled with context `reject_Continue`.
       let hoist1 := failure (("something is not implemented yet.
 TODO: Monad for loop-related control flow
 
-This is discussed in issue https://github.com/hacspec/hax/issues/15.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/15.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `CfIntoMonads`.
 "%string : string)) (("(break (Tuple0))"%string : string)) in

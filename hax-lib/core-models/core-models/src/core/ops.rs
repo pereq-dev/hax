@@ -294,7 +294,7 @@ mod deref {
 
     /// See [`std::ops::DerefMut`]
     // The `&mut Self::Target` return trips hax's `&mut` restriction (HAX0003,
-    // hacspec/hax#420), so this is excluded from the F* backend; aeneas/lean/native
+    // pereq-dev/hax#420), so this is excluded from the F* backend; aeneas/lean/native
     // keep it. The `impl DerefMut for Vec` in alloc is guarded to match.
     #[cfg(not(hax_backend_fstar))]
     pub trait DerefMut: Deref {

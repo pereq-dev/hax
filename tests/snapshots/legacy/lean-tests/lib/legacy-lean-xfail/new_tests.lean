@@ -265,13 +265,13 @@ def casting_edge_cases.spec (_dummy : Bool) :
   contract := by hax_mvcgen [casting_edge_cases] <;> bv_decide
 }
 
---  https://github.com/cryspen/hax/issues/1912
+--  https://github.com/pereq-dev/hax/issues/1912
 @[spec]
 def shift_after_cast (x : u16) (n : u8) : RustM u32 := do
   ((← (rust_primitives.hax.cast_op x : RustM u32))
     <<<? (← (rust_primitives.hax.cast_op n : RustM u32)))
 
---  https://github.com/cryspen/hax/issues/1911
+--  https://github.com/pereq-dev/hax/issues/1911
 @[spec]
 def add_after_cast (a : u8) (b : u8) (c : u8) : RustM u16 := do
   ((← ((← (rust_primitives.hax.cast_op a : RustM u16))
@@ -1102,7 +1102,7 @@ def forall_and_exists.spec (x : u8) :
 }
 
 --  Test function without arguments
---  https://github.com/cryspen/hax/issues/1856
+--  https://github.com/pereq-dev/hax/issues/1856
 def fn_without_args (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
