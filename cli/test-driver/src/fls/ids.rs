@@ -1,7 +1,12 @@
 //! The identifier lists `tests/fls-ids.txt` and `tests/hax-ids.txt`: one
-//! paragraph per row with its chapter and section, tab-separated.
+//! paragraph per row with its chapter and section, tab-separated, after
+//! comment lines carrying the revision, the columns, and the chapter titles.
 
-use std::{collections::HashMap, fs, path::Path};
+use std::{
+    collections::{BTreeMap, HashMap, HashSet},
+    fs,
+    path::Path,
+};
 
 use anyhow::{Context as _, Result, bail};
 
@@ -23,12 +28,15 @@ pub struct IdList {
     /// The release the revision is tagged with, where it is a tagged one.
     pub version: Option<String>,
     pub chapters: Vec<String>,
+    /// Chapter slug to title, from the `# chapter:` lines.
+    pub chapter_titles: BTreeMap<String, String>,
     pub paragraphs: Vec<Paragraph>,
 }
 
 const REVISION_PREFIX: &str = "# fls-revision:";
 const VERSION_PREFIX: &str = "# fls-version:";
 const COLUMNS_LINE: &str = "# columns: id\tchapter\tsection\tsection-title\tflags";
+const CHAPTER_PREFIX: &str = "# chapter:";
 
 impl IdList {
     pub fn read(path: &Path) -> Result<Self> {
@@ -51,6 +59,7 @@ impl IdList {
         }
         let mut version = None;
         let mut paragraphs = vec![];
+        let mut chapter_titles = BTreeMap::new();
         let mut seen: HashMap<&str, usize> = HashMap::new();
         for (i, line) in lines {
             let line_no = i + 1;
@@ -59,6 +68,21 @@ impl IdList {
                     bail!("line {line_no}: empty version");
                 }
                 version = Some(rest.trim().to_string());
+                continue;
+            }
+            if let Some(rest) = line.strip_prefix(CHAPTER_PREFIX) {
+                let Some((slug, title)) = rest.trim_start().split_once('\t') else {
+                    bail!("line {line_no}: expected `{CHAPTER_PREFIX} <slug>\t<title>`");
+                };
+                if slug.is_empty() || title.trim().is_empty() {
+                    bail!("line {line_no}: empty chapter slug or title");
+                }
+                if chapter_titles
+                    .insert(slug.to_string(), title.trim().to_string())
+                    .is_some()
+                {
+                    bail!("line {line_no}: chapter `{slug}` has two titles");
+                }
                 continue;
             }
             if line.starts_with('#') || line.trim().is_empty() {
@@ -93,10 +117,16 @@ impl IdList {
                 informational,
             });
         }
-        Ok(Self::from_paragraphs(revision, version, paragraphs))
+        let mut list = Self::from_paragraphs(revision, version, paragraphs);
+        if let Some(slug) = chapter_titles.keys().find(|c| !list.chapters.contains(c)) {
+            bail!("chapter `{slug}` has a title but no row");
+        }
+        list.chapter_titles = chapter_titles;
+        Ok(list)
     }
 
-    /// A list whose chapter order is the order of first appearance.
+    /// A list without chapter titles whose chapter order is the order of
+    /// first appearance.
     pub fn from_paragraphs(
         revision: String,
         version: Option<String>,
@@ -112,6 +142,7 @@ impl IdList {
             revision,
             version,
             chapters,
+            chapter_titles: BTreeMap::new(),
             paragraphs,
         }
     }
@@ -149,6 +180,16 @@ impl IdList {
             out += &format!("{VERSION_PREFIX} {version}\n");
         }
         out += &format!("{COLUMNS_LINE}\n");
+        // A chapter without paragraphs has no row, and `parse` rejects a
+        // title without rows.
+        let with_rows: HashSet<&str> = self.paragraphs.iter().map(|p| p.chapter.as_str()).collect();
+        for chapter in &self.chapters {
+            if let Some(title) = self.chapter_titles.get(chapter)
+                && with_rows.contains(chapter.as_str())
+            {
+                out += &format!("{CHAPTER_PREFIX} {chapter}\t{title}\n");
+            }
+        }
         for row in self.rows() {
             out += &row;
             out.push('\n');
@@ -165,10 +206,13 @@ impl IdList {
         paragraphs.extend(hax.paragraphs);
         let mut chapters = fls.chapters;
         chapters.extend(hax.chapters);
+        let mut chapter_titles = fls.chapter_titles;
+        chapter_titles.extend(hax.chapter_titles);
         Ok(Self {
             revision: fls.revision,
             version: fls.version,
             chapters,
+            chapter_titles,
             paragraphs,
         })
     }
@@ -209,7 +253,7 @@ mod tests {
 
     #[test]
     fn render_round_trips_and_sorts() {
-        let list = IdList::from_paragraphs(
+        let mut list = IdList::from_paragraphs(
             "abc".into(),
             None,
             vec![
@@ -219,11 +263,13 @@ mod tests {
                 paragraph("fls_d", "general", "general", true),
             ],
         );
+        list.chapter_titles.insert("values".into(), "Values".into());
         assert_eq!(list.chapters, ["values", "general"]);
         let text = list.render();
         assert_eq!(
             text,
             "# fls-revision: abc\n# columns: id\tchapter\tsection\tsection-title\tflags\n\
+             # chapter: values\tValues\n\
              fls_a\tvalues\tstatics\tSTATICS\tinformational\n\
              fls_b\tvalues\tstatics\tSTATICS\t\n\
              fls_c\tvalues\tconstants\tCONSTANTS\t\n\
@@ -232,7 +278,30 @@ mod tests {
         let back = IdList::parse(&text).unwrap();
         assert_eq!(back.revision, "abc");
         assert_eq!(back.chapters, list.chapters);
+        assert_eq!(back.chapter_titles, list.chapter_titles);
         assert_eq!(back.render(), text);
+    }
+
+    #[test]
+    fn chapter_title_errors() {
+        let head = "# fls-revision: r\n# columns: x\n";
+        let row = "fls_a\tc\ts\tS\t\n";
+        let cases = [
+            (
+                format!("{head}# chapter: c\tC\n# chapter: c\tD\n{row}"),
+                "two titles",
+            ),
+            (
+                format!("{head}# chapter: c C\n{row}"),
+                "expected `# chapter:",
+            ),
+            (format!("{head}# chapter: c\t\n{row}"), "empty chapter"),
+            (format!("{head}# chapter: other\tO\n{row}"), "no row"),
+        ];
+        for (text, expected) in cases {
+            let err = IdList::parse(&text).unwrap_err().to_string();
+            assert!(err.contains(expected), "{text:?}: {err}");
+        }
     }
 
     #[test]
@@ -285,9 +354,14 @@ mod tests {
             None,
             vec![paragraph("fls_a", "values", "s", false)],
         );
+        let mut c = c;
+        c.chapter_titles.insert("values".into(), "V".into());
+        let mut b = b;
+        b.chapter_titles.insert("hax".into(), "hax".into());
         let merged = IdList::merged(c, b).unwrap();
         assert_eq!(merged.revision, "r");
         assert_eq!(merged.chapters, ["values", "hax"]);
+        assert_eq!(merged.chapter_titles.len(), 2);
         assert_eq!(merged.paragraphs.len(), 2);
     }
 }

@@ -1,5 +1,27 @@
 # fls-revision: 0626fa45a0d296e59e62b183465bc7f114d1031e
 # columns: id	chapter	section	section-title	flags
+# chapter: general	General
+# chapter: lexical-elements	Lexical Elements
+# chapter: items	Items
+# chapter: types-and-traits	Types and Traits
+# chapter: patterns	Patterns
+# chapter: expressions	Expressions
+# chapter: values	Values
+# chapter: statements	Statements
+# chapter: functions	Functions
+# chapter: associated-items	Associated Items
+# chapter: implementations	Implementations
+# chapter: generics	Generics
+# chapter: attributes	Attributes
+# chapter: entities-and-resolution	Entities and Resolution
+# chapter: ownership-and-deconstruction	Ownership and Destruction
+# chapter: exceptions-and-errors	Exceptions and Errors
+# chapter: concurrency	Concurrency
+# chapter: program-structure-and-compilation	Program Structure and Compilation
+# chapter: unsafety	Unsafety
+# chapter: macros	Macros
+# chapter: ffi	FFI
+# chapter: inline-assembly	Inline Assembly
 fls_4dfcjyprkzbx	general	general	General	informational
 fls_8mt9iigoboba	general	general	General	informational
 fls_c4ry0kgmvk9z	general	general	General	informational

@@ -42,7 +42,7 @@ The Lean backend also needs `rustup` on `PATH`, since charon installs its Rust t
 cargo run -p test-driver -- tests fls coverage
 ```
 
-`fls refresh` regenerates `tests/fls-ids.txt` from the FLS sources at a revision of `rust-lang/fls`; `--check` writes nothing; it prints the rows added and removed against the committed file and exits with code 3 when the regenerated file would differ apart from its revision, including a change of chapter or section order:
+`fls refresh` regenerates `tests/fls-ids.txt` from the FLS sources at a revision of `rust-lang/fls`; `--check` writes nothing; it prints the rows added and removed against the committed file and exits with code 3 when the regenerated file would differ apart from its revision, including a change of chapter or section order or of a chapter title:
 
 ```
 cargo run -p test-driver -- tests fls refresh --rev <release>

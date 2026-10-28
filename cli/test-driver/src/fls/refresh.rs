@@ -159,8 +159,8 @@ struct Heading {
     slug: String,
 }
 
-/// The paragraphs of one chapter file, in document order.
-pub fn parse_chapter(chapter: &str, text: &str) -> Result<Vec<Paragraph>> {
+/// The title and the paragraphs of one chapter file, in document order.
+pub fn parse_chapter(chapter: &str, text: &str) -> Result<(String, Vec<Paragraph>)> {
     let anchor = Regex::new(r"^\.\. _fls_[A-Za-z0-9]+:$").unwrap();
     let paragraph = Regex::new(r":dp:`(fls_[A-Za-z0-9]+)`").unwrap();
 
@@ -269,10 +269,10 @@ pub fn parse_chapter(chapter: &str, text: &str) -> Result<Vec<Paragraph>> {
             });
         }
     }
-    if stack.is_empty() {
+    let Some(title) = stack.first().map(|h| h.title.clone()) else {
         bail!("{chapter}.rst: no heading");
-    }
-    Ok(paragraphs)
+    };
+    Ok((title, paragraphs))
 }
 
 /// The identifier list of the sources in `dir`.
@@ -282,6 +282,7 @@ pub fn read_sources(dir: &Path, rev: &str, version: Option<String>) -> Result<Id
         .with_context(|| format!("cannot read {}", src.join("index.rst").display()))?;
     let chapters = chapters_of_index(&index)?;
     let mut paragraphs: Vec<Paragraph> = vec![];
+    let mut chapter_titles = BTreeMap::new();
     let mut seen: HashMap<String, String> = HashMap::new();
     for chapter in &chapters {
         let path = src.join(format!("{chapter}.rst"));
@@ -291,17 +292,20 @@ pub fn read_sources(dir: &Path, rev: &str, version: Option<String>) -> Result<Id
                 path.display()
             )
         })?;
-        for p in parse_chapter(chapter, &text)? {
+        let (title, chapter_paragraphs) = parse_chapter(chapter, &text)?;
+        for p in chapter_paragraphs {
             if let Some(other) = seen.insert(p.id.clone(), chapter.clone()) {
                 bail!("`{}` appears in both {other}.rst and {chapter}.rst", p.id);
             }
             paragraphs.push(p);
         }
+        chapter_titles.insert(chapter.clone(), title);
     }
     Ok(IdList {
         revision: rev.to_string(),
         version,
         chapters,
+        chapter_titles,
         paragraphs,
     })
 }
@@ -395,7 +399,7 @@ pub fn run(options: &Cli, rev: &str, check: bool) -> Result<()> {
             return Ok(());
         }
         if added.is_empty() && removed.is_empty() {
-            println!("the order of the chapters or sections differs");
+            println!("the order of the chapters or sections, or the chapter titles, differ");
         }
         return Err(Drift(format!(
             "{} differs from the sources at {rev}: {} rows added, {} rows removed",
@@ -485,7 +489,8 @@ Not informational any more.
 
     #[test]
     fn synthetic_chapter() {
-        let paragraphs = parse_chapter("values", CHAPTER).unwrap();
+        let (title, paragraphs) = parse_chapter("values", CHAPTER).unwrap();
+        assert_eq!(title, "Values And Things");
         let rows: Vec<(&str, &str, &str, bool)> = paragraphs
             .iter()
             .map(|p| {
@@ -571,7 +576,7 @@ Orphan
     #[test]
     fn informational_page_flags_the_chapter() {
         let text = ".. informational-page::\n\n.. _fls_c:\n\nChapter\n=======\n\n:dp:`fls_a`\n\n.. _fls_s:\n\nS\n---\n\n:dp:`fls_b`\n";
-        let paragraphs = parse_chapter("c", text).unwrap();
+        let (_, paragraphs) = parse_chapter("c", text).unwrap();
         assert!(paragraphs.iter().all(|p| p.informational));
     }
 
@@ -642,7 +647,7 @@ FLS
     }
 
     #[test]
-    fn check_sees_chapter_order() {
+    fn check_sees_chapter_order_and_titles() {
         let p = |id: &str, ch: &str| Paragraph {
             id: id.into(),
             chapter: ch.into(),
@@ -650,8 +655,14 @@ FLS
             section_title: "S".into(),
             informational: false,
         };
-        let list =
-            |revision: &str, paragraphs| IdList::from_paragraphs(revision.into(), None, paragraphs);
+        let list = |revision: &str, paragraphs| {
+            let mut list = IdList::from_paragraphs(revision.into(), None, paragraphs);
+            list.chapter_titles = [("x", "X"), ("y", "Y")]
+                .into_iter()
+                .map(|(c, t)| (c.into(), t.into()))
+                .collect();
+            list
+        };
         let committed = list("a", vec![p("fls_1", "x"), p("fls_2", "y")]);
         assert!(!changes_file(
             &committed,
@@ -670,5 +681,8 @@ FLS
             &sections,
             &list("b", vec![q("fls_2", "s2"), q("fls_1", "s1")])
         ));
+        let mut renamed = list("b", vec![p("fls_1", "x"), p("fls_2", "y")]);
+        renamed.chapter_titles.insert("y".into(), "Z".into());
+        assert!(changes_file(&committed, &renamed));
     }
 }
