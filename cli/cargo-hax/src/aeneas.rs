@@ -407,14 +407,12 @@ pub fn run(
 
     // An overridden layout moves the output away from `out_dir`: creating
     // the default tree would leave an unused directory behind.
-    if !layout_overridden {
-        if let Err(e) = fs::create_dir_all(&out_dir) {
-            HaxMessage::GenericError {
-                message: format!("failed to create output directory: {}", e),
-            }
-            .report(message_format, None);
-            return true;
+    if !layout_overridden && let Err(e) = fs::create_dir_all(&out_dir) {
+        HaxMessage::GenericError {
+            message: format!("failed to create output directory: {}", e),
         }
+        .report(message_format, None);
+        return true;
     }
 
     if let Err(e) = fs::create_dir_all(&llbc_dir) {
