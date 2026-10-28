@@ -21,5 +21,9 @@ pub mod driver_api;
 /// `hax-engine`.
 pub mod engine_api;
 
+/// Lean naming conventions: the library name of a crate and the aeneas
+/// `[[require]]` block of a lakefile.
+pub mod lean;
+
 /// Compile-time version of hax
 pub const HAX_VERSION: &str = env!("HAX_VERSION");

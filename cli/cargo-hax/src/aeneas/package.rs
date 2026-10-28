@@ -19,11 +19,6 @@ use std::collections::BTreeSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-/// The source repository of the aeneas Lean proof library: the repository
-/// the managed aeneas binaries are built from, so a resolved aeneas
-/// version doubles as the library's rev.
-const AENEAS_REPO: &str = "https://github.com/pereq-dev/aeneas";
-
 /// The source repository of the `hax` Lean proof library.
 const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
 
@@ -107,7 +102,7 @@ pub fn validate_lib_name(
 /// ever slips through cannot restructure it into, say, a `[[require]]` on
 /// a repository of its choosing.
 fn toml_string(value: &str) -> String {
-    toml::Value::String(value.to_string()).to_string()
+    hax_types::lean::toml_basic_string(value)
 }
 
 /// Generate the contents of a `lakefile.toml` for a lean project. Following
@@ -116,8 +111,7 @@ fn toml_string(value: &str) -> String {
 /// module root (`lib_name`).
 fn lakefile_contents(pkg_name: &str, lib_name: &str, pins: &LakefilePins) -> String {
     let pkg_name = toml_string(pkg_name);
-    let aeneas_git = AENEAS_REPO;
-    let aeneas_rev = toml_string(&pins.aeneas_rev);
+    let aeneas = hax_types::lean::aeneas_require(&pins.aeneas_rev);
     let hax_lean_git = HAX_LEAN_LIB_REPO;
     let hax_lean_rev = toml_string(&pins.hax_lean_lib_rev);
 
@@ -129,12 +123,7 @@ defaultTargets = ["{lib_name}"]
 [[lean_lib]]
 name = "{lib_name}"
 
-[[require]]
-name = "aeneas"
-git = "{aeneas_git}"
-rev = {aeneas_rev}
-subDir = "backends/lean"
-
+{aeneas}
 [[require]]
 name = "hax"
 git = "{hax_lean_git}"
@@ -897,7 +886,7 @@ mod tests {
             vec![
                 (
                     "aeneas".to_string(),
-                    AENEAS_REPO.to_string(),
+                    hax_types::lean::AENEAS_REPO.to_string(),
                     "nightly-1".to_string()
                 ),
                 (
@@ -1031,7 +1020,7 @@ mod tests {
             vec![
                 (
                     "aeneas".to_string(),
-                    AENEAS_REPO.to_string(),
+                    hax_types::lean::AENEAS_REPO.to_string(),
                     "nightly-1".to_string()
                 ),
                 (

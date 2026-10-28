@@ -158,22 +158,6 @@ fn format_command(cmd: &process::Command) -> String {
     quoted(&parts)
 }
 
-/// Convert a crate name to CamelCase for Lean: split on `-` and `_`,
-/// upper-case the first character of each segment, and concatenate. Not
-/// injective (`my-crate` and `my_crate` both yield `MyCrate`), which is
-/// harmless because a package directory holds exactly one package.
-pub fn to_camel_case(name: &str) -> String {
-    name.split(['-', '_'])
-        .map(|s| {
-            let mut c = s.chars();
-            match c.next() {
-                None => String::new(),
-                Some(f) => f.to_uppercase().to_string() + c.as_str(),
-            }
-        })
-        .collect()
-}
-
 /// Forward all aeneas output lines.
 fn report_output(lines: &[String], message_format: MessageFormat) {
     for line in lines {
@@ -332,7 +316,7 @@ pub fn run(
         ),
         (None, Some(crate_name)) => (
             crate_name.clone(),
-            to_camel_case(crate_name),
+            hax_types::lean::to_camel_case(crate_name),
             format!("derived from the crate name `{crate_name}`"),
         ),
         (None, None) => {
