@@ -21,4 +21,4 @@ jobs:
         cargo clippy -p hax-rust-engine -- -D warnings --no-deps
     - name: Run clippy on cargo-hax
       run: |
-        cargo clippy -p cargo-hax --no-deps --all-targets -- -D warnings
+        cargo clippy -p cargo-hax --no-deps --all-targets --all-features -- -D warnings
