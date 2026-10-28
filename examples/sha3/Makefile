@@ -2,7 +2,7 @@
 lean:
 	cargo hax extract sha3
 	(cd proofs/sha3/lean && \
-		elan default v4.31.0 && \
+		elan default v4.35.0 && \
 		lake exe cache get && \
 		lake build)
 

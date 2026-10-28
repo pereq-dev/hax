@@ -195,7 +195,7 @@ module Make (F : Features.T) = struct
 
       (* This is a solution that bundles together everything that belongs to the same module SCC.
          It results in bundles that are much bigger than they could be but is a simple solution
-         to the problem described in https://github.com/hacspec/hax/issues/995#issuecomment-2411114404 *)
+         to the problem described in https://github.com/pereq-dev/hax/issues/995#issuecomment-2411114404 *)
       let of_mod_sccs (items : item list)
           (mod_graph_cycles : Namespace.Set.t list) : Bundle.t list =
         let item_names = List.map items ~f:(fun x -> x.ident) in

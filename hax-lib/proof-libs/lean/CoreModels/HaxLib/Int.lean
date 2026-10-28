@@ -156,6 +156,7 @@ def int.Int.to_isize : int.Int → RustM Isize := fun n => IScalar.tryMk .Isize 
 section specs
 open Std.Do
 set_option mvcgen.warning false
+set_option linter.deprecated.syntax false
 
 open Lean in
 local macro "uconcretize_spec " fn:ident T:ident : command => do

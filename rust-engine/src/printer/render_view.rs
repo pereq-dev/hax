@@ -65,7 +65,7 @@ pub trait RenderView: Sized {
 
     /// Escape a string if it needs escaping according to `Self::should_escape`
     fn escape(id: &str) -> String {
-        // See https://github.com/cryspen/hax/issues/1866
+        // See https://github.com/pereq-dev/hax/issues/1866
         let id = id.replace([' ', '<', '>'], "_");
         if id.is_empty() {
             "_ERROR_EMPTY_ID_".to_string()

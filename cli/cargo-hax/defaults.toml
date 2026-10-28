@@ -9,17 +9,17 @@
 
 [tools]
 # Managed tools, pinned by upstream release tag.
-aeneas = "nightly-2026.10.19-bee38e7"
-charon = "nightly-2026.10.02"
+aeneas = "build-41977a5"
+charon = "nightly-2026.10.17"
 
 [versions]
 # Declared-only versions: known to hax, but not installed by it.
 # The Lean toolchain, written verbatim into generated `lean-toolchain` files.
-lean = "leanprover/lean4:v4.31.0"
+lean = "leanprover/lean4:v4.35.0"
 # The Lean library that extracted code builds against. This is a tag in
 # `cryspen/hax-lean`, pushed by `.github/workflows/deploy_hax_lean.yml`; it
 # must match `version` in `hax-lib/proof-libs/lean/lakefile.toml`.
-hax-lean-lib = "v0.3.32"
+hax-lean-lib = "v0.3.39"
 
 # The default opaque set for proof scenarios: trait impls that are
 # routinely derived but rarely worth translating. Applied to every Lean

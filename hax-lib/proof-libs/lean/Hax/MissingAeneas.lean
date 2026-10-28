@@ -29,11 +29,11 @@ theorem RustM.deterministic (f : RustM α) [Inhabited α]:
 noncomputable def RustM.toPure (f : RustM α) [Inhabited α] : α :=
   f.deterministic.choose
 
-noncomputable def RustM.toPure_spec_mayThrow (f : RustM α) [Inhabited α] :
+theorem RustM.toPure_spec_mayThrow (f : RustM α) [Inhabited α] :
     ⦃ ⌜ True ⌝ ⦄ f ⦃ ⇓?r =>  ⌜ r = f.toPure ⌝ ⦄ :=
   f.deterministic.choose_spec
 
-noncomputable def RustM.toPure_spec (f : RustM α) [Inhabited α]
+theorem RustM.toPure_spec (f : RustM α) [Inhabited α]
     (h : ⦃ P ⦄ f ⦃ Q ⦄) :
     ⦃ P ⦄ f ⦃ (fun r =>  ⌜ r = f.toPure ⌝, Q.2) ⦄ := by
   have := h.and f (toPure_spec_mayThrow f)

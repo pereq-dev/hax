@@ -82,7 +82,7 @@ impl AstVisitorMut for RejectNotDoLeanDSLVisitor {
         if let TyKind::Array { length, .. } = ty.kind_mut() {
             // The Lean Backend does not support computation in array lengths yet.  It should be
             // possible to have do-blocks, and treat them like constants. See
-            // https://github.com/cryspen/hax/issues/1713
+            // https://github.com/pereq-dev/hax/issues/1713
             let parent_dsl_expr_kind = self.dsl_expr_kind;
             self.dsl_expr_kind = DoDSLExprKind::Expression;
             self.visit_inner(&mut *length);

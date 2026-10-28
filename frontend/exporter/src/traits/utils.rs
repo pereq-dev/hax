@@ -358,7 +358,7 @@ pub fn is_sized_related_trait<'tcx>(tcx: TyCtxt<'tcx>, def_id: DefId) -> bool {
 
 /// Given a `GenericPredicates`, prune every occurence of a sized-related clause.
 /// Prunes bounds of the shape `T: MetaSized`, `T: Sized` or `T: PointeeSized`.
-fn prune_sized_predicates<'tcx>(tcx: TyCtxt<'tcx>, generic_predicates: &mut Predicates<'tcx>) {
+pub fn prune_sized_predicates<'tcx>(tcx: TyCtxt<'tcx>, generic_predicates: &mut Predicates<'tcx>) {
     let predicates: Vec<(Clause<'tcx>, rustc_span::Span)> = generic_predicates
         .iter()
         .filter(|(clause, _)| {

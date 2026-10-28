@@ -30,7 +30,7 @@ meta register_option hax_mvcgen.warnings : Bool := {
 for, leaving a goal that mentions `wp⟦f a₁ ... aₙ⟧`. Returns `none` when the head of that program
 is not a constant, or is mere monadic plumbing, which says nothing about the missing spec. -/
 private meta def missingSpecCandidate? (e : Expr) : Option Name := Id.run do
-  let some wpApp := e.find? (·.isAppOfArity' ``WP.wp 5) | return none
+  let some wpApp := e.find? (·.isAppOfArity' ``Std.Do.WP.wp 5) | return none
   -- Look through `bind`s (`Bind.bind .. x f` or `Aeneas.Std.bind .. x f`): the missing
   -- specification is the one of the program bound first, i.e. the second-to-last argument.
   let mut prog := wpApp.appArg!
@@ -38,6 +38,15 @@ private meta def missingSpecCandidate? (e : Expr) : Option Name := Id.run do
     prog := prog.getAppArgs[prog.getAppNumArgs - 2]!
   let .const n _ := prog.getAppFn | return none
   return some n
+
+/-- Run `mvcgen` on `goal`. Lean deprecates the `mvcgen` syntax in favour of `vcgen`, which is not a
+drop-in replacement for the `Std.Do.Triple` goals hax works with. The deprecation warning would be
+reported at every `hax_mvcgen` call, where users cannot disable it, so it is silenced here. -/
+meta def evalMvcgenAt (cfgStx : TSyntax `Lean.Parser.Tactic.optConfig) (argStx : Syntax)
+    (goal : MVarId) : TacticM (List MVarId) := do
+  let inner : TSyntax `tactic := ⟨Syntax.node .none ``Lean.Parser.Tactic.mvcgen
+    #[Syntax.atom .none "mvcgen", cfgStx.raw, argStx]⟩
+  withOptions (·.setBool `linter.deprecated.syntax false) (evalTacticAt inner goal)
 
 /-- Main entry point of `hax_mvcgen at` -/
 meta def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Lean.Parser.Tactic.optConfig) (argStx : Syntax) : TacticM (List MVarId) := do
@@ -64,9 +73,7 @@ meta def haxMvcgenAt (mainGoal : MVarId) (hyp : LocalDecl) (cfgStx : TSyntax `Le
     trace `Hax.hax_mvcgen_at fun () => m!"run `mvcgen`"
     let cfgStx : TSyntax `Lean.Parser.Tactic.optConfig :=
       Parser.Tactic.appendConfig cfgStx (← `(Lean.Parser.Tactic.optConfig| -trivial))
-    let inner : TSyntax `tactic := ⟨Syntax.node .none ``Lean.Parser.Tactic.mvcgen
-        #[Syntax.atom .none "mvcgen", cfgStx.raw, argStx]⟩
-    let goals ← evalTacticAt inner goal
+    let goals ← evalMvcgenAt cfgStx argStx goal
 
     -- We partition the resulting goals into `newHypGoals` and `sideGoals`: If the conclusion
     -- of a goal is exactly `newHyp`, then we put it into `newHypGoals`, otherwise into `sideGoals`.

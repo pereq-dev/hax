@@ -64,6 +64,19 @@ impl<T: Inject> Inject for std::cmp::Reverse<T> {
     }
 }
 
+// std keeps `exhausted` private; it is set exactly when the end bound is excluded.
+impl<T: Inject> Inject for std::ops::RangeInclusive<T> {
+    type Model = crate::ops::range::RangeInclusive<T::Model>;
+    fn inject(&self) -> Self::Model {
+        use std::ops::RangeBounds;
+        crate::ops::range::RangeInclusive {
+            start_: self.start().inject(),
+            end_: self.end().inject(),
+            exhausted: matches!(self.end_bound(), std::ops::Bound::Excluded(_)),
+        }
+    }
+}
+
 impl Inject for std::num::TryFromIntError {
     type Model = crate::num::error::TryFromIntError;
     fn inject(&self) -> Self::Model {
@@ -260,18 +273,11 @@ pub fn range_forms(
             bounds(..=end),
         ),
     ];
-    // Iterating to the end leaves `start == end` with `exhausted` set.
+    // Iterated to the end, whatever state std leaves it in.
     if start <= end {
-        let mut exhausted = start..=end;
-        exhausted.nth(end - start);
-        forms.push((
-            ModelRange::Inclusive(m::RangeInclusive {
-                start_: end,
-                end_: end,
-                exhausted: true,
-            }),
-            bounds(exhausted),
-        ));
+        let mut iterated = start..=end;
+        iterated.nth(end - start);
+        forms.push((ModelRange::Inclusive(iterated.inject()), bounds(iterated)));
     }
     for ks in 0..3 {
         for ke in 0..3 {

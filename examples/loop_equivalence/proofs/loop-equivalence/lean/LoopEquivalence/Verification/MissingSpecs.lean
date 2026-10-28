@@ -81,7 +81,7 @@ private theorem eq_loop_correct {N : Usize} (a0 a1 : Array U64 N) (i : Usize)
   by_cases hjLt : j.val < N.val
   · -- j < N case
     have hjLt' : (j < N : Prop) := hjLt
-    rw [if_pos hjLt']
+    rw [ite_eq_left hjLt']
     rw [array_index_U64_eq a0 j hjLt, bind_ok]
     show Aeneas.Std.WP.spec (do
       let t1 ← rust_primitives.slice.array_index a1 j
@@ -107,7 +107,7 @@ private theorem eq_loop_correct {N : Usize} (a0 a1 : Array U64 N) (i : Usize)
     by_cases hbeq : a0.val[j.val]! = a1.val[j.val]!
     · -- equal
       have hbeq' : (a0.val[j.val]! == a1.val[j.val]!) = true := beq_iff_eq.mpr hbeq
-      rw [if_pos hbeq']
+      rw [ite_eq_left hbeq']
       obtain ⟨jp1, hjp1Eq, hjp1Val⟩ := add_one_usize j hj1Bound
       rw [hjp1Eq, bind_ok, Aeneas.Std.WP.spec_ok]
       refine ⟨⟨?_, ?_⟩, ?_⟩
@@ -122,13 +122,13 @@ private theorem eq_loop_correct {N : Usize} (a0 a1 : Array U64 N) (i : Usize)
         rw [hjp1Val]; omega
     · -- not equal
       have hbeq' : (a0.val[j.val]! == a1.val[j.val]!) = false := beq_eq_false_iff_ne.mpr hbeq
-      rw [if_neg (by rw [hbeq']; simp), Aeneas.Std.WP.spec_ok]
+      rw [ite_eq_right (by rw [hbeq']; simp), Aeneas.Std.WP.spec_ok]
       show (false : Bool) = (a0.val == a1.val)
       have hne : a0.val ≠ a1.val := fun hEq => hbeq (by rw [hEq])
       simp [hne]
   · -- j ≥ N: j = N
     have hjLt' : ¬ (j < N : Prop) := hjLt
-    rw [if_neg hjLt']
+    rw [ite_eq_right hjLt']
     simp only [Aeneas.Std.WP.spec_ok]
     have hjEq : j.val = N.val := by omega
     have hLen0 : a0.val.length = N.val := a0.property

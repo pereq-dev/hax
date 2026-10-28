@@ -264,7 +264,7 @@ hax-lean-lib = "v9.9.9"
         format!(
             r#"[[require]]
 name = "aeneas"
-git = "https://github.com/cryspen/aeneas"
+git = "https://github.com/pereq-dev/aeneas"
 rev = "nightly-old"
 subDir = "backends/lean"
 

@@ -11,11 +11,6 @@ type t_Error = | Error : t_Error
 /// `Display` only model whether formatting succeeds.
 type t_Formatter = | Formatter : t_Formatter
 
-val impl_Formatter__write_str (self: t_Formatter) (data: string)
-    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
-      Prims.l_True
-      (fun _ -> Prims.l_True)
-
 /// See [`std::fmt::Display`]
 class t_Display (v_Self: Type0) = {
   f_fmt_pre:v_Self -> t_Formatter -> Type0;
@@ -192,6 +187,12 @@ val impl_Display_for_i128:t_Display i128
 
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 val impl_Display_for_isize:t_Display isize
+
+/// See [`std::fmt::Formatter::write_str`]
+val impl_11__write_str (self: t_Formatter) (data: string)
+    : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)
+      Prims.l_True
+      (fun _ -> Prims.l_True)
 
 val impl_12__write_fmt (f: t_Formatter) (args: t_Arguments)
     : Prims.Pure (t_Formatter & Core_models.Result.t_Result Prims.unit t_Error)

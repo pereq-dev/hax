@@ -26,12 +26,12 @@ pub fn casting_edge_cases(_dummy: bool) -> bool {
     case1 && case2 && case3 && case4 && case5
 }
 
-/// https://github.com/cryspen/hax/issues/1912
+/// https://github.com/pereq-dev/hax/issues/1912
 pub fn shift_after_cast(x: u16, n: u8) -> u32 {
     (x as u32) << (n as u32)
 }
 
-/// https://github.com/cryspen/hax/issues/1911
+/// https://github.com/pereq-dev/hax/issues/1911
 pub fn add_after_cast(a: u8, b: u8, c: u8) -> u16 {
     (a as u16) + (b as u16) + (c as u16)
 }

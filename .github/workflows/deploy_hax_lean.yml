@@ -21,10 +21,10 @@ concurrency:
 jobs:
   sync:
     # Don't run on forks.
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source repo (cryspen/hax)
+      - name: Checkout source repo (pereq-dev/hax)
         uses: actions/checkout@v5
         with:
           path: source
@@ -48,7 +48,7 @@ jobs:
       - name: Update note in README
         working-directory: target
         env:
-          NOTE: "**Note: The contents of this repo are copied mechanically from the [hax repo](https://github.com/cryspen/hax/tree/main/hax-lib/proof-libs/aeneas-lean). Please file any issues or PRs there.**"
+          NOTE: "**Note: The contents of this repo are copied mechanically from the [hax repo](https://github.com/pereq-dev/hax/tree/main/hax-lib/proof-libs/lean). Please file any issues or PRs there.**"
         run: |
           # The upstream README carries a note between ⚠️ markers.
           # Overwrite whatever text sits between them with the note above.
@@ -103,8 +103,8 @@ jobs:
           git commit \
             --author="$AUTHOR" \
             -m "$MSG" \
-            -m "Snapshot of cryspen/hax@${SHA}"
-          git tag -a "$VERSION" -m "hax-lean $VERSION (cryspen/hax@${SHA})"
+            -m "Snapshot of pereq-dev/hax@${SHA}"
+          git tag -a "$VERSION" -m "hax-lean $VERSION (pereq-dev/hax@${SHA})"
 
           # Branch and tag land together, or neither does.
           git push --atomic origin HEAD "refs/tags/$VERSION"

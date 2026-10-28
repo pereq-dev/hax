@@ -76,7 +76,7 @@ jobs:
         if: >-
           github.event_name != 'merge_group' &&
           !startsWith(github.head_ref, 'release/') &&
-          !contains(github.event.head_commit.message, 'from cryspen/release/')
+          !contains(github.event.head_commit.message, 'from pereq-dev/release/')
         run: |
           cargo package --locked --no-verify -p cargo-hax
           tar --extract --directory "$RUNNER_TEMP" \

@@ -128,7 +128,7 @@ These components are developed as part of hax.
 - **Rust primitives & core/std/alloc crates.** Each backend comes with a library
   modeling the semantics of Rust and its core library. For Lean and F\*, we model
   Rust's `core` and `alloc` libraries directly in Rust (see [our core models
-  library](https://github.com/cryspen/hax/tree/main/hax-lib/core-models)). This
+  library](https://github.com/pereq-dev/hax/tree/main/hax-lib/core-models)). This
   Rust library gets extracted via hax into Lean and F\*. Only some Rust
   primitives that can not be modeled in terms of others are implemented directly
   in the backend languages. With this approach, we need to trust the Rust model,

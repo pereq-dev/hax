@@ -90,7 +90,7 @@ source "$SCRIPTPATH/.utils/install-rust-binaries.sh"
 
 # Provides the `hax-engine` binary
 install_ocaml_engine() {
-    # Fixes out of memory issues (https://github.com/hacspec/hax/issues/197)
+    # Fixes out of memory issues (https://github.com/pereq-dev/hax/issues/197)
     {
         # Limit the number of thread spawned by opam
         export OPAMJOBS=$opam_jobs

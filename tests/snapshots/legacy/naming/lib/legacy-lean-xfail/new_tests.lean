@@ -216,7 +216,7 @@ end new_tests.legacy__naming__lib.ambiguous_names
 
 namespace new_tests.legacy__naming__lib
 
---  From issue https://github.com/hacspec/hax/issues/839
+--  From issue https://github.com/pereq-dev/hax/issues/839
 @[spec]
 def string_shadows (string : String) (n : String) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -262,7 +262,7 @@ end new_tests.legacy__naming__lib.functions_defined_in_trait_impls
 
 namespace new_tests.legacy__naming__lib
 
---  From issue https://github.com/cryspen/hax/issues/1450
+--  From issue https://github.com/pereq-dev/hax/issues/1450
 @[spec]
 def items_under_closures (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

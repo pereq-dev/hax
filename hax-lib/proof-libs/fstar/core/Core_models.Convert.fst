@@ -69,7 +69,7 @@ include Core_models.Bundle {impl_7__from__convert as impl_7}
 
 include Core_models.Bundle {impl_8__from__convert as impl_8}
 
-include Core_models.Bundle {impl_9 as impl_9}
+include Core_models.Bundle {impl_9__from__convert as impl_9}
 
 include Core_models.Bundle {impl_10__from__convert as impl_10}
 

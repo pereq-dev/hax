@@ -45,7 +45,7 @@ This library mirrors the internal types of the Rust compiler (`rustc`) that cons
 
 The engine processes the transformed ASTs and options provided via JSON input from `stdin`. It performs several key functions to convert the hax-ified Rust code into the target backend language.
 
-The engine is written in OCaml, and parts of it have been rewritten in Rust in the [`rust-engine`](https://github.com/cryspen/hax/tree/main/rust-engine) crate: the legacy Lean backend runs its phases and printer there, and the F\* backend can run its phases there (behind an experimental flag) while delegating printing to the OCaml engine. This section describes the OCaml engine; the concepts (import, internal AST, phases, printers) carry over to the Rust rewrite.
+The engine is written in OCaml, and parts of it have been rewritten in Rust in the [`rust-engine`](https://github.com/pereq-dev/hax/tree/main/rust-engine) crate: the legacy Lean backend runs its phases and printer there, and the F\* backend can run its phases there (behind an experimental flag) while delegating printing to the OCaml engine. This section describes the OCaml engine; the concepts (import, internal AST, phases, printers) carry over to the Rust rewrite.
 
 ### Importing and Simplifying ASTs
 

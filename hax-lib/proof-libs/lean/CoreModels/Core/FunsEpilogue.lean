@@ -66,7 +66,7 @@ A field would be `<m>.default SELF`, whose resolution recurses through
 recursive fields`. Aeneas.Std keeps them off the structure too, as standalone
 functions where the dictionaries are ordinary parameters. -/
 open Aeneas.Std (RustM) in
-def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type}
+def iter.traits.iterator.Iterator.collect.default {Self B Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (collectFromIteratorInst : iter.traits.collect.FromIterator B Clause0_Item)
     (self : Self) : RustM B :=
@@ -86,7 +86,7 @@ this dispatch shim is hand-written. -/
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::rev"]
 def iter.traits.iterator.Iterator.rev.default
-    {Self Clause0_Item Clause1_Item : Type}
+    {Self Clause0_Item Clause1_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_DEInst : iter.traits.double_ended.DoubleEndedIterator Self Clause1_Item)
     (self : Self) : RustM (iter.adapters.rev.Rev Self) :=
@@ -99,7 +99,7 @@ self-reference the instance. -/
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::zip"]
 def iter.traits.iterator.Iterator.zip.default
-    {Self U Clause0_Item Clause1_Item IntoIter : Type}
+    {Self U Clause0_Item Clause1_Item IntoIter : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (IntoIterInst : iter.traits.collect.IntoIterator U Clause1_Item IntoIter)
     (self : Self) (other : U) :
@@ -113,7 +113,7 @@ def iter.traits.iterator.Iterator.zip.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::chain"]
 def iter.traits.iterator.Iterator.chain.default
-    {Self U Clause0_Item IntoIter : Type}
+    {Self U Clause0_Item IntoIter : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (IntoIterInst : iter.traits.collect.IntoIterator U Clause0_Item IntoIter)
     (self : Self) (other : U) :
@@ -124,7 +124,7 @@ def iter.traits.iterator.Iterator.chain.default
 
 open Aeneas.Std (RustM) in
 def iter.traits.iterator.Iterator.flat_map.default
-    {Self U F Clause0_Item Clause1_Item : Type}
+    {Self U F Clause0_Item Clause1_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (IteratorInst1 : iter.traits.iterator.Iterator U Clause1_Item)
     (FnInst : core.ops.function.FnMut F Clause0_Item U)
@@ -135,7 +135,7 @@ def iter.traits.iterator.Iterator.flat_map.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::flat_map"]
 def iter.traits.iterator.Iterator.flat_map.trait_default
-    {Self U F Clause0_Item Clause1_Item : Type}
+    {Self U F Clause0_Item Clause1_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (IteratorInst1 : iter.traits.iterator.Iterator U Clause1_Item)
     (FnInst : core.ops.function.FnMut F Clause0_Item U)
@@ -146,7 +146,7 @@ def iter.traits.iterator.Iterator.flat_map.trait_default
 
 open Aeneas.Std (RustM) in
 def iter.traits.iterator.Iterator.flatten.default
-    {Self Clause0_Item Clause1_Item : Type}
+    {Self Clause0_Item Clause1_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item)
     (self : Self) :
@@ -156,7 +156,7 @@ def iter.traits.iterator.Iterator.flatten.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::flatten"]
 def iter.traits.iterator.Iterator.flatten.trait_default
-    {Self Clause0_Item Clause1_Item : Type}
+    {Self Clause0_Item Clause1_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item)
     (self : Self) :
@@ -172,7 +172,7 @@ excluded (a Lean forward reference to `core.Usize.Insts.CoreIterRangeStep`), and
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fold"]
 def iter.traits.iterator.Iterator.fold.default
-    {Self B F Clause0_Item : Type}
+    {Self B F Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut F (B × Clause0_Item) B)
     (self : Self) (init : B) (f : F) : RustM B :=
@@ -185,7 +185,7 @@ open Aeneas.Std (RustM) in
 -- iterator straight out of the `iter_*` helper (which now takes `&mut I`).
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::all"]
 def iter.traits.iterator.Iterator.all.default
-    {Self F Clause0_Item : Type}
+    {Self F Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut F Clause0_Item Bool)
     (self : Self) (f : F) : RustM (Bool × Self) :=
@@ -194,7 +194,7 @@ def iter.traits.iterator.Iterator.all.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::any"]
 def iter.traits.iterator.Iterator.any.default
-    {Self F Clause0_Item : Type}
+    {Self F Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut F Clause0_Item Bool)
     (self : Self) (f : F) : RustM (Bool × Self) :=
@@ -203,7 +203,7 @@ def iter.traits.iterator.Iterator.any.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::find"]
 def iter.traits.iterator.Iterator.find.default
-    {Self P Clause0_Item : Type}
+    {Self P Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut P Clause0_Item Bool)
     (self : Self) (predicate : P) :
@@ -213,7 +213,7 @@ def iter.traits.iterator.Iterator.find.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::find_map"]
 def iter.traits.iterator.Iterator.find_map.default
-    {Self B F Clause0_Item : Type}
+    {Self B F Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut F Clause0_Item (option.Option B))
     (self : Self) (f : F) : RustM ((option.Option B) × Self) :=
@@ -222,7 +222,7 @@ def iter.traits.iterator.Iterator.find_map.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::position"]
 def iter.traits.iterator.Iterator.position.default
-    {Self P Clause0_Item : Type}
+    {Self P Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut P Clause0_Item Bool)
     (self : Self) (predicate : P) :
@@ -232,7 +232,7 @@ def iter.traits.iterator.Iterator.position.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::count"]
 def iter.traits.iterator.Iterator.count.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) : RustM Aeneas.Std.Usize :=
   iter.traits.iterator.iter_count IteratorInst self
@@ -240,7 +240,7 @@ def iter.traits.iterator.Iterator.count.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::last"]
 def iter.traits.iterator.Iterator.last.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) : RustM (option.Option Clause0_Item) :=
   iter.traits.iterator.iter_last IteratorInst self
@@ -248,7 +248,7 @@ def iter.traits.iterator.Iterator.last.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::for_each"]
 def iter.traits.iterator.Iterator.for_each.default
-    {Self F Clause0_Item : Type}
+    {Self F Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut F Clause0_Item Unit)
     (self : Self) (f : F) : RustM Unit :=
@@ -257,7 +257,7 @@ def iter.traits.iterator.Iterator.for_each.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::reduce"]
 def iter.traits.iterator.Iterator.reduce.default
-    {Self F Clause0_Item : Type}
+    {Self F Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (FnInst : core.ops.function.FnMut F (Clause0_Item × Clause0_Item) Clause0_Item)
     (self : Self) (f : F) : RustM (option.Option Clause0_Item) :=
@@ -266,7 +266,7 @@ def iter.traits.iterator.Iterator.reduce.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::min"]
 def iter.traits.iterator.Iterator.min.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (OrdInst : cmp.Ord Clause0_Item)
     (self : Self) : RustM (option.Option Clause0_Item) :=
@@ -275,7 +275,7 @@ def iter.traits.iterator.Iterator.min.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::max"]
 def iter.traits.iterator.Iterator.max.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (OrdInst : cmp.Ord Clause0_Item)
     (self : Self) : RustM (option.Option Clause0_Item) :=
@@ -293,7 +293,7 @@ adapter via its generated `::new`. -/
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map"]
 def iter.traits.iterator.Iterator.map.default
-    {Self O F Clause0_Item : Type}
+    {Self O F Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnMutInst : core.ops.function.FnMut F Clause0_Item O)
     (self : Self) (f : F) : RustM (iter.adapters.map.Map Self F) :=
@@ -302,7 +302,7 @@ def iter.traits.iterator.Iterator.map.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::enumerate"]
 def iter.traits.iterator.Iterator.enumerate.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) : RustM (iter.adapters.enumerate.Enumerate Self) :=
   iter.adapters.enumerate.Enumerate.new self
@@ -310,7 +310,7 @@ def iter.traits.iterator.Iterator.enumerate.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::step_by"]
 def iter.traits.iterator.Iterator.step_by.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) (step : Aeneas.Std.Usize) :
     RustM (iter.adapters.step_by.StepBy Self) :=
@@ -319,7 +319,7 @@ def iter.traits.iterator.Iterator.step_by.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::take"]
 def iter.traits.iterator.Iterator.take.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) (n : Aeneas.Std.Usize) :
     RustM (iter.adapters.take.Take Self) :=
@@ -328,7 +328,7 @@ def iter.traits.iterator.Iterator.take.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::skip"]
 def iter.traits.iterator.Iterator.skip.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) (n : Aeneas.Std.Usize) :
     RustM (iter.adapters.skip.Skip Self) :=
@@ -337,7 +337,7 @@ def iter.traits.iterator.Iterator.skip.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::filter"]
 def iter.traits.iterator.Iterator.filter.default
-    {Self P Clause0_Item : Type}
+    {Self P Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnInst : core.ops.function.FnMut P Clause0_Item Bool)
     (self : Self) (predicate : P) : RustM (iter.adapters.filter.Filter Self P) :=
@@ -346,7 +346,7 @@ def iter.traits.iterator.Iterator.filter.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::filter_map"]
 def iter.traits.iterator.Iterator.filter_map.default
-    {Self B F Clause0_Item : Type}
+    {Self B F Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnInst : core.ops.function.FnMut F Clause0_Item (option.Option B))
     (self : Self) (f : F) : RustM (iter.adapters.filter_map.FilterMap Self F) :=
@@ -355,7 +355,7 @@ def iter.traits.iterator.Iterator.filter_map.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::take_while"]
 def iter.traits.iterator.Iterator.take_while.default
-    {Self P Clause0_Item : Type}
+    {Self P Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnInst : core.ops.function.FnMut P Clause0_Item Bool)
     (self : Self) (predicate : P) :
@@ -365,7 +365,7 @@ def iter.traits.iterator.Iterator.take_while.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::skip_while"]
 def iter.traits.iterator.Iterator.skip_while.default
-    {Self P Clause0_Item : Type}
+    {Self P Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnInst : core.ops.function.FnMut P Clause0_Item Bool)
     (self : Self) (predicate : P) :
@@ -375,7 +375,7 @@ def iter.traits.iterator.Iterator.skip_while.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::map_while"]
 def iter.traits.iterator.Iterator.map_while.default
-    {Self B F Clause0_Item : Type}
+    {Self B F Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnInst : core.ops.function.FnMut F Clause0_Item (option.Option B))
     (self : Self) (f : F) : RustM (iter.adapters.map_while.MapWhile Self F) :=
@@ -384,7 +384,7 @@ def iter.traits.iterator.Iterator.map_while.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::inspect"]
 def iter.traits.iterator.Iterator.inspect.default
-    {Self F Clause0_Item : Type}
+    {Self F Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (_FnInst : core.ops.function.FnMut F Clause0_Item Unit)
     (self : Self) (f : F) : RustM (iter.adapters.inspect.Inspect Self F) :=
@@ -393,7 +393,7 @@ def iter.traits.iterator.Iterator.inspect.default
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fuse"]
 def iter.traits.iterator.Iterator.fuse.default
-    {Self Clause0_Item : Type}
+    {Self Clause0_Item : Type _}
     (_IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
     (self : Self) :
     RustM (iter.adapters.fuse.Fuse Self) :=
@@ -421,35 +421,45 @@ record-field projections, which this model cannot serve — see `poly_*` in
 -- (`…IteratorIterator.count` is NOT defined here: `FunsPrologue.lean` already
 -- provides it, derived from `Step::steps_between` instead of driving `next`.)
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.last
-    {A : Type} (StepInst : iter.range.Step A) :=
+    {A : Type _} (StepInst : iter.range.Step A) :=
   iter.traits.iterator.Iterator.last.default
     (ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst)
 
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.min
-    {A : Type} (StepInst : iter.range.Step A) :=
+    {A : Type _} (StepInst : iter.range.Step A) :=
   iter.traits.iterator.Iterator.min.default
     (ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst)
 
 abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.max
-    {A : Type} (StepInst : iter.range.Step A) :=
+    {A : Type _} (StepInst : iter.range.Step A) :=
   iter.traits.iterator.Iterator.max.default
     (ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst)
 
 -- slice::Iter<T>
 abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.count
-    {T : Type} :=
+    {T : Type _} :=
   iter.traits.iterator.Iterator.count.default
     (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T)
 
 abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.fold
-    {T B F : Type}
+    {T B F : Type _}
     (FoldFnInst : core.ops.function.FnMut F (B × T) B) :=
   iter.traits.iterator.Iterator.fold.default
     (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FoldFnInst
 
+abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.all
+    {T F : Type _} (FnInst : core.ops.function.FnMut F T Bool) :=
+  iter.traits.iterator.Iterator.all.default
+    (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FnInst
+
+abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.any
+    {T F : Type _} (FnInst : core.ops.function.FnMut F T Bool) :=
+  iter.traits.iterator.Iterator.any.default
+    (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FnInst
+
 -- Map<I, F>
 abbrev iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator.fold
-    {I O F Clause0_Item B G : Type}
+    {I O F Clause0_Item B G : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item)
     (FnMutInst : core.ops.function.FnMut F Clause0_Item O)
     (FoldFnInst : core.ops.function.FnMut G (B × O) B) :=
@@ -459,7 +469,7 @@ abbrev iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator.fold
 
 -- Enumerate<I>
 abbrev iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPairUsizeClause0_Item.fold
-    {I Clause0_Item B G : Type}
+    {I Clause0_Item B G : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item)
     (FoldFnInst : core.ops.function.FnMut G (B × (Aeneas.Std.Usize × Clause0_Item)) B) :=
   iter.traits.iterator.Iterator.fold.default
@@ -468,28 +478,28 @@ abbrev iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPai
 
 -- Skip<I>
 abbrev iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator.count
-    {I Clause0_Item : Type}
+    {I Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item) :=
   iter.traits.iterator.Iterator.count.default
     (iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator IteratorInst)
 
 -- Take<I>
 abbrev iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator.count
-    {I Clause0_Item : Type}
+    {I Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item) :=
   iter.traits.iterator.Iterator.count.default
     (iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator IteratorInst)
 
 -- Fuse<I>
 abbrev iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator.count
-    {I Clause0_Item : Type}
+    {I Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item) :=
   iter.traits.iterator.Iterator.count.default
     (iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator IteratorInst)
 
 -- Filter<I, P>
 abbrev iter.adapters.filter.Filter.Insts.CoreIterTraitsIteratorIterator.count
-    {I P Clause0_Item : Type}
+    {I P Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item)
     (FnMutInst : core.ops.function.FnMut P Clause0_Item Bool) :=
   iter.traits.iterator.Iterator.count.default
@@ -497,7 +507,7 @@ abbrev iter.adapters.filter.Filter.Insts.CoreIterTraitsIteratorIterator.count
 
 -- Chain<A, B>
 abbrev iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator.count
-    {A B Clause0_Item : Type}
+    {A B Clause0_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator A Clause0_Item)
     (IteratorInst1 : iter.traits.iterator.Iterator B Clause0_Item) :=
   iter.traits.iterator.Iterator.count.default
@@ -505,7 +515,7 @@ abbrev iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator.count
 
 -- Flatten<I, _, _>
 abbrev iter.adapters.flatten.Flatten.Insts.CoreIterTraitsIteratorIterator.count
-    {I Clause0_Item Clause1_Item : Type}
+    {I Clause0_Item Clause1_Item : Type _}
     (IteratorInst : iter.traits.iterator.Iterator I Clause0_Item)
     (IteratorInst1 : iter.traits.iterator.Iterator Clause0_Item Clause1_Item) :=
   iter.traits.iterator.Iterator.count.default
@@ -520,7 +530,7 @@ The Rust model in `result.rs` is the real fold, but extracting it trips aeneas's
 not a stub; `SeqIter` and its instance are generated. -/
 open Aeneas.Std (RustM) in
 def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter_loop
-    {A E IntoIter : Type}
+    {A E IntoIter : Type _}
     (iterInst : iter.traits.iterator.Iterator IntoIter (result.Result A E))
     (it : IntoIter) (acc : rust_primitives.sequence.Seq A) :
     RustM ((option.Option E) × (rust_primitives.sequence.Seq A)) := do
@@ -537,7 +547,7 @@ partial_fixpoint
 
 open Aeneas.Std (RustM) in
 def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
-    {A E V T IntoIter : Type}
+    {A E V T IntoIter : Type _}
     (FromIteratorInst : iter.traits.collect.FromIterator V A)
     (IntoIteratorInst : iter.traits.collect.IntoIterator T (result.Result A E) IntoIter)
     -- NOT named `iter`: that shadows the `iter` namespace, so `iter.traits.…`
@@ -563,9 +573,9 @@ def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
 -- from which `A` and `V` follow.
 @[reducible]
 def result.Result.Insts.CoreIterTraitsCollectFromIteratorResult
-    (E : Type) {A V : Type} (FromIteratorInst : iter.traits.collect.FromIterator V A) :
+    (E : Type _) {A V : Type _} (FromIteratorInst : iter.traits.collect.FromIterator V A) :
     iter.traits.collect.FromIterator (result.Result V E) (result.Result A E) := {
-  from_iter := fun {_T _IntoIter : Type} IntoIteratorInst =>
+  from_iter := fun {_T _IntoIter : Type _} IntoIteratorInst =>
     result.Result.Insts.CoreIterTraitsCollectFromIteratorResult.from_iter
       FromIteratorInst IntoIteratorInst
 }
@@ -585,7 +595,7 @@ CoreIterTraitsCollectIntoIteratorSharedATIter` (cf. Aeneas.Std's `SharedArray` f
 extraction calls directly. -/
 open Aeneas.Std (RustM) in
 def SharedAVec.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
-    {T : Type} (v : vec.Vec T) : RustM (core.slice.iter.Iter T) := do
+    {T : Type _} (v : vec.Vec T) : RustM (core.slice.iter.Iter T) := do
   let s ← vec.Vec.as_slice v
   core.slice.Slice.iter s
 
@@ -602,7 +612,7 @@ The body just builds the
 `F` is the closure, `T` the item, `O` its output (the `FnMut` instance is
 irrelevant to the model, hence `_`-prefixed). -/
 def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.map
-  {T O F : Type} (_FnMutInst : core.ops.function.FnMut F T O) :
+  {T O F : Type _} (_FnMutInst : core.ops.function.FnMut F T O) :
   vec.into_iter.IntoIter T → F →
   Aeneas.Std.RustM (core.iter.adapters.map.Map (vec.into_iter.IntoIter T) F) :=
   fun it f => .ok { iter := it, f := f }
@@ -611,7 +621,7 @@ def vec.into_iter.IntoIter.Insts.CoreIterTraitsIteratorIterator.map
 
 open Aeneas.Std (RustM) in
 def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
-    {T IntoIter : Type}
+    {T IntoIter : Type _}
     (iterInst : core.iter.traits.iterator.Iterator IntoIter T)
     (it : IntoIter) (res : collections.vec_deque.VecDeque T alloc.Global) : RustM (collections.vec_deque.VecDeque T alloc.Global) := do
   let (o, it1) ← iterInst.next it
@@ -624,7 +634,7 @@ partial_fixpoint
 
 open Aeneas.Std (RustM) in
 def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter
-    {T I IntoIter : Type}
+    {T I IntoIter : Type _}
     (IntoIteratorInst : core.iter.traits.collect.IntoIterator I T IntoIter)
     (iter : I) : RustM (collections.vec_deque.VecDeque T alloc.Global) := do
   let res ← collections.vec_deque.VecDequeTGlobal.new T
@@ -634,10 +644,10 @@ def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterato
 
 @[reducible]
 def collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator
-  (T : Type) :
+  (T : Type _) :
   core.iter.traits.collect.FromIterator
     (collections.vec_deque.VecDeque T alloc.Global) T := {
-  from_iter := fun {T1 Clause0_IntoIter : Type}
+  from_iter := fun {T1 Clause0_IntoIter : Type _}
     (IntoIteratorInst : core.iter.traits.collect.IntoIterator T1 T Clause0_IntoIter) =>
     collections.vec_deque.VecDequeTGlobal.Insts.CoreIterTraitsCollectFromIterator.from_iter IntoIteratorInst
 }
@@ -654,7 +664,7 @@ as Aeneas.Std hand-writes `alloc.vec.FromIteratorVec`. `IntoIterator` carries
 is computable. -/
 open Aeneas.Std (RustM) in
 def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter_loop
-    {T IntoIter : Type}
+    {T IntoIter : Type _}
     (iterInst : core.iter.traits.iterator.Iterator IntoIter T)
     (it : IntoIter) (res : vec.Vec T) : RustM (vec.Vec T) := do
   let (o, it1) ← iterInst.next it
@@ -667,7 +677,7 @@ partial_fixpoint
 
 open Aeneas.Std (RustM) in
 def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter
-    {T I IntoIter : Type}
+    {T I IntoIter : Type _}
     (IntoIteratorInst : core.iter.traits.collect.IntoIterator I T IntoIter)
     (iter : I) : RustM (vec.Vec T) := do
   let res ← vec.Vec.new T
@@ -676,9 +686,9 @@ def vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter
     IntoIteratorInst.iteratorIteratorInst it res
 
 @[reducible]
-def vec.Vec.Insts.CoreIterTraitsCollectFromIterator (T : Type) :
+def vec.Vec.Insts.CoreIterTraitsCollectFromIterator (T : Type _) :
     core.iter.traits.collect.FromIterator (vec.Vec T) T := {
-  from_iter := fun {T1 Clause0_IntoIter : Type}
+  from_iter := fun {T1 Clause0_IntoIter : Type _}
     (IntoIteratorInst : core.iter.traits.collect.IntoIterator T1 T Clause0_IntoIter) =>
     vec.Vec.Insts.CoreIterTraitsCollectFromIterator.from_iter IntoIteratorInst
 }
@@ -697,13 +707,13 @@ noncomputable section
 
 @[rust_fun "alloc::slice::{[@T]}::to_vec"]
 def slice.Slice.to_vec
-  {T : Type} (cloneInst : core.clone.Clone T) (s : Aeneas.Std.Slice T) :
+  {T : Type _} (cloneInst : core.clone.Clone T) (s : Aeneas.Std.Slice T) :
   Aeneas.Std.RustM (vec.Vec T) :=
   slice.Dummy.to_vec cloneInst s
 
 @[rust_fun "alloc::slice::{alloc::boxed::Box<[@T], @A>}::into_vec"]
 def slice.Slice.into_vec
-  {T : Type} (s : Aeneas.Std.Slice T) : Aeneas.Std.RustM (vec.Vec T) :=
+  {T : Type _} (s : Aeneas.Std.Slice T) : Aeneas.Std.RustM (vec.Vec T) :=
   slice.Dummy.into_vec s
 
 end

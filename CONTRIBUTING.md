@@ -37,7 +37,7 @@ The flake provides several dev shells:
 
 The first three shells give you the toolchain to build hax, not a `cargo-hax` binary: run `just build` first (see [below](#building-testing-and-formatting)).
 
-In any Nix command from the README's [*Installation*](README.md#installation) section, replace `github:cryspen/hax` by `./some-dir` to compile a local checkout of hax that lives in `./some-dir`.
+In any Nix command from the README's [*Installation*](README.md#installation) section, replace `github:pereq-dev/hax` by `./some-dir` to compile a local checkout of hax that lives in `./some-dir`.
 
 ### Structure of this repository
 

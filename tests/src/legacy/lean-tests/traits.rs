@@ -340,7 +340,7 @@ mod associated_constant {
         const x: u8 = 1 + 1;
     }
 
-    // https://github.com/cryspen/hax/issues/1940
+    // https://github.com/pereq-dev/hax/issues/1940
     /// @fail(extraction): proverif(HAX0008)
     trait Baz {
         const One: u32 = 1;

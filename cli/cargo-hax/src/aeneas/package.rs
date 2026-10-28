@@ -22,7 +22,7 @@ use std::path::{Path, PathBuf};
 /// The source repository of the aeneas Lean proof library: the repository
 /// the managed aeneas binaries are built from, so a resolved aeneas
 /// version doubles as the library's rev.
-const AENEAS_REPO: &str = "https://github.com/cryspen/aeneas";
+const AENEAS_REPO: &str = "https://github.com/pereq-dev/aeneas";
 
 /// The source repository of the `hax` Lean proof library.
 const HAX_LEAN_LIB_REPO: &str = "https://github.com/cryspen/hax-lean";
@@ -745,18 +745,18 @@ pub fn generate(
     // generation.
     if !lean_dir.join("lakefile.lean").exists() {
         let lakefile = lean_dir.join("lakefile.toml");
-        if absent_or_empty(&lakefile) {
-            if let Some(path) = aeneas_local_path {
-                HaxMessage::GenericWarning {
-                    message: format!(
-                        "aeneas resolves to the local binary {}; pinning the aeneas Lean \
-                         library to the default {} in the generated lakefile",
-                        path.display(),
-                        pins.aeneas_rev
-                    ),
-                }
-                .report(message_format, None);
+        if absent_or_empty(&lakefile)
+            && let Some(path) = aeneas_local_path
+        {
+            HaxMessage::GenericWarning {
+                message: format!(
+                    "aeneas resolves to the local binary {}; pinning the aeneas Lean \
+                     library to the default {} in the generated lakefile",
+                    path.display(),
+                    pins.aeneas_rev
+                ),
             }
+            .report(message_format, None);
         }
         error |= write_if_absent(
             &lakefile,

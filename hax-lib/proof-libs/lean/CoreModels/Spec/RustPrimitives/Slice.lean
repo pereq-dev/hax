@@ -13,6 +13,7 @@ open Aeneas.Std hiding namespace core alloc
 open Std.Do WP RustM
 
 set_option mvcgen.warning false
+set_option linter.deprecated.syntax false
 
 
 /-! ## `array_from_fn` -/

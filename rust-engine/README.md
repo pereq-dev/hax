@@ -1,6 +1,6 @@
 # Hax Rust Engine
 
-This crate implements an alternative engine for Rust: the main one is implemented in OCaml and is located in [`engine/`](https://github.com/cryspen/hax/tree/main/engine).
+This crate implements an alternative engine for Rust: the main one is implemented in OCaml and is located in [`engine/`](https://github.com/pereq-dev/hax/tree/main/engine).
 This Rust engine is designed so that it can re-use some bits of the OCaml engine.
 
 The plan is to slowly deprecate the OCaml engine, rewrite most of its components and drop it.

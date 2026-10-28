@@ -40,19 +40,19 @@ def Bool.Insts.CoreCmpPartialEqBool    : cmp.PartialEq Bool  Bool  := { eq := fu
 `(A, B) == (C, D)` — reached by e.g. comparing the `(T, bool)` an
 `overflowing_*` returns. Short-circuits on the first component, as Rust does. -/
 
-def Pair.Insts.CoreCmpPartialEqPair.eq {A B C D : Type}
+def Pair.Insts.CoreCmpPartialEqPair.eq {A B C D : Type _}
     (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
     A × B → C × D → RustM Bool := fun (a, b) (c, d) => do
   let eqFst ← PartialEqInst.eq a c
   if eqFst then PartialEqInst1.eq b d else ok false
 
-def Pair.Insts.CoreCmpPartialEqPair.ne {A B C D : Type}
+def Pair.Insts.CoreCmpPartialEqPair.ne {A B C D : Type _}
     (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
     A × B → C × D → RustM Bool := fun p q => do
   let eq ← Pair.Insts.CoreCmpPartialEqPair.eq PartialEqInst PartialEqInst1 p q
   ok (!eq)
 
-def Pair.Insts.CoreCmpPartialEqPair {A B C D : Type}
+def Pair.Insts.CoreCmpPartialEqPair {A B C D : Type _}
     (PartialEqInst : cmp.PartialEq A C) (PartialEqInst1 : cmp.PartialEq B D) :
     cmp.PartialEq (A × B) (C × D) := {
   eq := Pair.Insts.CoreCmpPartialEqPair.eq PartialEqInst PartialEqInst1
@@ -75,7 +75,7 @@ def mkUPartialOrd {ty} : cmp.PartialOrd (UScalar ty) (UScalar ty) := {
 
 /-- The `Iterator::next` implementation for `core::ops::range::Range<A>`,
     parameterised over the `Step` dictionary. -/
-def IteratorRange.next {A : Type} (StepInst : iter.range.Step A) :
+def IteratorRange.next {A : Type _} (StepInst : iter.range.Step A) :
     ops.range.Range A → Aeneas.Std.RustM ((Option A) × ops.range.Range A) := fun range => do
   let cmp ← StepInst.corecmpPartialOrdInst.partial_cmp range.start range.«end»
   let isLess : Bool := match cmp with
@@ -188,7 +188,7 @@ abbrev ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next :=
 /-- `Iterator::count` for `core::ops::range::Range<A>`. Driving `next` to
     exhaustion advances `start` one step at a time until it reaches `end`, which
     is what `Step::steps_between` reports (`0` when `start > end`). -/
-def ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count {A : Type}
+def ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count {A : Type _}
     (StepInst : iter.range.Step A) (range : ops.range.Range A) : RustM Usize := do
   let (steps, _) ← StepInst.steps_between range.start range.«end»
   ok steps
@@ -196,7 +196,7 @@ def ops.range.Range.Insts.CoreIterTraitsIteratorIterator.count {A : Type}
 /-- `next_back` for `Range<A>`, parameterised over `Step` — mirrors Aeneas.Std's
     `RangeIter`. Consume from the high end: if `start < end`, decrement `end` by one
     and yield the new `end`; otherwise `none`. -/
-def IteratorRange.next_back {A : Type} (StepInst : iter.range.Step A) :
+def IteratorRange.next_back {A : Type _} (StepInst : iter.range.Step A) :
     ops.range.Range A → RustM ((Option A) × ops.range.Range A) := fun range => do
   let lt ← StepInst.corecmpPartialOrdInst.lt range.start range.«end»
   if lt then do
@@ -217,13 +217,13 @@ the generic instance dict is missing. We provide it here (delegating to the gene
 `.next` abbrev above is the function form the same-crate generated code calls; this
 is the full dict a downstream extraction passes as an `Iterator`/`DoubleEnded`
 dictionary. -/
-def ops.range.Range.Insts.CoreIterTraitsIteratorIterator {A : Type}
+def ops.range.Range.Insts.CoreIterTraitsIteratorIterator {A : Type _}
     (StepInst : iter.range.Step A) :
     iter.traits.iterator.Iterator (ops.range.Range A) A := {
   next := IteratorRange.next StepInst
 }
 
-def ops.range.Range.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Type}
+def ops.range.Range.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Type _}
     (StepInst : iter.range.Step A) :
     iter.traits.double_ended.DoubleEndedIterator (ops.range.Range A) A := {
   iteratorIteratorInst := ops.range.Range.Insts.CoreIterTraitsIteratorIterator StepInst
@@ -236,7 +236,7 @@ def ops.range.Range.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Typ
     Visibility: public -/
 @[rust_fun "core::cmp::impls::{core::cmp::PartialOrd<&'1 @A, &'0 @B>}::lt"]
 def Shared1A.Insts.CoreCmpPartialOrdShared0B.lt
-  {A : Type} {B : Type} (PartialOrdInst : cmp.PartialOrd A B) :
+  {A : Type _} {B : Type _} (PartialOrdInst : cmp.PartialOrd A B) :
   A → B → RustM Bool := fun a b => do
   let o ← PartialOrdInst.partial_cmp a b
   match o with
@@ -249,7 +249,7 @@ def Shared1A.Insts.CoreCmpPartialOrdShared0B.lt
     Visibility: public -/
 @[rust_fun "core::cmp::impls::{core::cmp::PartialOrd<&'1 @A, &'0 @B>}::gt"]
 def Shared1A.Insts.CoreCmpPartialOrdShared0B.gt
-  {A : Type} {B : Type} (PartialOrdInst : cmp.PartialOrd A B) :
+  {A : Type _} {B : Type _} (PartialOrdInst : cmp.PartialOrd A B) :
   A → B → RustM Bool := fun a b => do
   let o ← PartialOrdInst.partial_cmp a b
   match o with
@@ -278,23 +278,23 @@ lifetimes baked into its extracted name (see the `PartialOrd` pair above), and
 are the ones an extracted client actually references -- read off
 `tests/client_test`'s extraction, like the `PartialOrd` pair. -/
 
-def Shared1A.Insts.CoreCmpPartialEqShared0B.eq {A B : Type}
+def Shared1A.Insts.CoreCmpPartialEqShared0B.eq {A B : Type _}
     (PartialEqInst : cmp.PartialEq A B) : A → B → RustM Bool :=
   PartialEqInst.eq
 
-def Shared1A.Insts.CoreCmpPartialEqShared0B.ne {A B : Type}
+def Shared1A.Insts.CoreCmpPartialEqShared0B.ne {A B : Type _}
     (PartialEqInst : cmp.PartialEq A B) : A → B → RustM Bool :=
   PartialEqInst.ne
 
-def Shared1A.Insts.CoreCmpPartialEqShared0B {A B : Type}
+def Shared1A.Insts.CoreCmpPartialEqShared0B {A B : Type _}
     (PartialEqInst : cmp.PartialEq A B) : cmp.PartialEq A B :=
   PartialEqInst
 
 /-- `Clone` for a shared reference: cloning `&T` copies the reference, which
     extraction erases, so this is the identity even when `T` is not `Clone`. -/
-def Shared0T.Insts.CoreCloneClone.clone {T : Type} : T → RustM T := ok
+def Shared0T.Insts.CoreCloneClone.clone {T : Type _} : T → RustM T := ok
 
-def Shared0T.Insts.CoreCloneClone (T : Type) : clone.Clone T := {
+def Shared0T.Insts.CoreCloneClone (T : Type _) : clone.Clone T := {
   clone := Shared0T.Insts.CoreCloneClone.clone
   -- `Clone` gained a `clone_from` provided method (see `clone.rs`); cloning a
   -- shared reference is the identity, so overwriting is just the source.

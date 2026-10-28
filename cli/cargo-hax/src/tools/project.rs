@@ -84,9 +84,10 @@ impl CargoArgs {
                 if let Some(value) = flags.next() {
                     args.metadata_args.extend([flag.clone(), value.clone()]);
                 }
-            } else if name == "--features" || (flag.starts_with("-F") && flag.len() > 2) {
-                args.metadata_args.push(flag.clone());
-            } else if FORWARDED.contains(&name) {
+            } else if name == "--features"
+                || (flag.starts_with("-F") && flag.len() > 2)
+                || FORWARDED.contains(&name)
+            {
                 args.metadata_args.push(flag.clone());
             }
         }

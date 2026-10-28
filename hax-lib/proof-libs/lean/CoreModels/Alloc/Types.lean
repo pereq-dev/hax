@@ -17,6 +17,7 @@ set_option linter.unusedVariables false
 set_option linter.style.whitespace false
 set_option linter.style.setOption false
 set_option linter.style.longLine false
+set_option linter.internalConstructors false
 
 /- You can set the `maxHeartbeats` value with the `-max-heartbeats` CLI option -/
 set_option maxHeartbeats 1000000
@@ -27,71 +28,71 @@ set_option maxRecDepth 2048
 namespace CoreModels.alloc
 
 /-- Trait declaration: [alloc::alloc::Allocator]
-    Source: 'src/lib.rs', lines 30:4-30:26
+    Source: 'src/lib.rs', lines 32:4-32:26
     Visibility: public -/
-structure alloc.Allocator (Self : Type) where
+structure alloc.Allocator (Self : Type _) where
 
 /-- [alloc::alloc::Global]
-    Source: 'src/lib.rs', lines 34:4-34:22
+    Source: 'src/lib.rs', lines 36:4-36:22
     Visibility: public -/
 @[reducible]
 def alloc.Global := Unit
 
 /-- [alloc::borrow::Cow]
-    Source: 'src/lib.rs', lines 40:4-40:21 -/
+    Source: 'src/lib.rs', lines 42:4-42:21 -/
 @[reducible]
-def borrow.Cow (T : Type) := T
+def borrow.Cow (T : Type _) := T
 
 /-- Trait declaration: [alloc::borrow::ToOwned]
-    Source: 'src/lib.rs', lines 42:4-44:5
+    Source: 'src/lib.rs', lines 44:4-46:5
     Visibility: public -/
-structure borrow.ToOwned (Self : Type) where
+structure borrow.ToOwned (Self : Type _) where
   to_owned : Self → RustM Self
 
 /-- [alloc::boxed::Box]
-    Source: 'src/lib.rs', lines 65:4-65:29
+    Source: 'src/lib.rs', lines 67:4-67:29
     Visibility: public -/
 @[reducible]
-def boxed.Box (T : Type) := T
+def boxed.Box (T : Type _) := T
 
 /-- [alloc::collections::btree::set::BTreeSet]
-    Source: 'src/lib.rs', lines 280:12-280:56 -/
-def collections.btree.set.BTreeSet (T : Type) (U : Type) :=
+    Source: 'src/lib.rs', lines 282:12-282:56 -/
+def collections.btree.set.BTreeSet (T : Type _) (U : Type _) :=
   core.option.Option T × core.option.Option U
 
 /-- [alloc::collections::vec_deque::VecDeque]
-    Source: 'src/lib.rs', lines 308:8-308:75
+    Source: 'src/lib.rs', lines 310:8-310:75
     Visibility: public -/
-def collections.vec_deque.VecDeque (T : Type) (A : Type) :=
+def collections.vec_deque.VecDeque (T : Type _) (A : Type _) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::collections::vec_deque::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 353:12-353:83
+    Source: 'src/lib.rs', lines 355:12-355:83
     Visibility: public -/
-def collections.vec_deque.into_iter.IntoIter (T : Type) (A : Type) :=
+def collections.vec_deque.into_iter.IntoIter (T : Type _) (A : Type _) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::slice::Dummy]
-    Source: 'src/lib.rs', lines 512:4-512:23 -/
+    Source: 'src/lib.rs', lines 514:4-514:23 -/
 @[reducible]
-def slice.Dummy (T : Type) := T
+def slice.Dummy (T : Type _) := T
 
 /-- [alloc::vec::Vec]
-    Source: 'src/lib.rs', lines 727:4-727:34
+    Source: 'src/lib.rs', lines 729:4-729:34
     Visibility: public -/
 @[reducible]
-def vec.Vec (T : Type) := rust_primitives.sequence.Seq T
+def vec.Vec (T : Type _) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 777:8-777:43
+    Source: 'src/lib.rs', lines 779:8-779:43
     Visibility: public -/
 @[reducible]
-def vec.into_iter.IntoIter (T : Type) := rust_primitives.sequence.Seq T
+def vec.into_iter.IntoIter (T : Type _) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 915:8-915:76
+    Source: 'src/lib.rs', lines 917:8-917:76
     Visibility: public -/
-def vec.drain.Drain (T : Type) (A : Type) :=
+def vec.drain.Drain (T : Type _) (A : Type _) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 end CoreModels.alloc

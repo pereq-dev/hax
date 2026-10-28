@@ -16,6 +16,7 @@ set_option linter.unusedVariables false
 set_option linter.style.whitespace false
 set_option linter.style.setOption false
 set_option linter.style.longLine false
+set_option linter.internalConstructors false
 
 /- You can set the `maxHeartbeats` value with the `-max-heartbeats` CLI option -/
 set_option maxHeartbeats 1000000
@@ -26,7 +27,7 @@ set_option maxRecDepth 2048
 namespace CoreModels.core
 
 /-- [core_models::ptr::alignment::AlignmentEnum]
-    Source: 'core-models/src/core/ptr.rs', lines 11:16-16:17
+    Source: 'core-models/src/core/ptr.rs', lines 11:16-16:17; this code is generated from a macro invocation at: 'core-models/src/core/ptr.rs', lines 21:4-25:5
     Visibility: public -/
 @[discriminant isize]
 inductive ptr.alignment.AlignmentEnum where
@@ -119,7 +120,7 @@ def alloc.layout.LayoutError := Unit
     Source: 'core-models/src/core/result.rs', lines 3:0-8:1
     Visibility: public -/
 @[discriminant isize]
-inductive result.Result (T : Type) (E : Type) where
+inductive result.Result (T : Type _) (E : Type _) where
 | Ok : T → result.Result T E
 | Err : E → result.Result T E
 -/
@@ -137,9 +138,9 @@ def fmt.Formatter := Unit
 def fmt.Error := Unit
 
 /-- Trait declaration: [core_models::fmt::Debug]
-    Source: 'core-models/src/core/fmt.rs', lines 88:0-94:1
+    Source: 'core-models/src/core/fmt.rs', lines 84:0-90:1
     Visibility: public -/
-structure fmt.Debug (Self : Type) where
+structure fmt.Debug (Self : Type _) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
     fmt.Formatter)
 
@@ -153,18 +154,18 @@ def array.TryFromSliceError := Unit
 /-- [core_models::array::Array]
     Source: 'core-models/src/core/array.rs', lines 10:0-10:40 -/
 @[reducible]
-def array.Array (T : Type) (N : Std.Usize) := Array T N
+def array.Array (T : Type _) (N : Std.Usize) := Array T N
 -/
 
 /-- [core_models::array::{core_models::array::Array<T, N>}::each_ref::{closure}]
     Source: 'core-models/src/core/array.rs', lines 65:22-65:43 -/
 @[reducible]
-def array.Array.each_ref.closure (T : Type) (N : Std.Usize) := Array T N
+def array.Array.each_ref.closure (T : Type _) (N : Std.Usize) := Array T N
 
 /-- [core_models::array::repeat::{closure}]
     Source: 'core-models/src/core/array.rs', lines 82:18-82:49 -/
 @[reducible]
-def array.repeat.closure (T : Type) (N : Std.Usize) :=
+def array.repeat.closure (T : Type _) (N : Std.Usize) :=
   rust_primitives.sequence.Seq T
 
 /-
@@ -172,7 +173,7 @@ def array.repeat.closure (T : Type) (N : Std.Usize) :=
     Source: 'core-models/src/core/option.rs', lines 3:0-8:1
     Visibility: public -/
 @[discriminant isize]
-inductive option.Option (T : Type) where
+inductive option.Option (T : Type _) where
 | Some : T → option.Option T
 | None : option.Option T
 -/
@@ -180,14 +181,15 @@ inductive option.Option (T : Type) where
 /-- Trait declaration: [core_models::iter::traits::iterator::Iterator]
     Source: 'core-models/src/core/iter.rs', lines 17:8-21:9
     Visibility: public -/
-structure iter.traits.iterator.Iterator (Self : Type) (Self_Item : Type) where
+structure iter.traits.iterator.Iterator (Self : Type _) (Self_Item : Type _)
+  where
   next : Self → RustM ((option.Option Self_Item) × Self)
 
 /-- Trait declaration: [core_models::iter::traits::collect::IntoIterator]
     Source: 'core-models/src/core/iter.rs', lines 461:8-469:9
     Visibility: public -/
-structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
-  (Self_IntoIter : Type) where
+structure iter.traits.collect.IntoIterator (Self : Type _) (Self_Item : Type _)
+  (Self_IntoIter : Type _) where
   iteratorIteratorInst : iter.traits.iterator.Iterator Self_IntoIter Self_Item
   into_iter : Self → RustM Self_IntoIter
 
@@ -195,20 +197,21 @@ structure iter.traits.collect.IntoIterator (Self : Type) (Self_Item : Type)
     Source: 'core-models/src/core/array.rs', lines 249:4-249:55
     Visibility: public -/
 @[reducible]
-def array.iter.IntoIter (T : Type) (N : Std.Usize) :=
+def array.iter.IntoIter (T : Type _) (N : Std.Usize) :=
   rust_primitives.sequence.Seq T
 
 /-- Trait declaration: [core_models::ops::index::Index]
     Source: 'core-models/src/core/ops.rs', lines 144:4-147:5
     Visibility: public -/
-structure ops.index.Index (Self : Type) (Idx : Type) (Self_Output : Type) where
+structure ops.index.Index (Self : Type _) (Idx : Type _) (Self_Output : Type _)
+  where
   index : Self → Idx → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::index::IndexMut]
     Source: 'core-models/src/core/ops.rs', lines 155:4-157:5
     Visibility: public -/
-structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
-  Type) where
+structure ops.index.IndexMut (Self : Type _) (Idx : Type _)
+  (Self_Clause0_Output : Type _) where
   IndexInst : ops.index.Index Self Idx Self_Clause0_Output
   index_mut : Self → Idx → RustM (Self_Clause0_Output ×
     (Self_Clause0_Output → Self))
@@ -216,48 +219,48 @@ structure ops.index.IndexMut (Self : Type) (Idx : Type) (Self_Clause0_Output :
 /-- Trait declaration: [core_models::clone::Clone]
     Source: 'core-models/src/core/clone.rs', lines 13:0-25:1
     Visibility: public -/
-structure clone.Clone (Self : Type) where
+structure clone.Clone (Self : Type _) where
   clone : Self → RustM Self
   clone_from : Self → Self → RustM Self
 
 /-- [core_models::array::{impl core_models::clone::Clone for [T; N]}::clone::{closure}]
     Source: 'core-models/src/core/array.rs', lines 181:25-181:38 -/
 @[reducible]
-def array.CloneArray.clone.closure (T : Type) (N : Std.Usize) := Unit
+def array.CloneArray.clone.closure (T : Type _) (N : Std.Usize) := Unit
 
 /-- Trait declaration: [core_models::cmp::PartialEq]
     Source: 'core-models/src/core/cmp.rs', lines 5:0-23:1
     Visibility: public -/
-structure cmp.PartialEq (Self : Type) (Rhs : Type) where
+structure cmp.PartialEq (Self : Type _) (Rhs : Type _) where
   eq : Self → Rhs → RustM Bool
   ne : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::default::Default]
     Source: 'core-models/src/core/default.rs', lines 3:0-7:1
     Visibility: public -/
-structure default.Default (Self : Type) where
+structure default.Default (Self : Type _) where
   default : RustM Self
 
 /-- [core_models::array::{impl core_models::default::Default for [T; N]}::default::{closure}]
     Source: 'core-models/src/core/array.rs', lines 219:22-219:68 -/
 @[reducible]
-def array.DefaultArray.default.closure (T : Type) (N : Std.Usize) := Unit
+def array.DefaultArray.default.closure (T : Type _) (N : Std.Usize) := Unit
 
 /-- Trait declaration: [core_models::convert::AsRef]
     Source: 'core-models/src/core/convert.rs', lines 91:0-95:1
     Visibility: public -/
-structure convert.AsRef (Self : Type) (T : Type) where
+structure convert.AsRef (Self : Type _) (T : Type _) where
   as_ref : Self → RustM T
 
 /-- Trait declaration: [core_models::borrow::Borrow]
     Source: 'core-models/src/core/borrow.rs', lines 2:0-5:1 -/
-structure borrow.Borrow (Self : Type) (Borrowed : Type) where
+structure borrow.Borrow (Self : Type _) (Borrowed : Type _) where
   borrow : Self → RustM Borrowed
 
 /-- Trait declaration: [core_models::cmp::Eq]
     Source: 'core-models/src/core/cmp.rs', lines 26:0-26:32
     Visibility: public -/
-structure cmp.Eq (Self : Type) where
+structure cmp.Eq (Self : Type _) where
   PartialEqInst : cmp.PartialEq Self Self
 
 /-
@@ -274,7 +277,7 @@ inductive cmp.Ordering where
 /-- Trait declaration: [core_models::cmp::PartialOrd]
     Source: 'core-models/src/core/cmp.rs', lines 49:0-85:1
     Visibility: public -/
-structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
+structure cmp.PartialOrd (Self : Type _) (Rhs : Type _) where
   PartialEqInst : cmp.PartialEq Self Rhs
   partial_cmp : Self → Rhs → RustM (option.Option cmp.Ordering)
   lt : Self → Rhs → RustM Bool
@@ -284,13 +287,13 @@ structure cmp.PartialOrd (Self : Type) (Rhs : Type) where
 
 /-- Trait declaration: [core_models::cmp::Neq]
     Source: 'core-models/src/core/cmp.rs', lines 88:0-91:1 -/
-structure cmp.Neq (Self : Type) (Rhs : Type) where
+structure cmp.Neq (Self : Type _) (Rhs : Type _) where
   neq : Self → Rhs → RustM Bool
 
 /-- Trait declaration: [core_models::cmp::Ord]
     Source: 'core-models/src/core/cmp.rs', lines 159:0-163:1
     Visibility: public -/
-structure cmp.Ord (Self : Type) where
+structure cmp.Ord (Self : Type _) where
   EqInst : cmp.Eq Self
   PartialOrdInst : cmp.PartialOrd Self Self
   cmp : Self → Self → RustM cmp.Ordering
@@ -299,28 +302,30 @@ structure cmp.Ord (Self : Type) where
     Source: 'core-models/src/core/cmp.rs', lines 182:0-182:29
     Visibility: public -/
 @[reducible]
-def cmp.Reverse (T : Type) := T
+def cmp.Reverse (T : Type _) := T
 
 /-- Trait declaration: [core_models::convert::TryInto]
     Source: 'core-models/src/core/convert.rs', lines 5:0-10:1 -/
-structure convert.TryInto (Self : Type) (T : Type) (Self_Error : Type) where
+structure convert.TryInto (Self : Type _) (T : Type _) (Self_Error : Type _)
+  where
   try_into : Self → RustM (result.Result T Self_Error)
 
 /-- Trait declaration: [core_models::convert::Into]
     Source: 'core-models/src/core/convert.rs', lines 14:0-18:1 -/
-structure convert.Into (Self : Type) (T : Type) where
+structure convert.Into (Self : Type _) (T : Type _) where
   into : Self → RustM T
 
 /-- Trait declaration: [core_models::convert::From]
     Source: 'core-models/src/core/convert.rs', lines 22:0-26:1
     Visibility: public -/
-structure convert.From (Self : Type) (T : Type) where
+structure convert.From (Self : Type _) (T : Type _) where
   «from» : T → RustM Self
 
 /-- Trait declaration: [core_models::convert::TryFrom]
     Source: 'core-models/src/core/convert.rs', lines 30:0-35:1
     Visibility: public -/
-structure convert.TryFrom (Self : Type) (T : Type) (Self_Error : Type) where
+structure convert.TryFrom (Self : Type _) (T : Type _) (Self_Error : Type _)
+  where
   try_from : T → RustM (result.Result Self Self_Error)
 
 /-- [core_models::convert::Infallible]
@@ -333,7 +338,7 @@ def convert.Infallible := Unit
     Source: 'core-models/src/core/convert.rs', lines 67:61-69:13 -/
 @[reducible]
 def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
-  Type) (N : Std.Usize) :=
+  Type _) (N : Std.Usize) :=
   Slice T
 
 /-- [core_models::num::error::TryFromIntError]
@@ -343,16 +348,16 @@ def convert.TryFromArrayShared0SliceTryFromSliceError.try_from.closure (T :
 def num.error.TryFromIntError := Unit
 
 /-- Trait declaration: [core_models::fmt::Display]
-    Source: 'core-models/src/core/fmt.rs', lines 82:0-85:1
+    Source: 'core-models/src/core/fmt.rs', lines 78:0-81:1
     Visibility: public -/
-structure fmt.Display (Self : Type) where
+structure fmt.Display (Self : Type _) where
   fmt : Self → fmt.Formatter → RustM ((result.Result Unit fmt.Error) ×
     fmt.Formatter)
 
 /-- Trait declaration: [core_models::error::Error]
     Source: 'core-models/src/core/error.rs', lines 4:0-4:35
     Visibility: public -/
-structure error.Error (Self : Type) where
+structure error.Error (Self : Type _) where
   fmtDisplayInst : fmt.Display Self
   fmtDebugInst : fmt.Debug Self
 
@@ -362,25 +367,25 @@ structure error.Error (Self : Type) where
 def f32.f32 := Unit
 
 /-- [core_models::fmt::Arguments]
-    Source: 'core-models/src/core/fmt.rs', lines 97:0-97:33
+    Source: 'core-models/src/core/fmt.rs', lines 93:0-93:33
     Visibility: public -/
 @[reducible]
 def fmt.Arguments := Unit
 
 /-- [core_models::fmt::rt::ArgumentType]
-    Source: 'core-models/src/core/fmt.rs', lines 280:4-287:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 281:4-288:5 -/
 @[discriminant isize]
 inductive fmt.rt.ArgumentType where
 | Placeholder : core.marker.PhantomData Unit → fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Argument]
-    Source: 'core-models/src/core/fmt.rs', lines 289:4-291:5
+    Source: 'core-models/src/core/fmt.rs', lines 290:4-292:5
     Visibility: public -/
 structure fmt.rt.Argument where
   ty : fmt.rt.ArgumentType
 
 /-- [core_models::fmt::rt::Count]
-    Source: 'core-models/src/core/fmt.rs', lines 370:4-374:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 371:4-375:5 -/
 @[discriminant isize]
 inductive fmt.rt.Count where
 | Is : Std.U16 → fmt.rt.Count
@@ -388,7 +393,7 @@ inductive fmt.rt.Count where
 | Implied : fmt.rt.Count
 
 /-- [core_models::fmt::rt::Placeholder]
-    Source: 'core-models/src/core/fmt.rs', lines 376:4-381:5 -/
+    Source: 'core-models/src/core/fmt.rs', lines 377:4-382:5 -/
 structure fmt.rt.Placeholder where
   position : Std.Usize
   flags : Std.U32
@@ -396,48 +401,48 @@ structure fmt.rt.Placeholder where
   width : fmt.rt.Count
 
 /-- [core_models::fmt::rt::UnsafeArg]
-    Source: 'core-models/src/core/fmt.rs', lines 383:4-383:21 -/
+    Source: 'core-models/src/core/fmt.rs', lines 384:4-384:21 -/
 @[reducible]
 def fmt.rt.UnsafeArg := Unit
 
 /-- Trait declaration: [core_models::hash::Hasher]
     Source: 'core-models/src/core/hash.rs', lines 2:0-7:1
     Visibility: public -/
-structure hash.Hasher (Self : Type) where
+structure hash.Hasher (Self : Type _) where
   finish : Self → RustM Std.U64
   write : Self → Slice Std.U8 → RustM Self
 
 /-- Trait declaration: [core_models::hash::Hash]
     Source: 'core-models/src/core/hash.rs', lines 11:0-16:1
     Visibility: public -/
-structure hash.Hash (Self : Type) where
+structure hash.Hash (Self : Type _) where
   hash : forall {H : Type} (HasherInst : hash.Hasher H), Self → H → RustM H
 
 /-- [core_models::iter::adapters::fuse::Fuse]
     Source: 'core-models/src/core/iter.rs', lines 1048:8-1051:9
     Visibility: public -/
-structure iter.adapters.fuse.Fuse (I : Type) where
+structure iter.adapters.fuse.Fuse (I : Type _) where
   iter : I
   done : Bool
 
 /-- [core_models::iter::adapters::inspect::Inspect]
     Source: 'core-models/src/core/iter.rs', lines 1021:8-1024:9
     Visibility: public -/
-structure iter.adapters.inspect.Inspect (I : Type) (F : Type) where
+structure iter.adapters.inspect.Inspect (I : Type _) (F : Type _) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::map_while::MapWhile]
     Source: 'core-models/src/core/iter.rs', lines 997:8-1000:9
     Visibility: public -/
-structure iter.adapters.map_while.MapWhile (I : Type) (F : Type) where
+structure iter.adapters.map_while.MapWhile (I : Type _) (F : Type _) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::skip_while::SkipWhile]
     Source: 'core-models/src/core/iter.rs', lines 960:8-964:9
     Visibility: public -/
-structure iter.adapters.skip_while.SkipWhile (I : Type) (P : Type) where
+structure iter.adapters.skip_while.SkipWhile (I : Type _) (P : Type _) where
   iter : I
   flag : Bool
   predicate : P
@@ -445,7 +450,7 @@ structure iter.adapters.skip_while.SkipWhile (I : Type) (P : Type) where
 /-- [core_models::iter::adapters::take_while::TakeWhile]
     Source: 'core-models/src/core/iter.rs', lines 920:8-924:9
     Visibility: public -/
-structure iter.adapters.take_while.TakeWhile (I : Type) (P : Type) where
+structure iter.adapters.take_while.TakeWhile (I : Type _) (P : Type _) where
   iter : I
   flag : Bool
   predicate : P
@@ -453,50 +458,51 @@ structure iter.adapters.take_while.TakeWhile (I : Type) (P : Type) where
 /-- [core_models::iter::adapters::filter_map::FilterMap]
     Source: 'core-models/src/core/iter.rs', lines 889:8-892:9
     Visibility: public -/
-structure iter.adapters.filter_map.FilterMap (I : Type) (F : Type) where
+structure iter.adapters.filter_map.FilterMap (I : Type _) (F : Type _) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::skip::Skip]
     Source: 'core-models/src/core/iter.rs', lines 859:8-862:9
     Visibility: public -/
-structure iter.adapters.skip.Skip (I : Type) where
+structure iter.adapters.skip.Skip (I : Type _) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::chain::Chain]
     Source: 'core-models/src/core/iter.rs', lines 826:8-829:9
     Visibility: public -/
-structure iter.adapters.chain.Chain (A : Type) (B : Type) where
+structure iter.adapters.chain.Chain (A : Type _) (B : Type _) where
   a : option.Option A
   b : B
 
 /-- [core_models::iter::adapters::filter::Filter]
     Source: 'core-models/src/core/iter.rs', lines 792:8-795:9
     Visibility: public -/
-structure iter.adapters.filter.Filter (I : Type) (P : Type) where
+structure iter.adapters.filter.Filter (I : Type _) (P : Type _) where
   iter : I
   predicate : P
 
 /-- [core_models::iter::adapters::zip::Zip]
     Source: 'core-models/src/core/iter.rs', lines 763:8-766:9
     Visibility: public -/
-structure iter.adapters.zip.Zip (I1 : Type) (I2 : Type) where
+structure iter.adapters.zip.Zip (I1 : Type _) (I2 : Type _) where
   it1 : I1
   it2 : I2
 
 /-- [core_models::iter::adapters::flatten::Flatten]
     Source: 'core-models/src/core/iter.rs', lines 717:8-723:9
     Visibility: public -/
-structure iter.adapters.flatten.Flatten (I : Type) (Clause0_Item : Type)
-  (Clause1_Item : Type) where
+structure iter.adapters.flatten.Flatten (I : Type _) (Clause0_Item : Type _)
+  (Clause1_Item : Type _) where
   it : I
   current : option.Option Clause0_Item
 
 /-- [core_models::iter::adapters::flat_map::FlatMap]
     Source: 'core-models/src/core/iter.rs', lines 677:8-681:9
     Visibility: public -/
-structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
+structure iter.adapters.flat_map.FlatMap (I : Type _) (U : Type _) (F : Type _)
+  where
   it : I
   f : F
   current : option.Option U
@@ -504,49 +510,49 @@ structure iter.adapters.flat_map.FlatMap (I : Type) (U : Type) (F : Type) where
 /-- [core_models::iter::adapters::take::Take]
     Source: 'core-models/src/core/iter.rs', lines 649:8-652:9
     Visibility: public -/
-structure iter.adapters.take.Take (I : Type) where
+structure iter.adapters.take.Take (I : Type _) where
   iter : I
   n : Std.Usize
 
 /-- [core_models::iter::adapters::map::Map]
     Source: 'core-models/src/core/iter.rs', lines 616:8-619:9
     Visibility: public -/
-structure iter.adapters.map.Map (I : Type) (F : Type) where
+structure iter.adapters.map.Map (I : Type _) (F : Type _) where
   iter : I
   f : F
 
 /-- [core_models::iter::adapters::step_by::StepBy]
     Source: 'core-models/src/core/iter.rs', lines 580:8-583:9
     Visibility: public -/
-structure iter.adapters.step_by.StepBy (I : Type) where
+structure iter.adapters.step_by.StepBy (I : Type _) where
   iter : I
   step : Std.Usize
 
 /-- [core_models::iter::adapters::enumerate::Enumerate]
     Source: 'core-models/src/core/iter.rs', lines 489:8-492:9
     Visibility: public -/
-structure iter.adapters.enumerate.Enumerate (I : Type) where
+structure iter.adapters.enumerate.Enumerate (I : Type _) where
   iter : I
   count : Std.Usize
 
 /-- Trait declaration: [core_models::iter::traits::collect::FromIterator]
     Source: 'core-models/src/core/iter.rs', lines 472:8-480:9
     Visibility: public -/
-structure iter.traits.collect.FromIterator (Self : Type) (A : Type) where
+structure iter.traits.collect.FromIterator (Self : Type _) (A : Type _) where
   from_iter : forall {T : Type} {Clause0_IntoIter : Type} (IntoIteratorInst :
     iter.traits.collect.IntoIterator T A Clause0_IntoIter), T → RustM Self
 
 /-- Trait declaration: [core_models::iter::traits::iterator::IteratorMethods]
     Source: 'core-models/src/core/iter.rs', lines 30:8-104:9 -/
-structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
-  : Type) where
+structure iter.traits.iterator.IteratorMethods (Self : Type _)
+  (Self_Clause0_Item : Type _) where
   IteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
   fold : forall {B : Type} {F : Type} (coreopsfunctionFnMutPPairPInst :
     core.ops.function.FnMut F (B × Self_Clause0_Item) B), Self → B → F →
     RustM B
   all : forall {F : Type} (coreopsfunctionFnMutPTuplePBoolInst :
     core.ops.function.FnMut F Self_Clause0_Item Bool), Self → F → RustM
-    Bool
+    (Bool × Self)
   map : forall {O : Type} {F : Type} (coreopsfunctionFnMutPTupleFPInst :
     core.ops.function.FnMut F Self_Clause0_Item O), Self → F → RustM
     (iter.adapters.map.Map Self F)
@@ -590,17 +596,17 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
     Self_Clause0_Item), Self → U → RustM (iter.adapters.chain.Chain Self U)
   any : forall {F : Type} (coreopsfunctionFnMutPTuplePBoolInst :
     core.ops.function.FnMut F Self_Clause0_Item Bool), Self → F → RustM
-    Bool
-  find : forall {P : Type} (coreopsfunctionFnMutPTupleSharedPBoolInst :
+    (Bool × Self)
+  find : forall {P : Type} (coreopsfunctionFnMutPTupleShared0PBoolInst :
     core.ops.function.FnMut P Self_Clause0_Item Bool), Self → P → RustM
-    (option.Option Self_Clause0_Item)
+    ((option.Option Self_Clause0_Item) × Self)
   find_map : forall {B : Type} {F : Type}
     (coreopsfunctionFnMutPTupleFOptionInst : core.ops.function.FnMut F
-    Self_Clause0_Item (option.Option B)), Self → F → RustM (option.Option
-    B)
+    Self_Clause0_Item (option.Option B)), Self → F → RustM ((option.Option
+    B) × Self)
   position : forall {P : Type} (coreopsfunctionFnMutPTuplePBoolInst :
     core.ops.function.FnMut P Self_Clause0_Item Bool), Self → P → RustM
-    (option.Option Std.Usize)
+    ((option.Option Std.Usize) × Self)
   count : Self → RustM Std.Usize
   nth : Self → Std.Usize → RustM (option.Option Self_Clause0_Item)
   last : Self → RustM (option.Option Self_Clause0_Item)
@@ -620,29 +626,29 @@ structure iter.traits.iterator.IteratorMethods (Self : Type) (Self_Clause0_Item
 /-- Trait declaration: [core_models::iter::traits::double_ended::DoubleEndedIterator]
     Source: 'core-models/src/core/iter.rs', lines 440:8-443:9
     Visibility: public -/
-structure iter.traits.double_ended.DoubleEndedIterator (Self : Type)
-  (Self_Clause0_Item : Type) where
+structure iter.traits.double_ended.DoubleEndedIterator (Self : Type _)
+  (Self_Clause0_Item : Type _) where
   iteratorIteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
   next_back : Self → RustM ((option.Option Self_Clause0_Item) × Self)
 
 /-- Trait declaration: [core_models::iter::traits::exact_size::ExactSizeIterator]
     Source: 'core-models/src/core/iter.rs', lines 454:8-457:9
     Visibility: public -/
-structure iter.traits.exact_size.ExactSizeIterator (Self : Type)
-  (Self_Clause0_Item : Type) where
+structure iter.traits.exact_size.ExactSizeIterator (Self : Type _)
+  (Self_Clause0_Item : Type _) where
   iteratorIteratorInst : iter.traits.iterator.Iterator Self Self_Clause0_Item
   len : Self → RustM Std.Usize
 
 /-- [core_models::iter::adapters::rev::Rev]
     Source: 'core-models/src/core/iter.rs', lines 556:8-558:9
     Visibility: public -/
-structure iter.adapters.rev.Rev (I : Type) where
+structure iter.adapters.rev.Rev (I : Type _) where
   iter : I
 
 /-- Trait declaration: [core_models::iter::range::Step]
     Source: 'core-models/src/core/iter.rs', lines 1085:4-1105:5
     Visibility: public -/
-structure iter.range.Step (Self : Type) where
+structure iter.range.Step (Self : Type _) where
   cloneCloneInst : clone.Clone Self
   corecmpPartialOrdInst : core.cmp.PartialOrd Self Self
   steps_between : Self → Self → RustM (Std.Usize × (option.Option
@@ -657,40 +663,40 @@ structure iter.range.Step (Self : Type) where
 /-- Trait declaration: [core_models::marker::Copy]
     Source: 'core-models/src/core/marker.rs', lines 4:0-4:24
     Visibility: public -/
-structure marker.Copy (Self : Type) where
+structure marker.Copy (Self : Type _) where
   cloneCloneInst : clone.Clone Self
 
 /-- Trait declaration: [core_models::marker::Send]
     Source: 'core-models/src/core/marker.rs', lines 6:0-6:17
     Visibility: public -/
-structure marker.Send (Self : Type) where
+structure marker.Send (Self : Type _) where
 
 /-- Trait declaration: [core_models::marker::Sync]
     Source: 'core-models/src/core/marker.rs', lines 8:0-8:17
     Visibility: public -/
-structure marker.Sync (Self : Type) where
+structure marker.Sync (Self : Type _) where
 
 /-- Trait declaration: [core_models::marker::Sized]
     Source: 'core-models/src/core/marker.rs', lines 10:0-10:18
     Visibility: public -/
-structure marker.Sized (Self : Type) where
+structure marker.Sized (Self : Type _) where
 
 /-- Trait declaration: [core_models::marker::StructuralPartialEq]
     Source: 'core-models/src/core/marker.rs', lines 12:0-12:32
     Visibility: public -/
-structure marker.StructuralPartialEq (Self : Type) where
+structure marker.StructuralPartialEq (Self : Type _) where
 
 /-
 /-- [core_models::marker::PhantomData]
     Source: 'core-models/src/core/marker.rs', lines 49:0-49:25 -/
 @[reducible]
-def marker.PhantomData (T : Type) := T
+def marker.PhantomData (T : Type _) := T
 -/  -- replaced by rewrite_phantom_data in favor of the def in `TypesPrologue.lean`
 
 /-- [core_models::mem::manually_drop::ManuallyDrop]
     Source: 'core-models/src/core/mem.rs', lines 142:4-144:5
     Visibility: public -/
-structure mem.manually_drop.ManuallyDrop (T : Type) where
+structure mem.manually_drop.ManuallyDrop (T : Type _) where
   value : T
 
 /-- [core_models::num::error::IntErrorKind]
@@ -705,275 +711,285 @@ def num.error.IntErrorKind := Unit
 structure num.error.ParseIntError where
   kind : num.error.IntErrorKind
 
-/-- [core_models::num::{core_models::num::u8}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17 -/
-@[reducible]
-def num.U8.to_le_bytes.closure := Std.U8
-
-/-- [core_models::num::{core_models::num::u16}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17 -/
-@[reducible]
-def num.U16.to_le_bytes.closure := Std.U16
-
-/-- [core_models::num::{core_models::num::u32}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17 -/
-@[reducible]
-def num.U32.to_le_bytes.closure := Std.U32
-
-/-- [core_models::num::{core_models::num::u64}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17 -/
-@[reducible]
-def num.U64.to_le_bytes.closure := Std.U64
-
-/-- [core_models::num::{core_models::num::u128}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17 -/
-@[reducible]
-def num.U128.to_le_bytes.closure := Std.U128
-
-/-- [core_models::num::{core_models::num::usize}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17 -/
-@[reducible]
-def num.Usize.to_le_bytes.closure := Std.Usize
-
-/-- [core_models::num::{core_models::num::i8}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 496:54-500:17 -/
-@[reducible]
-def num.I8.to_le_bytes.closure := Std.I8
-
-/-- [core_models::num::{core_models::num::i16}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 496:54-500:17 -/
-@[reducible]
-def num.I16.to_le_bytes.closure := Std.I16
-
-/-- [core_models::num::{core_models::num::i32}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 496:54-500:17 -/
-@[reducible]
-def num.I32.to_le_bytes.closure := Std.I32
-
-/-- [core_models::num::{core_models::num::i64}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 496:54-500:17 -/
-@[reducible]
-def num.I64.to_le_bytes.closure := Std.I64
-
-/-- [core_models::num::{core_models::num::i128}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 496:54-500:17 -/
-@[reducible]
-def num.I128.to_le_bytes.closure := Std.I128
-
-/-- [core_models::num::{core_models::num::isize}::to_le_bytes::{closure}]
-    Source: 'core-models/src/core/num/mod.rs', lines 496:54-500:17 -/
-@[reducible]
-def num.Isize.to_le_bytes.closure := Std.Isize
-
 /-- [core_models::num::u8]
-    Source: 'core-models/src/core/num/mod.rs', lines 578:0-578:14
+    Source: 'core-models/src/core/num/mod.rs', lines 582:0-582:14
     Visibility: public -/
 @[reducible]
 def num.u8 := Unit
 
 /-- [core_models::num::u16]
-    Source: 'core-models/src/core/num/mod.rs', lines 581:0-581:15
+    Source: 'core-models/src/core/num/mod.rs', lines 585:0-585:15
     Visibility: public -/
 @[reducible]
 def num.u16 := Unit
 
 /-- [core_models::num::u32]
-    Source: 'core-models/src/core/num/mod.rs', lines 584:0-584:15
+    Source: 'core-models/src/core/num/mod.rs', lines 588:0-588:15
     Visibility: public -/
 @[reducible]
 def num.u32 := Unit
 
 /-- [core_models::num::u64]
-    Source: 'core-models/src/core/num/mod.rs', lines 587:0-587:15
+    Source: 'core-models/src/core/num/mod.rs', lines 591:0-591:15
     Visibility: public -/
 @[reducible]
 def num.u64 := Unit
 
 /-- [core_models::num::u128]
-    Source: 'core-models/src/core/num/mod.rs', lines 590:0-590:16
+    Source: 'core-models/src/core/num/mod.rs', lines 594:0-594:16
     Visibility: public -/
 @[reducible]
 def num.u128 := Unit
 
 /-- [core_models::num::usize]
-    Source: 'core-models/src/core/num/mod.rs', lines 593:0-593:17
+    Source: 'core-models/src/core/num/mod.rs', lines 597:0-597:17
     Visibility: public -/
 @[reducible]
 def num.usize := Unit
 
 /-- [core_models::num::i8]
-    Source: 'core-models/src/core/num/mod.rs', lines 596:0-596:14
+    Source: 'core-models/src/core/num/mod.rs', lines 600:0-600:14
     Visibility: public -/
 @[reducible]
 def num.i8 := Unit
 
 /-- [core_models::num::i16]
-    Source: 'core-models/src/core/num/mod.rs', lines 599:0-599:15
+    Source: 'core-models/src/core/num/mod.rs', lines 603:0-603:15
     Visibility: public -/
 @[reducible]
 def num.i16 := Unit
 
 /-- [core_models::num::i32]
-    Source: 'core-models/src/core/num/mod.rs', lines 602:0-602:15
+    Source: 'core-models/src/core/num/mod.rs', lines 606:0-606:15
     Visibility: public -/
 @[reducible]
 def num.i32 := Unit
 
 /-- [core_models::num::i64]
-    Source: 'core-models/src/core/num/mod.rs', lines 605:0-605:15
+    Source: 'core-models/src/core/num/mod.rs', lines 609:0-609:15
     Visibility: public -/
 @[reducible]
 def num.i64 := Unit
 
 /-- [core_models::num::i128]
-    Source: 'core-models/src/core/num/mod.rs', lines 608:0-608:16
+    Source: 'core-models/src/core/num/mod.rs', lines 612:0-612:16
     Visibility: public -/
 @[reducible]
 def num.i128 := Unit
 
 /-- [core_models::num::isize]
-    Source: 'core-models/src/core/num/mod.rs', lines 611:0-611:17
+    Source: 'core-models/src/core/num/mod.rs', lines 615:0-615:17
     Visibility: public -/
 @[reducible]
 def num.isize := Unit
 
+/-- [core_models::num::{core_models::num::u8}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1 -/
+@[reducible]
+def num.U8.to_le_bytes.closure := Std.U8
+
+/-- [core_models::num::{core_models::num::u16}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1 -/
+@[reducible]
+def num.U16.to_le_bytes.closure := Std.U16
+
+/-- [core_models::num::{core_models::num::u32}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1 -/
+@[reducible]
+def num.U32.to_le_bytes.closure := Std.U32
+
+/-- [core_models::num::{core_models::num::u64}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1 -/
+@[reducible]
+def num.U64.to_le_bytes.closure := Std.U64
+
+/-- [core_models::num::{core_models::num::u128}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1 -/
+@[reducible]
+def num.U128.to_le_bytes.closure := Std.U128
+
+/-- [core_models::num::{core_models::num::usize}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1 -/
+@[reducible]
+def num.Usize.to_le_bytes.closure := Std.Usize
+
+/-- [core_models::num::{core_models::num::i8}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1 -/
+@[reducible]
+def num.I8.to_le_bytes.closure := Std.I8
+
+/-- [core_models::num::{core_models::num::i16}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1 -/
+@[reducible]
+def num.I16.to_le_bytes.closure := Std.I16
+
+/-- [core_models::num::{core_models::num::i32}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1 -/
+@[reducible]
+def num.I32.to_le_bytes.closure := Std.I32
+
+/-- [core_models::num::{core_models::num::i64}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1 -/
+@[reducible]
+def num.I64.to_le_bytes.closure := Std.I64
+
+/-- [core_models::num::{core_models::num::i128}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1 -/
+@[reducible]
+def num.I128.to_le_bytes.closure := Std.I128
+
+/-- [core_models::num::{core_models::num::isize}::to_le_bytes::{closure}]
+    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1 -/
+@[reducible]
+def num.Isize.to_le_bytes.closure := Std.Isize
+
 /-- Trait declaration: [core_models::ops::arith::Add]
     Source: 'core-models/src/core/ops.rs', lines 3:4-6:5
     Visibility: public -/
-structure ops.arith.Add (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.arith.Add (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   add : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Sub]
     Source: 'core-models/src/core/ops.rs', lines 8:4-11:5
     Visibility: public -/
-structure ops.arith.Sub (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.arith.Sub (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   sub : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Mul]
     Source: 'core-models/src/core/ops.rs', lines 13:4-16:5
     Visibility: public -/
-structure ops.arith.Mul (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.arith.Mul (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   mul : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Div]
     Source: 'core-models/src/core/ops.rs', lines 18:4-21:5
     Visibility: public -/
-structure ops.arith.Div (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.arith.Div (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   div : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Neg]
     Source: 'core-models/src/core/ops.rs', lines 23:4-26:5
     Visibility: public -/
-structure ops.arith.Neg (Self : Type) (Self_Output : Type) where
+structure ops.arith.Neg (Self : Type _) (Self_Output : Type _) where
   neg : Self → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::Rem]
     Source: 'core-models/src/core/ops.rs', lines 28:4-31:5
     Visibility: public -/
-structure ops.arith.Rem (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.arith.Rem (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   rem : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::arith::AddAssign]
     Source: 'core-models/src/core/ops.rs', lines 33:4-35:5
     Visibility: public -/
-structure ops.arith.AddAssign (Self : Type) (Rhs : Type) where
+structure ops.arith.AddAssign (Self : Type _) (Rhs : Type _) where
   add_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::arith::SubAssign]
     Source: 'core-models/src/core/ops.rs', lines 37:4-39:5
     Visibility: public -/
-structure ops.arith.SubAssign (Self : Type) (Rhs : Type) where
+structure ops.arith.SubAssign (Self : Type _) (Rhs : Type _) where
   sub_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::arith::MulAssign]
     Source: 'core-models/src/core/ops.rs', lines 41:4-43:5
     Visibility: public -/
-structure ops.arith.MulAssign (Self : Type) (Rhs : Type) where
+structure ops.arith.MulAssign (Self : Type _) (Rhs : Type _) where
   mul_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::arith::DivAssign]
     Source: 'core-models/src/core/ops.rs', lines 45:4-47:5
     Visibility: public -/
-structure ops.arith.DivAssign (Self : Type) (Rhs : Type) where
+structure ops.arith.DivAssign (Self : Type _) (Rhs : Type _) where
   div_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::arith::RemAssign]
     Source: 'core-models/src/core/ops.rs', lines 49:4-51:5
     Visibility: public -/
-structure ops.arith.RemAssign (Self : Type) (Rhs : Type) where
+structure ops.arith.RemAssign (Self : Type _) (Rhs : Type _) where
   rem_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::bit::Shr]
     Source: 'core-models/src/core/ops.rs', lines 81:4-84:5
     Visibility: public -/
-structure ops.bit.Shr (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.bit.Shr (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   shr : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::Shl]
     Source: 'core-models/src/core/ops.rs', lines 86:4-89:5
     Visibility: public -/
-structure ops.bit.Shl (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.bit.Shl (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   shl : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::BitXor]
     Source: 'core-models/src/core/ops.rs', lines 91:4-94:5
     Visibility: public -/
-structure ops.bit.BitXor (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.bit.BitXor (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   bitxor : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::BitAnd]
     Source: 'core-models/src/core/ops.rs', lines 96:4-99:5
     Visibility: public -/
-structure ops.bit.BitAnd (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.bit.BitAnd (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   bitand : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::BitOr]
     Source: 'core-models/src/core/ops.rs', lines 101:4-104:5
     Visibility: public -/
-structure ops.bit.BitOr (Self : Type) (Rhs : Type) (Self_Output : Type) where
+structure ops.bit.BitOr (Self : Type _) (Rhs : Type _) (Self_Output : Type _)
+  where
   bitor : Self → Rhs → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::Not]
     Source: 'core-models/src/core/ops.rs', lines 106:4-109:5
     Visibility: public -/
-structure ops.bit.Not (Self : Type) (Self_Output : Type) where
+structure ops.bit.Not (Self : Type _) (Self_Output : Type _) where
   not : Self → RustM Self_Output
 
 /-- Trait declaration: [core_models::ops::bit::ShrAssign]
     Source: 'core-models/src/core/ops.rs', lines 111:4-113:5
     Visibility: public -/
-structure ops.bit.ShrAssign (Self : Type) (Rhs : Type) where
+structure ops.bit.ShrAssign (Self : Type _) (Rhs : Type _) where
   shr_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::bit::ShlAssign]
     Source: 'core-models/src/core/ops.rs', lines 115:4-117:5
     Visibility: public -/
-structure ops.bit.ShlAssign (Self : Type) (Rhs : Type) where
+structure ops.bit.ShlAssign (Self : Type _) (Rhs : Type _) where
   shl_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::bit::BitXorAssign]
     Source: 'core-models/src/core/ops.rs', lines 119:4-121:5
     Visibility: public -/
-structure ops.bit.BitXorAssign (Self : Type) (Rhs : Type) where
+structure ops.bit.BitXorAssign (Self : Type _) (Rhs : Type _) where
   bitxor_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::bit::BitAndAssign]
     Source: 'core-models/src/core/ops.rs', lines 123:4-125:5
     Visibility: public -/
-structure ops.bit.BitAndAssign (Self : Type) (Rhs : Type) where
+structure ops.bit.BitAndAssign (Self : Type _) (Rhs : Type _) where
   bitand_assign : Self → Rhs → RustM Self
 
 /-- Trait declaration: [core_models::ops::bit::BitOrAssign]
     Source: 'core-models/src/core/ops.rs', lines 127:4-129:5
     Visibility: public -/
-structure ops.bit.BitOrAssign (Self : Type) (Rhs : Type) where
+structure ops.bit.BitOrAssign (Self : Type _) (Rhs : Type _) where
   bitor_assign : Self → Rhs → RustM Self
 
 /-- [core_models::ops::control_flow::ControlFlow]
     Source: 'core-models/src/core/ops.rs', lines 134:4-139:5
     Visibility: public -/
 @[discriminant isize]
-inductive ops.control_flow.ControlFlow (B : Type) (C : Type) where
+inductive ops.control_flow.ControlFlow (B : Type _) (C : Type _) where
 | Continue : C → ops.control_flow.ControlFlow B C
 | Break : B → ops.control_flow.ControlFlow B C
 
@@ -981,8 +997,8 @@ inductive ops.control_flow.ControlFlow (B : Type) (C : Type) where
 /-- Trait declaration: [core_models::ops::function::FnOnce]
     Source: 'core-models/src/core/ops.rs', lines 163:4-167:5
     Visibility: public -/
-structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
-  where
+structure ops.function.FnOnce (Self : Type _) (Args : Type _) (Self_Output :
+  Type _) where
   call_once : Self → Args → RustM Self_Output
 -/
 
@@ -990,8 +1006,8 @@ structure ops.function.FnOnce (Self : Type) (Args : Type) (Self_Output : Type)
 /-- Trait declaration: [core_models::ops::function::FnMut]
     Source: 'core-models/src/core/ops.rs', lines 171:4-174:5
     Visibility: public -/
-structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
-  Type) where
+structure ops.function.FnMut (Self : Type _) (Args : Type _)
+  (Self_Clause0_Output : Type _) where
   FnOnceInst : ops.function.FnOnce Self Args Self_Clause0_Output
   call_mut : Self → Args → RustM Self_Clause0_Output
 -/
@@ -1000,8 +1016,8 @@ structure ops.function.FnMut (Self : Type) (Args : Type) (Self_Clause0_Output :
 /-- Trait declaration: [core_models::ops::function::Fn]
     Source: 'core-models/src/core/ops.rs', lines 259:4-262:5
     Visibility: public -/
-structure ops.function.Fn (Self : Type) (Args : Type)
-  (Self_Clause0_Clause0_Output : Type) where
+structure ops.function.Fn (Self : Type _) (Args : Type _)
+  (Self_Clause0_Clause0_Output : Type _) where
   FnMutInst : ops.function.FnMut Self Args Self_Clause0_Clause0_Output
   call : Self → Args → RustM Self_Clause0_Clause0_Output
 -/
@@ -1009,14 +1025,14 @@ structure ops.function.Fn (Self : Type) (Args : Type)
 /-- Trait declaration: [core_models::ops::try_trait::FromResidual]
     Source: 'core-models/src/core/ops.rs', lines 267:4-269:5
     Visibility: public -/
-structure ops.try_trait.FromResidual (Self : Type) (R : Type) where
+structure ops.try_trait.FromResidual (Self : Type _) (R : Type _) where
   from_residual : R → RustM Self
 
 /-- Trait declaration: [core_models::ops::try_trait::Try]
     Source: 'core-models/src/core/ops.rs', lines 272:4-277:5
     Visibility: public -/
-structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
-  Type) where
+structure ops.try_trait.Try (Self : Type _) (Self_Output : Type _)
+  (Self_Residual : Type _) where
   from_output : Self_Output → RustM Self
   branch : Self → RustM (ops.control_flow.ControlFlow Self_Residual
     Self_Output)
@@ -1024,13 +1040,14 @@ structure ops.try_trait.Try (Self : Type) (Self_Output : Type) (Self_Residual :
 /-- Trait declaration: [core_models::ops::deref::Deref]
     Source: 'core-models/src/core/ops.rs', lines 282:4-286:5
     Visibility: public -/
-structure ops.deref.Deref (Self : Type) (Self_Target : Type) where
+structure ops.deref.Deref (Self : Type _) (Self_Target : Type _) where
   deref : Self → RustM Self_Target
 
 /-- Trait declaration: [core_models::ops::deref::DerefMut]
     Source: 'core-models/src/core/ops.rs', lines 300:4-302:5
     Visibility: public -/
-structure ops.deref.DerefMut (Self : Type) (Self_Clause0_Target : Type) where
+structure ops.deref.DerefMut (Self : Type _) (Self_Clause0_Target : Type _)
+  where
   DerefInst : ops.deref.Deref Self Self_Clause0_Target
   deref_mut : Self → RustM (Self_Clause0_Target × (Self_Clause0_Target →
     Self))
@@ -1038,25 +1055,25 @@ structure ops.deref.DerefMut (Self : Type) (Self_Clause0_Target : Type) where
 /-- Trait declaration: [core_models::ops::drop::Drop]
     Source: 'core-models/src/core/ops.rs', lines 307:4-313:5
     Visibility: public -/
-structure ops.drop.Drop (Self : Type) where
+structure ops.drop.Drop (Self : Type _) where
   drop : Self → RustM Self
 
 /-- [core_models::ops::range::RangeTo]
     Source: 'core-models/src/core/ops.rs', lines 319:4-321:5
     Visibility: public -/
-structure ops.range.RangeTo (T : Type) where
+structure ops.range.RangeTo (T : Type _) where
   «end» : T
 
 /-- [core_models::ops::range::RangeFrom]
     Source: 'core-models/src/core/ops.rs', lines 323:4-325:5
     Visibility: public -/
-structure ops.range.RangeFrom (T : Type) where
+structure ops.range.RangeFrom (T : Type _) where
   start : T
 
 /-- [core_models::ops::range::Range]
     Source: 'core-models/src/core/ops.rs', lines 327:4-330:5
     Visibility: public -/
-structure ops.range.Range (T : Type) where
+structure ops.range.Range (T : Type _) where
   start : T
   «end» : T
 
@@ -1069,7 +1086,7 @@ def ops.range.RangeFull := Unit
 /-- [core_models::ops::range::RangeInclusive]
     Source: 'core-models/src/core/ops.rs', lines 336:4-340:5
     Visibility: public -/
-structure ops.range.RangeInclusive (T : Type) where
+structure ops.range.RangeInclusive (T : Type _) where
   start_ : T
   end_ : T
   exhausted : Bool
@@ -1077,14 +1094,14 @@ structure ops.range.RangeInclusive (T : Type) where
 /-- [core_models::ops::range::RangeToInclusive]
     Source: 'core-models/src/core/ops.rs', lines 342:4-344:5
     Visibility: public -/
-structure ops.range.RangeToInclusive (T : Type) where
+structure ops.range.RangeToInclusive (T : Type _) where
   «end» : T
 
 /-- [core_models::ops::range::Bound]
     Source: 'core-models/src/core/ops.rs', lines 384:4-388:5
     Visibility: public -/
 @[discriminant isize]
-inductive ops.range.Bound (T : Type) where
+inductive ops.range.Bound (T : Type _) where
 | Included : T → ops.range.Bound T
 | Excluded : T → ops.range.Bound T
 | Unbounded : ops.range.Bound T
@@ -1092,7 +1109,7 @@ inductive ops.range.Bound (T : Type) where
 /-- Trait declaration: [core_models::ops::range::RangeBounds]
     Source: 'core-models/src/core/ops.rs', lines 391:4-407:5
     Visibility: public -/
-structure ops.range.RangeBounds (Self : Type) (T : Type) where
+structure ops.range.RangeBounds (Self : Type _) (T : Type _) where
   start_bound : Self → RustM (ops.range.Bound T)
   end_bound : Self → RustM (ops.range.Bound T)
   contains : forall {U : Type} (cmpPartialOrdInst : cmp.PartialOrd T U)
@@ -1127,38 +1144,38 @@ inductive panicking.AssertKind where
 /-- [core_models::pin::Pin]
     Source: 'core-models/src/core/pin.rs', lines 6:0-8:1
     Visibility: public -/
-structure pin.Pin (Ptr : Type) where
+structure pin.Pin (Ptr : Type _) where
   pointer : Ptr
 
 /-- [core_models::pin::helper::PinHelper]
     Source: 'core-models/src/core/pin.rs', lines 14:4-16:5
     Visibility: public -/
-structure pin.helper.PinHelper (Ptr : Type) where
+structure pin.helper.PinHelper (Ptr : Type _) where
   pointer : Ptr
 
 /-- [core_models::result::SeqIter]
     Source: 'core-models/src/core/result.rs', lines 364:0-364:53 -/
 @[reducible]
-def result.SeqIter (A : Type) := rust_primitives.sequence.Seq A
+def result.SeqIter (A : Type _) := rust_primitives.sequence.Seq A
 
 /-
 /-- [core_models::slice::Slice]
     Source: 'core-models/src/core/slice.rs', lines 7:0-7:21 -/
 @[reducible]
-def slice.Slice (T : Type) := Slice T
+def slice.Slice (T : Type _) := Slice T
 -/
 
 /-- [core_models::slice::iter::Chunks]
     Source: 'core-models/src/core/slice.rs', lines 14:4-17:5
     Visibility: public -/
-structure slice.iter.Chunks (T : Type) where
+structure slice.iter.Chunks (T : Type _) where
   cs : Std.Usize
   elements : Slice T
 
 /-- [core_models::slice::iter::ChunksExact]
     Source: 'core-models/src/core/slice.rs', lines 24:4-27:5
     Visibility: public -/
-structure slice.iter.ChunksExact (T : Type) where
+structure slice.iter.ChunksExact (T : Type _) where
   cs : Std.Usize
   elements : Slice T
 
@@ -1166,26 +1183,26 @@ structure slice.iter.ChunksExact (T : Type) where
     Source: 'core-models/src/core/slice.rs', lines 34:4-34:43
     Visibility: public -/
 @[reducible]
-def slice.iter.Iter (T : Type) := rust_primitives.sequence.Seq T
+def slice.iter.Iter (T : Type _) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::IterMut]
     Source: 'core-models/src/core/slice.rs', lines 43:4-43:50
     Visibility: public -/
 @[reducible]
-def slice.iter.IterMut (T : Type) := rust_primitives.sequence.Seq T
+def slice.iter.IterMut (T : Type _) := rust_primitives.sequence.Seq T
 
 /-- [core_models::slice::iter::Windows]
     Source: 'core-models/src/core/slice.rs', lines 124:4-127:5
     Visibility: public -/
-structure slice.iter.Windows (T : Type) where
+structure slice.iter.Windows (T : Type _) where
   size : Std.Usize
   elements : Slice T
 
 /-- Trait declaration: [core_models::slice::index::SliceIndex]
     Source: 'core-models/src/core/slice.rs', lines 524:4-549:5
     Visibility: public -/
-structure slice.index.SliceIndex (Self : Type) (T : Type) (Self_Output : Type)
-  where
+structure slice.index.SliceIndex (Self : Type _) (T : Type _) (Self_Output :
+  Type _) where
   get : Self → T → RustM (option.Option Self_Output)
   index : Self → T → RustM Self_Output
   get_unchecked : Self → T → RustM Self_Output
@@ -1203,11 +1220,11 @@ def str.error.Utf8Error := Unit
 /-- [core_models::str::iter::Split]
     Source: 'core-models/src/core/str.rs', lines 72:4-72:23 -/
 @[reducible]
-def str.iter.Split (T : Type) := T
+def str.iter.Split (T : Type _) := T
 
 /-- Trait declaration: [core_models::str::traits::FromStr]
     Source: 'core-models/src/core/str.rs', lines 76:4-79:5 -/
-structure str.traits.FromStr (Self : Type) (Self_Err : Type) where
+structure str.traits.FromStr (Self : Type _) (Self_Err : Type _) where
   from_str : Str → RustM (result.Result Self Self_Err)
 
 /-- [core_models::sync::atomic::AtomicBool]

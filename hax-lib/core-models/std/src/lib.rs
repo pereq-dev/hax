@@ -14,7 +14,7 @@ mod collections {
                     HashMap(None, None, None)
                 }
             }
-            // Dummy impl for disambiguator (https://github.com/cryspen/hax/issues/828)
+            // Dummy impl for disambiguator (https://github.com/pereq-dev/hax/issues/828)
             impl HashMap<usize, usize, usize> {}
             impl<K, V, S> HashMap<K, V, S> {
                 // Excluded from coverage: `HashMap` is `hax_lib::opaque`, so it

@@ -56,7 +56,7 @@ To try to prove panic-freedom, we have to
 specify that `square` is expected not to panic.
 To add a specification, we need to add `hax_lib` as a dependency of our Rust package:
 ```
-cargo add --git https://github.com/cryspen/hax hax-lib
+cargo add --git https://github.com/pereq-dev/hax hax-lib
 ```
 Now we can add a simple specification as follows:
 ```{.rust}

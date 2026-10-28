@@ -35,7 +35,7 @@ jobs:
   # runner instead of a maintainer's machine.
   bump:
     if: >-
-      github.repository == 'cryspen/hax' &&
+      github.repository == 'pereq-dev/hax' &&
       github.event_name == 'workflow_dispatch'
     # One bump at a time. Kept off the `start-publish` job: a pending release
     # run sharing a group could be evicted by an unrelated PR closing.
@@ -161,7 +161,7 @@ jobs:
   # as a release.
   start-publish:
     if: >-
-      github.repository == 'cryspen/hax' &&
+      github.repository == 'pereq-dev/hax' &&
       github.event_name == 'pull_request' &&
       github.event.pull_request.merged &&
       github.event.pull_request.head.repo.full_name == github.repository &&

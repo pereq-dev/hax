@@ -10,7 +10,7 @@ jobs:
     permissions:
       issues: write
       contents: write
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo

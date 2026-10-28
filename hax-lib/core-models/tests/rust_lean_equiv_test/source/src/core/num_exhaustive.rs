@@ -245,6 +245,22 @@ pub fn test_i8_abs_exhaustive() -> bool {
     ok
 }
 
+// ----- unsigned_abs (signed, total) -----------------------------------------
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_exhaustive() -> bool {
+    let mut ok = true;
+    for i in 0..256usize {
+        let x = to_i8(i as u32);
+        let v = i8_val(x);
+        let expected = if v < 0 { (0 - v) as u8 } else { v as u8 };
+        if x.unsigned_abs() != expected {
+            ok = false;
+        }
+    }
+    ok
+}
+
 // ----- rotate_left / rotate_right -------------------------------------------
 
 #[rust_lean_test]

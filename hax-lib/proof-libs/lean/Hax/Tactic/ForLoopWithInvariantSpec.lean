@@ -11,6 +11,7 @@ lemmas reduce to the `loop_range_spec*` lemmas in `Hax.MissingAeneas`. -/
 
 set_option autoImplicit false
 set_option mvcgen.warning false
+set_option linter.deprecated.syntax false
 
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc

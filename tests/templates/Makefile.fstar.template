@@ -7,7 +7,7 @@
 #  2. `cargo`, `rustup`, `hax` and `jq` to be installed and in PATH.
 #
 #  3. the extracted Cargo crate to have "hax-lib" as a dependency:
-#     `hax-lib = { version = "0.1.0-pre.1", git = "https://github.com/hacspec/hax"}`
+#     `hax-lib = { version = "0.1.0-pre.1", git = "https://github.com/pereq-dev/hax"}`
 #
 # Optionally, you can set `HACL_HOME`.
 #
@@ -97,7 +97,7 @@ else
 	K += $(info ${ERROR})
 	ERROR := $(shell printf '  > Do you have `${ANSI_COLOR_BLUE}hax-lib${ANSI_COLOR_RESET}` in your `${ANSI_COLOR_BLUE}Cargo.toml${ANSI_COLOR_RESET}` as a ${ANSI_COLOR_BLUE}git${ANSI_COLOR_RESET} or ${ANSI_COLOR_BLUE}path${ANSI_COLOR_RESET} dependency?')
 	K += $(info ${ERROR})
-	ERROR := $(shell printf '  ${ANSI_COLOR_BLUE}> Tip: you may want to run `cargo add --git https://github.com/hacspec/hax hax-lib`${ANSI_COLOR_RESET}')
+	ERROR := $(shell printf '  ${ANSI_COLOR_BLUE}> Tip: you may want to run `cargo add --git https://github.com/pereq-dev/hax hax-lib`${ANSI_COLOR_RESET}')
 	K += $(info ${ERROR})
 	K += $(info )
 	K += $(error Fatal error: `proof-libs` is required.)

@@ -5,7 +5,7 @@ default: lean
 lean:
 	cargo hax extract lean-tutorial
 	(cd proofs/lean-tutorial/lean && \
-		elan default v4.31.0 && \
+		elan default v4.35.0 && \
 		lake exe cache get && \
 		lake build)
 

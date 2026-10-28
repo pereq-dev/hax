@@ -309,11 +309,11 @@ pub enum GenericParamKind<Body: IsBody> {
         /// On use site, Rust always give us all the generic
         /// parameters, no matter the defaultness. This information is
         /// thus not so useful. At the same time, as discussed in
-        /// https://github.com/hacspec/hax/issues/310, extracting this
+        /// https://github.com/pereq-dev/hax/issues/310, extracting this
         /// default type causes failures when querying Rust for trait
         /// resolution. We thus decided to disable this feature. If
         /// this default type information is useful to you, please
-        /// open an issue on https://github.com/hacspec/hax.
+        /// open an issue on https://github.com/pereq-dev/hax.
         #[map(x.map(|_ty| ()))]
         default: Option<()>,
         synthetic: bool,
@@ -387,11 +387,9 @@ pub enum ImplItemKind<Body: IsBody> {
             let impl_did = assoc_item.impl_container(tcx).unwrap();
             // An inherent associated type has no trait declaration to inherit bounds from.
             assoc_item.trait_item_def_id().map_or(vec![], |decl_did| {
-                tcx.explicit_item_bounds(decl_did)
-                    .iter_identity_copied()
-                    .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
-                        !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
-                    }))
+                owner_bounds(tcx, decl_did)
+                    .iter()
+                    .copied()
                     .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, impl_did, owner_id, clause, span))
                     .collect()
             })
@@ -435,19 +433,19 @@ pub struct Impl<Body: IsBody> {
         let (tcx, owner_id) = (s.base().tcx, s.owner_id());
         if self.of_trait.is_some() {
             let trait_did = tcx.impl_trait_id(owner_id);
-            tcx.explicit_super_predicates_of(trait_did)
-                .iter_identity_copied()
-                .filter(|(clause, _)| clause.as_trait_clause().is_some_and(|trait_predicate| {
-                    !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
-                }))
+            // Backends match these with the trait's bounds by index.
+            owner_bounds(tcx, trait_did)
+                .iter()
+                .copied()
                 .filter_map(|(clause, span)| super_clause_to_clause_and_impl_expr(s, owner_id, owner_id, clause, span))
                 .collect::<Vec<_>>()
         } else {
             vec![]
         }
     })]
-    /// The clauses and impl expressions corresponding to the impl's
-    /// trait (if not inherent) super bounds (if any).
+    /// The clauses and impl expressions corresponding to the bounds of the
+    /// impl's trait (if not inherent): its super bounds and the bounds on its
+    /// generic parameters.
     pub parent_bounds: Vec<(Clause, ImplExpr, Span)>,
 }
 
@@ -662,7 +660,7 @@ pub enum ItemKind<Body: IsBody> {
         #[map({
             // Rust doesn't enforce bounds on generic parameters in type aliases. Thus, when
             // translating type aliases, we need to disable trait resolution errors. For more
-            // details, please see https://github.com/hacspec/hax/issues/707.
+            // details, please see https://github.com/pereq-dev/hax/issues/707.
             let s = &s.with_base(Base { silence_resolution_errors: true, ..s.base() });
             x.sinto(s)
         })]
@@ -821,53 +819,36 @@ impl<'a, S: UnderOwnerState<'a>, Body: IsBody> SInto<S, ForeignItem<Body>> for h
 /// Reflects [`hir::GenericBounds`]
 type GenericBounds = Vec<Clause>;
 
+/// The bounds of `def_id`, with their spans, without sized-related bounds.
+#[cfg(feature = "rustc")]
+fn owner_bounds<'tcx>(
+    tcx: ty::TyCtxt<'tcx>,
+    def_id: rustc_span::def_id::DefId,
+) -> Predicates<'tcx> {
+    use hir::def::DefKind;
+    // According to what kind of node we are looking at, we should
+    // either call `predicates_defined_on` or `item_bounds`
+    let use_item_bounds = match tcx.def_kind(def_id) {
+        DefKind::AssocTy => matches!(tcx.def_kind(tcx.parent(def_id)), DefKind::Trait),
+        DefKind::OpaqueTy => true,
+        _ => false,
+    };
+
+    let mut clauses = if use_item_bounds {
+        std::borrow::Cow::Borrowed(tcx.explicit_item_bounds(def_id).skip_binder())
+    } else {
+        predicates_defined_on(tcx, def_id)
+    };
+    prune_sized_predicates(tcx, &mut clauses);
+    clauses
+}
+
 /// Compute the bounds for the owner registed in the state `s`
 #[cfg(feature = "rustc")]
 fn region_bounds_at_current_owner<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> GenericBounds {
-    let tcx = s.base().tcx;
-
-    // According to what kind of node we are looking at, we should
-    // either call `predicates_defined_on` or `item_bounds`
-    let use_item_bounds = {
-        if let Some(oid) = s.owner_id().as_local() {
-            let hir_id = tcx.local_def_id_to_hir_id(oid);
-            let node = tcx.hir_node(hir_id);
-            matches!(
-                node,
-                hir::Node::TraitItem(hir::TraitItem {
-                    kind: hir::TraitItemKind::Type(..),
-                    ..
-                }) | hir::Node::OpaqueTy(..),
-            )
-        } else {
-            false
-        }
-    };
-
-    let clauses: Vec<ty::Clause<'tcx>> = if use_item_bounds {
-        tcx.explicit_item_bounds(s.owner_id())
-            .map_bound(|clauses| {
-                clauses
-                    .iter()
-                    .map(|(x, _span)| x)
-                    .copied()
-                    .collect::<Vec<_>>()
-            })
-            .instantiate_identity()
-    } else {
-        predicates_defined_on(tcx, s.owner_id())
-            .iter()
-            .map(|(x, _span)| x)
-            .copied()
-            .collect()
-    };
-    clauses
-        .into_iter()
-        .filter(|clause| {
-            clause.as_trait_clause().is_none_or(|trait_predicate| {
-                !is_sized_related_trait(tcx, trait_predicate.skip_binder().def_id())
-            })
-        })
+    owner_bounds(s.base().tcx, s.owner_id())
+        .iter()
+        .map(|(clause, _)| *clause)
         .collect::<Vec<_>>()
         .sinto(s)
 }

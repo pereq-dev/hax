@@ -28,6 +28,6 @@ theorem barrett_reduce.spec.proof (value : Std.I32) : barrett_reduce.spec value 
   unfold spec
   hax_mvcgen
     <;> try simp [BARRETT_MULTIPLIER, BARRETT_R, BARRETT_SHIFT, FIELD_MODULUS] at *
-    <;> try grind
+  all_goals try grind
 
 end barrett

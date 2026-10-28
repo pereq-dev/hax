@@ -438,6 +438,10 @@ macro_rules! iint_impl {
             pub fn abs(x: $Self) -> $Self {
                 if x < 0 { -x } else { x }
             }
+            /// See [`std::primitive::i8::unsigned_abs`] (and similar for other signed integer types)
+            pub fn unsigned_abs(x: $Self) -> $USelf {
+                if x < 0 { (-(x + 1)) as $USelf + 1 } else { x as $USelf }
+            }
             /// See [`std::primitive::u8::rotate_right`] (and similar for other integer types)
             #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
             pub fn rotate_right(x: $Self, n: core::primitive::u32) -> $Self {
@@ -1042,6 +1046,12 @@ mod tests {
                             if x != $t::MIN {
                                 prop_assert_eq!(super::$t::abs(x.inject()), x.abs());
                             }
+                        }
+
+                        // `MIN` is biased in: the only input where `-x` overflows.
+                        #[test]
+                        fn [<test_ $t _unsigned_abs>](x in prop_oneof![Just(<$t>::MIN), any::<$t>()]) {
+                            prop_assert_eq!(super::$t::unsigned_abs(x.inject()), x.unsigned_abs());
                         }
 
                         #[test]

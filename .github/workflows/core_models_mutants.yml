@@ -20,7 +20,6 @@ on:
   workflow_dispatch:
 
 env:
-  RUST_TOOLCHAIN: nightly-2026-02-07
   # Must match the length of the `shard` matrix below.
   SHARDS: 16
   # One mutant build uses under half of a 4-vCPU runner (183% of 400%), so
@@ -36,7 +35,7 @@ defaults:
 jobs:
   sweep:
     name: mutants (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     strategy:
@@ -53,10 +52,16 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Assigned before being written out, so that a failure fails the step.
+      - name: Resolve the hax toolchain
+        run: |
+          toolchain=$(tools/toolchain.sh hax)
+          echo "RUSTUP_TOOLCHAIN=$toolchain" >> "$GITHUB_ENV"
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          toolchain: ${{ env.RUSTUP_TOOLCHAIN }}
 
       - uses: taiki-e/install-action@v2
         with:
@@ -87,7 +92,7 @@ jobs:
   report:
     name: survivors common to both cfgs
     needs: sweep
-    if: github.repository == 'cryspen/hax' && always() && needs.sweep.result != 'skipped'
+    if: github.repository == 'pereq-dev/hax' && always() && needs.sweep.result != 'skipped'
     runs-on: ubuntu-latest
     permissions:
       contents: read

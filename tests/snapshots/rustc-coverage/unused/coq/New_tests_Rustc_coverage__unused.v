@@ -18,7 +18,7 @@ Definition foo `{v_T : Type} (x : v_T) : (t_i32*unit) :=
   (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
@@ -41,7 +41,7 @@ Definition unused_template_func `{v_T : Type} (x : v_T) : (t_i32*unit) :=
   (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{

@@ -64,7 +64,7 @@ where
             let version = haxmeta.0.hax_version;
             let expected = crate::HAX_VERSION;
             panic!(
-                "An invariant was broken: `*.haxmeta` was produced by hax version `{version}` while the current version of hax is `{expected}`. Please report this to https://github.com/hacspec/hax/issues."
+                "An invariant was broken: `*.haxmeta` was produced by hax version `{version}` while the current version of hax is `{expected}`. Please report this to https://github.com/pereq-dev/hax/issues."
             );
         };
         haxmeta

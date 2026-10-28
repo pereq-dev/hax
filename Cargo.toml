@@ -37,10 +37,10 @@ resolver = "2"
 version = "0.4.2"
 authors = ["hax Authors"]
 license = "Apache-2.0"
-homepage = "https://github.com/cryspen/hax"
+homepage = "https://github.com/pereq-dev/hax"
 edition = "2024"
 rust-version = "1.88"
-repository = "https://github.com/cryspen/hax"
+repository = "https://github.com/pereq-dev/hax"
 readme = "README.md"
 
 [workspace.dependencies]
@@ -86,5 +86,4 @@ hax-rust-engine = { path = "rust-engine", version = "=0.4.2" }
 hax-rust-engine-macros = { path = "rust-engine/macros", version = "=0.4.2" }
 
 [workspace.metadata.release]
-owners = ["github:cryspen:tools"]
 pre-release-commit-message = "chore: release v{{version}}"

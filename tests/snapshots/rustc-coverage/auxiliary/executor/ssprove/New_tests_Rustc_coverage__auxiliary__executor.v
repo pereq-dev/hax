@@ -34,7 +34,7 @@ Equations block_on {v_F : v_F} `{ t_Future v_F} (future : both v_F) : both f_Out
   block_on future  :=
     failure (ret_both (The mutation of this &mut is not allowed here.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/420.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/420.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `DirectAndMut`.
  : chString)) (ret_both ({

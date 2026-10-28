@@ -42,7 +42,7 @@ permissions:
 
 jobs:
   plan:
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}

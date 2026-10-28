@@ -15,14 +15,34 @@ Changes to the hax-lib crate:
 
 Lean backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
+ - Add a model of `unsigned_abs` for signed integers
+ - Add models of `contains` for `Range`, `RangeFrom`, `RangeTo` and
+   `RangeToInclusive`, and of `Range::is_empty`
 
 F* backend and library:
  - Add models of `RangeInclusive` and `RangeToInclusive`
+ - Add a model of `unsigned_abs` for signed integers
+ - Add models of `contains` for `Range`, `RangeFrom`, `RangeTo` and
+   `RangeToInclusive`, and of `Range::is_empty`
 
 ### Fixed
 
 Changes to the hax-lib crate:
  - The Rust semantics of `implies` is no longer reversed
+
+Changes to the frontend:
+ - Impls now list the bounds on the generic parameters of their trait as parent bounds (#1554)
+
+Lean backend and library:
+ - `v.iter().all(..)` and `v.iter().any(..)` on slices no longer fail with an
+   unknown constant
+
+F* backend and library:
+ - `Iterator::{all, any, find, find_map, position}` now take `&mut self` as in
+   std and return the advanced iterator with their result, matching extracted
+   call sites
+ - `Formatter::write_str` is now `Core_models.Fmt.impl_11__write_str`, the name
+   extracted client code calls, instead of `impl_Formatter__write_str`
 
 ### Changed
 
@@ -35,6 +55,10 @@ Lean backend and library:
  - Breaking: the fields `start` and `«end»` of `ops.range.RangeInclusive` are
    now `start_` and `end_`, and `RangeInclusive.start` and `RangeInclusive.end`
    are functions
+ - Breaking: bump Lean to v4.35.0 and update aeneas. Proofs may need updating:
+   `if_pos`/`if_neg` no longer rewrite `if`s (use `ite_eq_left`/`ite_eq_right`),
+   and hand-written models that extracted code instantiates must take `Type _`
+   rather than `Type` parameters
 
 F* backend and library:
  - Breaking: the fields `f_start` and `f_end` of `t_RangeInclusive` are now

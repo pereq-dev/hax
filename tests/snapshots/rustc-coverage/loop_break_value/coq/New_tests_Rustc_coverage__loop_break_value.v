@@ -17,11 +17,11 @@ Definition main '(_ : unit) : unit :=
   let result := (failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{
  loop {
  rust_primitives::hax::failure(
- "something is not implemented yet.\nTODO: Monad for loop-related control flow\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/15.\nPlease..."%string : string)),tt) in
+ "something is not implemented yet.\nTODO: Monad for loop-related control flow\n\nThis is discussed in issue https://github.com/pereq-dev/hax/issues/15.\nPlease..."%string : string)),tt) in
   tt.

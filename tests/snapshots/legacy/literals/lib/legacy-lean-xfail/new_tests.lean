@@ -215,7 +215,7 @@ def empty_array (_ : rust_primitives.hax.Tuple0) :
   let _ : (RustSlice u8) ← (rust_primitives.unsize (RustArray.ofVec #v[]));
   (pure rust_primitives.hax.Tuple0.mk)
 
---  https://github.com/hacspec/hax/issues/500
+--  https://github.com/pereq-dev/hax/issues/500
 @[spec]
 def fn_pointer_cast (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

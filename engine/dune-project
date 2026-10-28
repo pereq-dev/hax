@@ -7,7 +7,7 @@
 (generate_opam_files true)
 
 (source
- (github hacspec/hax))
+ (github pereq-dev/hax))
 
 (authors "Hax Authors")
 

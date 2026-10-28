@@ -6,7 +6,7 @@ module%inlined_contents Make (F : Features.T) = struct
   module U = Ast_utils.Make (F)
   open Ast
 
-  (* TODO: Swap to Concrete_ident see: https://github.com/hacspec/hax/issues/375 *)
+  (* TODO: Swap to Concrete_ident see: https://github.com/pereq-dev/hax/issues/375 *)
   type analysis_data = concrete_ident list Map.M(String).t
   type id_order = int
 

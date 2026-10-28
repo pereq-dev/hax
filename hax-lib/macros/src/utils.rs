@@ -335,7 +335,7 @@ pub fn foreign_self_projection_error(sig: &Signature, assoc: &[String]) -> Optio
                     format!(
                         "hax: `Self::{name}` is not defined by this `impl` block, hax cannot \
                          qualify it. Write `<Type as Trait>::{name}` explicitly. See \
-                         https://github.com/cryspen/hax/issues/2089."
+                         https://github.com/pereq-dev/hax/issues/2089."
                     ),
                 ));
             }

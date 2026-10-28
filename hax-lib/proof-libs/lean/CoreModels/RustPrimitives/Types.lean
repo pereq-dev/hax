@@ -8,6 +8,6 @@ public import Aeneas
     Name pattern: [rust_primitives::sequence::Seq]
     Visibility: public -/
 @[rust_type "rust_primitives::sequence::Seq"]
-def rust_primitives.sequence.Seq (T : Type) := Aeneas.Std.Slice T
+def rust_primitives.sequence.Seq (T : Type _) := Aeneas.Std.Slice T
 
 def alloc.string.String := _root_.String

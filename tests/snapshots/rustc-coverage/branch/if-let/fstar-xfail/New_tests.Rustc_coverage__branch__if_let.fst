@@ -38,9 +38,9 @@ let if_let (input: Core_models.Option.t_Option string) : Prims.unit =
 let if_let_chain (a b: Core_models.Option.t_Option string) : Prims.unit =
   let _:Prims.unit =
     if
-      Rust_primitives.Hax.failure "something is not implemented yet.\nLet-chains (e.g. `if let .. && let ..`) are not supported.\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/2018.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
+      Rust_primitives.Hax.failure "something is not implemented yet.\nLet-chains (e.g. `if let .. && let ..`) are not supported.\n\nThis is discussed in issue https://github.com/pereq-dev/hax/issues/2018.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
         "" &&
-      Rust_primitives.Hax.failure "something is not implemented yet.\nLet-chains (e.g. `if let .. && let ..`) are not supported.\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/2018.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
+      Rust_primitives.Hax.failure "something is not implemented yet.\nLet-chains (e.g. `if let .. && let ..`) are not supported.\n\nThis is discussed in issue https://github.com/pereq-dev/hax/issues/2018.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
         ""
     then
       let _:Prims.unit = say x in

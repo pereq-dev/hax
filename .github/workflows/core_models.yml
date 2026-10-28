@@ -14,6 +14,7 @@ on:
       - 'frontend/**'
       - 'flake.nix'
       - 'flake.lock'
+      - 'rust-toolchain.toml'
       - '.github/workflows/core_models.yml'
   pull_request:
     branches: [main, dev]
@@ -25,10 +26,8 @@ on:
       - 'frontend/**'
       - 'flake.nix'
       - 'flake.lock'
+      - 'rust-toolchain.toml'
       - '.github/workflows/core_models.yml'
-
-env:
-  RUST_TOOLCHAIN: nightly-2026-02-07
 
 defaults:
   run:
@@ -42,10 +41,16 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Assigned before being written out, so that a failure fails the step.
+      - name: Resolve the hax toolchain
+        run: |
+          toolchain=$(tools/toolchain.sh hax)
+          echo "RUSTUP_TOOLCHAIN=$toolchain" >> "$GITHUB_ENV"
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          toolchain: ${{ env.RUSTUP_TOOLCHAIN }}
           components: rustfmt
 
       - run: cargo fmt -- --check
@@ -56,27 +61,42 @@ jobs:
         working-directory: hax-lib/core-models/tests
 
   # ---------------------------------------------------------------- rust tests
+  # The models must build under both toolchains client code is compiled with:
+  # hax's, for the F* extraction, and the pinned charon's, for the Lean one.
   rust-test:
-    name: cargo test
+    name: cargo test (${{ matrix.toolchain }} toolchain)
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        toolchain: [hax, charon]
     steps:
       - uses: actions/checkout@v5
+
+      # Assigned before being written out, so that a failure fails the step.
+      - name: Resolve the ${{ matrix.toolchain }} toolchain
+        run: |
+          toolchain=$(tools/toolchain.sh ${{ matrix.toolchain }})
+          echo "RUSTUP_TOOLCHAIN=$toolchain" >> "$GITHUB_ENV"
 
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          toolchain: ${{ env.RUSTUP_TOOLCHAIN }}
 
       - run: cargo test --workspace
         env:
           RUSTFLAGS: "" # disable `cfg(hax)` from `.cargo/config.toml`
 
       # Both crates have cfg-exclusive models the default-cfg run can't reach.
+      # F* clients are only ever compiled with hax's toolchain.
       - run: cargo test -p alloc
+        if: matrix.toolchain == 'hax'
         env:
           RUSTFLAGS: "--cfg hax_backend_fstar"
 
       - run: cargo test -p core-models
+        if: matrix.toolchain == 'hax'
         env:
           RUSTFLAGS: "--cfg hax_backend_fstar"
 
@@ -89,25 +109,33 @@ jobs:
   # cannot be (a `panic!()`-bodied intrinsic, say) is marked
   # `#[cfg_attr(coverage_nightly, coverage(off))]` at the item, so this gate is
   # an absolute 100% and needs no threshold or baseline file.
+  #
+  # Only under hax's toolchain: other rustc versions instrument a few regions
+  # differently (`for` desugaring, `format!` arguments) without any line or
+  # function being missed.
   test-coverage:
     name: llvm-cov test coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
+      # Assigned before being written out, so that a failure fails the step.
+      - name: Resolve the hax toolchain
+        run: |
+          toolchain=$(tools/toolchain.sh hax)
+          echo "RUSTUP_TOOLCHAIN=$toolchain" >> "$GITHUB_ENV"
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: ${{ env.RUST_TOOLCHAIN }}
+          toolchain: ${{ env.RUSTUP_TOOLCHAIN }}
           components: llvm-tools-preview
 
       - uses: taiki-e/install-action@v2
         with:
           tool: cargo-llvm-cov
 
-      # COV_TOOLCHAIN is passed explicitly so the Makefile default cannot drift
-      # from RUST_TOOLCHAIN.
-      - run: make COV_TOOLCHAIN=${{ env.RUST_TOOLCHAIN }} test-coverage-check
+      - run: make test-coverage-check
 
   # ----------------------------------------------------------- lean extraction
   lean-build:

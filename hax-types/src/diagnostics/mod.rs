@@ -72,7 +72,7 @@ impl std::fmt::Display for Diagnostics {
         if let Some(issue) = self.kind.issue_number() {
             write!(
                 f,
-                "This is discussed in issue https://github.com/hacspec/hax/issues/{issue}.\nPlease upvote or comment this issue if you see this error message.\n"
+                "This is discussed in issue https://github.com/pereq-dev/hax/issues/{issue}.\nPlease upvote or comment this issue if you see this error message.\n"
             )?;
         }
         write!(

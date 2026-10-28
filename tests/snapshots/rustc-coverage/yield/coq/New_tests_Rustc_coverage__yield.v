@@ -25,7 +25,7 @@ Definition main '(_ : unit) : unit :=
   failure (("something is not implemented yet.
 Got type `Coroutine`: coroutines are not supported by hax
 
-This is discussed in issue https://github.com/hacspec/hax/issues/924.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/924.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
 "%string : string)) ((""%string : string)).

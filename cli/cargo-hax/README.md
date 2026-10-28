@@ -5,7 +5,7 @@ This crate provides `cargo hax`, the command line interface of hax.
 
 ## Usage
 
-`cargo hax into BACKEND` translates a Rust crate to the backend `BACKEND`, such as `lean` or `fstar`; further subcommands run proof scenarios (`extract`), export the typed AST of a crate (`json`), and manage the external tools hax depends on (`tools`). See [Usage](https://hax.cryspen.com/manual/#usage) in the manual for all subcommands and the [backend overview](https://github.com/cryspen/hax#backends) for the supported backends and their maturity.
+`cargo hax into BACKEND` translates a Rust crate to the backend `BACKEND`, such as `lean` or `fstar`; further subcommands run proof scenarios (`extract`), export the typed AST of a crate (`json`), and manage the external tools hax depends on (`tools`). See [Usage](https://hax.cryspen.com/manual/#usage) in the manual for all subcommands and the [backend overview](https://github.com/pereq-dev/hax#backends) for the supported backends and their maturity.
 
 Use `--help` on any subcommand for options (e.g. `cargo hax into fstar --z3rlimit 100`).
 
@@ -28,6 +28,6 @@ All other backends need the hax frontend driver and engine as well; see [Install
  - [Manual](https://hax.cryspen.com/manual/)
     + Quick start: [Lean](https://hax.cryspen.com/manual/lean/quick_start/), [F\*](https://hax.cryspen.com/manual/fstar/quick_start/)
     + Tutorial: [Lean](https://hax.cryspen.com/manual/lean/tutorial/), [F\*](https://hax.cryspen.com/manual/fstar/tutorial/)
- - [Repository](https://github.com/cryspen/hax), including [examples](https://github.com/cryspen/hax/tree/main/examples) of what hax can do.
+ - [Repository](https://github.com/pereq-dev/hax), including [examples](https://github.com/pereq-dev/hax/tree/main/examples) of what hax can do.
 
-Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/cryspen/hax/discussions). For bugs, file an [Issue](https://github.com/cryspen/hax/issues).
+Questions? Join us on [Zulip](https://hacspec.zulipchat.com/) or open a [GitHub Discussion](https://github.com/pereq-dev/hax/discussions). For bugs, file an [Issue](https://github.com/pereq-dev/hax/issues).

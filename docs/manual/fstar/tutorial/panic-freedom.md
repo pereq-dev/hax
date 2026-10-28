@@ -91,7 +91,7 @@ anything might happen: the function might panic, might run forever,
 erase your disk, or anything.
 
 The helper crate
-[hax-lib](https://github.com/cryspen/hax/tree/main/hax-lib)
+[hax-lib](https://github.com/pereq-dev/hax/tree/main/hax-lib)
 provides the `requires`
 [proc-macro](https://doc.rust-lang.org/reference/procedural-macros.html)
 which lets user writing pre-conditions directly in Rust.
@@ -117,11 +117,11 @@ Another source of panics is indexing. Indexing in an array, a slice or
 a vector is a partial operation: the index might be out of range.
 
 In the example folder of hax, you can find the [`chacha20`
-example](https://github.com/cryspen/hax/blob/main/examples/chacha20/src/lib.rs)
+example](https://github.com/pereq-dev/hax/blob/main/examples/chacha20/src/lib.rs)
 that makes use of pre-conditions to prove panic freedom.
 
 Another solution for safe indexing is to use the [newtype index
 pattern](https://matklad.github.io/2018/06/04/newtype-index-pattern.html),
 which is [also supported by
-hax](https://github.com/cryspen/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
+hax](https://github.com/pereq-dev/hax/blob/d668de4d17e5ddee3a613068dc30b71353a9db4f/tests/attributes/src/lib.rs#L98-L126). The [data invariants](data-invariants.md#newtype-and-refinements) chapter gives more details about this.
 

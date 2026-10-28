@@ -31,12 +31,12 @@ fn forall_and_exists(x: u8) -> u8 {
 }
 
 /// Test function without arguments
-/// https://github.com/cryspen/hax/issues/1856
+/// https://github.com/pereq-dev/hax/issues/1856
 #[hax_lib::ensures(|_| true)]
 fn fn_without_args() {}
 
 /// The Lean backend used to produce `self_` instead of `self` in annotations in
-/// impl blocks. See https://github.com/cryspen/hax/issues/1852.
+/// impl blocks. See https://github.com/pereq-dev/hax/issues/1852.
 mod issue_1852 {
     struct T {}
 
@@ -58,7 +58,7 @@ mod issue_1852 {
 fn custom_pure_proofs(x: u8) {}
 
 /// Resugarings need to be apply also to linked items
-/// https://github.com/cryspen/hax/issues/1945
+/// https://github.com/pereq-dev/hax/issues/1945
 mod issue_1945 {
     #[hax_lib::requires({let x = a; a == 0})]
     fn mktuple(a: i32) -> bool {

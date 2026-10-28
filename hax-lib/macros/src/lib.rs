@@ -538,7 +538,7 @@ pub fn int(payload: TokenStream) -> TokenStream {
 ///
 /// Note that loop invariants are unstable (this will be handled in a
 /// better way in the future, see
-/// <https://github.com/hacspec/hax/issues/858>) and only supported on
+/// <https://github.com/pereq-dev/hax/issues/858>) and only supported on
 /// specific `for` loops with specific iterators:
 ///
 ///  - `for i in start..end {...}`

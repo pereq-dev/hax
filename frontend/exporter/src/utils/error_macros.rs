@@ -35,7 +35,7 @@ mod internal_helpers {
             builder.code(rustc_errors::codes::ErrCode::MAX);
             builder.note(
                 "⚠️ This is a bug in Hax's frontend.
-Please report this error to https://github.com/hacspec/hax/issues with some context (e.g. the current crate)!",
+Please report this error to https://github.com/pereq-dev/hax/issues with some context (e.g. the current crate)!",
             );
             builder.emit()
         }};

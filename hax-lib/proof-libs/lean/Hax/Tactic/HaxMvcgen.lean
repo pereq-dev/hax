@@ -52,9 +52,7 @@ meta partial def haxMvcgenLoop (mainGoal : MVarId)
     let goalType ← whnfR (← instantiateMVars (← mainGoal.getType))
     if goalNeedsMvcgen goalType then
       trace `Hax.hax_mvcgen fun () => m!"hax_mvcgen at goal: {mainGoal}"
-      let inner : TSyntax `tactic := ⟨Syntax.node .none ``Lean.Parser.Tactic.mvcgen
-        #[Syntax.atom .none "mvcgen", cfgStx.raw, argStx]⟩
-      let goals ← evalTacticAt inner mainGoal
+      let goals ← evalMvcgenAt cfgStx argStx mainGoal
       return (← goals.flatMapM (haxMvcgenLoop · cfgStx argStx visited))
     -- No `Triple`s in hyptheses or goal: The `mainGoal` is a finished verification condition.
     return [mainGoal]

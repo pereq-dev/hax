@@ -9,7 +9,7 @@
 //!   - `rotate_left`, `rotate_right`, `leading_zeros`,
 //!   - `from_{be,le}_bytes`, `to_{be,le}_bytes`,
 //!   - `checked_div`, `checked_rem`,
-//!   - `is_power_of_two` (unsigned), `abs` and `signum` (signed),
+//!   - `is_power_of_two` (unsigned), `abs`, `unsigned_abs` and `signum` (signed),
 //!   - `ilog2`,
 //!   - `Default::default()`.
 //!
@@ -815,6 +815,35 @@ pub fn test_i128_abs_neg() -> bool {
 #[rust_lean_test]
 pub fn test_isize_abs_neg() -> bool {
     (-100000isize).abs() == 100000isize
+}
+
+// =============================================================================
+// unsigned_abs (signed only)
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_zero() -> bool {
+    0i8.unsigned_abs() == 0u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_neg() -> bool {
+    (-42i8).unsigned_abs() == 42u8
+}
+
+#[rust_lean_test]
+pub fn test_i8_unsigned_abs_min() -> bool {
+    i8::MIN.unsigned_abs() == 128u8
+}
+
+#[rust_lean_test]
+pub fn test_i32_unsigned_abs_min() -> bool {
+    i32::MIN.unsigned_abs() == 2147483648u32
+}
+
+#[rust_lean_test]
+pub fn test_i64_unsigned_abs_neg() -> bool {
+    (-100000i64).unsigned_abs() == 100000u64
 }
 
 // =============================================================================

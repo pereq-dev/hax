@@ -4,7 +4,8 @@
 //!   - `arith::AddAssign::add_assign` on `u8` (with `x, y` constrained
 //!     to `0..128` so the sum cannot overflow),
 //!   - `arith::SubAssign::sub_assign` on `u8` (when `x >= y`), and
-//!   - `RangeInclusive`'s inherent methods and `RangeBounds::contains`.
+//!   - the inherent `contains` and `is_empty` of every range type, and
+//!     `RangeBounds::contains`.
 //!
 //! On the Rust side we use the `+=` / `-=` operators (which dispatch
 //! through `AddAssign` / `SubAssign`); on the Lean side Aeneas
@@ -99,6 +100,35 @@ pub fn test_sub_assign_u8_max_minus_one() -> bool {
 // =============================================================================
 // Ranges
 // =============================================================================
+
+#[rust_lean_test]
+pub fn test_range_contains() -> bool {
+    let r = 2u8..5;
+    r.contains(&2) && r.contains(&4) && !r.contains(&1) && !r.contains(&5)
+}
+
+#[rust_lean_test]
+pub fn test_range_from_contains() -> bool {
+    let r = 2u8..;
+    r.contains(&2) && r.contains(&u8::MAX) && !r.contains(&1)
+}
+
+#[rust_lean_test]
+pub fn test_range_to_contains() -> bool {
+    let r = ..5u8;
+    r.contains(&0) && r.contains(&4) && !r.contains(&5)
+}
+
+#[rust_lean_test]
+pub fn test_range_to_inclusive_contains() -> bool {
+    let r = ..=5u8;
+    r.contains(&0) && r.contains(&5) && !r.contains(&6)
+}
+
+#[rust_lean_test]
+pub fn test_range_is_empty() -> bool {
+    !(2u8..3).is_empty() && (2u8..2).is_empty() && (3u8..2).is_empty()
+}
 
 #[rust_lean_test]
 pub fn test_range_inclusive_into_inner() -> bool {

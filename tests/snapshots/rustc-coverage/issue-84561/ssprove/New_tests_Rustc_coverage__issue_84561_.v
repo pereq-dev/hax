@@ -84,7 +84,7 @@ Hint Unfold t_Foo_t_Debug.
 (*something is not implemented yet.
 Mutable static items are not supported.
 
-This is discussed in issue https://github.com/hacspec/hax/issues/1343.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/1343.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `AST import`.
  todo(item)*)

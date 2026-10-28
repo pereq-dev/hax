@@ -521,6 +521,8 @@ include Core_models.Bundle {impl_12__count_ones as impl_i8__count_ones}
 
 include Core_models.Bundle {impl_12__abs as impl_i8__abs}
 
+include Core_models.Bundle {impl_12__unsigned_abs as impl_i8__unsigned_abs}
+
 include Core_models.Bundle {impl_12__rotate_right as impl_i8__rotate_right}
 
 include Core_models.Bundle {impl_12__rotate_left as impl_i8__rotate_left}
@@ -602,6 +604,8 @@ include Core_models.Bundle {impl_13__overflowing_pow as impl_i16__overflowing_po
 include Core_models.Bundle {impl_13__count_ones as impl_i16__count_ones}
 
 include Core_models.Bundle {impl_13__abs as impl_i16__abs}
+
+include Core_models.Bundle {impl_13__unsigned_abs as impl_i16__unsigned_abs}
 
 include Core_models.Bundle {impl_13__rotate_right as impl_i16__rotate_right}
 
@@ -685,6 +689,8 @@ include Core_models.Bundle {impl_14__count_ones as impl_i32__count_ones}
 
 include Core_models.Bundle {impl_14__abs as impl_i32__abs}
 
+include Core_models.Bundle {impl_14__unsigned_abs as impl_i32__unsigned_abs}
+
 include Core_models.Bundle {impl_14__rotate_right as impl_i32__rotate_right}
 
 include Core_models.Bundle {impl_14__rotate_left as impl_i32__rotate_left}
@@ -766,6 +772,8 @@ include Core_models.Bundle {impl_15__overflowing_pow as impl_i64__overflowing_po
 include Core_models.Bundle {impl_15__count_ones as impl_i64__count_ones}
 
 include Core_models.Bundle {impl_15__abs as impl_i64__abs}
+
+include Core_models.Bundle {impl_15__unsigned_abs as impl_i64__unsigned_abs}
 
 include Core_models.Bundle {impl_15__rotate_right as impl_i64__rotate_right}
 
@@ -849,6 +857,8 @@ include Core_models.Bundle {impl_16__count_ones as impl_i128__count_ones}
 
 include Core_models.Bundle {impl_16__abs as impl_i128__abs}
 
+include Core_models.Bundle {impl_16__unsigned_abs as impl_i128__unsigned_abs}
+
 include Core_models.Bundle {impl_16__rotate_right as impl_i128__rotate_right}
 
 include Core_models.Bundle {impl_16__rotate_left as impl_i128__rotate_left}
@@ -930,6 +940,8 @@ include Core_models.Bundle {impl_17__overflowing_pow as impl_isize__overflowing_
 include Core_models.Bundle {impl_17__count_ones as impl_isize__count_ones}
 
 include Core_models.Bundle {impl_17__abs as impl_isize__abs}
+
+include Core_models.Bundle {impl_17__unsigned_abs as impl_isize__unsigned_abs}
 
 include Core_models.Bundle {impl_17__rotate_right as impl_isize__rotate_right}
 

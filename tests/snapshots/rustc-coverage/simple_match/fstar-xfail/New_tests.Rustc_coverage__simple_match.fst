@@ -37,7 +37,7 @@ let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
     (fun temp_0_ temp_1_ ->
         let _:Prims.unit = temp_0_ in
         let _:i32 = temp_1_ in
-        Rust_primitives.Hax.failure "something is not implemented yet.\nSorry, Hax does not support declare-first let bindings (see https://doc.rust-lang.org/rust-by-example/variable_bindings/declare.html) for now.\n\nThis is discussed in issue https://github.com/hacspec/hax/issues/156.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
+        Rust_primitives.Hax.failure "something is not implemented yet.\nSorry, Hax does not support declare-first let bindings (see https://doc.rust-lang.org/rust-by-example/variable_bindings/declare.html) for now.\n\nThis is discussed in issue https://github.com/pereq-dev/hax/issues/156.\nPlease upvote or comment this issue if you see this error message.\nNote: the error was labeled with context `AST import`.\n"
           ""
         <:
         Prims.unit),

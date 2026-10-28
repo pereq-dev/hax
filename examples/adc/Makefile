@@ -2,7 +2,7 @@
 lean:
 	cargo hax extract adc
 	(cd proofs/adc/lean && \
-		elan default v4.31.0 && \
+		elan default v4.35.0 && \
 		lake exe cache get && \
 		lake build)
 

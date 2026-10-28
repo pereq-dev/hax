@@ -2316,7 +2316,7 @@ pub fn import_item(
                     .collect(),
             };
 
-            let mut parent_bounds: Vec<(ast::ImplExpr, ast::ImplIdent)> =
+            let parent_bounds: Vec<(ast::ImplExpr, ast::ImplIdent)> =
                 implied_impl_exprs.spanned_import(context, span);
             let items: Vec<ast::ImplItem> = if has_auto {
                 Vec::new()
@@ -2405,9 +2405,6 @@ pub fn import_item(
             };
 
             if let [ast::GenericValue::Ty(self_ty), ..] = &of_trait.args[..] {
-                parent_bounds.retain(|(impl_expr, _)| {
-                    matches!(impl_expr.goal.args.first(), Some(ast::GenericValue::Ty(arg_ty)) if arg_ty == self_ty)
-                });
                 ast::ItemKind::Impl {
                     generics,
                     self_ty: self_ty.clone(),

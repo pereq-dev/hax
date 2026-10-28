@@ -123,7 +123,7 @@ pub fn ge_usize(x: usize, y: usize) -> bool {
 
 /// Derived impls whose provided methods the crate never calls: charon drops
 /// those unless they are named as translation roots, and Lean then rejects the
-/// impl (cryspen/hax#2172).
+/// impl (pereq-dev/hax#2172).
 #[derive(PartialEq)]
 pub enum DerivedPartialEq {
     A,
@@ -236,7 +236,7 @@ pub fn array_index_val(a: [u32; 4], i: usize) -> u32 {
     a[i]
 }
 
-/// Covers `<[T; N] as IndexMut<Range<usize>>>::index_mut` (cryspen/hax#2174).
+/// Covers `<[T; N] as IndexMut<Range<usize>>>::index_mut` (pereq-dev/hax#2174).
 pub fn array_write_range(a: &mut [u8; 8], src: &[u8]) {
     a[0..src.len()].copy_from_slice(src);
 }
@@ -580,6 +580,14 @@ pub fn slice_iter_fold(x: &[u8]) -> u8 {
 
 pub fn slice_iter_map_count(x: &[u8]) -> usize {
     x.iter().map(|b| b.wrapping_add(1)).count()
+}
+
+pub fn slice_iter_all(x: &[u8]) -> bool {
+    x.iter().all(|b| *b > 0)
+}
+
+pub fn slice_iter_any(x: &[u8]) -> bool {
+    x.iter().any(|b| *b == 3)
 }
 
 // --- generic receivers: force the dictionary-passing `.default` form ---

@@ -8,7 +8,7 @@ We define a type `USize64` to represent Rust's `usize` type. It is simply a copy
 This file aims to collect all definitions, lemmas, and type class instances about `UInt64` from
 Lean's standard library and to state them for `USize64`.
 
-The regular `USize` type does not work for us because of https://github.com/cryspen/hax/issues/1702.
+The regular `USize` type does not work for us because of https://github.com/pereq-dev/hax/issues/1702.
 -/
 
 /-- A copy of `UInt64`, which we use to represent Rust's `usize` type. -/

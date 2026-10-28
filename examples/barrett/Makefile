@@ -14,7 +14,7 @@ rust:
 lean:
 	cargo hax extract barrett
 	(cd proofs/barrett/lean && \
-		elan default v4.31.0 && \
+		elan default v4.35.0 && \
 		lake exe cache get && \
 		lake build)
 

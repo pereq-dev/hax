@@ -11,7 +11,7 @@ weight: 1
  - [Install Lean](https://lean-lang.org/install/)
  - *(Optional)* Aeneas and Charon are downloaded automatically on first use; to pre-install them, run `cargo hax tools install` inside your crate.
  - Add `hax-lib` as a dependency to your crate.  
-   `cargo add --git https://github.com/cryspen/hax hax-lib`  
+   `cargo add --git https://github.com/pereq-dev/hax hax-lib`  
    *(`hax-lib` is not mandatory, but this guide assumes it is present)*
 
 ## Partial extraction

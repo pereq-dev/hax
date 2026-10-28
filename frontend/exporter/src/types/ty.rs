@@ -219,7 +219,7 @@ pub enum UserType {
     //
     // In this case, we get a [ty::ConstKind::Bound] in
     // [do_something], which we are not able to translate.
-    // See: https://github.com/hacspec/hax/pull/209
+    // See: https://github.com/pereq-dev/hax/pull/209
 
     // Ty(Ty),
     // TypeOf(DefId, UserArgs),
@@ -995,7 +995,7 @@ impl Alias {
                 // the `&'a Result<T, U> as IntoIterator` trait ref has escaping bound variables
                 // yet we dont have a binder around (could even be several). Binding this correctly
                 // is therefore difficult. Since our trait resolution ignores lifetimes anyway, we
-                // just erase them. See also https://github.com/hacspec/hax/issues/747.
+                // just erase them. See also https://github.com/pereq-dev/hax/issues/747.
                 let trait_ref = crate::traits::erase_free_regions(tcx, trait_ref);
                 let item = tcx.associated_item(alias_ty.def_id);
                 AliasKind::Projection {

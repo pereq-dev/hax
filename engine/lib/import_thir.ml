@@ -155,7 +155,7 @@ let c_attrs : Thir.attribute list -> attrs = List.filter_map ~f:c_attr
 let c_item_attrs (attrs : Thir.item_attributes) : attrs =
   (* TODO: This is a quite coarse approximation, we need to reflect
      that parent/self structure in our AST. See
-     https://github.com/hacspec/hax/issues/123. *)
+     https://github.com/pereq-dev/hax/issues/123. *)
   let self = c_attrs attrs.attributes in
   let parent =
     c_attrs attrs.parent_attributes
@@ -255,6 +255,10 @@ module type EXPR = sig
   val c_trait_ref : Thir.span -> Thir.trait_ref -> trait_goal
   val c_impl_expr : Thir.span -> Thir.impl_expr -> impl_expr
   val c_clause : Thir.span -> int -> Thir.clause -> generic_constraint option
+
+  val c_parent_bounds :
+    (Thir.clause * Thir.impl_expr * Thir.span) list ->
+    (impl_expr * impl_ident) list
 end
 
 (* BinOp to [core::ops::*] overloaded functions *)
@@ -1375,6 +1379,18 @@ end) : EXPR = struct
       bounds
     |> snd |> List.rev
 
+  (** Named like the bounds of [c_bounds], which they are matched with. *)
+  let c_parent_bounds
+      (parent_bounds : (Thir.clause * Thir.impl_expr * Thir.span) list) =
+    List.fold_left ~init:(0, [])
+      ~f:(fun (i, bounds) (clause, impl_expr, span) ->
+        match c_clause span i clause with
+        | Some (GCType trait_goal) ->
+            (i + 1, (c_impl_expr span impl_expr, trait_goal) :: bounds)
+        | _ -> (i, bounds))
+      parent_bounds
+    |> snd |> List.rev
+
   let c_generics ?(offset : int = 0) (generics : Thir.generics) : generics =
     let bounds = c_bounds ~offset generics.span generics.bounds in
     {
@@ -1859,7 +1875,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
               (* TODO: introduce a Kind.TraitImplItem or
                  something. Otherwise we have to assume every
                  backend will see traits and impls as
-                 records. See https://github.com/hacspec/hax/issues/271. *)
+                 records. See https://github.com/pereq-dev/hax/issues/271. *)
               let ii_ident =
                 Concrete_ident.of_def_id ~value:false item.owner_id
               in
@@ -1879,17 +1895,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                       IIType
                         {
                           typ = c_ty item.span ty;
-                          parent_bounds =
-                            List.fold_left ~init:(0, [])
-                              ~f:(fun (i, clauses) (clause, impl_expr, span) ->
-                                match c_clause span i clause with
-                                | Some (GCType trait_goal) ->
-                                    ( i + 1,
-                                      (c_impl_expr span impl_expr, trait_goal)
-                                      :: clauses )
-                                | _ -> (i, clauses))
-                              parent_bounds
-                            |> snd |> List.rev;
+                          parent_bounds = c_parent_bounds parent_bounds;
                         });
                 ii_ident;
                 ii_attrs = c_item_attrs item.attributes;
@@ -1907,15 +1913,7 @@ and c_item_unwrapped ~ident ~type_only (item : Thir.item) : item list =
                    ~f:(c_generic_value item.span)
                    of_trait.value.generic_args );
              items;
-             parent_bounds =
-               List.filter_mapi
-                 ~f:(fun i (clause, impl_expr, span) ->
-                   let* bound = c_clause span i clause in
-                   match bound with
-                   | GCType trait_goal ->
-                       Some (c_impl_expr span impl_expr, trait_goal)
-                   | _ -> None)
-                 parent_bounds;
+             parent_bounds = c_parent_bounds parent_bounds;
              safety = csafety safety;
            }
   | Use ({ span = _; res; segments; rename }, _) ->

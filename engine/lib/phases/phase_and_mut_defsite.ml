@@ -122,7 +122,7 @@ struct
               let rhs = e in
               let lhs, body =
                 if [%eq: ty] e.typ UB.unit_typ then
-                  (* This case has been added to fix https://github.com/hacspec/hax/issues/720.
+                  (* This case has been added to fix https://github.com/pereq-dev/hax/issues/720.
                      It might need a better solution. *)
                   ( UB.M.pat_PWild ~span:e.span ~typ:e.typ,
                     UB.M.expr_unit ~span:e.span )

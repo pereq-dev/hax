@@ -31,23 +31,23 @@ namespace CoreModels
 
 @[spec]
 def rust_primitives.slice.slice_length
-  {T : Type} : Slice T → RustM Std.Usize := fun s => ok (Slice.len s)
+  {T : Type _} : Slice T → RustM Std.Usize := fun s => ok (Slice.len s)
 
 @[spec]
 def rust_primitives.slice.slice_split_at
-  {T : Type} : Slice T → Std.Usize → RustM ((Slice T) × (Slice T)) :=
+  {T : Type _} : Slice T → Std.Usize → RustM ((Slice T) × (Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at
 
 /-- The `&mut` counterpart of `slice_split_at`. hax turns the two `&mut` returns
     into a value pair plus a write-back function, which is exactly the shape of
     Aeneas's own `core::slice::{[@T]}::split_at_mut`. -/
 def rust_primitives.slice.slice_split_at_mut
-  {T : Type} : Slice T → Std.Usize →
+  {T : Type _} : Slice T → Std.Usize →
   RustM (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at_mut
 
 /-- Recursive helper function for `slice_contains` -/
-def rust_primitives.slice.slice_contains_go {T : Type}
+def rust_primitives.slice.slice_contains_go {T : Type _}
     (inst : core.cmp.PartialEq T T) (x : T) : List T → RustM Bool
   | [] => ok false
   | y :: ys => do
@@ -55,22 +55,22 @@ def rust_primitives.slice.slice_contains_go {T : Type}
     if b then ok true else slice_contains_go inst x ys
 
 def rust_primitives.slice.slice_contains
-  {T : Type} (CoreCmpPartialEqInst : core.cmp.PartialEq T T) :
+  {T : Type _} (CoreCmpPartialEqInst : core.cmp.PartialEq T T) :
   Slice T → T → RustM Bool := fun s x =>
   slice_contains_go CoreCmpPartialEqInst x s.val
 
 @[spec]
 def rust_primitives.slice.slice_index
-  {T : Type} : Slice T → Std.Usize → RustM T := Slice.index_usize
+  {T : Type _} : Slice T → Std.Usize → RustM T := Slice.index_usize
 
 @[spec]
 def rust_primitives.slice.slice_slice
-  {T : Type} : Slice T → Std.Usize → Std.Usize → RustM (Slice T) :=
+  {T : Type _} : Slice T → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun s i j => Slice.subslice s ⟨i, j⟩
 
 @[spec]
 def rust_primitives.slice.slice_clone_from_slice
-  {T : Type} (corecloneCloneInst : core.clone.Clone T) :
+  {T : Type _} (corecloneCloneInst : core.clone.Clone T) :
   Slice T → Slice T → RustM (Slice T) := fun dest src =>
   if dest.length = src.length then
     -- Cloned, so `clone`'s effects are observable and cannot be skipped.
@@ -85,7 +85,7 @@ def rust_primitives.slice.slice_clone_from_slice
     the write-back function (Aeneas's pure encoding of `&mut s[i]`). -/
 @[spec]
 def rust_primitives.slice.slice_index_mut
-  {T : Type} : Slice T → Std.Usize → RustM (T × (T → Slice T)) :=
+  {T : Type _} : Slice T → Std.Usize → RustM (T × (T → Slice T)) :=
   fun s i => Slice.index_mut_usize s i
 
 /-- [rust_primitives::slice::slice_slice_mut]: the subslice `s[b..e]` plus its
@@ -93,7 +93,7 @@ def rust_primitives.slice.slice_index_mut
     fixed at `e - b`, so writing `ss` back overwrites exactly `[b, e)`. -/
 @[spec]
 def rust_primitives.slice.slice_slice_mut
-  {T : Type} : Slice T → Std.Usize → Std.Usize → RustM ((Slice T) × (Slice T → Slice T)) :=
+  {T : Type _} : Slice T → Std.Usize → Std.Usize → RustM ((Slice T) × (Slice T → Slice T)) :=
   fun s b e => do
   let sub ← Slice.subslice s ⟨b, e⟩
   ok (sub, fun ss => Slice.from (s.val.setSlice! b.val ss.val) (by scalar_tac))
@@ -102,13 +102,13 @@ def rust_primitives.slice.slice_slice_mut
     `Slice T → Slice T`. -/
 @[spec]
 def rust_primitives.slice.slice_reverse
-  {T : Type} : Slice T → RustM (Slice T) :=
+  {T : Type _} : Slice T → RustM (Slice T) :=
   fun s => ok (Slice.from s.val.reverse (by simp [s.property]))
 
 /-- [rust_primitives::slice::slice_swap]: swap elements `a` and `b`. -/
 @[spec]
 def rust_primitives.slice.slice_swap
-  {T : Type} : Slice T → Std.Usize → Std.Usize → RustM (Slice T) :=
+  {T : Type _} : Slice T → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun s a b => do
   let va ← Slice.index_usize s a
   let vb ← Slice.index_usize s b
@@ -119,7 +119,7 @@ def rust_primitives.slice.slice_swap
     `dest`, panicking where std's `copy_within` does. -/
 @[spec]
 def rust_primitives.slice.slice_copy_within
-  {T : Type} (coremarkerCopyInst : CoreModels.core.marker.Copy T) :
+  {T : Type _} (coremarkerCopyInst : CoreModels.core.marker.Copy T) :
   Slice T → Std.Usize → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun s start end_ dest =>
   if start.val ≤ end_.val ∧ end_.val ≤ s.length ∧ dest.val ≤ s.length - (end_.val - start.val) then
@@ -129,7 +129,7 @@ def rust_primitives.slice.slice_copy_within
 
 /-- This helper function for `array_from_fn` takes a `FnMut` closure and produces a list. A list
     is easier to produce than an array because we do not need to produce a length-proof. -/
-def rust_primitives.slice.array_from_fn_go {T F : Type}
+def rust_primitives.slice.array_from_fn_go {T F : Type _}
     (inst : core.ops.function.FnMut F Std.Usize T) : F → Nat → RustM (List T × F)
   | c, 0 => ok ([], c)
   | c, n + 1 => do
@@ -137,7 +137,7 @@ def rust_primitives.slice.array_from_fn_go {T F : Type}
     let q ← inst.call_mut p.2 ⟨BitVec.ofNat _ n⟩
     ok (p.1 ++ [q.1], q.2)
 
-private theorem foldlM_list_build_length {A T F : Type}
+private theorem foldlM_list_build_length {A T F : Type _}
     (step : List T × F → A → RustM (List T × F))
     (hstep : ∀ l f i r, step (l, f) i = .ok r → r.1.length = l.length + 1) :
     ∀ (l : List A) (acc : List T) (f : F) (result : List T × F),
@@ -164,7 +164,7 @@ private theorem foldlM_list_build_length {A T F : Type}
     | div => simp [hstep_x] at h
 
 def rust_primitives.slice.array_from_fn
-  {T : Type} {F : Type} (N : Std.Usize) (coreopsfunctionFnMutFTupleUsizeTInst :
+  {T : Type _} {F : Type _} (N : Std.Usize) (coreopsfunctionFnMutFTupleUsizeTInst :
   core.ops.function.FnMut F Std.Usize T) :
   F → RustM (Array T N) := fun f => do
   let p ← array_from_fn_go coreopsfunctionFnMutFTupleUsizeTInst f N.val
@@ -173,7 +173,7 @@ def rust_primitives.slice.array_from_fn
   (if h : p.1.length = N.val then ok (Array.from p.1 h) else fail .panic)
 
 /-- Recursive helper function for `array_map` -/
-def rust_primitives.slice.array_map_go {T U F : Type}
+def rust_primitives.slice.array_map_go {T U F : Type _}
     (inst : core.ops.function.Fn F T U) (f : F) : List T → RustM (List U)
   | [] => ok []
   | x :: xs => do
@@ -182,7 +182,7 @@ def rust_primitives.slice.array_map_go {T U F : Type}
     ok (y :: ys)
 
 def rust_primitives.slice.array_map
-  {T : Type} {U : Type} {F : Type} {N : Std.Usize}
+  {T : Type _} {U : Type _} {F : Type _} {N : Std.Usize}
   (coreopsfunctionFnMutFTupleTUInst : core.ops.function.FnMut F T U) :
   Array T N → F → RustM (Array U N) := fun a f =>
   match h : (a.val.foldlM
@@ -218,31 +218,31 @@ def rust_primitives.slice.array_map
 
 @[spec]
 def rust_primitives.slice.array_as_slice
-  {T : Type} {N : Std.Usize} : Array T N → RustM (Slice T) :=
+  {T : Type _} {N : Std.Usize} : Array T N → RustM (Slice T) :=
   fun a => ok (Array.to_slice a)
 
 /-- [rust_primitives::slice::array_as_mut_slice]: `&mut a[..]` as a slice plus
     its write-back. -/
 @[spec]
 def rust_primitives.slice.array_as_mut_slice
-  {T : Type} {N : Std.Usize} :
+  {T : Type _} {N : Std.Usize} :
   Array T N → RustM ((Slice T) × (Slice T → Array T N)) :=
   fun a => ok (Array.to_slice_mut a)
 
 @[spec]
 def rust_primitives.slice.array_slice
-  {T : Type} {N : Std.Usize} :
+  {T : Type _} {N : Std.Usize} :
   Array T N → Std.Usize → Std.Usize → RustM (Slice T) :=
   fun a i j => Array.subslice a ⟨i, j⟩
 
 @[spec]
 def rust_primitives.slice.array_index
-  {T : Type} {N : Std.Usize} : Array T N → Std.Usize → RustM T :=
+  {T : Type _} {N : Std.Usize} : Array T N → Std.Usize → RustM T :=
   fun a i => Slice.index_usize (Array.to_slice a) i
 
 @[spec]
 def rust_primitives.sequence.seq_from_slice
-  {T : Type} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
+  {T : Type _} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
 
 /-- [rust_primitives::sequence::seq_from_slice_mut]:
     Name pattern: [rust_primitives::sequence::seq_from_slice_mut]
@@ -254,7 +254,7 @@ def rust_primitives.sequence.seq_from_slice
     Aeneas gives `core::slice::{[@T]}::iter_mut`. -/
 @[rust_fun "rust_primitives::sequence::seq_from_slice_mut"]
 def rust_primitives.sequence.seq_from_slice_mut
-  {T : Type} :
+  {T : Type _} :
   Slice T → RustM ((rust_primitives.sequence.Seq T) ×
     ((rust_primitives.sequence.Seq T) → Slice T)) :=
   fun s => ok (s, fun s' => s')
@@ -275,7 +275,7 @@ def rust_primitives.sequence.seq_from_slice_mut
     caller, and is returned unchanged. -/
 @[rust_fun "rust_primitives::sequence::seq_remove_mut"]
 def rust_primitives.sequence.seq_remove_mut
-  {T : Type} :
+  {T : Type _} :
   rust_primitives.sequence.Seq T → Std.Usize → RustM (T ×
     (rust_primitives.sequence.Seq T) ×
     ((rust_primitives.sequence.Seq T) → T →
@@ -299,17 +299,17 @@ def rust_primitives.sequence.seq_remove_mut
 
 @[spec]
 def rust_primitives.sequence.seq_from_array
-  {T : Type} {N : Std.Usize} :
+  {T : Type _} {N : Std.Usize} :
   Array T N → RustM (rust_primitives.sequence.Seq T) := fun a => ok (Array.to_slice a)
 
 @[spec]
 def rust_primitives.sequence.seq_len
-  {T : Type} : rust_primitives.sequence.Seq T → RustM Std.Usize :=
+  {T : Type _} : rust_primitives.sequence.Seq T → RustM Std.Usize :=
   fun s => ok (Slice.len s)
 
 @[spec]
 def rust_primitives.sequence.seq_remove
-  {T : Type} :
+  {T : Type _} :
   rust_primitives.sequence.Seq T → Std.Usize → RustM (T ×
     (rust_primitives.sequence.Seq T)) := fun s i =>
   if h : i.val < s.val.length then
@@ -890,26 +890,26 @@ def alloc.string.String.new : RustM String := ok ""
 
 @[spec]
 def rust_primitives.sequence.seq_empty
-  (T : Type) : RustM (rust_primitives.sequence.Seq T) := ok (Slice.new T)
+  (T : Type _) : RustM (rust_primitives.sequence.Seq T) := ok (Slice.new T)
 
 @[spec]
 def rust_primitives.sequence.seq_from_boxed_slice
-  {T : Type} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
+  {T : Type _} : Slice T → RustM (rust_primitives.sequence.Seq T) := fun s => ok s
 
 @[spec]
 def rust_primitives.sequence.seq_to_slice
-  {T : Type} : rust_primitives.sequence.Seq T → RustM (Slice T) := fun s => ok s
+  {T : Type _} : rust_primitives.sequence.Seq T → RustM (Slice T) := fun s => ok s
 
 @[spec]
 def rust_primitives.sequence.seq_to_slice_mut
-  {T : Type} :
+  {T : Type _} :
   rust_primitives.sequence.Seq T →
     RustM ((Slice T) × (Slice T → rust_primitives.sequence.Seq T)) :=
   fun s => ok (s, fun s' => s')
 
 @[spec]
 def rust_primitives.sequence.seq_concat
-  {T : Type} :
+  {T : Type _} :
   rust_primitives.sequence.Seq T → rust_primitives.sequence.Seq T → RustM
     ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T)) :=
   fun s1 s2 =>
@@ -920,7 +920,7 @@ def rust_primitives.sequence.seq_concat
 -- Appends `src`'s elements *cloned*.
 @[spec]
 def rust_primitives.sequence.seq_extend
-  {T : Type} (corecloneCloneInst : core.clone.Clone T) :
+  {T : Type _} (corecloneCloneInst : core.clone.Clone T) :
   rust_primitives.sequence.Seq T → Slice T → RustM
     (rust_primitives.sequence.Seq T) := fun s src =>
   match (src.val.mapM corecloneCloneInst.clone).match with
@@ -933,7 +933,7 @@ def rust_primitives.sequence.seq_extend
 
 @[spec]
 def rust_primitives.sequence.seq_push
-  {T : Type} :
+  {T : Type _} :
   rust_primitives.sequence.Seq T → T → RustM (rust_primitives.sequence.Seq T) :=
   fun s x =>
     let extended := s.val ++ [x]
@@ -943,7 +943,7 @@ def rust_primitives.sequence.seq_push
 -- std clones `x` for all but the last element, which is `x` itself moved in.
 @[spec]
 def rust_primitives.sequence.seq_create
-  {T : Type} (corecloneCloneInst : core.clone.Clone T) :
+  {T : Type _} (corecloneCloneInst : core.clone.Clone T) :
   T → Std.Usize → RustM (rust_primitives.sequence.Seq T) := fun x n =>
   if n.val = 0 then ok (Slice.new T)
   else
@@ -957,7 +957,7 @@ def rust_primitives.sequence.seq_create
 
 @[spec]
 def rust_primitives.sequence.seq_drain
-  {T : Type} :
+  {T : Type _} :
   rust_primitives.sequence.Seq T → Std.Usize → Std.Usize → RustM
     ((rust_primitives.sequence.Seq T) × (rust_primitives.sequence.Seq T)) :=
   fun s start «end» =>
@@ -969,7 +969,7 @@ def rust_primitives.sequence.seq_drain
 
 @[spec]
 def rust_primitives.sequence.seq_index
-  {T : Type} : rust_primitives.sequence.Seq T → Std.Usize → RustM T :=
+  {T : Type _} : rust_primitives.sequence.Seq T → Std.Usize → RustM T :=
   Slice.index_usize
 
 @[spec] def rust_primitives.arithmetic.wrapping_add_i8 (x y : I8) : RustM I8 :=

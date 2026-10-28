@@ -65,6 +65,6 @@ include Core_models.Bundle {impl_3__from__option as impl_3}
 
 include Core_models.Bundle {impl_4__from__option as impl_4}
 
-include Core_models.Bundle {impl_5__from__option as impl_5}
+include Core_models.Bundle {impl_5 as impl_5}
 
 include Core_models.Bundle {impl_6__from__option as impl_6}

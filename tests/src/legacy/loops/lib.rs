@@ -315,7 +315,7 @@ mod control_flow {
 }
 
 mod and_mut_side_effect_loop {
-    // https://github.com/hacspec/hax/issues/720
+    // https://github.com/pereq-dev/hax/issues/720
 /// @fail(extraction): proverif(HAX0008)
     fn looping(array: &mut [u8; 5]) {
         for i in 0..array.len() {

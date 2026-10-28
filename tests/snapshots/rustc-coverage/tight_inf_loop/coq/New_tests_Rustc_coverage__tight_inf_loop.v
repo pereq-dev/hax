@@ -20,7 +20,7 @@ Definition main '(_ : unit) : unit :=
     never_to_any ((failure (("something is not implemented yet.
 Unhandled loop kind
 
-This is discussed in issue https://github.com/hacspec/hax/issues/933.
+This is discussed in issue https://github.com/pereq-dev/hax/issues/933.
 Please upvote or comment this issue if you see this error message.
 Note: the error was labeled with context `FunctionalizeLoops`.
 "%string : string)) (("{

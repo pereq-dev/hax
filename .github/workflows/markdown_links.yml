@@ -11,7 +11,7 @@ on:
 
 jobs:
   lychee:
-    if: github.repository == 'cryspen/hax'
+    if: github.repository == 'pereq-dev/hax'
     permissions:
       contents: read
       issues: write
@@ -31,7 +31,7 @@ jobs:
             --no-progress
             --max-retries 5
             --exclude-path docs
-            --user-agent 'hax link check (https://github.com/cryspen/hax)'
+            --user-agent 'hax link check (https://github.com/pereq-dev/hax)'
             './**/*.md'
           fail: true
       - name: Open an issue on failure
