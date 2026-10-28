@@ -24,6 +24,8 @@ use crate::log::JobKind;
 pub struct TestResult {
     pub stage: Stage,
     pub tier: Tier,
+    /// Derived from `tier` and `stage`.
+    pub classification: Classification,
 }
 
 pub struct ResultsFile {
@@ -76,15 +78,23 @@ impl CommittedFile {
         self.tests
             .iter()
             .map(|(path, t)| {
-                Ok((
-                    path.clone(),
-                    TestResult {
-                        stage: scale.parse(&t.stage)?,
-                        tier: t.tier.parse()?,
-                    },
-                ))
+                let stage = scale.parse(&t.stage)?;
+                let tier = t.tier.parse()?;
+                // The committed `classification` is recomputed, so a stale
+                // one is a results difference and shows up in the diff.
+                Ok((path.clone(), TestResult::new(stage, tier)))
             })
             .collect()
+    }
+}
+
+impl TestResult {
+    pub fn new(stage: Stage, tier: Tier) -> Self {
+        Self {
+            stage,
+            tier,
+            classification: classify(tier, stage),
+        }
     }
 }
 
@@ -169,10 +179,7 @@ impl ResultsFile {
                     .with_context(|| format!("no stage observed for `{}`", test.path))?;
                 Ok((
                     test.path.clone(),
-                    TestResult {
-                        stage,
-                        tier: test.tiers[&backend],
-                    },
+                    TestResult::new(stage, test.tiers[&backend]),
                 ))
             })
             .collect::<Result<BTreeMap<_, _>>>()?;
@@ -197,6 +204,10 @@ impl ResultsFile {
             out += &format!("\n[tests.{}]\n", toml_string(path));
             out += &format!("stage = {}\n", toml_string(result.stage.as_str()));
             out += &format!("tier = {}\n", toml_string(result.tier.as_str()));
+            out += &format!(
+                "classification = {}\n",
+                toml_string(result.classification.as_str())
+            );
         }
         out
     }
@@ -305,7 +316,7 @@ pub async fn check(ctx: &FlsContext, file: &ResultsFile, job: JobKind) -> Result
         job.report_message(format!(
             "{path}: {} ({})",
             result.stage.as_str(),
-            classify(result.tier, result.stage).as_str()
+            result.classification.as_str()
         ));
     }
     let rendered = file.render();
@@ -348,10 +359,7 @@ mod tests {
     use std::collections::HashMap;
 
     fn result(stage: &str) -> TestResult {
-        TestResult {
-            stage: LEAN.stage(stage),
-            tier: Tier::Supported,
-        }
+        TestResult::new(LEAN.stage(stage), Tier::Supported)
     }
 
     #[test]
@@ -459,8 +467,14 @@ mod tests {
             ],
             tests: BTreeMap::from([("c/s/t".to_string(), result("aeneas-rejected"))]),
         };
-        let back: CommittedFile = toml::from_str(&file.render()).unwrap();
+        let rendered = file.render();
+        assert!(rendered.contains("\nclassification = \"planned\"\n"));
+        let back: CommittedFile = toml::from_str(&rendered).unwrap();
         assert_eq!(back.tools(), file.tools);
         assert_eq!(back.tests(&LEAN).unwrap(), file.tests);
+        assert_eq!(
+            back.tests(&LEAN).unwrap()["c/s/t"].classification,
+            Classification::Planned
+        );
     }
 }

@@ -56,4 +56,4 @@ After a refresh, run `fls coverage`: paragraphs the new revision added show up a
 ## Updating the results
 
 - `--update-results` rewrites the results file of the backend from the observed stages. Run it without `--matching` when the tool versions changed, so that every test is observed with the current tools. The `hax` row is the version of the checkout, which the release bump rewrites.
-- The results file records the stage and the tier of every test; the report reads the title, the identifiers, and the reason from the test file. Editing those needs no update of the results file, while a tier change needs a run of the test.
+- The results file records the stage and the tier of every test, and the classification derived from them; the report reads the title, the identifiers, and the reason from the test file. Editing those needs no update of the results file, while a tier change needs a run of the test.
