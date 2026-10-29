@@ -14,6 +14,7 @@ mod results;
 mod runner;
 pub mod stage;
 mod test;
+mod triage;
 
 use anyhow::{Result, ensure};
 use hax_types::cli_options::BackendName;
@@ -36,6 +37,7 @@ pub async fn subcommand(options: &Cli, command: FlsCommand) -> Result<()> {
     match command {
         FlsCommand::Refresh { rev, check } => refresh::run(options, &rev, check),
         FlsCommand::Coverage => coverage::run(options).await,
+        FlsCommand::Triage { chapter, all } => triage::run(options, &chapter, all).await,
     }
 }
 

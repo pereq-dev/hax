@@ -6,7 +6,7 @@
 # and from `pending-chapters`; they are not written here.
 #
 # A chapter listed in `pending-chapters` has no tables. The pull request that
-# triages a chapter removes it from the list and adds its tables.
+# completes the triage of a chapter removes it from the list and adds its tables.
 
 pending-chapters = [
   "general",

@@ -46,6 +46,15 @@ pub enum FlsCommand {
     /// Check that every identifier is claimed by a test or excluded, that
     /// every claim is valid, and that the results files match the tests.
     Coverage,
+    /// Print the paragraphs of a chapter that are neither claimed by a test
+    /// nor excluded, grouped by section, with their rubric and text.
+    Triage {
+        /// Chapter slug, as in the identifier lists.
+        chapter: String,
+        /// Print the claimed and excluded paragraphs too, marked.
+        #[clap(long)]
+        all: bool,
+    },
 }
 
 #[derive(Debug, Clone, Parser)]

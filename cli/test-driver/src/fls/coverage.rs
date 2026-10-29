@@ -4,7 +4,10 @@
 //! an entry for exactly the tests with a tier for their backend, with a
 //! reason in the test for every entry not classified as supported.
 
-use std::collections::{BTreeMap, HashMap, HashSet};
+use std::{
+    collections::{BTreeMap, HashMap, HashSet},
+    path::Path,
+};
 
 use anyhow::{Result, bail};
 
@@ -116,7 +119,7 @@ pub fn analyse(list: &IdList, exclusions: &Exclusions, tests: &[Claims<'_>]) -> 
     for chapter in chapters_with_tables {
         if pending.contains(chapter) {
             violations.push(format!(
-                "{chapter}: pending chapters have no exclusion tables; a chapter is triaged in one pull request that also removes it from pending-chapters"
+                "{chapter}: pending chapters have no exclusion tables; the pull request that completes the triage of a chapter adds its tables and removes it from pending-chapters"
             ));
         }
     }
@@ -182,8 +185,8 @@ pub fn analyse(list: &IdList, exclusions: &Exclusions, tests: &[Claims<'_>]) -> 
     }
 }
 
-fn check(options: &Cli, tests: &[FlsTest], job: &JobKind) -> Result<()> {
-    let tests_dir = options.tests_crate_dir();
+/// The merged identifier lists of the tests crate.
+pub fn read_lists(tests_dir: &Path) -> Result<IdList> {
     let fls_ids = tests_dir.join("fls-ids.txt");
     if !fls_ids.exists() {
         bail!(
@@ -198,7 +201,12 @@ fn check(options: &Cli, tests: &[FlsTest], job: &JobKind) -> Result<()> {
             hax_ids.display()
         );
     }
-    let list = IdList::merged(IdList::read(&fls_ids)?, IdList::read(&hax_ids)?)?;
+    IdList::merged(IdList::read(&fls_ids)?, IdList::read(&hax_ids)?)
+}
+
+fn check(options: &Cli, tests: &[FlsTest], job: &JobKind) -> Result<()> {
+    let tests_dir = options.tests_crate_dir();
+    let list = read_lists(&tests_dir)?;
     let exclusions = exclusions::read(&tests_dir.join("fls-excluded.toml"), &list.chapters)?;
     let claims: Vec<Claims<'_>> = tests
         .iter()
@@ -469,7 +477,7 @@ mod tests {
         assert_eq!(
             v,
             [
-                "values: pending chapters have no exclusion tables; a chapter is triaged in one pull request that also removes it from pending-chapters"
+                "values: pending chapters have no exclusion tables; the pull request that completes the triage of a chapter adds its tables and removes it from pending-chapters"
             ]
         );
     }

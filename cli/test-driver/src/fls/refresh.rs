@@ -159,8 +159,45 @@ struct Heading {
     slug: String,
 }
 
+/// A paragraph with what the triage needs from its source: the rubric it
+/// appears under and its text.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ParsedParagraph {
+    pub paragraph: Paragraph,
+    /// Slug of the last `.. rubric::` above the paragraph in its section,
+    /// `none` without one.
+    pub rubric: String,
+    /// The source lines of the paragraph up to the next blank line, joined
+    /// with single spaces, without the `:dp:` marker.
+    pub text: String,
+}
+
+/// The rubric of a paragraph without a `.. rubric::` line above it.
+pub const NO_RUBRIC: &str = "none";
+
+/// The text of the paragraph whose `:dp:` marker is on line `start`.
+fn paragraph_text(lines: &[&str], start: usize, marker: &str) -> String {
+    let mut words: Vec<String> = vec![];
+    for (i, line) in lines.iter().enumerate().skip(start) {
+        if line.trim().is_empty() {
+            break;
+        }
+        let line = if i == start {
+            line.replacen(marker, "", 1)
+        } else {
+            line.to_string()
+        };
+        // Bullet and list-table markers in front of the text.
+        let line = line.trim().trim_start_matches(['*', '-', ' ']);
+        if !line.is_empty() {
+            words.push(line.to_string());
+        }
+    }
+    words.join(" ")
+}
+
 /// The title and the paragraphs of one chapter file, in document order.
-pub fn parse_chapter(chapter: &str, text: &str) -> Result<(String, Vec<Paragraph>)> {
+pub fn parse_chapter(chapter: &str, text: &str) -> Result<(String, Vec<ParsedParagraph>)> {
     let anchor = Regex::new(r"^\.\. _fls_[A-Za-z0-9]+:$").unwrap();
     let paragraph = Regex::new(r":dp:`(fls_[A-Za-z0-9]+)`").unwrap();
 
@@ -171,6 +208,7 @@ pub fn parse_chapter(chapter: &str, text: &str) -> Result<(String, Vec<Paragraph
     // as the FLS's own `paragraph-ids.json` does.
     let mut informational_sections: HashSet<String> = HashSet::new();
     let mut page_informational = false;
+    let mut rubric = NO_RUBRIC.to_string();
     let mut slugs: HashMap<String, String> = HashMap::new();
     let mut paragraphs = vec![];
 
@@ -239,9 +277,14 @@ pub fn parse_chapter(chapter: &str, text: &str) -> Result<(String, Vec<Paragraph
                 title: title.to_string(),
                 slug: heading_slug,
             });
+            rubric = NO_RUBRIC.to_string();
             continue;
         }
         let directive = line.trim();
+        if let Some(name) = directive.strip_prefix(".. rubric::") {
+            rubric = slug(name);
+            continue;
+        }
         if directive == ".. informational-page::" {
             page_informational = true;
             continue;
@@ -260,12 +303,17 @@ pub fn parse_chapter(chapter: &str, text: &str) -> Result<(String, Vec<Paragraph
             let Some(section) = stack.last() else {
                 bail!("{}", at(i, "paragraph before the chapter heading"));
             };
-            paragraphs.push(Paragraph {
-                id: m[1].to_string(),
-                chapter: chapter.to_string(),
-                section: section.slug.clone(),
-                section_title: section.title.clone(),
-                informational: page_informational || informational_sections.contains(&section.slug),
+            paragraphs.push(ParsedParagraph {
+                paragraph: Paragraph {
+                    id: m[1].to_string(),
+                    chapter: chapter.to_string(),
+                    section: section.slug.clone(),
+                    section_title: section.title.clone(),
+                    informational: page_informational
+                        || informational_sections.contains(&section.slug),
+                },
+                rubric: rubric.clone(),
+                text: paragraph_text(&lines, i, &m[0]),
             });
         }
     }
@@ -293,7 +341,7 @@ pub fn read_sources(dir: &Path, rev: &str, version: Option<String>) -> Result<Id
             )
         })?;
         let (title, chapter_paragraphs) = parse_chapter(chapter, &text)?;
-        for p in chapter_paragraphs {
+        for p in chapter_paragraphs.into_iter().map(|p| p.paragraph) {
             if let Some(other) = seen.insert(p.id.clone(), chapter.clone()) {
                 bail!("`{}` appears in both {other}.rst and {chapter}.rst", p.id);
             }
@@ -493,6 +541,7 @@ Not informational any more.
         assert_eq!(title, "Values And Things");
         let rows: Vec<(&str, &str, &str, bool)> = paragraphs
             .iter()
+            .map(|p| &p.paragraph)
             .map(|p| {
                 (
                     p.id.as_str(),
@@ -513,6 +562,31 @@ Not informational any more.
                 ("fls_n2", "sibling", "Sibling", false),
             ]
         );
+        let sources: Vec<(&str, &str)> = paragraphs
+            .iter()
+            .map(|p| (p.rubric.as_str(), p.text.as_str()))
+            .collect();
+        assert_eq!(
+            sources,
+            [
+                ("none", "Directly under the chapter."),
+                ("none", "Informational."),
+                ("none", "Under a subsection."),
+                ("none", "A bullet item."),
+                ("legality-rules", "Not informational any more."),
+                ("legality-rules", "In a table."),
+            ]
+        );
+    }
+
+    #[test]
+    fn rubric_resets_at_headings() {
+        let text = ".. _fls_c:\n\nChapter\n=======\n\n.. rubric:: Dynamic Semantics\n\n:dp:`fls_a`\nFirst line\nsecond line.\n\n.. _fls_s:\n\nS\n---\n\n:dp:`fls_b` inline text.\n";
+        let (_, paragraphs) = parse_chapter("c", text).unwrap();
+        assert_eq!(paragraphs[0].rubric, "dynamic-semantics");
+        assert_eq!(paragraphs[0].text, "First line second line.");
+        assert_eq!(paragraphs[1].rubric, "none");
+        assert_eq!(paragraphs[1].text, "inline text.");
     }
 
     #[test]
@@ -577,7 +651,7 @@ Orphan
     fn informational_page_flags_the_chapter() {
         let text = ".. informational-page::\n\n.. _fls_c:\n\nChapter\n=======\n\n:dp:`fls_a`\n\n.. _fls_s:\n\nS\n---\n\n:dp:`fls_b`\n";
         let (_, paragraphs) = parse_chapter("c", text).unwrap();
-        assert!(paragraphs.iter().all(|p| p.informational));
+        assert!(paragraphs.iter().all(|p| p.paragraph.informational));
     }
 
     #[test]
