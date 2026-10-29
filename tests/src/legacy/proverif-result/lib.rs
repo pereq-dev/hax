@@ -219,7 +219,8 @@ fn decode_or_zero(b: u8) -> u8 {
 
 // Observable calls while an `Err` is pending.
 
-#[hax_lib::proverif::replace_body("x")]
+#[hax_lib::proverif::before("event Recorded(bitstring).")]
+#[hax_lib::proverif::replace_body("event Recorded(${x}); ${x}")]
 fn record(x: u8) -> u8 {
     x
 }
@@ -321,4 +322,147 @@ enum Wrapped {
 fn map_err_constructor(x: u8) -> Result<u8, Wrapped> {
     let v = check(x).map_err(Wrapped::E)?;
     Ok(v)
+}
+
+#[hax_lib::proverif::replace_body("e")]
+fn make_error(e: Error) -> Error {
+    e
+}
+
+fn err_payload_effect(x: u8) -> Result<u8, Error> {
+    if x == 0 { Err(make_error(Error::Invalid)) } else { Ok(x) }
+}
+
+/// @fail(extraction): proverif(HAX0001, HAX0001)
+fn nested_unwrap(x: u8) -> u8 {
+    let outer: Result<Result<u8, Error>, ()> = Ok(modelled(x));
+    match outer.unwrap() {
+        Ok(v) => v,
+        Err(Error::Invalid) => 1,
+        Err(Error::Other) => 2,
+    }
+}
+
+/// @fail(extraction): proverif(HAX0001, HAX0001, HAX0001)
+fn nested_ok(x: u8) -> u8 {
+    let outer: Result<Result<u8, Error>, ()> = Ok(modelled(x));
+    match outer.ok() {
+        Some(Ok(v)) => v,
+        Some(Err(Error::Invalid)) => 1,
+        _ => 2,
+    }
+}
+
+fn identity<T>(x: T) -> T {
+    x
+}
+
+/// @fail(extraction): proverif(HAX0001, HAX0001, HAX0001)
+fn through_generic(x: u8) -> u8 {
+    match identity(modelled(x)) {
+        Ok(v) => v,
+        Err(Error::Invalid) => 1,
+        Err(Error::Other) => 2,
+    }
+}
+
+// Guards and arms that see an `Err`.
+
+/// @fail(extraction): proverif(HAX0001)
+fn guard_falls_through(o: Option<u8>) -> u8 {
+    match o {
+        Some(v) if let Ok(y) = check(v) => y,
+        _ => 0,
+    }
+}
+
+fn err_taken_first(x: u8) -> Result<u8, Error> {
+    if let Err(e) = check(x) {
+        return Err(e);
+    }
+    Ok(x)
+}
+
+fn err_arm_then_catch_all(x: u8) -> u8 {
+    match check(x) {
+        Err(_) => panic!(),
+        Ok(1) => 1,
+        _ => 2,
+    }
+}
+
+fn two_pending(x: u8, y: u8) -> Result<u8, Error> {
+    let a = check(x);
+    let b = check(y);
+    let u = a?;
+    let v = b?;
+    Ok(u + v)
+}
+
+fn early_return_before_use(c: bool, x: u8) -> Result<u8, Error> {
+    let r = check(x);
+    if c {
+        return Err(Error::Other);
+    }
+    r
+}
+
+fn pure_loop_before_use(x: u8) -> Result<u8, Error> {
+    let r = check(x);
+    let mut n = 0;
+    for i in 0..x {
+        n += i;
+    }
+    let v = r?;
+    Ok(v + n)
+}
+
+// Error values kept in other values.
+
+/// @fail(extraction): proverif(HAX0001, HAX0001)
+fn ok_or_repacked(x: u8) -> u8 {
+    let opt = match modelled(x) {
+        Err(e) => Some(e),
+        Ok(_) => None,
+    };
+    let swapped: Result<Error, ()> = opt.ok_or(());
+    match swapped {
+        Ok(Error::Invalid) => 1,
+        Ok(Error::Other) => 2,
+        Err(_) => 3,
+    }
+}
+
+#[hax_lib::proverif::replace(
+    "letfun ${MODELLED_CONST}() = hax_result_err(rust_primitives__hax__Tuple0__Tuple0)."
+)]
+const MODELLED_CONST: Result<u8, Error> = Err(Error::Invalid);
+
+/// @fail(extraction): proverif(HAX0001, HAX0001)
+fn match_const() -> u8 {
+    match MODELLED_CONST {
+        Ok(v) => v,
+        Err(Error::Invalid) => 1,
+        Err(Error::Other) => 2,
+    }
+}
+
+/// @fail(extraction): proverif(HAX0001)
+fn reused_name(x: u8) -> u8 {
+    let y = match modelled(x) {
+        Ok(v) => v,
+        Err(e) => {
+            let _ = e;
+            0
+        }
+    };
+    let e = y + 1;
+    if e == 3 { 1 } else { 0 }
+}
+
+/// @fail(extraction): proverif(HAX0001, HAX0001)
+fn spliced(x: u8) -> u8 {
+    let r = modelled(x);
+    hax_lib::proverif!("${r}");
+    0
 }

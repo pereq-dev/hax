@@ -726,25 +726,38 @@ pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
     let other_path = parse_macro_input!(attr as syn::Path);
     let other_str = other_path.to_token_stream().to_string().replace(' ', "");
     let item_fn: ItemFn = parse_macro_input!(item);
-    let self_name = item_fn.sig.ident.to_string();
-    let returns_result = matches!(&item_fn.sig.output, syn::ReturnType::Type(_, ty)
-        if matches!(&**ty, syn::Type::Path(p)
-            if p.path.segments.last().is_some_and(|s| s.ident == "Result")));
-    // The inverse of a function returning a `Result` returns an `Ok`, and an
-    // `Err` off the image, so that both are matchable under `--result-errors`.
-    let body = if returns_result {
-        format!(
-            "reduc forall x: bitstring; ${{{self_name}}}__inverse(${{{other_str}}}(x)) = x.\n\
-             letfun ${{{self_name}}}(y: bitstring) =\n  \
-             let x = ${{{self_name}}}__inverse(y) in hax_result_ok(x)\n  \
-             else hax_result_err(rust_primitives__hax__Tuple0__Tuple0)."
-        )
-    } else {
-        format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.")
+    let arg = match item_fn.sig.inputs.iter().collect::<Vec<_>>().as_slice() {
+        [syn::FnArg::Typed(pat_type)] => match &*pat_type.pat {
+            syn::Pat::Ident(pat_ident) if pat_ident.subpat.is_none() => pat_ident.ident.to_string(),
+            pat => {
+                return syn::Error::new(
+                    pat.span(),
+                    "`pv_inverse_of` needs its parameter to be a plain identifier",
+                )
+                .to_compile_error()
+                .into();
+            }
+        },
+        _ => {
+            return syn::Error::new(
+                item_fn.sig.inputs.span(),
+                "`pv_inverse_of` needs exactly one parameter",
+            )
+            .to_compile_error()
+            .into();
+        }
     };
+    // The function applies the `reduc`, named after the other function so
+    // that it does not refer to this one; for a function returning a
+    // `Result`, the backend makes that an `Ok`, and an `Err` off the image.
+    let reduc =
+        format!("reduc forall x: bitstring; ${{{other_str}}}__inverse(${{{other_str}}}(x)) = x.");
+    let body = format!("${{{other_str}}}__inverse(${{{arg}}})");
+    let reduc_lit = syn::LitStr::new(&reduc, ::proc_macro2::Span::call_site());
     let body_lit = syn::LitStr::new(&body, ::proc_macro2::Span::call_site());
     quote! {
-        #[::hax_lib::proverif::replace(#body_lit)]
+        #[::hax_lib::proverif::before(#reduc_lit)]
+        #[::hax_lib::proverif::replace_body(#body_lit)]
         #item_fn
     }
     .into()

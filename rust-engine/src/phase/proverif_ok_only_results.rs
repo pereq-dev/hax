@@ -8,6 +8,7 @@
 //! or a `let` that needs an `Err` never matches, so it is dropped; any other
 //! `Err` pattern is rejected.
 
+use super::proverif_result_soundness::Effects;
 use crate::ast::span::Span;
 use crate::ast::*;
 use crate::ast::{diagnostics::*, visitors::*};
@@ -21,7 +22,9 @@ pub struct ProverifOkOnlyResults;
 
 #[setup_error_handling_struct]
 #[derive(Default)]
-struct OkOnlyResults;
+struct OkOnlyResults {
+    effects: Effects,
+}
 
 impl VisitorWithContext for OkOnlyResults {
     fn context(&self) -> Context {
@@ -86,8 +89,28 @@ impl AstVisitorMut for OkOnlyResults {
                 let (_, inner) = fields.remove(0);
                 *expr = inner;
             }
-            ExprKind::Construct { constructor, .. } if *constructor == Err::Constructor => {
-                *expr = sink(expr.ty.clone(), expr.meta.span);
+            ExprKind::Construct {
+                constructor,
+                fields,
+                ..
+            } if *constructor == Err::Constructor => {
+                // An observable payload is still evaluated before the sink.
+                let (ty, span) = (expr.ty.clone(), expr.meta.span);
+                *expr = std::mem::take(fields).into_iter().rev().fold(
+                    sink(ty.clone(), span),
+                    |body, (_, field)| {
+                        if self.effects.has_effect(&field) {
+                            ExprKind::Let {
+                                lhs: PatKind::Wild.promote(field.ty.clone(), span),
+                                rhs: field,
+                                body,
+                            }
+                            .promote(ty.clone(), span)
+                        } else {
+                            body
+                        }
+                    },
+                );
             }
             _ => {}
         }
@@ -132,6 +155,10 @@ impl AstVisitorMut for OkOnlyResults {
 impl Phase for ProverifOkOnlyResults {
     fn apply(&self, items: &mut Vec<Item>) {
         super::proverif_result_soundness::reject_recovery(items);
-        OkOnlyResults::default().visit(items)
+        OkOnlyResults {
+            effects: Effects::of(items),
+            ..Default::default()
+        }
+        .visit(items)
     }
 }

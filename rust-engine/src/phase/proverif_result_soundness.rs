@@ -27,40 +27,51 @@ use crate::names::rust_primitives::hax::never_to_any;
 use crate::phase::Phase;
 use hax_lib_macros_types::AttrPayload;
 
-/// Library functions that keep the `Err` of their first argument in their
-/// result.
-const KEEP_ERR: &[&str] = &[
-    "core__clone__Clone__clone",
-    "core__ops__try_trait__FromResidual__from_residual",
-    "core__ops__try_trait__Try__branch",
-    "core__option__Impl_4__transpose",
-    "core__result__Impl__map",
-    "core__result__Impl__map_err",
-];
+/// What a library function does with a `Result` it receives as its first
+/// argument.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum LibCall {
+    /// Returns its argument (`From::from`, `Into::into`).
+    Identity,
+    /// Keeps the `Err` in its result.
+    KeepErr,
+    /// Maps the error through an opaque closure.
+    MapErr,
+    /// Panics on an `Err`, and returns the `Ok` payload.
+    PanicOnErr,
+    /// Reads whether it is an `Err`, and the `Ok` payload.
+    ReadOk,
+    /// Returns the error.
+    ReadErr,
+    /// `Option::ok_or`: the payload goes into `Ok`, the fallback into `Err`.
+    OkOr,
+}
 
-/// Library functions that panic on an `Err` of their first argument.
-const PANIC_ON_ERR: &[&str] = &["core__result__Impl__unwrap", "core__result__Impl__expect"];
-
-/// Library functions whose result is their argument.
-const IDENTITY: &[&str] = &["core__convert__From__from", "core__convert__Into__into"];
-
-/// Library functions that only read whether their first argument is an `Err`,
-/// and its `Ok` payload.
-const READ_OK: &[&str] = &[
-    "core__result__Impl__expect",
-    "core__result__Impl__is_err",
-    "core__result__Impl__is_ok",
-    "core__result__Impl__ok",
-    "core__result__Impl__unwrap",
-    "core__result__Impl__unwrap_or",
-];
-
-/// Library functions returning the error of their first argument.
-const READ_ERR: &[&str] = &[
-    "core__result__Impl__err",
-    "core__result__Impl__expect_err",
-    "core__result__Impl__unwrap_err",
-];
+/// The library function `g` that handles `Result`s, if it is one. These
+/// names, but `map_err`, are not in `crate::names`.
+fn lib_call(g: &GlobalId) -> Option<LibCall> {
+    if *g == crate::names::core::result::Impl::map_err {
+        return Some(LibCall::MapErr);
+    }
+    Some(match render_id(g).as_str() {
+        "core__convert__From__from" | "core__convert__Into__into" => LibCall::Identity,
+        "core__clone__Clone__clone"
+        | "core__ops__try_trait__FromResidual__from_residual"
+        | "core__ops__try_trait__Try__branch"
+        | "core__option__Impl_4__transpose"
+        | "core__result__Impl__map" => LibCall::KeepErr,
+        "core__result__Impl__expect" | "core__result__Impl__unwrap" => LibCall::PanicOnErr,
+        "core__result__Impl__is_err"
+        | "core__result__Impl__is_ok"
+        | "core__result__Impl__ok"
+        | "core__result__Impl__unwrap_or" => LibCall::ReadOk,
+        "core__result__Impl__err"
+        | "core__result__Impl__expect_err"
+        | "core__result__Impl__unwrap_err" => LibCall::ReadErr,
+        "core__option__Impl__ok_or" => LibCall::OkOr,
+        _ => return None,
+    })
+}
 
 /// The prefixes of the names that hax's own libraries model, without events.
 const LIBRARY_PREFIXES: &[&str] = &[
@@ -71,12 +82,22 @@ const LIBRARY_PREFIXES: &[&str] = &[
     "std__",
 ];
 
-/// The libraries whose `fun`, `reduc` and `const` declarations a hand-written
-/// model may apply.
-const MODEL_LIBRARIES: &[&str] = &[
-    include_str!("../../../hax-lib/proof-libs/proverif/primitives.pvl"),
-    include_str!("../../../hax-lib/proof-libs/proverif/cryptolib.pvl"),
+/// `cryptolib.pvl`, which hand-written models apply.
+const CRYPTOLIB_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/cryptolib.pvl");
+
+/// The libraries hax ships, which emit no event.
+const LIBRARIES: &[&str] = &[
+    crate::backends::proverif::PRIMITIVES_PVL,
+    crate::backends::proverif::RESULT_PVL,
+    crate::backends::proverif::RESULT_ERRORS_PVL,
+    CRYPTOLIB_PVL,
 ];
+
+/// Whether verbatim ProVerif text may emit an event.
+fn emits_event(text: &str) -> bool {
+    text.split(|c: char| !(c.is_alphanumeric() || c == '_'))
+        .any(|w| w == "event")
+}
 
 /// Whether the model extracts the function with these `meta` and `body`.
 fn is_extracted(meta: &Metadata, body: &Expr) -> bool {
@@ -190,6 +211,26 @@ impl ResultTypes {
         }
     }
 
+    /// Whether a value of type `ty` may hold a `Result`, counting the types
+    /// that a generic may instantiate with one.
+    fn may_hold(&self, ty: &Ty) -> bool {
+        match ty.kind() {
+            TyKind::Param(_)
+            | TyKind::AssociatedType { .. }
+            | TyKind::Opaque(_)
+            | TyKind::Dyn(_) => true,
+            TyKind::App { args, .. } => {
+                self.holds(ty, false)
+                    || args
+                        .iter()
+                        .any(|a| matches!(a, GenericValue::Ty(t) if self.may_hold(t)))
+            }
+            TyKind::Ref { inner, .. } | TyKind::Slice(inner) => self.may_hold(inner),
+            TyKind::Array { ty, .. } => self.may_hold(ty),
+            _ => self.holds(ty, false),
+        }
+    }
+
     /// Whether a value of type `ty` (the type of the matched value) has a
     /// field that `fields` leaves out, as `..` does, and that may hold a
     /// `Result`.
@@ -293,6 +334,45 @@ fn binders(pat: &Pat) -> Vec<LocalId> {
     finder.0
 }
 
+/// The right-hand side of the `if let` guard of `arm`.
+fn guard_rhs(arm: &Arm) -> Option<&Expr> {
+    arm.guard.as_ref().map(|g| {
+        let GuardKind::IfLet { rhs, .. } = &g.kind;
+        rhs
+    })
+}
+
+/// Whether `pat` matches every `Err`, matched against a `Result`.
+fn covers_err(pat: &Pat) -> bool {
+    match &*pat.kind {
+        PatKind::Construct {
+            constructor,
+            fields,
+            ..
+        } => *constructor == Err::Constructor && fields.iter().all(|(_, p)| irrefutable(p)),
+        PatKind::Binding {
+            sub_pat: Some(p), ..
+        }
+        | PatKind::Ascription { pat: p, .. }
+        | PatKind::Deref { sub_pat: p } => covers_err(p),
+        PatKind::Or { sub_pats } => sub_pats.iter().any(covers_err),
+        _ => irrefutable(pat),
+    }
+}
+
+/// Whether `e` mentions the local `x`.
+fn mentions(x: &LocalId, e: &Expr) -> bool {
+    struct Finder<'a>(&'a LocalId, bool);
+    impl AstVisitor for Finder<'_> {
+        fn enter_expr_kind(&mut self, kind: &ExprKind) {
+            self.1 |= matches!(kind, ExprKind::LocalId(y) if y == self.0);
+        }
+    }
+    let mut finder = Finder(x, false);
+    finder.visit_expr(e);
+    finder.1
+}
+
 /// Whether `pat` matches every value.
 fn irrefutable(pat: &Pat) -> bool {
     match &*pat.kind {
@@ -338,58 +418,134 @@ fn err_certain(e: &Expr) -> bool {
 
 /// Which calls the model may observe. ProVerif terms may emit events, so a
 /// hand-written model may be observable, and so is any function calling one.
-struct Effects {
+#[derive(Default)]
+pub(crate) struct Effects {
+    /// The functions the model extracts.
     extracted: HashSet<GlobalId>,
-    observable: HashSet<GlobalId>,
+    /// The crate's functions, and whether calling one may be observable.
+    observable: HashMap<GlobalId, bool>,
+    /// The names the libraries declare.
+    library: HashSet<String>,
+    /// The names the crate's verbatim ProVerif declares, and whether their
+    /// text may emit an event.
+    quoted: HashMap<String, bool>,
 }
 
 impl Effects {
-    fn new(items: &[Item], extracted: HashSet<GlobalId>) -> Self {
+    /// The observable calls of `items`.
+    pub(crate) fn of(items: &[Item]) -> Self {
         let mut effects = Self {
-            extracted,
-            observable: HashSet::new(),
+            extracted: extracted_fns(items),
+            library: LIBRARIES
+                .iter()
+                .flat_map(|lib| scan_declarations(lib))
+                .map(|(_, name)| name)
+                .collect(),
+            ..Default::default()
         };
+        for item in items {
+            if let ItemKind::Quote { quote, .. } = &item.kind {
+                let text = quote_text(quote);
+                for (_, name) in scan_declarations(&text) {
+                    *effects.quoted.entry(name).or_default() |= emits_event(&text);
+                }
+            }
+        }
+        // Each extracted function is observable when it calls an observable
+        // function, directly or through other extracted functions.
+        let mut callees: HashMap<GlobalId, Vec<GlobalId>> = HashMap::new();
+        for d in fn_decls(items) {
+            let direct = if effects.extracted.contains(&d.name) {
+                let mut calls = vec![];
+                let direct = effects.walk(d.body, &mut calls);
+                callees.insert(d.name, calls);
+                direct
+            } else if let Some(quote) = quoted_body(d.body) {
+                emits_event(&quote_text(quote))
+            } else {
+                !d.meta
+                    .hax_attributes()
+                    .any(|a| matches!(a, AttrPayload::Erased | AttrPayload::PVConstructor))
+            };
+            effects.observable.insert(d.name, direct);
+        }
         loop {
-            let new: Vec<GlobalId> = fn_decls(items)
-                .filter(|d| {
-                    effects.extracted.contains(&d.name)
-                        && !effects.observable.contains(&d.name)
-                        && effects.has_effect(d.body)
+            let new: Vec<GlobalId> = callees
+                .iter()
+                .filter(|(f, calls)| {
+                    !effects.observable[*f]
+                        && calls
+                            .iter()
+                            .any(|g| effects.observable.get(g) == Some(&true))
                 })
-                .map(|d| d.name)
+                .map(|(f, _)| *f)
                 .collect();
             if new.is_empty() {
                 return effects;
             }
-            effects.observable.extend(new);
+            for f in new {
+                effects.observable.insert(f, true);
+            }
         }
+    }
+
+    /// Whether calling `head` may be observable; the calls of extracted
+    /// functions are added to `calls` instead, when given.
+    fn call(&self, head: &Expr, calls: Option<&mut Vec<GlobalId>>) -> bool {
+        let ExprKind::GlobalId(g) = &*head.kind else {
+            return true;
+        };
+        if *g == never_to_any || g.is_projector() || g.is_constructor() {
+            return false;
+        }
+        if let Some(calls) = calls
+            && self.extracted.contains(g)
+        {
+            calls.push(*g);
+            return false;
+        }
+        if let Some(observable) = self.observable.get(g) {
+            return *observable;
+        }
+        let rendered = render_id(g);
+        if let Some(observable) = self.quoted.get(&rendered) {
+            return *observable;
+        }
+        !(self.library.contains(&rendered)
+            || LIBRARY_PREFIXES.iter().any(|p| rendered.starts_with(p)))
     }
 
     /// Whether calling `head` may be observable.
     fn call_is_observable(&self, head: &Expr) -> bool {
-        match &*head.kind {
-            ExprKind::GlobalId(g)
-                if *g == never_to_any || g.is_projector() || g.is_constructor() =>
-            {
-                false
+        self.call(head, None)
+    }
+
+    /// Whether evaluating `e` may be observable, not counting the calls of
+    /// extracted functions, which are added to `calls`.
+    fn walk(&self, e: &Expr, calls: &mut Vec<GlobalId>) -> bool {
+        struct Finder<'a>(&'a Effects, &'a mut Vec<GlobalId>, bool);
+        impl AstVisitor for Finder<'_> {
+            fn enter_expr_kind(&mut self, kind: &ExprKind) {
+                self.2 |= match kind {
+                    ExprKind::App { head, .. } => self.0.call(head, Some(self.1)),
+                    ExprKind::Quote { contents } => emits_event(&quote_text(contents)),
+                    _ => false,
+                };
             }
-            ExprKind::GlobalId(g) if self.extracted.contains(g) => self.observable.contains(g),
-            ExprKind::GlobalId(g) => {
-                let rendered = render_id(g);
-                !LIBRARY_PREFIXES.iter().any(|p| rendered.starts_with(p))
-            }
-            _ => true,
         }
+        let mut finder = Finder(self, calls, false);
+        finder.visit_expr(e);
+        finder.2
     }
 
     /// Whether evaluating `e` may be observable.
-    fn has_effect(&self, e: &Expr) -> bool {
+    pub(crate) fn has_effect(&self, e: &Expr) -> bool {
         struct Finder<'a>(&'a Effects, bool);
         impl AstVisitor for Finder<'_> {
             fn enter_expr_kind(&mut self, kind: &ExprKind) {
                 self.1 |= match kind {
                     ExprKind::App { head, .. } => self.0.call_is_observable(head),
-                    ExprKind::Quote { .. } => true,
+                    ExprKind::Quote { contents } => emits_event(&quote_text(contents)),
                     _ => false,
                 };
             }
@@ -454,6 +610,16 @@ struct Recovery {
 }
 
 impl Recovery {
+    /// How the branch `e` uses `x`. A branch that returns an `Err`, with
+    /// nothing observable, needs not use it: every `Err` ends the trace alike.
+    fn branch_use(&self, x: &LocalId, e: &Expr) -> Use {
+        match self.first_use(x, e) {
+            Use::First => Use::First,
+            _ if err_certain(e) && !self.effects.has_effect(e) => Use::First,
+            u => u,
+        }
+    }
+
     /// How `e` uses `x` (see [`Use`]).
     fn first_use(&self, x: &LocalId, e: &Expr) -> Use {
         let seq = |es: &[&Expr], last: Use| {
@@ -467,7 +633,7 @@ impl Recovery {
             }
             guard
                 .map_or(Use::Neither, |g| self.first_use(x, g))
-                .then(|| self.first_use(x, body))
+                .then(|| self.branch_use(x, body))
         };
         let effect = |observable: bool| if observable { Use::Late } else { Use::Neither };
         match &*e.kind {
@@ -481,20 +647,17 @@ impl Recovery {
                 else_,
             } => self.first_use(x, condition).then(|| {
                 Use::join([
-                    self.first_use(x, then),
+                    self.branch_use(x, then),
                     else_
                         .as_ref()
-                        .map_or(Use::Neither, |e| self.first_use(x, e)),
+                        .map_or(Use::Neither, |e| self.branch_use(x, e)),
                 ])
             }),
             ExprKind::Match { scrutinee, arms } => self.first_use(x, scrutinee).then(|| {
-                Use::join(arms.iter().map(|arm| {
-                    let guard = arm.guard.as_ref().map(|g| {
-                        let GuardKind::IfLet { rhs, .. } = &g.kind;
-                        rhs
-                    });
-                    scoped(&arm.pat, guard, &arm.body)
-                }))
+                Use::join(
+                    arms.iter()
+                        .map(|arm| scoped(&arm.pat, guard_rhs(arm), &arm.body)),
+                )
             }),
             ExprKind::App { head, args, .. } => {
                 let mut es: Vec<&Expr> = vec![head];
@@ -514,6 +677,17 @@ impl Recovery {
             | ExprKind::Return { value: e } => self.first_use(x, e),
             ExprKind::Closure { captures, .. } => {
                 seq(&captures.iter().collect::<Vec<_>>(), Use::Neither)
+            }
+            ExprKind::Loop { kind, state, .. } => {
+                let mut es: Vec<&Expr> = state.iter().map(|s| &s.init).collect();
+                match &**kind {
+                    LoopKind::WhileLoop { condition } => es.push(condition),
+                    LoopKind::ForLoop { iterator, .. } => es.push(iterator),
+                    LoopKind::ForIndexLoop { start, end, .. } => es.extend([start, end]),
+                    _ => {}
+                }
+                let body = effect(mentions(x, e) || self.effects.has_effect(e));
+                seq(&es, body)
             }
             ExprKind::LocalId(_) | ExprKind::GlobalId(_) | ExprKind::Literal(_) => Use::Neither,
             _ => Use::Late,
@@ -541,7 +715,9 @@ impl Recovery {
 
     /// Checks `e`, whose value is propagated when `carried`.
     fn expr(&self, e: &mut Expr, carried: bool) {
-        let holds = self.types.holds(&e.ty, true);
+        // Rejected here, `e` is not rejected again where it flows.
+        let not_carried = !carried && self.types.holds(&e.ty, true);
+        let carried = carried || not_carried;
         let mut rejected = vec![];
         match &mut *e.kind {
             ExprKind::Let { lhs, rhs, body } => {
@@ -551,17 +727,35 @@ impl Recovery {
             }
             ExprKind::Match { scrutinee, arms } => {
                 self.expr(scrutinee, true);
+                // Whether an earlier arm already takes every `Err` of a
+                // `Result` scrutinee.
+                let mut err_taken = false;
                 for arm in arms {
-                    let guard = arm.guard.as_ref().map(|g| {
-                        let GuardKind::IfLet { rhs, .. } = &g.kind;
-                        rhs
-                    });
-                    self.pat(&arm.pat, guard, &arm.body, &mut rejected);
+                    self.arm_pat(
+                        &arm.pat,
+                        err_taken,
+                        guard_rhs(arm),
+                        &arm.body,
+                        &mut rejected,
+                    );
                     if let Some(guard) = &mut arm.guard {
                         let GuardKind::IfLet { lhs, rhs } = &mut guard.kind;
+                        // On an `Err` the guard does not take, Rust falls
+                        // through to the next arms; the model does not.
+                        if self.types.holds(&rhs.ty, false) && !covers_err(lhs) {
+                            rejected.push(pat_diagnostic(
+                                lhs,
+                                RECOVERY_CONTEXT,
+                                format!(
+                                    "on an `Err`, this guard falls through to the next arms: \
+                                     {RECOVERY_HINT}"
+                                ),
+                            ));
+                        }
                         self.pat(lhs, None, &arm.body, &mut rejected);
                         self.expr(rhs, true);
                     }
+                    err_taken |= arm.guard.is_none() && covers_err(&arm.pat);
                     self.expr(&mut arm.body, carried);
                 }
             }
@@ -608,15 +802,17 @@ impl Recovery {
                 let generics_hold = generic_args
                     .iter()
                     .any(|g| matches!(g, GenericValue::Ty(t) if self.types.holds(t, true)));
-                let rendered = callee.map(|g| render_id(&g)).unwrap_or_default();
+                let lib = callee.as_ref().and_then(lib_call);
                 let arg_carried = |i: usize, arg: &Expr| match callee {
                     Some(g) if g == never_to_any => true,
                     Some(g) if g.is_projector() => {
                         carried && !self.types.projection_drops_result(g, &arg.ty)
                     }
                     Some(g) if self.effects.extracted.contains(&g) => !generics_hold,
-                    _ if i == 0 && PANIC_ON_ERR.contains(&rendered.as_str()) => true,
-                    _ if i == 0 && KEEP_ERR.contains(&rendered.as_str()) => carried,
+                    _ if i == 0 && lib == Some(LibCall::PanicOnErr) => true,
+                    _ if i == 0 && matches!(lib, Some(LibCall::KeepErr | LibCall::MapErr)) => {
+                        carried
+                    }
                     _ => false,
                 };
                 let carried_args: Vec<bool> = args
@@ -678,7 +874,7 @@ impl Recovery {
             ExprKind::Quote { contents } => {
                 for c in &mut contents.0 {
                     if let QuoteContent::Expr(e) = c {
-                        self.expr(e, true);
+                        self.expr(e, false);
                     }
                 }
             }
@@ -687,7 +883,7 @@ impl Recovery {
         }
         if !rejected.is_empty() {
             reject_scope(e, rejected);
-        } else if holds && !carried {
+        } else if not_carried {
             reject_expr(
                 e,
                 RECOVERY_CONTEXT,
@@ -720,6 +916,28 @@ impl Recovery {
             RECOVERY_CONTEXT,
             format!("{reason}: {RECOVERY_HINT}"),
         ))
+    }
+
+    /// Checks the pattern of a match arm; with `err_taken`, an earlier arm
+    /// already takes every `Err` of the scrutinee, which then is an `Ok` here.
+    fn arm_pat(
+        &self,
+        pat: &Pat,
+        err_taken: bool,
+        guard: Option<&Expr>,
+        cont: &Expr,
+        rejected: &mut Vec<Diagnostic>,
+    ) {
+        let is_result = matches!(pat.ty.kind(), TyKind::App { head, .. }
+            if *head == crate::names::core::result::Result);
+        let catch_all = matches!(
+            &*pat.kind,
+            PatKind::Wild | PatKind::Binding { sub_pat: None, .. }
+        );
+        if err_taken && is_result && catch_all {
+            return;
+        }
+        self.pat(pat, guard, cont, rejected)
     }
 
     /// Checks `pat`, whose bindings scope over `guard` then `cont`, and adds
@@ -800,7 +1018,7 @@ impl Recovery {
 pub(crate) fn reject_recovery(items: &mut [Item]) {
     let recovery = Recovery {
         types: ResultTypes::new(items),
-        effects: Effects::new(items, extracted_fns(items)),
+        effects: Effects::of(items),
     };
     for_each_extracted_fn(items, |_, params, body| {
         let mut rejected = vec![];
@@ -849,8 +1067,8 @@ impl Taint {
 /// Taint analysis of the unknown errors (see [`Taint`]), to a fixpoint over
 /// the crate. A tainted `Result` may only be matched with an irrefutable
 /// pattern inside `Err`; a value that may hold an unknown error may not be
-/// matched with a refutable pattern, branched on or passed to a function
-/// whose body is not extracted.
+/// matched with a refutable pattern, branched on, spliced into verbatim
+/// ProVerif or passed to a function whose body is not extracted.
 struct UnknownErrors<'a> {
     types: &'a ResultTypes,
     extracted: &'a HashSet<GlobalId>,
@@ -858,8 +1076,11 @@ struct UnknownErrors<'a> {
     fns: HashMap<GlobalId, Taint>,
     /// The taint each parameter, by function and position, may receive.
     params: HashMap<(GlobalId, usize), Taint>,
-    /// The taint of each local, by function.
-    locals: HashMap<(GlobalId, LocalId), Taint>,
+    /// The taint each loop state binder, by function, may have on a later
+    /// iteration.
+    loop_states: HashMap<(GlobalId, LocalId), Taint>,
+    /// The taint of each local in scope.
+    locals: HashMap<LocalId, Taint>,
     /// The function being analysed.
     current: Option<GlobalId>,
     /// Whether to reject, or only to compute the taints.
@@ -883,11 +1104,6 @@ impl UnknownErrors<'_> {
         }
     }
 
-    fn local(&self, x: &LocalId) -> Taint {
-        let key = (self.current.unwrap(), x.clone());
-        self.locals.get(&key).copied().unwrap_or_default()
-    }
-
     fn reject_expr(&self, e: &mut Expr, what: &str) {
         if self.reject {
             reject_expr(e, UNKNOWN_CONTEXT, format!("{what}: {UNKNOWN_HINT}"))
@@ -898,7 +1114,10 @@ impl UnknownErrors<'_> {
     /// and adds the rejections to `rejected`.
     fn pat(&mut self, pat: &Pat, taint: Taint, rejected: &mut Vec<Diagnostic>) {
         // The parts of a tainted `Result` that hold no `Result` are faithful.
-        if taint == Taint::Clean || (taint == Taint::Results && !self.types.holds(&pat.ty, false)) {
+        if taint == Taint::Clean || (taint == Taint::Results && !self.types.may_hold(&pat.ty)) {
+            for x in binders(pat) {
+                self.locals.insert(x, Taint::Clean);
+            }
             return;
         }
         let refutable_err = matches!(&*pat.kind, PatKind::Construct { constructor, fields, .. }
@@ -906,8 +1125,7 @@ impl UnknownErrors<'_> {
         match &*pat.kind {
             PatKind::Wild => {}
             PatKind::Binding { var, sub_pat, .. } => {
-                let key = (self.current.unwrap(), var.clone());
-                Self::raise(&mut self.locals, key, taint, &mut self.changed);
+                self.locals.insert(var.clone(), taint);
                 if let Some(sub_pat) = sub_pat {
                     self.pat(sub_pat, taint, rejected);
                 }
@@ -921,6 +1139,9 @@ impl UnknownErrors<'_> {
                 }
             }
             _ if taint == Taint::Error || refutable_err => {
+                for x in binders(pat) {
+                    self.locals.insert(x, Taint::Error);
+                }
                 if self.reject {
                     rejected.push(pat_diagnostic(
                         pat,
@@ -959,8 +1180,9 @@ impl UnknownErrors<'_> {
         }
     }
 
-    /// The taint of a call of `head` on arguments of taints `args`, of type
-    /// `ty`; `Err` with a reason when the call must be rejected.
+    /// The taint of a call of `head` (or of a reference to the constant
+    /// `head`) on arguments of taints `args`, of type `ty`; `Err` with a
+    /// reason when the call must be rejected.
     fn call(&mut self, head: &Expr, args: &[Taint], ty: &Ty) -> Result<Taint, &'static str> {
         let all = args.iter().copied().max().unwrap_or_default();
         let ExprKind::GlobalId(g) = &*head.kind else {
@@ -972,60 +1194,62 @@ impl UnknownErrors<'_> {
             }
             return Ok(self.fns.get(g).copied().unwrap_or_default());
         }
-        if *g == never_to_any {
-            return Ok(Taint::Clean);
-        }
-        let first = args.first().copied().unwrap_or_default();
-        if g.is_projector() {
-            return Ok(match first {
-                Taint::Results if !self.types.holds(ty, false) => Taint::Clean,
-                t => t,
-            });
-        }
-        let rendered = render_id(g);
-        let r = rendered.as_str();
-        Ok(
-            if IDENTITY.contains(&r)
-                || (KEEP_ERR.contains(&r) && r != "core__result__Impl__map_err")
-            {
+        if *g == never_to_any || g.is_constructor() {
+            return Ok(if g.is_constructor() {
                 all
-            } else if r == "core__result__Impl__map_err" {
-                // The error is mapped through an opaque closure.
-                all.max(Taint::Results)
-            } else if r == "core__option__Impl__ok_or" {
-                all.in_err()
-            } else if READ_ERR.contains(&r) {
-                if first == Taint::Clean {
-                    Taint::Clean
-                } else {
-                    Taint::Error
-                }
-            } else if READ_OK.contains(&r) {
-                if all == Taint::Error {
-                    Taint::Error
-                } else {
-                    Taint::Clean
-                }
-            } else if all != Taint::Clean {
-                return Err(
-                    "a `Result` or an error coming from a hand-written model is passed to a \
-                 function whose body is not extracted",
-                );
-            } else if self.types.holds(ty, false) {
-                // The error a model returns is unknown.
-                Taint::Results
             } else {
                 Taint::Clean
-            },
-        )
+            });
+        }
+        let first = args.first().copied().unwrap_or_default();
+        // The `Ok` payload of a tainted `Result` may hold a `Result` in turn.
+        let payload = |t: Taint| match t {
+            Taint::Results if !self.types.may_hold(ty) => Taint::Clean,
+            t => t,
+        };
+        if g.is_projector() {
+            return Ok(payload(first));
+        }
+        Ok(match lib_call(g) {
+            Some(LibCall::Identity | LibCall::KeepErr) => all,
+            // The error is mapped through an opaque closure.
+            Some(LibCall::MapErr) => all.max(Taint::Results),
+            Some(LibCall::OkOr) => first.max(args.get(1).copied().unwrap_or_default().in_err()),
+            Some(LibCall::ReadErr) if first != Taint::Clean => Taint::Error,
+            Some(LibCall::ReadErr) => Taint::Clean,
+            Some(LibCall::PanicOnErr | LibCall::ReadOk) => payload(all),
+            None if all != Taint::Clean => {
+                return Err(
+                    "a `Result` or an error coming from a hand-written model is passed to a \
+                     function whose body is not extracted",
+                );
+            }
+            // The error a model returns is unknown.
+            None if self.types.may_hold(ty) => Taint::Results,
+            None => Taint::Clean,
+        })
     }
 
     /// The taint of the value of `e`.
     fn expr(&mut self, e: &mut Expr) -> Taint {
         let mut reject_here = None;
         let mut rejected = vec![];
+        // The bindings of a scope do not outlive it.
+        let opens_scope = matches!(
+            &*e.kind,
+            ExprKind::Let { .. }
+                | ExprKind::Match { .. }
+                | ExprKind::Closure { .. }
+                | ExprKind::Loop { .. }
+        );
+        let scope = opens_scope.then(|| self.locals.clone());
         let taint = match &mut *e.kind {
-            ExprKind::LocalId(x) => self.local(x),
+            ExprKind::LocalId(x) => self.locals.get(x).copied().unwrap_or_default(),
+            // A constant is a call without arguments.
+            ExprKind::GlobalId(_) => {
+                let head = e.clone();
+                self.call(&head, &[], &e.ty).unwrap_or_default()
+            }
             ExprKind::Let { lhs, rhs, body } => {
                 let t = self.expr(rhs);
                 self.pat(lhs, t, &mut rejected);
@@ -1042,6 +1266,7 @@ impl UnknownErrors<'_> {
                         self.pat(lhs, t, &mut rejected);
                     }
                     out = out.max(self.expr(&mut arm.body));
+                    self.locals.clone_from(scope.as_ref().unwrap());
                 }
                 out
             }
@@ -1055,7 +1280,9 @@ impl UnknownErrors<'_> {
                 else_.as_mut().map_or(Taint::Clean, |e| self.expr(e)).max(t)
             }
             ExprKind::App { head, args, .. } => {
-                self.expr(head);
+                if !matches!(&*head.kind, ExprKind::GlobalId(_)) {
+                    self.expr(head);
+                }
                 let taints: Vec<Taint> = args.iter_mut().map(|a| self.expr(a)).collect();
                 match self.call(head, &taints, &e.ty) {
                     Ok(t) => t,
@@ -1090,10 +1317,17 @@ impl UnknownErrors<'_> {
             | ExprKind::Borrow { inner, .. }
             | ExprKind::AddressOf { inner, .. }
             | ExprKind::Return { value: inner } => self.expr(inner),
-            ExprKind::Closure { body, captures, .. } => {
+            ExprKind::Closure {
+                params,
+                body,
+                captures,
+            } => {
                 let t = captures
                     .iter_mut()
                     .fold(Taint::Clean, |acc, c| acc.max(self.expr(c)));
+                for param in params.iter() {
+                    self.pat(param, Taint::Clean, &mut rejected);
+                }
                 self.expr(body).max(t)
             }
             ExprKind::Loop {
@@ -1113,20 +1347,27 @@ impl UnknownErrors<'_> {
                 }
                 match state {
                     Some(state) => {
-                        // A later iteration starts from what this one returns:
-                        // the state keeps the taint of earlier passes of the
-                        // fixpoint.
+                        // A later iteration starts from what this one returns,
+                        // which earlier passes of the fixpoint recorded.
                         let init = self.expr(&mut state.init);
-                        let earlier = binders(&state.body_pat)
+                        let current = self.current.unwrap();
+                        let state_binders = binders(&state.body_pat);
+                        let later = state_binders
                             .iter()
-                            .map(|x| self.local(x))
+                            .filter_map(|x| self.loop_states.get(&(current, x.clone())))
+                            .copied()
                             .max()
                             .unwrap_or_default();
-                        self.pat(&state.body_pat, init.max(earlier), &mut rejected);
+                        self.pat(&state.body_pat, init.max(later), &mut rejected);
                         let out = self.expr(body);
-                        let reject = std::mem::replace(&mut self.reject, false);
-                        self.pat(&state.body_pat, out, &mut vec![]);
-                        self.reject = reject;
+                        for x in state_binders {
+                            Self::raise(
+                                &mut self.loop_states,
+                                (current, x),
+                                out,
+                                &mut self.changed,
+                            );
+                        }
                         init.max(out)
                     }
                     None => self.expr(body),
@@ -1141,12 +1382,19 @@ impl UnknownErrors<'_> {
             } => self.expr(state),
             ExprKind::Assign { value, .. } => self.expr(value),
             ExprKind::Quote { contents } => {
+                let mut spliced = Taint::Clean;
                 for c in &mut contents.0 {
                     if let QuoteContent::Expr(e) = c {
-                        self.expr(e);
+                        spliced = spliced.max(self.expr(e));
                     }
                 }
-                if self.types.holds(&e.ty, false) {
+                if spliced != Taint::Clean {
+                    reject_here = Some(
+                        "a `Result` or an error coming from a hand-written model is spliced into \
+                         verbatim ProVerif",
+                    );
+                }
+                if self.types.may_hold(&e.ty) {
                     Taint::Results
                 } else {
                     Taint::Clean
@@ -1154,6 +1402,9 @@ impl UnknownErrors<'_> {
             }
             _ => Taint::Clean,
         };
+        if let Some(scope) = scope {
+            self.locals = scope;
+        }
         if !rejected.is_empty() {
             reject_scope(e, rejected);
         } else if let Some(what) = reject_here {
@@ -1165,6 +1416,7 @@ impl UnknownErrors<'_> {
     /// Analyses the function `name`, and records the taint of its result.
     fn function(&mut self, name: GlobalId, params: &mut [Param], body: &mut Expr) {
         self.current = Some(name);
+        self.locals.clear();
         let mut rejected = vec![];
         for (i, param) in params.iter().enumerate() {
             let t = self.params.get(&(name, i)).copied().unwrap_or_default();
@@ -1176,55 +1428,86 @@ impl UnknownErrors<'_> {
     }
 }
 
-/// The names that the verbatim ProVerif text of `items`, or the libraries a
-/// hand-written model may use, declare as a `fun`, a `reduc` or a `const`,
-/// whose application is a bare term.
+/// The names declared as a `fun`, a `reduc` or a `const`, whose application
+/// is a bare term: in the crate's verbatim ProVerif, the libraries, and the
+/// opaque and `pv_constructor` functions, which render as a `fun`.
 fn bare_term_names(items: &[Item]) -> HashSet<String> {
     let quotes = items.iter().filter_map(|item| match &item.kind {
         ItemKind::Quote { quote, .. } => Some(quote_text(quote)),
         _ => None,
     });
-    quotes
-        .chain(MODEL_LIBRARIES.iter().map(|lib| lib.to_string()))
+    let mut names: HashSet<String> = quotes
+        .chain(LIBRARIES.iter().map(|lib| lib.to_string()))
         .flat_map(|text| scan_declarations(&text))
         .filter(|(kw, _)| *kw != "letfun")
         .map(|(_, name)| name)
-        .collect()
+        .collect();
+    names.extend(
+        fn_decls(items)
+            .filter(|d| {
+                d.meta
+                    .hax_attributes()
+                    .any(|a| matches!(a, AttrPayload::Erased | AttrPayload::PVConstructor))
+            })
+            .map(|d| render_id(&d.name)),
+    );
+    names
 }
 
-/// The functions returning a `Result` whose model is a bare term: opaque and
-/// `pv_constructor` functions, which render as a `fun`, and verbatim bodies
-/// applying a bare term.
-fn bare_result_fns(items: &[Item], types: &ResultTypes) -> HashSet<String> {
-    let bare_names = bare_term_names(items);
-    let head = |quote: &Quote| {
-        let text = quote_text(quote);
-        let text = text.trim_start();
-        let end = text
-            .find(|c: char| !(c.is_alphanumeric() || c == '_'))
-            .unwrap_or(text.len());
-        text[..end].to_string()
-    };
-    let mut out: HashSet<String> = bare_names.clone();
-    for d in fn_decls(items) {
-        if !types.holds(&d.body.ty, false) {
-            continue;
+/// The identifier a verbatim ProVerif expression starts with.
+fn head_name(quote: &Quote) -> String {
+    let text = quote_text(quote);
+    let text = text.trim_start();
+    let end = text
+        .find(|c: char| !(c.is_alphanumeric() || c == '_'))
+        .unwrap_or(text.len());
+    text[..end].to_string()
+}
+
+/// Wraps the verbatim body of each function returning a `Result` that applies
+/// a bare term (as `replace_body`, `pv_extern` and `pv_inverse_of` make it)
+/// in `hax_result_ok`, and its failure in `hax_result_err`: a destructor that
+/// fails is an `Err`, with an unknown error.
+fn wrap_bare_results(items: &mut [Item], bare: &HashSet<String>) {
+    let wrap = |body: &mut Expr| {
+        let returns_result = matches!(body.ty.kind(), TyKind::App { head, .. }
+            if *head == crate::names::core::result::Result);
+        let body = match &mut *body.kind {
+            ExprKind::Block { body, .. } => body,
+            _ => body,
+        };
+        if let ExprKind::Quote { contents } = &mut *body.kind
+            && returns_result
+            && bare.contains(&head_name(contents))
+        {
+            contents
+                .0
+                .insert(0, QuoteContent::Verbatim("let hax__model = ".into()));
+            contents.0.push(QuoteContent::Verbatim(
+                " in hax_result_ok(hax__model) \
+                 else hax_result_err(rust_primitives__hax__Tuple0__Tuple0)"
+                    .into(),
+            ));
         }
-        let opaque = d
-            .meta
-            .hax_attributes()
-            .any(|a| matches!(a, AttrPayload::Erased | AttrPayload::PVConstructor));
-        let applies_bare = quoted_body(d.body).is_some_and(|q| bare_names.contains(&head(q)));
-        if opaque || applies_bare {
-            out.insert(render_id(&d.name));
+    };
+    for item in items.iter_mut() {
+        match &mut item.kind {
+            ItemKind::Fn { body, .. } => wrap(body),
+            ItemKind::Impl { items, .. } => {
+                for ii in items.iter_mut() {
+                    if let ImplItemKind::Fn { body, .. } = &mut ii.kind {
+                        wrap(body)
+                    }
+                }
+            }
+            _ => {}
         }
     }
-    out
 }
 
-/// Rejects the calls to a function returning a `Result` that the model
-/// renders as a bare term: neither `Ok(..)` nor `Err(..)` matches it, so
-/// both paths would be lost.
+/// Rejects the uses of a function or a constant returning a `Result` whose
+/// model is a bare term: neither `Ok(..)` nor `Err(..)` matches it, so both
+/// paths would be lost.
 #[setup_error_handling_struct]
 #[derive(Default)]
 struct BareResults {
@@ -1265,8 +1548,7 @@ impl AstVisitorMut for BareResults {
                     details: Some(format!(
                         "`{}` returns a `Result`, but its model is a `fun`, a `reduc` or a \
                          `const`, whose value is neither `Ok(..)` nor `Err(..)` under \
-                         `--result-errors`; model it with a `letfun` returning \
-                         `hax_result_ok(..)` or `hax_result_err(..)`",
+                         `--result-errors`; give it a `replace_body` model",
                         render_id(g)
                     )),
                 },
@@ -1278,14 +1560,16 @@ impl AstVisitorMut for BareResults {
 impl Phase for ProverifRejectUnknownErrors {
     fn apply(&self, items: &mut Vec<Item>) {
         let types = ResultTypes::new(items);
+        let bare = bare_term_names(items);
+        wrap_bare_results(items, &bare);
         let extracted = extracted_fns(items);
-        let bare = bare_result_fns(items, &types);
 
         let mut analysis = UnknownErrors {
             types: &types,
             extracted: &extracted,
             fns: HashMap::new(),
             params: HashMap::new(),
+            loop_states: HashMap::new(),
             locals: HashMap::new(),
             current: None,
             reject: false,
