@@ -671,18 +671,26 @@ impl AstVisitor for ExternRefCollector {
     }
 
     fn visit_quote(&mut self, quote: &Quote) {
-        self.quote_declared
-            .extend(scan_declared_names(&quote_text(quote)));
-        for content in &quote.0 {
-            if let QuoteContent::Verbatim(text) = content {
-                self.quoted.extend(
-                    text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
-                        .filter(|word| word.starts_with(|c: char| c.is_ascii_alphabetic()))
-                        .map(str::to_string),
-                );
+        let text = quote_text(quote);
+        self.quote_declared.extend(scan_declared_names(&text));
+        self.quoted.extend(
+            text.split(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
+                .filter(|word| word.starts_with(|c: char| c.is_ascii_alphabetic()))
+                .map(str::to_string),
+        );
+        // A name spliced in as the prefix of a longer identifier, such as
+        // `${f}__inverse`, does not refer to the item.
+        for (i, content) in quote.0.iter().enumerate() {
+            let glued = matches!(quote.0.get(i + 1), Some(QuoteContent::Verbatim(next))
+                if next.starts_with(|c: char| c.is_ascii_alphanumeric() || c == '_'));
+            match content {
+                QuoteContent::Expr(e) if glued && matches!(&*e.kind, ExprKind::GlobalId(_)) => {}
+                QuoteContent::Expr(e) => self.visit_expr(e),
+                QuoteContent::Pattern(p) => self.visit_pat(p),
+                QuoteContent::Ty(t) => self.visit_ty(t),
+                QuoteContent::Verbatim(_) => {}
             }
         }
-        self.visit_inner(quote)
     }
 
     fn enter_expr_kind(&mut self, kind: &ExprKind) {

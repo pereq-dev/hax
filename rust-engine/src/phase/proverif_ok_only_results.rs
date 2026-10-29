@@ -154,9 +154,10 @@ impl AstVisitorMut for OkOnlyResults {
 
 impl Phase for ProverifOkOnlyResults {
     fn apply(&self, items: &mut Vec<Item>) {
-        super::proverif_result_soundness::reject_recovery(items);
+        let effects = Effects::of(items);
+        super::proverif_result_soundness::reject_recovery(items, &effects);
         OkOnlyResults {
-            effects: Effects::of(items),
+            effects,
             ..Default::default()
         }
         .visit(items)

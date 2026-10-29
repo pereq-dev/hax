@@ -498,6 +498,51 @@ fn decode_unchecked(b: u8) -> u8 {
     b
 }
 
+// Observable through a table, or through another model.
+
+#[hax_lib::proverif::before("table Recorded_table(bitstring).")]
+#[hax_lib::proverif::replace_body("insert Recorded_table(${x}); ${x}")]
+fn record_in_table(x: u8) -> u8 {
+    x
+}
+
+fn err_arm_table(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            record_in_table(0);
+            Err(e)
+        }
+    }
+}
+
+#[hax_lib::proverif::replace_body("${record}(${x})")]
+fn indirect_record(x: u8) -> u8 {
+    record(x)
+}
+
+fn err_arm_indirect(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            indirect_record(0);
+            Err(e)
+        }
+    }
+}
+
+// Propagation that returns another `Err`, or converts the `Result`.
+
+fn returns_other_err(x: u8) -> Result<u8, Error> {
+    let _r = check(x);
+    Err(Error::Other)
+}
+
+fn converted(x: u8) -> Result<u8, Error> {
+    let r: Result<u8, Error> = From::from(check(x));
+    r
+}
+
 // The model of a std fallible conversion always succeeds, so under
 // `--result-errors` its error path would be lost: rejected.
 /// @fail(extraction): proverif(HAX0001)
