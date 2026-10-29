@@ -7,10 +7,6 @@ name: Tools e2e
 # the outcome can change rather than on every push: on a pull request touching
 # tool management, before a merge lands, and nightly, since the artifacts live
 # upstream and can change under an entry that was correct when written.
-#
-# The paths gate is a job rather than a trigger filter: a required check that
-# a filtered trigger never reports would block every other pull request from
-# merging, while a skipped job reports and passes.
 
 on:
   pull_request:
