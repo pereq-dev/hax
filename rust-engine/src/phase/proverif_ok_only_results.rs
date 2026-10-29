@@ -1,10 +1,12 @@
 //! ProVerif-backend phase: model a `Result` by its `Ok` payload.
 //!
 //! Without `--result-errors`, a `Result` is its `Ok` payload and producing an
-//! `Err` ends the trace, so no value is ever an `Err`. This phase replaces
-//! `Ok(x)` by `x` in values and patterns, and an `Err` value by the error sink.
-//! A match arm, an or-pattern alternative or a `let` that needs an `Err` never
-//! matches, so it is dropped; any other `Err` pattern is rejected.
+//! `Err` ends the trace, so no value is ever an `Err`. That is only sound for
+//! code that never goes on after an `Err`, which this phase checks first (see
+//! `reject_recovery`). It then replaces `Ok(x)` by `x` in values and patterns,
+//! and an `Err` value by the error sink. A match arm, an or-pattern alternative
+//! or a `let` that needs an `Err` never matches, so it is dropped; any other
+//! `Err` pattern is rejected.
 
 use crate::ast::span::Span;
 use crate::ast::*;
@@ -129,6 +131,7 @@ impl AstVisitorMut for OkOnlyResults {
 
 impl Phase for ProverifOkOnlyResults {
     fn apply(&self, items: &mut Vec<Item>) {
+        super::proverif_result_soundness::reject_recovery(items);
         OkOnlyResults::default().visit(items)
     }
 }

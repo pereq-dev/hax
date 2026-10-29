@@ -2263,7 +2263,7 @@ impl Backend for ProVerifBackend {
     fn phases(&self) -> Vec<PhaseKind> {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         let result_model = if self.options.result_errors {
-            vec![ProverifRejectTryConversions]
+            vec![ProverifRejectTryConversions, ProverifRejectUnknownErrors]
         } else {
             vec![ProverifOkOnlyResults]
         };

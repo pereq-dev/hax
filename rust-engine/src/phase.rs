@@ -36,6 +36,7 @@ mod proverif_ok_only_results;
 mod proverif_reject_higher_order;
 mod proverif_reject_unsupported;
 mod proverif_resolve_trait_calls;
+mod proverif_result_soundness;
 mod proverif_simplify_bindings;
 mod reject_not_do_lean_dsl;
 
@@ -90,6 +91,7 @@ declare_phase_kind! {
     ProverifRejectHigherOrder = proverif_reject_higher_order::ProverifRejectHigherOrder,
     ProverifRejectUnsupported = proverif_reject_unsupported::ProverifRejectUnsupported,
     ProverifRejectTryConversions = proverif_reject_unsupported::ProverifRejectTryConversions,
+    ProverifRejectUnknownErrors = proverif_result_soundness::ProverifRejectUnknownErrors,
     ProverifMarkMutReplaceBody = proverif_reject_unsupported::ProverifMarkMutReplaceBody,
     ProverifBindFailable = proverif_bind_failable::ProverifBindFailable,
     ProverifNameWildcards = proverif_name_wildcards::ProverifNameWildcards,

@@ -727,7 +727,21 @@ pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
     let other_str = other_path.to_token_stream().to_string().replace(' ', "");
     let item_fn: ItemFn = parse_macro_input!(item);
     let self_name = item_fn.sig.ident.to_string();
-    let body = format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.");
+    let returns_result = matches!(&item_fn.sig.output, syn::ReturnType::Type(_, ty)
+        if matches!(&**ty, syn::Type::Path(p)
+            if p.path.segments.last().is_some_and(|s| s.ident == "Result")));
+    // The inverse of a function returning a `Result` returns an `Ok`, and an
+    // `Err` off the image, so that both are matchable under `--result-errors`.
+    let body = if returns_result {
+        format!(
+            "reduc forall x: bitstring; ${{{self_name}}}__inverse(${{{other_str}}}(x)) = x.\n\
+             letfun ${{{self_name}}}(y: bitstring) =\n  \
+             let x = ${{{self_name}}}__inverse(y) in hax_result_ok(x)\n  \
+             else hax_result_err(rust_primitives__hax__Tuple0__Tuple0)."
+        )
+    } else {
+        format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.")
+    };
     let body_lit = syn::LitStr::new(&body, ::proc_macro2::Span::call_site());
     quote! {
         #[::hax_lib::proverif::replace(#body_lit)]

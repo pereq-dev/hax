@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001)
 #![feature(if_let_guard)]
 #![allow(dead_code)]
 

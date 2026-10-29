@@ -725,13 +725,22 @@ impl AstVisitor for ExternRefCollector {
 /// Every name that a `fun`, `letfun`, `const` or `reduc` declaration of the
 /// ProVerif `text` introduces.
 pub(crate) fn scan_declared_names(text: &str) -> Vec<String> {
+    scan_declarations(text)
+        .into_iter()
+        .map(|(_, name)| name)
+        .collect()
+}
+
+/// Every `fun`, `letfun`, `const` or `reduc` declaration of the ProVerif
+/// `text`, as its keyword and the name it introduces.
+pub(crate) fn scan_declarations(text: &str) -> Vec<(&'static str, String)> {
     let mut out = Vec::new();
     for line in text.lines().map(str::trim_start) {
-        for kw in ["fun ", "letfun ", "const "] {
-            if let Some(rest) = line.strip_prefix(kw) {
+        for kw in ["fun", "letfun", "const"] {
+            if let Some(rest) = line.strip_prefix(kw).and_then(|r| r.strip_prefix(' ')) {
                 let end = rest.find(['(', ':', ' ', '\t']).unwrap_or(rest.len());
                 if end > 0 {
-                    out.push(rest[..end].to_string());
+                    out.push((kw, rest[..end].to_string()));
                 }
             }
         }
@@ -755,7 +764,7 @@ pub(crate) fn scan_declared_names(text: &str) -> Vec<String> {
             .find(|c: char| c == '(' || c.is_whitespace())
             .unwrap_or(head.len());
         if end > 0 {
-            out.push(head[..end].to_string());
+            out.push(("reduc", head[..end].to_string()));
         }
         rest = tail;
     }

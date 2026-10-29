@@ -47,18 +47,14 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
+(*  - the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
-(*  - Closures not supported in ProVerif *)
-(*  - Closures not supported in ProVerif *)
-(*  - Closures not supported in ProVerif *)
-(*  - Closures not supported in ProVerif *)
-(*  - Closures not supported in ProVerif *)
-(*  - Closures not supported in ProVerif *)
+(*  - the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
@@ -86,31 +82,7 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/lean-core-models/result.rs:16:0-43:1 new_tests__legacy__lean_core_models__lib__result__tests *)
 letfun new_tests__legacy__lean_core_models__lib__result__tests(wildcard: bitstring) =
-  let v1 = nat_1 in
-  let v2 = bitstring_err() in
-  let f = (bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)) in
-  let v5 = core__result__Impl__map(
-    nat_1,
-    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
-  ) in
-  let v6 = core__result__Impl__map_or(nat_1, nat_9, f) in
-  let v7 = core__result__Impl__map_or_else(
-    nat_1,
-    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *),
-    f
-  ) in
-  let v8 = (let hax__ok = nat_0 in hax__ok) in
-  let v9 = core__result__Impl__is_ok(v1) in
-  let v10 = core__result__Impl__is_err(v1) in
-  let v11 = core__result__Impl__and_then(
-    v1,
-    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
-  ) in
-  let v12 = core__result__Impl__unwrap(nat_0) in
-  let v13 = core__result__Impl__expect(nat_0, string_lit__Should_x20be_x20Ok) in
-  let hax__scrut0 = core__result__Impl__map(v1, f) in
-  let hoist2 = hax__scrut0 in
-    let hoist1 = v2 in rust_primitives__hax__machine_int__add(hoist2, hoist1).
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *).
 
 (* src: src/legacy/lean-core-models/phantom.rs:9:0-11:1 new_tests__legacy__lean_core_models__lib__phantom__Bar *)
 fun new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(bitstring): bitstring [data].
@@ -171,28 +143,7 @@ letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstrin
     bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *),
     bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
   ) in
-  let o11 = core__option__Impl__ok_or(
-    Some(nat_3),
-    new_tests__legacy__lean_core_models__lib__option__E__C(nat_0)
-  ) in
-  let o12 = core__option__Impl__ok_or_else(
-    Some(nat_1),
-    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
-  ) in
-  let o13 = core__option__Impl__and_then(
-    None(),
-    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
-  ) in
-  let rust_primitives__hax__Tuple2__Tuple2(
-    wildcard_4: bitstring,
-    out_kw: bitstring
-  ) = core__option__Impl__take(
-    Some(new_tests__legacy__lean_core_models__lib__option__S__S(nat_9))
-  ) in (let o15 = core__option__Impl__is_some(Some(nat_1)) in
-  let o16 = core__option__Impl__is_none(Some(nat_2)) in
-  let o17 = core__option__Impl__expect(Some(nat_3), string_lit__Should_x20be_x20Some) in
-  let o18 = core__option__Impl__unwrap(Some(nat_4)) in
-  rust_primitives__hax__Tuple0__Tuple0) else bitstring_err().
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *).
 (* src: src/legacy/lean-core-models/default.rs:7:4-9:5 new_tests__legacy__lean_core_models__lib__default__structs__S *)
 fun new_tests__legacy__lean_core_models__lib__default__structs__S__S(bitstring): bitstring [data].
 reduc forall v_0: bitstring;

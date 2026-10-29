@@ -47,7 +47,7 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - Closures not supported in ProVerif *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -64,7 +64,6 @@ query attacker(hax_extraction_error__new_tests).
 (*  - 1 × branch on a result of `core__ops__try_trait__Try__branch`, which the model does not define *)
 (*  - 9 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
 (*  - 2 × branch on a result of `core__num__Impl_6__wrapping_add`, which the model does not define *)
-(*  - 1 × branch on a result of `core__iter__traits__iterator__Iterator__map`, which the model does not define *)
 (*****************************************************************)
 
 (* src: src/legacy/side-effects/lib.rs:190:4-192:5 new_tests__legacy__side_effects__lib__nested_return__other_fun *)
@@ -555,12 +554,8 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
   ).
 (* src: src/legacy/side-effects/lib.rs:200:4-208:5 new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
 letfun new_tests__legacy__side_effects__lib__issue_1300__fun_kw(wildcard: bitstring) =
-  (* HAX WARNING: branch on a result of `core__iter__traits__iterator__Iterator__map`, which the model does not define *)
   let hax__scrut0 = core__iter__traits__iterator__Iterator__collect(
-    core__iter__traits__iterator__Iterator__map(
-      core__slice__Impl__iter(rust_primitives__hax__repeat(nat_0, nat_5)),
-      bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
-    )
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
   ) in
   let val = hax__scrut0 in rust_primitives__hax__Tuple0__Tuple0().
 (* src: src/legacy/side-effects/lib.rs:183:4-185:5 new_tests__legacy__side_effects__lib__issue_1089__test *)

@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001)
 //! @off: fstar, lean, coq, ssprove, legacy-lean
 //!
 //! Constructs whose model must keep the Rust evaluation order: a failure in a

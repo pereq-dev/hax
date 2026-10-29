@@ -8,5 +8,5 @@
 (* boundary. Only Rust constructors are declared `[data]`: any   *)
 (* other function may be one-way.                                *)
 (*****************************************************************)
-(* (none — every referenced symbol is defined in lib.pvl, *)
-(* primitives.pvl, or a -lib'd dependency.)               *)
+(* referenced by: new_tests__legacy__proverif_result_errors__lib__panicking_arm *)
+const string_lit__explicit_x20panic: bitstring.

@@ -184,7 +184,9 @@ passthrough_attributes! {
     pv_stub;
 
     /// Declare this function as the one-sided inverse of another, emitting
-    /// `reduc forall x: bitstring; self(other(x)) = x.`.
+    /// `reduc forall x: bitstring; self(other(x)) = x.`. When this function
+    /// returns a `Result`, the `reduc` is wrapped in a `letfun self` that
+    /// returns `Ok`, and an `Err` off the image of the other function.
     ///
     /// A ProVerif `reduc` rewrites on *constructors*, so the other function has
     /// to be one — annotate it `#[hax_lib::pv_constructor]` (or
