@@ -49,15 +49,14 @@ jobs:
         cargo hax extract chacha20
   result:
     name: "install-scripts: result"
-    if: |
-      always() &&
-      github.event_name ==  'workflow_dispatch'  ||github.event_name ==  'merge_group'  
-    needs: setup_sh
+    needs: [docker, setup_sh]
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Successful
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Failing
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}
+          allow-skipped: ${{ github.event_name != 'merge_group' && github.event_name != 'workflow_dispatch' }}

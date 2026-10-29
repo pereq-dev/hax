@@ -146,3 +146,16 @@ jobs:
         run: >
           cargo "+${{ steps.msrv.outputs.version }}" install --locked
           --root "$RUNNER_TEMP/hax" --path cli/cargo-hax
+
+  result:
+    name: "install-standalone: result"
+    needs: [install-and-extract, install-msrv]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}

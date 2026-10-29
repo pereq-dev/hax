@@ -27,3 +27,16 @@ jobs:
     - name: Run Rust formatter
       run: |
         cargo fmt --check
+
+  result:
+    name: "format: result"
+    needs: [ocamlformat, rustfmt]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}

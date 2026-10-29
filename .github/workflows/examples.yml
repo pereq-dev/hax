@@ -56,9 +56,10 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-    - name: Check the results
-      env:
-        RESULTS: ${{ needs.list-examples.result }} ${{ needs.examples.result }}
-      run: |
-        echo "$RESULTS"
-        [ "$RESULTS" = "success success" ]
+    - uses: actions/checkout@v4
+      with:
+        sparse-checkout: .github/actions
+    - uses: ./.github/actions/check-results
+      with:
+        results: ${{ join(needs.*.result, ' ') }}
+        allow-skipped: false

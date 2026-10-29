@@ -70,3 +70,16 @@ jobs:
         run: |
           rustup target add thumbv7em-none-eabi
           cargo build -p hax-lib --target thumbv7em-none-eabi
+
+  result:
+    name: "workspace: result"
+    needs: [test-workspace, no-std-lib]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}

@@ -110,10 +110,10 @@ jobs:
     needs: [changes, install-and-run]
     runs-on: ubuntu-latest
     steps:
-      - name: Check the results
-        env:
-          RELEVANT: ${{ needs.changes.outputs.relevant }}
-          RESULT: ${{ needs.install-and-run.result }}
-        run: |
-          echo "$RELEVANT $RESULT"
-          [ "$RESULT" = success ] || { [ "$RESULT" = skipped ] && [ "$RELEVANT" = false ]; }
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}
+          allow-skipped: ${{ needs.changes.outputs.relevant != 'true' }}
