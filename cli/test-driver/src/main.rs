@@ -312,6 +312,12 @@ const DISABLED_BACKENDS: &[BackendName] = &[
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    let result = run().await;
+    flush().await;
+    result
+}
+
+async fn run() -> Result<()> {
     let mut options = cli::Cli::parse();
     options.canonicalize()?;
 
