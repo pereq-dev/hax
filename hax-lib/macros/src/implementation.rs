@@ -747,12 +747,14 @@ pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
             .into();
         }
     };
-    // The function applies the `reduc`, named after the other function so
-    // that it does not refer to this one; for a function returning a
+    // The function applies the `reduc`, named after the other function and
+    // this one's name, without referring to this one; for a function returning a
     // `Result`, the backend makes that an `Ok`, and an `Err` off the image.
-    let reduc =
-        format!("reduc forall x: bitstring; ${{{other_str}}}__inverse(${{{other_str}}}(x)) = x.");
-    let body = format!("${{{other_str}}}__inverse(${{{arg}}})");
+    let self_name = &item_fn.sig.ident;
+    let reduc = format!(
+        "reduc forall x: bitstring; ${{{other_str}}}__inverse_{self_name}(${{{other_str}}}(x)) = x."
+    );
+    let body = format!("${{{other_str}}}__inverse_{self_name}(${{{arg}}})");
     let reduc_lit = syn::LitStr::new(&reduc, ::proc_macro2::Span::call_site());
     let body_lit = syn::LitStr::new(&body, ::proc_macro2::Span::call_site());
     quote! {

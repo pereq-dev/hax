@@ -184,7 +184,7 @@ passthrough_attributes! {
     pv_stub;
 
     /// Declare this function as the one-sided inverse of another, emitting
-    /// `reduc forall x: bitstring; other__inverse(other(x)) = x.` and making
+    /// `reduc forall x: bitstring; other__inverse_self(other(x)) = x.` and making
     /// `self` apply it. With `--result-errors`, a function returning a
     /// `Result` returns `Ok`, and an `Err` off the image of the other function.
     ///

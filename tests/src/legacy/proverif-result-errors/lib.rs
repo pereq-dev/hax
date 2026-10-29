@@ -452,6 +452,52 @@ fn spliced(x: u8) -> u8 {
     0
 }
 
+// A `Result` passed to a generic parameter.
+
+trait Tag {
+    fn tag(&self) -> u8;
+}
+
+impl<T> Tag for T {
+    fn tag(&self) -> u8 {
+        3
+    }
+}
+
+fn generic_self(x: u8) -> u8 {
+    check(x).tag()
+}
+
+// Models that build the `Result` themselves, or apply a bare term after a
+// `let`.
+
+#[hax_lib::proverif::replace_body("core__result__Result__Err(rust_primitives__hax__Tuple0__Tuple0)")]
+fn always_err(_x: u8) -> Result<u8, ()> {
+    Err(())
+}
+
+fn recover_always_err(x: u8) -> u8 {
+    match always_err(x) {
+        Ok(v) => v,
+        Err(_) => 0,
+    }
+}
+
+#[hax_lib::proverif::replace_body("let k2 = crypto__hash(${k}) in crypto__aead_dec(k2, ${c}, empty)")]
+fn dec_let(k: u8, c: u8) -> Result<u8, ()> {
+    if k == c { Ok(k) } else { Err(()) }
+}
+
+fn use_dec_let(k: u8, c: u8) -> Result<u8, ()> {
+    let v = dec_let(k, c)?;
+    Ok(v)
+}
+
+#[hax_lib::pv_inverse_of(encode)]
+fn decode_unchecked(b: u8) -> u8 {
+    b
+}
+
 // The model of a std fallible conversion always succeeds, so under
 // `--result-errors` its error path would be lost: rejected.
 /// @fail(extraction): proverif(HAX0001)

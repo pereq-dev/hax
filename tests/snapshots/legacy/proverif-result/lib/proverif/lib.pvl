@@ -76,6 +76,8 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -202,10 +204,10 @@ letfun new_tests__legacy__proverif_result__lib__use_opaque(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:199:0-201:1 new_tests__legacy__proverif_result__lib__encode *)
 (* marked as constructor *)
 fun new_tests__legacy__proverif_result__lib__encode(bitstring): bitstring [data].
-reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__encode__inverse(new_tests__legacy__proverif_result__lib__encode(x)) = x.
+reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__encode__inverse_decode(new_tests__legacy__proverif_result__lib__encode(x)) = x.
 (* src: src/legacy/proverif-result/lib.rs:203:0-203:33 new_tests__legacy__proverif_result__lib__decode *)
 letfun new_tests__legacy__proverif_result__lib__decode(b: bitstring) =
-  new_tests__legacy__proverif_result__lib__encode__inverse(b).
+  new_tests__legacy__proverif_result__lib__encode__inverse_decode(b).
 (* src: src/legacy/proverif-result/lib.rs:208:0-210:1 new_tests__legacy__proverif_result__lib__round_trip *)
 letfun new_tests__legacy__proverif_result__lib__round_trip(x: bitstring) =
   new_tests__legacy__proverif_result__lib__decode(
@@ -382,3 +384,30 @@ letfun new_tests__legacy__proverif_result__lib__reused_name(x: bitstring) =
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__spliced(x: bitstring) =
   bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+
+(* src: src/legacy/proverif-result/lib.rs:477:4-479:5 new_tests__legacy__proverif_result__lib__Impl__tag *)
+letfun new_tests__legacy__proverif_result__lib__Impl__tag(self: bitstring) = nat_3.
+(* src: src/legacy/proverif-result/lib.rs:483:0-485:1 new_tests__legacy__proverif_result__lib__generic_self *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__generic_self(x: bitstring) =
+  new_tests__legacy__proverif_result__lib__Impl__tag(
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+  ).
+(* src: src/legacy/proverif-result/lib.rs:490:0-490:90 new_tests__legacy__proverif_result__lib__always_err *)
+letfun new_tests__legacy__proverif_result__lib__always_err(u_x: bitstring) =
+  hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/legacy/proverif-result/lib.rs:496:0-501:1 new_tests__legacy__proverif_result__lib__recover_always_err *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__recover_always_err(x: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+(* src: src/legacy/proverif-result/lib.rs:503:0-503:102 new_tests__legacy__proverif_result__lib__dec_let *)
+letfun new_tests__legacy__proverif_result__lib__dec_let(k: bitstring, c: bitstring) =
+  let k2 = crypto__hash(k) in crypto__aead_dec(k2, c, empty).
+(* src: src/legacy/proverif-result/lib.rs:508:0-511:1 new_tests__legacy__proverif_result__lib__use_dec_let *)
+letfun new_tests__legacy__proverif_result__lib__use_dec_let(k: bitstring, c: bitstring) =
+  let hax__scrut0 = new_tests__legacy__proverif_result__lib__dec_let(k, c) in
+  let v = hax__scrut0 in v.
+reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__encode__inverse_decode_unchecked(new_tests__legacy__proverif_result__lib__encode(x)) = x.
+(* src: src/legacy/proverif-result/lib.rs:513:0-513:33 new_tests__legacy__proverif_result__lib__decode_unchecked *)
+letfun new_tests__legacy__proverif_result__lib__decode_unchecked(b: bitstring) =
+  new_tests__legacy__proverif_result__lib__encode__inverse_decode_unchecked(b).

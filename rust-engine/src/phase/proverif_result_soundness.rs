@@ -607,6 +607,8 @@ const RECOVERY_HINT: &str = "the default Result model ends the trace on every `E
 struct Recovery {
     types: ResultTypes,
     effects: Effects,
+    /// The parameter types of each function.
+    params: HashMap<GlobalId, Vec<Ty>>,
 }
 
 impl Recovery {
@@ -808,7 +810,16 @@ impl Recovery {
                     Some(g) if g.is_projector() => {
                         carried && !self.types.projection_drops_result(g, &arg.ty)
                     }
-                    Some(g) if self.effects.extracted.contains(&g) => !generics_hold,
+                    // The callee checks a parameter whose type holds a
+                    // `Result`, but not a generic one.
+                    Some(g) if self.effects.extracted.contains(&g) => {
+                        !generics_hold
+                            && self
+                                .params
+                                .get(&g)
+                                .and_then(|ps| ps.get(i))
+                                .is_some_and(|t| self.types.holds(t, true))
+                    }
                     _ if i == 0 && lib == Some(LibCall::PanicOnErr) => true,
                     _ if i == 0 && matches!(lib, Some(LibCall::KeepErr | LibCall::MapErr)) => {
                         carried
@@ -1019,6 +1030,9 @@ pub(crate) fn reject_recovery(items: &mut [Item]) {
     let recovery = Recovery {
         types: ResultTypes::new(items),
         effects: Effects::of(items),
+        params: fn_decls(items)
+            .map(|d| (d.name, d.params.iter().map(|p| p.ty.clone()).collect()))
+            .collect(),
     };
     for_each_extracted_fn(items, |_, params, body| {
         let mut rejected = vec![];
@@ -1454,21 +1468,40 @@ fn bare_term_names(items: &[Item]) -> HashSet<String> {
     names
 }
 
-/// The identifier a verbatim ProVerif expression starts with.
-fn head_name(quote: &Quote) -> String {
-    let text = quote_text(quote);
-    let text = text.trim_start();
-    let end = text
-        .find(|c: char| !(c.is_alphanumeric() || c == '_'))
-        .unwrap_or(text.len());
-    text[..end].to_string()
+/// The names whose application is a `Result`: `Ok`, `Err`, their
+/// `hax_result_*` forms, the `*_result` functions of `cryptolib.pvl`, and the
+/// crate's functions returning a `Result`.
+fn result_producers(items: &[Item]) -> HashSet<String> {
+    let mut names: HashSet<String> = [
+        "core__result__Result__Ok",
+        "core__result__Result__Err",
+        "hax_result_ok",
+        "hax_result_err",
+    ]
+    .map(String::from)
+    .into();
+    names.extend(
+        scan_declarations(CRYPTOLIB_PVL)
+            .into_iter()
+            .filter(|(kw, name)| *kw == "letfun" && name.ends_with("_result"))
+            .map(|(_, name)| name),
+    );
+    names.extend(
+        fn_decls(items)
+            .filter(|d| {
+                matches!(d.body.ty.kind(), TyKind::App { head, .. }
+                if *head == crate::names::core::result::Result)
+            })
+            .map(|d| render_id(&d.name)),
+    );
+    names
 }
 
-/// Wraps the verbatim body of each function returning a `Result` that applies
-/// a bare term (as `replace_body`, `pv_extern` and `pv_inverse_of` make it)
-/// in `hax_result_ok`, and its failure in `hax_result_err`: a destructor that
-/// fails is an `Err`, with an unknown error.
-fn wrap_bare_results(items: &mut [Item], bare: &HashSet<String>) {
+/// Wraps each verbatim body (as `replace_body`, `pv_extern` and
+/// `pv_inverse_of` make it) of a function returning a `Result` that builds no
+/// `Result` itself: its value becomes an `Ok`, and its failure an `Err`, with
+/// an unknown error.
+fn wrap_bare_results(items: &mut [Item], producers: &HashSet<String>) {
     let wrap = |body: &mut Expr| {
         let returns_result = matches!(body.ty.kind(), TyKind::App { head, .. }
             if *head == crate::names::core::result::Result);
@@ -1478,13 +1511,15 @@ fn wrap_bare_results(items: &mut [Item], bare: &HashSet<String>) {
         };
         if let ExprKind::Quote { contents } = &mut *body.kind
             && returns_result
-            && bare.contains(&head_name(contents))
+            && !quote_text(contents)
+                .split(|c: char| !(c.is_alphanumeric() || c == '_'))
+                .any(|w| producers.contains(w))
         {
             contents
                 .0
-                .insert(0, QuoteContent::Verbatim("let hax__model = ".into()));
+                .insert(0, QuoteContent::Verbatim("let hax__model = (".into()));
             contents.0.push(QuoteContent::Verbatim(
-                " in hax_result_ok(hax__model) \
+                ") in hax_result_ok(hax__model) \
                  else hax_result_err(rust_primitives__hax__Tuple0__Tuple0)"
                     .into(),
             ));
@@ -1561,7 +1596,8 @@ impl Phase for ProverifRejectUnknownErrors {
     fn apply(&self, items: &mut Vec<Item>) {
         let types = ResultTypes::new(items);
         let bare = bare_term_names(items);
-        wrap_bare_results(items, &bare);
+        let producers = result_producers(items);
+        wrap_bare_results(items, &producers);
         let extracted = extracted_fns(items);
 
         let mut analysis = UnknownErrors {

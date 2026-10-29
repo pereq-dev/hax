@@ -77,7 +77,7 @@ letfun new_tests__legacy__proverif_replace_body__lib__replaced_body(x: bitstring
 (* src: src/legacy/proverif-replace-body/lib.rs:57:0-59:1 new_tests__legacy__proverif_replace_body__lib__pack *)
 (* marked as constructor *)
 fun new_tests__legacy__proverif_replace_body__lib__pack(bitstring): bitstring [data].
-reduc forall x: bitstring; new_tests__legacy__proverif_replace_body__lib__pack__inverse(new_tests__legacy__proverif_replace_body__lib__pack(x)) = x.
+reduc forall x: bitstring; new_tests__legacy__proverif_replace_body__lib__pack__inverse_unpack(new_tests__legacy__proverif_replace_body__lib__pack(x)) = x.
 (* src: src/legacy/proverif-replace-body/lib.rs:61:0-61:31 new_tests__legacy__proverif_replace_body__lib__unpack *)
 letfun new_tests__legacy__proverif_replace_body__lib__unpack(bytes: bitstring) =
-  new_tests__legacy__proverif_replace_body__lib__pack__inverse(bytes).
+  new_tests__legacy__proverif_replace_body__lib__pack__inverse_unpack(bytes).
