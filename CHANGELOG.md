@@ -46,6 +46,10 @@ F* backend and library:
 
 ### Changed
 
+Changes to `cargo-hax`:
+ - Breaking: `anodized` specifications need `anodized` 0.8.0 or later; hax no
+   longer sets `anodized_discard_specs`
+
 Lean backend and library:
  - Breaking: the Lean library and the extracted Lean files are Lean modules.
    A module can only import modules, so the hand-written models in

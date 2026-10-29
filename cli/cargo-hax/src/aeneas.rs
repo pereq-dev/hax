@@ -516,7 +516,7 @@ pub fn run(
         "--config",
         // Proc-macro crates are host artifacts: they take `host.rustflags`, not
         // `RUSTFLAGS`, so `anodized`'s flags have to be repeated here.
-        r#"host.rustflags=["--cfg","hax","--cfg","hax_backend_lean","--cfg","anodized_hax","--cfg","anodized_discard_specs"]"#,
+        r#"host.rustflags=["--cfg","hax","--cfg","hax_backend_lean","--cfg","anodized_hax"]"#,
     ]);
     // Register the tool-attribute namespaces through `RUSTFLAGS`, which cargo applies
     // to every target crate. `--rustc-arg` only reaches the crate charon instruments,

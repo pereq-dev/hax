@@ -7,6 +7,4 @@ edition = "2021"
 
 [dependencies]
 hax-lib.workspace = true
-# Pinned by `rev`, not `branch`: a branch moving under us would not fail to
-# build, it would silently change what gets extracted.
-anodized = { git = "https://github.com/mkovaxx/anodized.git", rev = "f9334c40e4e3afd0a01ed88747e9f5932d3ac35a" }
+anodized = "0.8.0"

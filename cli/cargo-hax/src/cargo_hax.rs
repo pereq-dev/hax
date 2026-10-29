@@ -93,10 +93,8 @@ fn check_cfg_flags() -> String {
 }
 
 /// The `cfg` names that make `anodized`'s `#[spec(..)]` emit `hax_lib`
-/// annotations (`anodized_hax`) and drop the `__anodized_fn_*` items it emits
-/// for rustc to type-check the specification against (`anodized_discard_specs`).
-/// `anodized` reads them when its proc-macro crate is compiled.
-const ANODIZED_CFG_NAMES: &[&str] = &["anodized_hax", "anodized_discard_specs"];
+/// annotations. `anodized` reads them when its proc-macro crate is compiled.
+const ANODIZED_CFG_NAMES: &[&str] = &["anodized_hax"];
 
 /// Sets the `anodized` cfg names. They are declared by `check_cfg_flags`,
 /// along with hax's own.
