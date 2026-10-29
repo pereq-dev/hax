@@ -5,6 +5,7 @@
 //! every arm is kept. Code that inspects the error of a hand-written model is
 //! rejected. `proverif-result` extracts the same items with the default model.
 
+#[derive(PartialEq)]
 enum Error {
     Invalid,
     Other,
@@ -205,6 +206,110 @@ fn decode_or_zero(b: u8) -> u8 {
         Ok(v) => v,
         Err(_) => 0,
     }
+}
+
+// Observable calls while an `Err` is pending.
+
+#[hax_lib::proverif::replace_body("x")]
+fn record(x: u8) -> u8 {
+    x
+}
+
+fn err_arm_effect(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            record(0);
+            Err(e)
+        }
+    }
+}
+
+fn effect_before_propagation(x: u8) -> Result<u8, Error> {
+    let r = check(x);
+    record(x);
+    let v = r?;
+    Ok(v)
+}
+
+fn effect_after_result(x: u8) -> (Result<u8, Error>, u8) {
+    (check(x), record(x))
+}
+
+fn effect_after_propagation(x: u8) -> Result<u8, Error> {
+    let v = check(x)?;
+    Ok(record(v))
+}
+
+struct Out {
+    n: u8,
+    r: Result<u8, Error>,
+}
+
+fn produce(x: u8) -> Out {
+    Out { n: x, r: check(x) }
+}
+
+fn rest_pattern(x: u8) -> u8 {
+    let Out { n, .. } = produce(x);
+    n
+}
+
+fn all_fields(x: u8) -> Result<u8, Error> {
+    let Out { n, r } = produce(x);
+    let v = r?;
+    Ok(n + v)
+}
+
+// Error values of hand-written models, kept through other values.
+
+/// @fail(extraction): proverif(HAX0001)
+fn equal_err(x: u8) -> u8 {
+    if modelled(x) == Err(Error::Invalid) { 1 } else { 0 }
+}
+
+/// @fail(extraction): proverif(HAX0001, HAX0001, HAX0001)
+fn repacked(x: u8) -> u8 {
+    let swapped: Result<Error, ()> = match modelled(x) {
+        Ok(_) => Err(()),
+        Err(e) => Ok(e),
+    };
+    match swapped {
+        Ok(Error::Invalid) => 1,
+        Ok(Error::Other) => 2,
+        Err(_) => 3,
+    }
+}
+
+#[hax_lib::pv_extern]
+fn derive(k: u8) -> Result<u8, Error> {
+    check(k)
+}
+
+/// @fail(extraction): proverif(HAX0001)
+fn use_derive(k: u8) -> Result<u8, Error> {
+    let v = derive(k)?;
+    Ok(v)
+}
+
+#[hax_lib::proverif::replace_body("crypto__hash(x)")]
+fn hashed(x: u8) -> Result<u8, Error> {
+    check(x)
+}
+
+/// @fail(extraction): proverif(HAX0001)
+fn use_hashed(x: u8) -> Result<u8, Error> {
+    let v = hashed(x)?;
+    Ok(v)
+}
+
+enum Wrapped {
+    E(Error),
+}
+
+fn map_err_constructor(x: u8) -> Result<u8, Wrapped> {
+    let v = check(x).map_err(Wrapped::E)?;
+    Ok(v)
 }
 
 // The model of a std fallible conversion always succeeds, so under

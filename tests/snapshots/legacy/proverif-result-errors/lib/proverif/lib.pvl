@@ -49,33 +49,39 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result_errors.
 (*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
 (*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
 (*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - `new_tests__legacy__proverif_result_errors__lib__opaque_result` returns a `Result`, but its model is a `fun` or a `reduc`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)
+(*  - `new_tests__legacy__proverif_result_errors__lib__opaque_result` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)
+(*  - a `Result` or an error coming from a hand-written model is passed to a function whose body is not extracted: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - `new_tests__legacy__proverif_result_errors__lib__derive` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)
+(*  - `new_tests__legacy__proverif_result_errors__lib__hashed` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)
 (*  - std fallible conversion under `--result-errors`, whose error is not modelled *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
 
-(* src: src/legacy/proverif-result-errors/lib.rs:8:0-11:1 new_tests__legacy__proverif_result_errors__lib__Error *)
+(* src: src/legacy/proverif-result-errors/lib.rs:9:0-12:1 new_tests__legacy__proverif_result_errors__lib__Error *)
 fun new_tests__legacy__proverif_result_errors__lib__Error__Invalid(): bitstring [data].
 fun new_tests__legacy__proverif_result_errors__lib__Error__Other(): bitstring [data].
-(* src: src/legacy/proverif-result-errors/lib.rs:8:0-11:1 new_tests__legacy__proverif_result_errors__lib__Error_cast_to_repr *)
+(* src: src/legacy/proverif-result-errors/lib.rs:9:0-12:1 new_tests__legacy__proverif_result_errors__lib__Error_cast_to_repr *)
 letfun new_tests__legacy__proverif_result_errors__lib__Error_cast_to_repr(x: bitstring) =
   let new_tests__legacy__proverif_result_errors__lib__Error__Invalid() = x in nat_0
   else let new_tests__legacy__proverif_result_errors__lib__Error__Other() = x in nat_1
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:13:0-15:1 new_tests__legacy__proverif_result_errors__lib__check *)
+
+
+(* src: src/legacy/proverif-result-errors/lib.rs:14:0-16:1 new_tests__legacy__proverif_result_errors__lib__check *)
 letfun new_tests__legacy__proverif_result_errors__lib__check(x: bitstring) =
   let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
   let (=True()) = hax__cond0
     in core__result__Result__Err(new_tests__legacy__proverif_result_errors__lib__Error__Invalid())
     else core__result__Result__Ok(x).
-(* src: src/legacy/proverif-result-errors/lib.rs:17:0-20:1 new_tests__legacy__proverif_result_errors__lib__question_mark *)
+(* src: src/legacy/proverif-result-errors/lib.rs:18:0-21:1 new_tests__legacy__proverif_result_errors__lib__question_mark *)
 letfun new_tests__legacy__proverif_result_errors__lib__question_mark(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__check(x) in
   let core__result__Result__Ok(y: bitstring) = hax__scrut0 in core__result__Result__Ok(y)
   else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:22:0-28:1 new_tests__legacy__proverif_result_errors__lib__err_arms_first *)
+(* src: src/legacy/proverif-result-errors/lib.rs:23:0-29:1 new_tests__legacy__proverif_result_errors__lib__err_arms_first *)
 letfun new_tests__legacy__proverif_result_errors__lib__err_arms_first(r: bitstring) =
   let core__result__Result__Err(
     new_tests__legacy__proverif_result_errors__lib__Error__Invalid()
@@ -83,70 +89,70 @@ letfun new_tests__legacy__proverif_result_errors__lib__err_arms_first(r: bitstri
   else let core__result__Result__Err(wildcard: bitstring) = r in nat_2
   else let core__result__Result__Ok(v: bitstring) = r in v
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:30:0-36:1 new_tests__legacy__proverif_result_errors__lib__nested_err *)
+(* src: src/legacy/proverif-result-errors/lib.rs:31:0-37:1 new_tests__legacy__proverif_result_errors__lib__nested_err *)
 letfun new_tests__legacy__proverif_result_errors__lib__nested_err(o: bitstring) =
   let Some(core__result__Result__Err(wildcard: bitstring)) = o in nat_0
   else let Some(core__result__Result__Ok(v: bitstring)) = o in v
   else let None() = o in nat_1
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:38:0-40:1 new_tests__legacy__proverif_result_errors__lib__is_ok *)
+(* src: src/legacy/proverif-result-errors/lib.rs:39:0-41:1 new_tests__legacy__proverif_result_errors__lib__is_ok *)
 letfun new_tests__legacy__proverif_result_errors__lib__is_ok(r: bitstring) =
   core__result__Impl__is_ok(r).
-(* src: src/legacy/proverif-result-errors/lib.rs:42:0-44:1 new_tests__legacy__proverif_result_errors__lib__map_err *)
+(* src: src/legacy/proverif-result-errors/lib.rs:43:0-45:1 new_tests__legacy__proverif_result_errors__lib__map_err *)
 letfun new_tests__legacy__proverif_result_errors__lib__map_err(r: bitstring) =
   let core__result__Result__Ok(hax__ok: bitstring) = r in core__result__Result__Ok(hax__ok)
   else let core__result__Result__Err(hax__err: bitstring) = r in core__result__Result__Err(hax__err)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:47:0-49:1 new_tests__legacy__proverif_result_errors__lib__transpose *)
+(* src: src/legacy/proverif-result-errors/lib.rs:48:0-50:1 new_tests__legacy__proverif_result_errors__lib__transpose *)
 letfun new_tests__legacy__proverif_result_errors__lib__transpose(x: bitstring) =
   core__option__Impl_4__transpose(x).
-(* src: src/legacy/proverif-result-errors/lib.rs:53:0-55:1 new_tests__legacy__proverif_result_errors__lib__if_let_else *)
+(* src: src/legacy/proverif-result-errors/lib.rs:54:0-56:1 new_tests__legacy__proverif_result_errors__lib__if_let_else *)
 letfun new_tests__legacy__proverif_result_errors__lib__if_let_else(r: bitstring) =
   let core__result__Result__Ok(v: bitstring) = r in v
   else nat_0.
-(* src: src/legacy/proverif-result-errors/lib.rs:57:0-62:1 new_tests__legacy__proverif_result_errors__lib__wildcard_arm *)
+(* src: src/legacy/proverif-result-errors/lib.rs:58:0-63:1 new_tests__legacy__proverif_result_errors__lib__wildcard_arm *)
 letfun new_tests__legacy__proverif_result_errors__lib__wildcard_arm(r: bitstring) =
   let core__result__Result__Ok(v: bitstring) = r in v
   else nat_0.
-(* src: src/legacy/proverif-result-errors/lib.rs:64:0-67:1 new_tests__legacy__proverif_result_errors__lib__discarded *)
+(* src: src/legacy/proverif-result-errors/lib.rs:65:0-68:1 new_tests__legacy__proverif_result_errors__lib__discarded *)
 letfun new_tests__legacy__proverif_result_errors__lib__discarded(x: bitstring) =
   let wildcard = new_tests__legacy__proverif_result_errors__lib__check(x) in
   x.
-(* src: src/legacy/proverif-result-errors/lib.rs:69:0-71:1 new_tests__legacy__proverif_result_errors__lib__unused_param *)
+(* src: src/legacy/proverif-result-errors/lib.rs:70:0-72:1 new_tests__legacy__proverif_result_errors__lib__unused_param *)
 letfun new_tests__legacy__proverif_result_errors__lib__unused_param(u_r: bitstring, x: bitstring) =
   x.
-(* src: src/legacy/proverif-result-errors/lib.rs:73:0-76:1 new_tests__legacy__proverif_result_errors__lib__used_on_one_path *)
+(* src: src/legacy/proverif-result-errors/lib.rs:74:0-77:1 new_tests__legacy__proverif_result_errors__lib__used_on_one_path *)
 letfun new_tests__legacy__proverif_result_errors__lib__used_on_one_path(
   c: bitstring,
   x: bitstring
 ) =
   let r = new_tests__legacy__proverif_result_errors__lib__check(x) in
   let (=True()) = c in r else core__result__Result__Ok(nat_0).
-(* src: src/legacy/proverif-result-errors/lib.rs:80:0-85:1 new_tests__legacy__proverif_result_errors__lib__propagating_arms *)
+(* src: src/legacy/proverif-result-errors/lib.rs:81:0-86:1 new_tests__legacy__proverif_result_errors__lib__propagating_arms *)
 letfun new_tests__legacy__proverif_result_errors__lib__propagating_arms(r: bitstring) =
   let core__result__Result__Ok(v: bitstring) = r in
     core__result__Result__Ok(rust_primitives__hax__machine_int__add(v, nat_1))
   else let core__result__Result__Err(e: bitstring) = r in core__result__Result__Err(e)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:87:0-92:1 new_tests__legacy__proverif_result_errors__lib__panicking_arm *)
+(* src: src/legacy/proverif-result-errors/lib.rs:88:0-93:1 new_tests__legacy__proverif_result_errors__lib__panicking_arm *)
 letfun new_tests__legacy__proverif_result_errors__lib__panicking_arm(r: bitstring) =
   let core__result__Result__Ok(v: bitstring) = r in v
   else let core__result__Result__Err(wildcard: bitstring) = r in bitstring_err()
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:94:0-99:1 new_tests__legacy__proverif_result_errors__lib__wildcard_err *)
+(* src: src/legacy/proverif-result-errors/lib.rs:95:0-100:1 new_tests__legacy__proverif_result_errors__lib__wildcard_err *)
 letfun new_tests__legacy__proverif_result_errors__lib__wildcard_err(r: bitstring) =
   let core__result__Result__Ok(v: bitstring) = r in core__result__Result__Ok(v)
   else core__result__Result__Err(new_tests__legacy__proverif_result_errors__lib__Error__Other()).
-(* src: src/legacy/proverif-result-errors/lib.rs:101:0-105:1 new_tests__legacy__proverif_result_errors__lib__bound_then_propagated *)
+(* src: src/legacy/proverif-result-errors/lib.rs:102:0-106:1 new_tests__legacy__proverif_result_errors__lib__bound_then_propagated *)
 letfun new_tests__legacy__proverif_result_errors__lib__bound_then_propagated(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__check(x) in
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
   else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:107:0-109:1 new_tests__legacy__proverif_result_errors__lib__in_tuple *)
+(* src: src/legacy/proverif-result-errors/lib.rs:108:0-110:1 new_tests__legacy__proverif_result_errors__lib__in_tuple *)
 letfun new_tests__legacy__proverif_result_errors__lib__in_tuple(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(x, new_tests__legacy__proverif_result_errors__lib__check(x)).
-(* src: src/legacy/proverif-result-errors/lib.rs:111:0-115:1 new_tests__legacy__proverif_result_errors__lib__from_tuple *)
+(* src: src/legacy/proverif-result-errors/lib.rs:112:0-116:1 new_tests__legacy__proverif_result_errors__lib__from_tuple *)
 letfun new_tests__legacy__proverif_result_errors__lib__from_tuple(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     y: bitstring,
@@ -156,78 +162,191 @@ letfun new_tests__legacy__proverif_result_errors__lib__from_tuple(x: bitstring) 
   ) = r in core__result__Result__Ok(rust_primitives__hax__machine_int__add(y, v))
   else let core__result__Result__Err(err: bitstring) = r in core__result__Result__Err(err)
   else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:121:0-124:1 new_tests__legacy__proverif_result_errors__lib__question_mark_of *)
+(* src: src/legacy/proverif-result-errors/lib.rs:122:0-125:1 new_tests__legacy__proverif_result_errors__lib__question_mark_of *)
 letfun new_tests__legacy__proverif_result_errors__lib__question_mark_of(r: bitstring) =
   let core__result__Result__Ok(v: bitstring) = r in core__result__Result__Ok(v)
   else let core__result__Result__Err(err: bitstring) = r in core__result__Result__Err(err)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:117:0-119:1 new_tests__legacy__proverif_result_errors__lib__passed *)
+(* src: src/legacy/proverif-result-errors/lib.rs:118:0-120:1 new_tests__legacy__proverif_result_errors__lib__passed *)
 letfun new_tests__legacy__proverif_result_errors__lib__passed(x: bitstring) =
   new_tests__legacy__proverif_result_errors__lib__question_mark_of(
     new_tests__legacy__proverif_result_errors__lib__check(x)
   ).
-(* src: src/legacy/proverif-result-errors/lib.rs:128:0-128:54 new_tests__legacy__proverif_result_errors__lib__modelled *)
+(* src: src/legacy/proverif-result-errors/lib.rs:129:0-129:54 new_tests__legacy__proverif_result_errors__lib__modelled *)
 letfun new_tests__legacy__proverif_result_errors__lib__modelled(x: bitstring) = hax_result_ok(x).
-(* src: src/legacy/proverif-result-errors/lib.rs:133:0-138:1 new_tests__legacy__proverif_result_errors__lib__match_any *)
+(* src: src/legacy/proverif-result-errors/lib.rs:134:0-139:1 new_tests__legacy__proverif_result_errors__lib__match_any *)
 letfun new_tests__legacy__proverif_result_errors__lib__match_any(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in v
   else let core__result__Result__Err(wildcard: bitstring) = hax__scrut0 in nat_0
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:141:0-147:1 new_tests__legacy__proverif_result_errors__lib__match_variant *)
+(* src: src/legacy/proverif-result-errors/lib.rs:142:0-148:1 new_tests__legacy__proverif_result_errors__lib__match_variant *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__match_variant(x: bitstring) =
   bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
-(* src: src/legacy/proverif-result-errors/lib.rs:149:0-152:1 new_tests__legacy__proverif_result_errors__lib__forwarded *)
+(* src: src/legacy/proverif-result-errors/lib.rs:150:0-153:1 new_tests__legacy__proverif_result_errors__lib__forwarded *)
 letfun new_tests__legacy__proverif_result_errors__lib__forwarded(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
   else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:155:0-161:1 new_tests__legacy__proverif_result_errors__lib__match_forwarded *)
+(* src: src/legacy/proverif-result-errors/lib.rs:156:0-162:1 new_tests__legacy__proverif_result_errors__lib__match_forwarded *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__match_forwarded(x: bitstring) =
   bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
-(* src: src/legacy/proverif-result-errors/lib.rs:164:0-169:1 new_tests__legacy__proverif_result_errors__lib__error_code *)
+(* src: src/legacy/proverif-result-errors/lib.rs:165:0-170:1 new_tests__legacy__proverif_result_errors__lib__error_code *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__error_code(e: bitstring) =
   bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
-(* src: src/legacy/proverif-result-errors/lib.rs:171:0-176:1 new_tests__legacy__proverif_result_errors__lib__inspected *)
+(* src: src/legacy/proverif-result-errors/lib.rs:172:0-177:1 new_tests__legacy__proverif_result_errors__lib__inspected *)
 letfun new_tests__legacy__proverif_result_errors__lib__inspected(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in v
   else let core__result__Result__Err(e: bitstring) = hax__scrut0 in
     new_tests__legacy__proverif_result_errors__lib__error_code(e)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:179:0-181:1 new_tests__legacy__proverif_result_errors__lib__opaque_result *)
+(* src: src/legacy/proverif-result-errors/lib.rs:180:0-182:1 new_tests__legacy__proverif_result_errors__lib__opaque_result *)
 (* opaque *)
 fun new_tests__legacy__proverif_result_errors__lib__opaque_result(bitstring): bitstring [data].
-(* src: src/legacy/proverif-result-errors/lib.rs:184:0-187:1 new_tests__legacy__proverif_result_errors__lib__use_opaque *)
+(* src: src/legacy/proverif-result-errors/lib.rs:185:0-188:1 new_tests__legacy__proverif_result_errors__lib__use_opaque *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__use_opaque(x: bitstring) =
-  let hax__scrut0 = (bitstring_err() (* HAX ERROR: `new_tests__legacy__proverif_result_errors__lib__opaque_result` returns a `Result`, but its model is a `fun` or a `reduc`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)) in
+  let hax__scrut0 = (bitstring_err() (* HAX ERROR: `new_tests__legacy__proverif_result_errors__lib__opaque_result` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)) in
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
   else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:190:0-192:1 new_tests__legacy__proverif_result_errors__lib__encode *)
+(* src: src/legacy/proverif-result-errors/lib.rs:191:0-193:1 new_tests__legacy__proverif_result_errors__lib__encode *)
 (* marked as constructor *)
 fun new_tests__legacy__proverif_result_errors__lib__encode(bitstring): bitstring [data].
 reduc forall x: bitstring; new_tests__legacy__proverif_result_errors__lib__decode__inverse(new_tests__legacy__proverif_result_errors__lib__encode(x)) = x.
 letfun new_tests__legacy__proverif_result_errors__lib__decode(y: bitstring) =
   let x = new_tests__legacy__proverif_result_errors__lib__decode__inverse(y) in hax_result_ok(x)
   else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
-(* src: src/legacy/proverif-result-errors/lib.rs:199:0-201:1 new_tests__legacy__proverif_result_errors__lib__round_trip *)
+(* src: src/legacy/proverif-result-errors/lib.rs:200:0-202:1 new_tests__legacy__proverif_result_errors__lib__round_trip *)
 letfun new_tests__legacy__proverif_result_errors__lib__round_trip(x: bitstring) =
   new_tests__legacy__proverif_result_errors__lib__decode(
     new_tests__legacy__proverif_result_errors__lib__encode(x)
   ).
-(* src: src/legacy/proverif-result-errors/lib.rs:203:0-208:1 new_tests__legacy__proverif_result_errors__lib__decode_or_zero *)
+(* src: src/legacy/proverif-result-errors/lib.rs:204:0-209:1 new_tests__legacy__proverif_result_errors__lib__decode_or_zero *)
 letfun new_tests__legacy__proverif_result_errors__lib__decode_or_zero(b: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__decode(b) in
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in v
   else let core__result__Result__Err(wildcard: bitstring) = hax__scrut0 in nat_0
   else bitstring_err().
-(* src: src/legacy/proverif-result-errors/lib.rs:213:0-215:1 new_tests__legacy__proverif_result_errors__lib__narrow *)
+(* src: src/legacy/proverif-result-errors/lib.rs:213:0-213:39 new_tests__legacy__proverif_result_errors__lib__record *)
+letfun new_tests__legacy__proverif_result_errors__lib__record(x: bitstring) = x.
+(* src: src/legacy/proverif-result-errors/lib.rs:218:0-226:1 new_tests__legacy__proverif_result_errors__lib__err_arm_effect *)
+letfun new_tests__legacy__proverif_result_errors__lib__err_arm_effect(r: bitstring) =
+  let core__result__Result__Ok(v: bitstring) = r in core__result__Result__Ok(v)
+  else let core__result__Result__Err(e: bitstring) = r in
+    (let wildcard = new_tests__legacy__proverif_result_errors__lib__record(nat_0) in
+    core__result__Result__Err(e))
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:228:0-233:1 new_tests__legacy__proverif_result_errors__lib__effect_before_propagation *)
+letfun new_tests__legacy__proverif_result_errors__lib__effect_before_propagation(x: bitstring) =
+  let wildcard = new_tests__legacy__proverif_result_errors__lib__record(x) in
+  let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__check(x) in
+  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
+  else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:235:0-237:1 new_tests__legacy__proverif_result_errors__lib__effect_after_result *)
+letfun new_tests__legacy__proverif_result_errors__lib__effect_after_result(x: bitstring) =
+  rust_primitives__hax__Tuple2__Tuple2(
+    new_tests__legacy__proverif_result_errors__lib__check(x),
+    new_tests__legacy__proverif_result_errors__lib__record(x)
+  ).
+(* src: src/legacy/proverif-result-errors/lib.rs:239:0-242:1 new_tests__legacy__proverif_result_errors__lib__effect_after_propagation *)
+letfun new_tests__legacy__proverif_result_errors__lib__effect_after_propagation(x: bitstring) =
+  let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__check(x) in
+  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in
+    core__result__Result__Ok(new_tests__legacy__proverif_result_errors__lib__record(v))
+  else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:244:0-247:1 new_tests__legacy__proverif_result_errors__lib__Out *)
+fun new_tests__legacy__proverif_result_errors__lib__Out__Out(
+  bitstring,
+  bitstring
+): bitstring [data].
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_result_errors__lib__Out__Out__n(
+    new_tests__legacy__proverif_result_errors__lib__Out__Out(v_0, v_1)
+  ) = v_0.
+reduc forall v_0: bitstring, v_1: bitstring;
+  new_tests__legacy__proverif_result_errors__lib__Out__Out__r(
+    new_tests__legacy__proverif_result_errors__lib__Out__Out(v_0, v_1)
+  ) = v_1.
+(* src: src/legacy/proverif-result-errors/lib.rs:249:0-251:1 new_tests__legacy__proverif_result_errors__lib__produce *)
+letfun new_tests__legacy__proverif_result_errors__lib__produce(x: bitstring) =
+  new_tests__legacy__proverif_result_errors__lib__Out__Out(
+    x,
+    new_tests__legacy__proverif_result_errors__lib__check(x)
+  ).
+(* src: src/legacy/proverif-result-errors/lib.rs:253:0-256:1 new_tests__legacy__proverif_result_errors__lib__rest_pattern *)
+letfun new_tests__legacy__proverif_result_errors__lib__rest_pattern(x: bitstring) =
+  let new_tests__legacy__proverif_result_errors__lib__Out__Out(
+    n: bitstring,
+    wildcard: bitstring
+  ) = new_tests__legacy__proverif_result_errors__lib__produce(x) in n else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:258:0-262:1 new_tests__legacy__proverif_result_errors__lib__all_fields *)
+letfun new_tests__legacy__proverif_result_errors__lib__all_fields(x: bitstring) =
+  let new_tests__legacy__proverif_result_errors__lib__Out__Out(
+    n: bitstring,
+    r: bitstring
+  ) = new_tests__legacy__proverif_result_errors__lib__produce(x) in (let core__result__Result__Ok(
+    v: bitstring
+  ) = r in core__result__Result__Ok(rust_primitives__hax__machine_int__add(n, v))
+  else let core__result__Result__Err(err: bitstring) = r in core__result__Result__Err(err)
+  else bitstring_err()) else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:267:0-269:1 new_tests__legacy__proverif_result_errors__lib__equal_err *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result_errors__lib__equal_err(x: bitstring) =
+  bitstring_err() (* HAX ERROR: a `Result` or an error coming from a hand-written model is passed to a function whose body is not extracted: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+(* src: src/legacy/proverif-result-errors/lib.rs:272:0-282:1 new_tests__legacy__proverif_result_errors__lib__repacked *)
+(*  @fail(extraction): proverif(HAX0001, HAX0001, HAX0001) *)
+letfun new_tests__legacy__proverif_result_errors__lib__repacked(x: bitstring) =
+  let swapped = (let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
+  let core__result__Result__Ok(wildcard: bitstring) = hax__scrut0 in
+    core__result__Result__Err(rust_primitives__hax__Tuple0__Tuple0())
+  else let core__result__Result__Err(e: bitstring) = hax__scrut0 in core__result__Result__Ok(e)
+  else bitstring_err()) in
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+fun extern__derive(bitstring): bitstring.
+(* src: src/legacy/proverif-result-errors/lib.rs:284:0-284:21 new_tests__legacy__proverif_result_errors__lib__derive *)
+letfun new_tests__legacy__proverif_result_errors__lib__derive(k: bitstring) = extern__derive(k).
+(* src: src/legacy/proverif-result-errors/lib.rs:290:0-293:1 new_tests__legacy__proverif_result_errors__lib__use_derive *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result_errors__lib__use_derive(k: bitstring) =
+  let hax__scrut0 = (bitstring_err() (* HAX ERROR: `new_tests__legacy__proverif_result_errors__lib__derive` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)) in
+  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
+  else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:295:0-295:53 new_tests__legacy__proverif_result_errors__lib__hashed *)
+letfun new_tests__legacy__proverif_result_errors__lib__hashed(x: bitstring) = crypto__hash(x).
+(* src: src/legacy/proverif-result-errors/lib.rs:301:0-304:1 new_tests__legacy__proverif_result_errors__lib__use_hashed *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result_errors__lib__use_hashed(x: bitstring) =
+  let hax__scrut0 = (bitstring_err() (* HAX ERROR: `new_tests__legacy__proverif_result_errors__lib__hashed` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; model it with a `letfun` returning `hax_result_ok(..)` or `hax_result_err(..)` *)) in
+  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
+  else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:306:0-308:1 new_tests__legacy__proverif_result_errors__lib__Wrapped *)
+fun new_tests__legacy__proverif_result_errors__lib__Wrapped__E(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__proverif_result_errors__lib__Wrapped__E__0(
+    new_tests__legacy__proverif_result_errors__lib__Wrapped__E(v_0)
+  ) = v_0.
+(* src: src/legacy/proverif-result-errors/lib.rs:310:0-313:1 new_tests__legacy__proverif_result_errors__lib__map_err_constructor *)
+letfun new_tests__legacy__proverif_result_errors__lib__map_err_constructor(x: bitstring) =
+  let hax__scrut0 = (let hax__scrut1 = new_tests__legacy__proverif_result_errors__lib__check(x) in
+  let core__result__Result__Ok(hax__ok: bitstring) = hax__scrut1 in
+    core__result__Result__Ok(hax__ok)
+  else let core__result__Result__Err(hax__err: bitstring) = hax__scrut1 in
+    core__result__Result__Err(new_tests__legacy__proverif_result_errors__lib__Wrapped__E(hax__err))
+  else bitstring_err()) in
+  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
+  else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:318:0-320:1 new_tests__legacy__proverif_result_errors__lib__narrow *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__narrow(x: bitstring) =
   bitstring_err() (* HAX ERROR: std fallible conversion under `--result-errors`, whose error is not modelled *).

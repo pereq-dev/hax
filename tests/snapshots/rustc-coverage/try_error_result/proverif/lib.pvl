@@ -49,7 +49,7 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*                                                               *)
 (*  - Loops containing `return` not supported in ProVerif *)
 (*  - Loops containing `return` not supported in ProVerif *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -66,10 +66,10 @@ query attacker(hax_extraction_error__new_tests).
 (*  - 2 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
 (*****************************************************************)
 
-(* src: src/rustc-coverage/try_error_result.rs:8:0-14:1 new_tests__rustc_coverage__try_error_result__call *)
+(* src: src/rustc-coverage/try_error_result.rs:7:0-13:1 new_tests__rustc_coverage__try_error_result__call *)
 letfun new_tests__rustc_coverage__try_error_result__call(return_error: bitstring) =
   let (=True()) = return_error in bitstring_err() else rust_primitives__hax__Tuple0__Tuple0().
-(* src: src/rustc-coverage/try_error_result.rs:16:0-40:1 new_tests__rustc_coverage__try_error_result__test1 *)
+(* src: src/rustc-coverage/try_error_result.rs:15:0-39:1 new_tests__rustc_coverage__try_error_result__test1 *)
 letfun new_tests__rustc_coverage__try_error_result__test1(wildcard: bitstring) =
   (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
   let hax__scrut0 = (bitstring_err() (* HAX ERROR: Loops containing `return` not supported in ProVerif *)) in
@@ -77,11 +77,11 @@ letfun new_tests__rustc_coverage__try_error_result__test1(wildcard: bitstring) =
   else let core__ops__control_flow__ControlFlow__Continue(countdown_3: bitstring) = hax__scrut0 in
     rust_primitives__hax__Tuple0__Tuple0()
   else bitstring_err().
-(* src: src/rustc-coverage/try_error_result.rs:42:0-42:14 new_tests__rustc_coverage__try_error_result__Thing1 *)
+(* src: src/rustc-coverage/try_error_result.rs:41:0-41:14 new_tests__rustc_coverage__try_error_result__Thing1 *)
 fun new_tests__rustc_coverage__try_error_result__Thing1__Thing1(): bitstring [data].
-(* src: src/rustc-coverage/try_error_result.rs:53:0-53:14 new_tests__rustc_coverage__try_error_result__Thing2 *)
+(* src: src/rustc-coverage/try_error_result.rs:52:0-52:14 new_tests__rustc_coverage__try_error_result__Thing2 *)
 fun new_tests__rustc_coverage__try_error_result__Thing2__Thing2(): bitstring [data].
-(* src: src/rustc-coverage/try_error_result.rs:44:4-50:5 new_tests__rustc_coverage__try_error_result__Impl__get_thing_2 *)
+(* src: src/rustc-coverage/try_error_result.rs:43:4-49:5 new_tests__rustc_coverage__try_error_result__Impl__get_thing_2 *)
 letfun new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
   self: bitstring,
   return_error: bitstring
@@ -89,12 +89,12 @@ letfun new_tests__rustc_coverage__try_error_result__Impl__get_thing_2(
   let (=True()) = return_error
     in bitstring_err()
     else new_tests__rustc_coverage__try_error_result__Thing2__Thing2().
-(* src: src/rustc-coverage/try_error_result.rs:55:4-61:5 new_tests__rustc_coverage__try_error_result__Impl_1__call *)
+(* src: src/rustc-coverage/try_error_result.rs:54:4-60:5 new_tests__rustc_coverage__try_error_result__Impl_1__call *)
 letfun new_tests__rustc_coverage__try_error_result__Impl_1__call(
   self: bitstring,
   return_error: bitstring
 ) = let (=True()) = return_error in bitstring_err() else nat_57.
-(* src: src/rustc-coverage/try_error_result.rs:64:0-114:1 new_tests__rustc_coverage__try_error_result__test2 *)
+(* src: src/rustc-coverage/try_error_result.rs:63:0-113:1 new_tests__rustc_coverage__try_error_result__test2 *)
 letfun new_tests__rustc_coverage__try_error_result__test2(wildcard: bitstring) =
   let thing1 = new_tests__rustc_coverage__try_error_result__Thing1__Thing1() in
   (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
@@ -103,10 +103,10 @@ letfun new_tests__rustc_coverage__try_error_result__test2(wildcard: bitstring) =
   else let core__ops__control_flow__ControlFlow__Continue(countdown_3: bitstring) = hax__scrut0 in
     rust_primitives__hax__Tuple0__Tuple0()
   else bitstring_err().
-(* src: src/rustc-coverage/try_error_result.rs:116:0-122:1 new_tests__rustc_coverage__try_error_result__main *)
+(* src: src/rustc-coverage/try_error_result.rs:115:0-121:1 new_tests__rustc_coverage__try_error_result__main *)
 letfun new_tests__rustc_coverage__try_error_result__main(wildcard: bitstring) =
   let wildcard_1 = core__result__Impl__expect_err(
-    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *),
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *),
     string_lit__test1_x20should_x20fail
   ) in
   let hax__scrut0 = new_tests__rustc_coverage__try_error_result__test2(

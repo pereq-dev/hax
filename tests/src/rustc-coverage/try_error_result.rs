@@ -1,5 +1,4 @@
-//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001)
-//! @fail(extraction): proverif(HAX0001, HAX0001)
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001)
 //! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments)]
 #![cfg_attr(rustfmt, rustfmt::skip)]

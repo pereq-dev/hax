@@ -47,14 +47,14 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
+(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
-(*  - the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
+(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
 (*  - Closures not supported in ProVerif *)
@@ -82,7 +82,7 @@ reduc forall v_0: bitstring;
   ) = v_0.
 (* src: src/legacy/lean-core-models/result.rs:16:0-43:1 new_tests__legacy__lean_core_models__lib__result__tests *)
 letfun new_tests__legacy__lean_core_models__lib__result__tests(wildcard: bitstring) =
-  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
 
 (* src: src/legacy/lean-core-models/phantom.rs:9:0-11:1 new_tests__legacy__lean_core_models__lib__phantom__Bar *)
 fun new_tests__legacy__lean_core_models__lib__phantom__Bar__Bar(bitstring): bitstring [data].
@@ -143,7 +143,7 @@ letfun new_tests__legacy__lean_core_models__lib__option__test(wildcard: bitstrin
     bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *),
     bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
   ) in
-  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
 (* src: src/legacy/lean-core-models/default.rs:7:4-9:5 new_tests__legacy__lean_core_models__lib__default__structs__S *)
 fun new_tests__legacy__lean_core_models__lib__default__structs__S__S(bitstring): bitstring [data].
 reduc forall v_0: bitstring;

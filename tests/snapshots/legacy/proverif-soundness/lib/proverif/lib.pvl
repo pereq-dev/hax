@@ -47,10 +47,10 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
-(*  - this arm handles an `Err` without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
-(*  - this pattern discards a `Result`, which may be an `Err`: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -74,7 +74,7 @@ letfun new_tests__legacy__proverif_soundness__lib__check(x: bitstring) =
   let (=True()) = hax__cond0 in bitstring_err() else x.
 (* src: src/legacy/proverif-soundness/lib.rs:14:0-16:1 new_tests__legacy__proverif_soundness__lib__reject_on_error *)
 letfun new_tests__legacy__proverif_soundness__lib__reject_on_error(x: bitstring) =
-  bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-soundness/lib.rs:18:0-20:1 new_tests__legacy__proverif_soundness__lib__short_circuit_or *)
 letfun new_tests__legacy__proverif_soundness__lib__short_circuit_or(o: bitstring, x: bitstring) =
   let hax__cond0 = core__option__Impl__is_none(o) in
@@ -93,8 +93,8 @@ letfun new_tests__legacy__proverif_soundness__lib__short_circuit_and(o: bitstrin
     else logical_and_opaque(hax__cond0).
 (* src: src/legacy/proverif-soundness/lib.rs:26:0-32:1 new_tests__legacy__proverif_soundness__lib__unit_patterns *)
 letfun new_tests__legacy__proverif_soundness__lib__unit_patterns(r: bitstring) =
-  let n = (bitstring_err() (* HAX ERROR: this arm handles an `Err` without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)) in
-  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *).
+  let n = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)) in
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-soundness/lib.rs:34:0-40:1 new_tests__legacy__proverif_soundness__lib__external_constructors *)
 letfun new_tests__legacy__proverif_soundness__lib__external_constructors(
   a: bitstring,
@@ -132,7 +132,7 @@ letfun new_tests__legacy__proverif_soundness__lib__guarded(x: bitstring, y: bits
   let Some(hax__val5) = hax__arm4 in hax__val5
   else let hax__arm7 = (let Some(v_2) = x in
     (let hax__cond6 = core__result__Impl__is_ok(
-      bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one; propagate the error, or pass `--result-errors` *)
+      bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
     ) in
     let (=True()) = hax__cond6 in Some(nat_2)
     else None())

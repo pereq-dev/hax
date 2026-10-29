@@ -17,7 +17,7 @@ cargo hax into proverif
 The backend accepts three options (see `cargo hax into proverif --help`):
 
 - `--keep-trait-calls <PATHS>` keeps calls of the given trait items as calls of the trait item rather than of the impl they dispatch to, so that a hand-written model covers every impl.
-- `--result-errors` keeps `Ok` and `Err` as constructors, so error paths stay reachable. By default, a `Result` is its `Ok` payload and producing an `Err` ends the trace, which keeps the state space small but only fits code that never goes on after an `Err`: a match arm or an `else` branch that handles an `Err` without returning one, `is_err()`, `unwrap_or(..)` or a discarded `Result` is rejected, and needs `--result-errors`.
+- `--result-errors` keeps `Ok` and `Err` as constructors, so error paths stay reachable. By default, a `Result` is its `Ok` payload and producing an `Err` ends the trace, which keeps the state space small but only fits code that never goes on after an `Err`, nor does anything observable before returning it: a match arm or an `else` branch that handles an `Err` without returning one, `is_err()`, `unwrap_or(..)`, a discarded `Result`, or a call to a hand-written model between producing an `Err` and returning it is rejected, and needs `--result-errors`.
 - `--assume-items <CLAUSES>` extracts only the signature of the selected items, as abstract functions.
 
 For a project, store the configuration as a [proof scenario](../tools.md#proof-scenarios) in `hax.toml`, and run it with `cargo hax extract`:
