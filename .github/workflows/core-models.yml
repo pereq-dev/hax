@@ -2,41 +2,78 @@ name: Core models
 
 # Both extractions run through `cargo hax`, built from this checkout — the
 # Lean one via the charon and aeneas versions it pins. Any change to hax can
-# therefore move the extraction, hence the broad paths below.
+# therefore move the extraction, hence the broad paths of the `changes` job.
 on:
   push:
     branches: [main, dev]
-    paths:
-      - 'hax-lib/**'
-      - 'cli/**'
-      - 'engine/**'
-      - 'rust-engine/**'
-      - 'frontend/**'
-      - 'flake.nix'
-      - 'flake.lock'
-      - 'rust-toolchain.toml'
-      - '.github/workflows/core-models.yml'
   pull_request:
     branches: [main, dev]
-    paths:
-      - 'hax-lib/**'
-      - 'cli/**'
-      - 'engine/**'
-      - 'rust-engine/**'
-      - 'frontend/**'
-      - 'flake.nix'
-      - 'flake.lock'
-      - 'rust-toolchain.toml'
-      - '.github/workflows/core-models.yml'
+  merge_group:
 
 defaults:
   run:
     working-directory: hax-lib/core-models
 
 jobs:
+  changes:
+    name: "core-models: changes"
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ github.workspace }}
+    outputs:
+      relevant: ${{ steps.diff.outputs.relevant }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # For a pull request, the merge commit and both of its parents.
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
+      # The base is the target branch of a pull request, the previous tip of
+      # a pushed branch, and for a merge queue entry the current tip of the
+      # target branch rather than the entry's own base, so that the diff also
+      # covers the entries ahead of it in the queue, which may merge on the
+      # strength of this entry's checks. A failing fetch or diff marks the
+      # change relevant rather than skipping the checks.
+      - id: diff
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.event.merge_group.base_ref }}
+          BEFORE: ${{ github.event.before }}
+        run: |
+          base=
+          case "$EVENT" in
+            pull_request) base=HEAD^1 ;;
+            merge_group) git fetch --depth=1 origin "$BASE_REF" && base=FETCH_HEAD ;;
+            push) git fetch --depth=1 origin "$BEFORE" && base=$BEFORE ;;
+          esac
+          if [ -z "$base" ] || ! git diff --quiet "$base" HEAD -- \
+            hax-lib \
+            hax-types \
+            hax-lib-protocol \
+            hax-lib-protocol-macros \
+            cli \
+            engine \
+            rust-engine \
+            frontend \
+            Cargo.toml \
+            Cargo.lock \
+            rustfmt.toml \
+            .cargo \
+            flake.nix \
+            flake.lock \
+            rust-toolchain.toml \
+            .github/workflows/core-models.yml
+          then
+            echo relevant=true >> "$GITHUB_OUTPUT"
+          else
+            echo relevant=false >> "$GITHUB_OUTPUT"
+          fi
+
   # ---------------------------------------------------------------- formatting
   rust-fmt:
     name: "core-models: fmt"
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -65,6 +102,8 @@ jobs:
   # hax's, for the F* extraction, and the pinned charon's, for the Lean one.
   rust-test:
     name: "core-models: test (${{ matrix.toolchain }})"
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -115,6 +154,8 @@ jobs:
   # function being missed.
   test-coverage:
     name: "core-models: coverage"
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -141,7 +182,8 @@ jobs:
   lean-build:
     name: "core-models: lean"
     runs-on: ubuntu-latest
-    needs: [rust-fmt]   # don't waste cycles on a formatting-broken PR
+    needs: [changes, rust-fmt]   # don't waste cycles on a formatting-broken PR
+    if: needs.changes.outputs.relevant == 'true'
     steps:
       - uses: actions/checkout@v5
       - name: Free disk space by removing preinstalled packages
@@ -214,7 +256,8 @@ jobs:
   fstar-build:
     name: "core-models: fstar"
     runs-on: ubuntu-latest
-    needs: [rust-fmt]
+    needs: [changes, rust-fmt]
+    if: needs.changes.outputs.relevant == 'true'
     defaults:
       run:
         working-directory: .
@@ -250,6 +293,8 @@ jobs:
 
   core-models-tests:
     name: "core-models: tests"
+    needs: changes
+    if: needs.changes.outputs.relevant == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -279,3 +324,17 @@ jobs:
         unset CI
         nix develop .#ci-examples --command \
           make -C hax-lib/core-models/tests/rust_lean_equiv_test check-skipped
+
+  result:
+    name: "core-models: result"
+    needs: [changes, rust-fmt, rust-test, test-coverage, lean-build, fstar-build, core-models-tests]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}
+          allow-skipped: ${{ needs.changes.outputs.relevant != 'true' }}
