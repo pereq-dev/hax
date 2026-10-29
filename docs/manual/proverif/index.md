@@ -17,7 +17,7 @@ cargo hax into proverif
 The backend accepts three options (see `cargo hax into proverif --help`):
 
 - `--keep-trait-calls <PATHS>` keeps calls of the given trait items as calls of the trait item rather than of the impl they dispatch to, so that a hand-written model covers every impl.
-- `--result-errors` keeps `Ok` and `Err` as constructors, so error paths stay reachable. By default, a `Result` is its `Ok` payload and producing an `Err` ends the trace, which keeps the state space small but only fits code that never goes on after an `Err`, nor does anything observable before returning it: a match arm or an `else` branch that handles an `Err` without returning one, `is_err()`, `unwrap_or(..)`, a discarded `Result`, or a call to a hand-written model between producing an `Err` and returning it is rejected, and needs `--result-errors`.
+- `--result-errors` models errors as values, for protocols that recover from them or react to them (see [Errors](#errors)).
 - `--assume-items <CLAUSES>` extracts only the signature of the selected items, as abstract functions.
 
 For a project, store the configuration as a [proof scenario](../tools.md#proof-scenarios) in `hax.toml`, and run it with `cargo hax extract`:
@@ -56,6 +56,14 @@ proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives \
          proofs/proverif/analysis.pv
 ```
 
+## Errors
+
+The backend has two models of `Result`, for two meanings of an error.
+
+By default, errors are fatal: a `Result` is its `Ok` payload, and producing an `Err` ends the trace. The model assumes that the session then stops with no observable reaction, which fits most protocol code and keeps the state space small. The backend rejects the code this model would get wrong: code that goes on after an `Err` (a match arm or an `else` branch that handles an `Err` without returning one, `is_err()`, `unwrap_or(..)`, a discarded `Result`), and code that does anything observable, such as calling a hand-written model, between producing an `Err` and returning it. Propagating the error, with `?` or an arm returning an `Err`, is accepted.
+
+With `--result-errors`, errors are values: `Ok` and `Err` are constructors, and recovery is modelled. Use it when the protocol recovers from an error or reacts to one, for example by sending an alert, retrying or falling back, and model that reaction in the analysis process: under the default model, an attacker who can tell that an operation failed is not modelled. A hand-written model of a function returning a `Result` must then return `hax_result_ok(..)` or `hax_result_err(..)`, and its error is a placeholder, not the Rust error value: the extracted code may propagate it or match it with `Err(_)`, but code that inspects it is rejected, and so is a model whose value is a bare `fun`, `reduc` or `const` term.
+
 ## Writing the model
 
 Two things are written by hand: abstract models for the functions whose Rust code should not be extracted, and the analysis file.
@@ -64,8 +72,8 @@ Two things are written by hand: abstract models for the functions whose Rust cod
 
 Cryptographic code, parsing and serialization are not meaningful as symbolic terms, so they get an abstract model through `hax_lib` attributes:
 
-- `#[hax_lib::proverif::replace_body("...")]` replaces the body of a function by a ProVerif expression, typically a call to `cryptolib.pvl`, such as `crypto__aead_enc(key, message, empty)`. For a function returning a `Result`, the expression returns `hax_result_ok(..)` or `hax_result_err(..)`, as the `*_result` functions of `cryptolib.pvl` do, so that it fits both Result models. Its error is a term of the model, not the Rust error value, so with `--result-errors` a match on a specific error variant of it is rejected.
-- `#[hax_lib::pv_constructor]` makes a function a ProVerif constructor, for an injective encoding, and `#[hax_lib::pv_inverse_of(f)]` makes a function its inverse, for the matching decoding. An inverse returning a `Result` returns `Ok`, and an `Err` off the image of `f`. With `--result-errors`, a `pv_constructor` or opaque function returning a `Result` is rejected, as its value would be neither `Ok` nor `Err`.
+- `#[hax_lib::proverif::replace_body("...")]` replaces the body of a function by a ProVerif expression, typically a call to `cryptolib.pvl`, such as `crypto__aead_enc(key, message, empty)`. For a function returning a `Result`, the expression returns `hax_result_ok(..)` or `hax_result_err(..)`, as the `*_result` functions of `cryptolib.pvl` do, so that it fits both [Result models](#errors).
+- `#[hax_lib::pv_constructor]` makes a function a ProVerif constructor, for an injective encoding, and `#[hax_lib::pv_inverse_of(f)]` makes a function its inverse, for the matching decoding. An inverse returning a `Result` returns `Ok`, and an `Err` off the image of `f`.
 - `#[hax_lib::pv_extern]` makes a function an abstract one-way function of its arguments.
 - `#[hax_lib::opaque]` drops the code of an item. With `--keep-trait-calls`, the trait items are then defined once in a hand-written `.pvl` file, loaded before `lib.pvl`.
 - `#[hax_lib::proverif::before("...")]`, `after` and `replace` insert verbatim ProVerif declarations around, or instead of, an item.
