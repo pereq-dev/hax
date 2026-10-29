@@ -108,7 +108,7 @@ pub async fn run(options: Cli) -> Result<()> {
                 &selected,
                 &stages,
             )?;
-            results::check(&ctx, &file, job).await
+            results::check(&ctx, &file, &with_tier, job).await
         })
         .await
 }

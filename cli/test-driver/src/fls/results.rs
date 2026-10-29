@@ -213,6 +213,20 @@ impl ResultsFile {
     }
 }
 
+/// The report shows a reason only for a gap or an unsupported construct, so
+/// a reason on a fully supported test is never read.
+fn unused_reason(backend: BackendName, test: &FlsTest, result: &TestResult) -> Option<String> {
+    let shown = result.classification != Classification::Supported;
+    if shown || !test.reasons.contains_key(&backend) {
+        return None;
+    }
+    let path = &test.path;
+    Some(format!(
+        "{path}: warning: `@{backend}(reason)` is never shown for a test classified as `{}`; drop it or fix the tier",
+        result.classification.as_str()
+    ))
+}
+
 /// The violations of the committed results files in `results_dir`: every test
 /// with a tier for the backend of a file has an entry of that tier in it, a
 /// reason for the backend if the entry is not classified as supported, and
@@ -311,13 +325,27 @@ fn toml_string(s: &str) -> String {
 /// Writes the merged results to the cache directory and compares them with
 /// the committed file; with `--update-results` the committed file is
 /// rewritten instead.
-pub async fn check(ctx: &FlsContext, file: &ResultsFile, job: JobKind) -> Result<()> {
+pub async fn check(
+    ctx: &FlsContext,
+    file: &ResultsFile,
+    tests: &[&FlsTest],
+    job: JobKind,
+) -> Result<()> {
     for (path, result) in &file.tests {
         job.report_message(format!(
             "{path}: {} ({})",
             result.stage.as_str(),
             result.classification.as_str()
         ));
+    }
+    for test in tests {
+        if let Some(warning) = file
+            .tests
+            .get(&test.path)
+            .and_then(|result| unused_reason(file.backend, test, result))
+        {
+            job.report_message(warning);
+        }
     }
     let rendered = file.render();
     let observed_path = ctx
@@ -379,6 +407,36 @@ mod tests {
         assert_eq!(merged["a"].stage, LEAN.stage("checked"));
         assert_eq!(merged["b"].stage, LEAN.stage("checked"));
         assert_eq!(merged["new"].stage, LEAN.stage("elaborates"));
+    }
+
+    #[test]
+    fn unused_reason_warns_on_supported_only() {
+        let test = |reason: Option<&str>| FlsTest {
+            path: "c/s/t".into(),
+            source: PathBuf::new(),
+            fls: vec!["fls_a".into()],
+            title: "t".into(),
+            no_equiv: None,
+            tiers: HashMap::from([(BackendName::Lean, Tier::Supported)]),
+            reasons: reason
+                .map(|r| HashMap::from([(BackendName::Lean, r.to_string())]))
+                .unwrap_or_default(),
+            equiv: vec![],
+        };
+        let with_reason = test(Some("why"));
+        let warns = |test: &FlsTest, stage: &str, tier: Tier| {
+            unused_reason(
+                BackendName::Lean,
+                test,
+                &TestResult::new(LEAN.stage(stage), tier),
+            )
+            .is_some()
+        };
+        assert!(warns(&with_reason, "checked", Tier::Supported));
+        assert!(!warns(&with_reason, "extracted", Tier::Supported));
+        assert!(!warns(&with_reason, "aeneas-rejected", Tier::Unsupported));
+        assert!(!warns(&with_reason, "checked", Tier::Unsupported));
+        assert!(!warns(&test(None), "checked", Tier::Supported));
     }
 
     #[test]

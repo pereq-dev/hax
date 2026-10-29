@@ -9,7 +9,7 @@ One test file per language construct, each run through every backend as a whole 
    - `@fls: <id>, <id>, ...` lists the paragraph identifiers the test covers. Required.
    - `@title: <text>` is the row label of the report. Required.
    - `@<backend>(tier): supported | unsupported`, one line per backend the test is run on, at least one. A backend without a tier line does not run the test.
-   - `@<backend>(reason): <text>` explains a stage below the tier, or a tier that is not `supported`. Required for every gap; see "Triaging a chapter".
+   - `@<backend>(reason): <text>` explains a stage below the tier, or a tier that is not `supported`. Required for every gap; see "Triaging a chapter". The results check warns when a reason accompanies a test whose classification is `supported`, since the report never shows it.
    - `@no-equiv: <reason>` declares that the test has no `equiv` function on purpose; see step 5.
    - `@cli`, `@off`, and `@fail` are not accepted.
 3. **One construct per test.** A test exercises one construct with the smallest program that gives it an observable value. Use nothing beyond `core`, `alloc`, and `hax-lib`, and limit the supporting constructs to those the FLS chapters before it introduce, so that a stage change can be attributed to the construct under test. One section holds as many tests as it has constructs, typically one to four.
