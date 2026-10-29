@@ -543,6 +543,77 @@ fn converted(x: u8) -> Result<u8, Error> {
     r
 }
 
+// Guards with observable or falling-through `Err`s.
+
+fn guard_effect(o: Option<u8>) -> Result<u8, Error> {
+    match o {
+        Some(v) if let Err(_) = check(record(v)) => Err(Error::Other),
+        _ => Ok(1),
+    }
+}
+
+fn guard_falls_to_err(o: Option<u8>) -> Result<u8, Error> {
+    match o {
+        Some(v) if let Ok(y) = check(v) => Ok(y),
+        _ => Err(Error::Other),
+    }
+}
+
+// Models whose observable behaviour is not in their own text.
+
+#[hax_lib::proverif::before(
+    "event Logged(bitstring). letfun log_it(x: bitstring) = event Logged(x); x."
+)]
+#[hax_lib::proverif::replace_body("log_it(${x})")]
+fn log(x: u8) -> u8 {
+    x
+}
+
+fn err_arm_log(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            log(0);
+            Err(e)
+        }
+    }
+}
+
+#[hax_lib::proverif::replace("event Read. letfun ${OBSERVED}() = event Read; nat_0.")]
+const OBSERVED: u8 = 0;
+
+fn err_arm_constant(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            let _k = OBSERVED;
+            Err(e)
+        }
+    }
+}
+
+// Models of `&mut` functions, and of values holding a `Result`.
+
+#[hax_lib::proverif::replace_body("crypto__aead_dec(${k}, ${c}, empty)")]
+fn dec_mut(st: &mut u8, k: u8, c: u8) -> Result<u8, ()> {
+    *st += 1;
+    if k == c { Ok(k) } else { Err(()) }
+}
+
+fn use_dec_mut(k: u8, c: u8) -> Result<u8, ()> {
+    let mut st = 0;
+    let v = dec_mut(&mut st, k, c)?;
+    Ok(v + st)
+}
+
+/// @fail(extraction): proverif(HAX0001)
+#[hax_lib::proverif::replace_body(
+    "rust_primitives__hax__Tuple2__Tuple2(${k}, crypto__aead_dec(${k}, ${c}, empty))"
+)]
+fn dec_pair(k: u8, c: u8) -> (u8, Result<u8, ()>) {
+    (k, if k == c { Ok(k) } else { Err(()) })
+}
+
 // The model of a std fallible conversion always succeeds, so under
 // `--result-errors` its error path would be lost: rejected.
 /// @fail(extraction): proverif(HAX0001)

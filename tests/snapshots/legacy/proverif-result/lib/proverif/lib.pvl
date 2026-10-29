@@ -79,10 +79,25 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
+
+(*****************************************************************)
+(*  WARNINGS — branches the model may not follow as Rust does.   *)
+(*                                                               *)
+(*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
+(*  the model cannot always evaluate. When it cannot, no arm of  *)
+(*  a `match` is taken (the trace ends) and an `if` takes its    *)
+(*  `else` branch, whatever Rust does. A query about the other   *)
+(*  branch may then hold for lack of any trace.                  *)
+(*                                                               *)
+(*  - 1 × `replace_body` keeps the `&mut` parameters `st` unchanged *)
+(*****************************************************************)
 
 (* src: src/legacy/proverif-result/lib.rs:9:0-12:1 new_tests__legacy__proverif_result__lib__Error *)
 fun new_tests__legacy__proverif_result__lib__Error__Invalid(): bitstring [data].
@@ -418,6 +433,45 @@ letfun new_tests__legacy__proverif_result__lib__returns_other_err(x: bitstring) 
 (* src: src/legacy/proverif-result/lib.rs:560:0-563:1 new_tests__legacy__proverif_result__lib__converted *)
 letfun new_tests__legacy__proverif_result__lib__converted(x: bitstring) =
   new_tests__legacy__proverif_result__lib__check(x).
+(* src: src/legacy/proverif-result/lib.rs:568:0-573:1 new_tests__legacy__proverif_result__lib__guard_effect *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__guard_effect(o: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+(* src: src/legacy/proverif-result/lib.rs:575:0-580:1 new_tests__legacy__proverif_result__lib__guard_falls_to_err *)
+letfun new_tests__legacy__proverif_result__lib__guard_falls_to_err(o: bitstring) =
+  let hax__arm1 = (let Some(v) = o in
+    (let hax__cond0 = new_tests__legacy__proverif_result__lib__check(v) in
+    let y = hax__cond0 in Some(y))
+  else None()) in
+  let Some(hax__val2) = hax__arm1 in hax__val2
+  else bitstring_err().
+event Logged(bitstring). letfun log_it(x: bitstring) = event Logged(x); x.
+(* src: src/legacy/proverif-result/lib.rs:587:0-587:50 new_tests__legacy__proverif_result__lib__log *)
+letfun new_tests__legacy__proverif_result__lib__log(x: bitstring) = log_it(x).
+(* src: src/legacy/proverif-result/lib.rs:593:0-601:1 new_tests__legacy__proverif_result__lib__err_arm_log *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__err_arm_log(r: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+event Read. letfun new_tests__legacy__proverif_result__lib__OBSERVED() = event Read; nat_0.
+(* src: src/legacy/proverif-result/lib.rs:607:0-615:1 new_tests__legacy__proverif_result__lib__err_arm_constant *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__err_arm_constant(r: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+(* src: src/legacy/proverif-result/lib.rs:619:0-619:73 new_tests__legacy__proverif_result__lib__dec_mut *)
+(* HAX WARNING: `replace_body` keeps the `&mut` parameters `st` unchanged *)
+letfun new_tests__legacy__proverif_result__lib__dec_mut(st: bitstring, k: bitstring, c: bitstring) =
+  let hax_temp_output = (crypto__aead_dec(k, c, empty)) in
+  rust_primitives__hax__Tuple2__Tuple2(st, hax_temp_output).
+(* src: src/legacy/proverif-result/lib.rs:625:0-629:1 new_tests__legacy__proverif_result__lib__use_dec_mut *)
+letfun new_tests__legacy__proverif_result__lib__use_dec_mut(k: bitstring, c: bitstring) =
+  let rust_primitives__hax__Tuple2__Tuple2(
+    tmp0: bitstring,
+    out_kw: bitstring
+  ) = new_tests__legacy__proverif_result__lib__dec_mut(nat_0, k, c) in (let v = out_kw in
+    rust_primitives__hax__machine_int__add(v, tmp0)) else bitstring_err().
+(* src: src/legacy/proverif-result/lib.rs:631:0-633:2 new_tests__legacy__proverif_result__lib__dec_pair *)
+letfun new_tests__legacy__proverif_result__lib__dec_pair(k: bitstring, c: bitstring) =
+  rust_primitives__hax__Tuple2__Tuple2(k, crypto__aead_dec(k, c, empty)).
 reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__decode__inverse(new_tests__legacy__proverif_result__lib__encode(x)) = x.
 (* src: src/legacy/proverif-result/lib.rs:203:0-203:33 new_tests__legacy__proverif_result__lib__decode *)
 letfun new_tests__legacy__proverif_result__lib__decode(b: bitstring) =

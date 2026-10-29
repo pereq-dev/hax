@@ -33,6 +33,9 @@ use hax_lib_macros_types::AttrPayload;
 enum LibCall {
     /// Keeps the `Err` in its result.
     KeepErr,
+    /// Converts its argument (`From::from`, `Into::into`): the identity when
+    /// the result holds a `Result`, an unknown function otherwise.
+    Convert,
     /// Maps the error through an opaque closure.
     MapErr,
     /// Panics on an `Err`, and returns the `Ok` payload.
@@ -52,9 +55,8 @@ fn lib_call(g: &GlobalId) -> Option<LibCall> {
         return Some(LibCall::MapErr);
     }
     Some(match render_id(g).as_str() {
+        "core__convert__From__from" | "core__convert__Into__into" => LibCall::Convert,
         "core__clone__Clone__clone"
-        | "core__convert__From__from"
-        | "core__convert__Into__into"
         | "core__ops__try_trait__FromResidual__from_residual"
         | "core__ops__try_trait__Try__branch"
         | "core__option__Impl_4__transpose"
@@ -109,6 +111,30 @@ fn words(text: &str) -> impl Iterator<Item = &str> {
 /// insertion in a table.
 fn acts_observably(text: &str) -> bool {
     words(text).any(|w| w == "event" || w == "insert")
+}
+
+/// The ProVerif keywords that may precede a parenthesis.
+const KEYWORDS: &[&str] = &[
+    "else", "event", "fun", "get", "if", "in", "insert", "let", "letfun", "new", "not", "out",
+    "phase", "reduc", "suchthat", "table", "then",
+];
+
+/// The names verbatim ProVerif text applies.
+fn applied(text: &str) -> Vec<String> {
+    let mut out = vec![];
+    let mut rest = text;
+    while let Some(start) = rest.find(|c: char| c.is_alphabetic() || c == '_') {
+        rest = &rest[start..];
+        let end = rest
+            .find(|c: char| !(c.is_alphanumeric() || c == '_'))
+            .unwrap_or(rest.len());
+        let (word, after) = rest.split_at(end);
+        if after.trim_start().starts_with('(') && !KEYWORDS.contains(&word) {
+            out.push(word.to_string());
+        }
+        rest = after;
+    }
+    out
 }
 
 /// Whether the model extracts the function with these `meta` and `body`.
@@ -467,31 +493,38 @@ impl Effects {
         // Each function or declaration acts observably by itself, or calls
         // other ones, by name.
         let mut graph: HashMap<String, (bool, Vec<String>)> = HashMap::new();
+        let mut quotes = vec![];
         for item in items {
             if let ItemKind::Quote { quote, .. } = &item.kind {
                 let text = quote_text(quote);
-                let calls: Vec<String> = words(&text).map(String::from).collect();
-                for (_, name) in scan_declarations(&text) {
-                    let node = graph.entry(name).or_default();
-                    node.0 |= acts_observably(&text);
-                    node.1.extend(calls.iter().cloned());
+                let names: Vec<String> = scan_declarations(&text)
+                    .into_iter()
+                    .map(|(_, name)| name)
+                    .collect();
+                for name in &names {
+                    graph.entry(name.clone()).or_default();
                 }
+                quotes.push((names, text));
             }
         }
         for d in fn_decls(items) {
             graph.entry(render_id(&d.name)).or_default();
         }
         let known: HashSet<String> = graph.keys().cloned().collect();
+        for (names, text) in quotes {
+            let (direct, calls) = effects.text(&text, &known);
+            for name in names {
+                let node = graph.get_mut(&name).unwrap();
+                node.0 |= direct;
+                node.1.extend(calls.iter().cloned());
+            }
+        }
         for d in fn_decls(items) {
             let (direct, calls) = if effects.extracted.contains(&d.name) {
                 let mut calls = vec![];
                 (effects.walk(d.body, &known, &mut calls), calls)
             } else if let Some(quote) = quoted_body(d.body) {
-                let text = quote_text(quote);
-                (
-                    acts_observably(&text),
-                    words(&text).map(String::from).collect(),
-                )
+                effects.text(&quote_text(quote), &known)
             } else {
                 // A handwritten or unimported body is unknown; an opaque or
                 // `pv_constructor` function renders as a `fun`.
@@ -526,6 +559,23 @@ impl Effects {
         }
     }
 
+    /// Whether verbatim ProVerif text may be observable by itself, and the
+    /// `known` names it applies. A name the analysis does not know may be
+    /// defined anywhere, so applying it may be observable.
+    fn text(&self, text: &str, known: &HashSet<String>) -> (bool, Vec<String>) {
+        let mut calls = vec![];
+        let mut direct = acts_observably(text);
+        for name in applied(text) {
+            if known.contains(&name) {
+                calls.push(name);
+            } else {
+                direct |= !(self.library.contains(&name)
+                    || LIBRARY_PREFIXES.iter().any(|p| name.starts_with(p)));
+            }
+        }
+        (direct, calls)
+    }
+
     /// Whether calling `head` may be observable. With `known`, the calls of
     /// the crate's functions and declarations are added to `calls` instead.
     fn call(&self, head: &Expr, known: Option<(&HashSet<String>, &mut Vec<String>)>) -> bool {
@@ -557,7 +607,21 @@ impl Effects {
     /// Whether a quote in a function body may be observable.
     fn quote_is_observable(&self, quote: &Quote) -> bool {
         let text = quote_text(quote);
-        acts_observably(&text) || words(&text).any(|w| self.observable.get(w) == Some(&true))
+        acts_observably(&text)
+            || applied(&text)
+                .iter()
+                .any(|name| match self.observable.get(name) {
+                    Some(observable) => *observable,
+                    None => {
+                        !(self.library.contains(name)
+                            || LIBRARY_PREFIXES.iter().any(|p| name.starts_with(p)))
+                    }
+                })
+    }
+
+    /// Whether reading the constant `g` may be observable.
+    fn constant_is_observable(&self, g: &GlobalId) -> bool {
+        self.observable.get(&render_id(g)) == Some(&true)
     }
 
     /// Whether evaluating `e` may be observable by itself; the calls of the
@@ -569,9 +633,13 @@ impl Effects {
                 self.3 |= match kind {
                     ExprKind::App { head, .. } => self.0.call(head, Some((self.1, self.2))),
                     ExprKind::Quote { contents } => {
-                        let text = quote_text(contents);
-                        self.2.extend(words(&text).map(String::from));
-                        acts_observably(&text)
+                        let (direct, calls) = self.0.text(&quote_text(contents), self.1);
+                        self.2.extend(calls);
+                        direct
+                    }
+                    ExprKind::GlobalId(g) if self.1.contains(&render_id(g)) => {
+                        self.2.push(render_id(g));
+                        false
                     }
                     _ => false,
                 };
@@ -590,6 +658,7 @@ impl Effects {
                 self.1 |= match kind {
                     ExprKind::App { head, .. } => self.0.call_is_observable(head),
                     ExprKind::Quote { contents } => self.0.quote_is_observable(contents),
+                    ExprKind::GlobalId(g) => self.0.constant_is_observable(g),
                     _ => false,
                 };
             }
@@ -776,7 +845,18 @@ impl Recovery<'_> {
                 // Whether an earlier arm already takes every `Err` of a
                 // `Result` scrutinee.
                 let mut err_taken = false;
-                for arm in arms {
+                // Whether every arm after each one returns an `Err`, with
+                // nothing observable: where an `Err` falls through to them,
+                // the model ends the trace alike.
+                let mut later_err = vec![true; arms.len()];
+                for i in (0..arms.len().saturating_sub(1)).rev() {
+                    let next = &arms[i + 1];
+                    later_err[i] = later_err[i + 1]
+                        && err_certain(&next.body)
+                        && !self.effects.has_effect(&next.body)
+                        && !guard_rhs(next).is_some_and(|g| self.effects.has_effect(g));
+                }
+                for (i, arm) in arms.iter_mut().enumerate() {
                     self.arm_pat(
                         &arm.pat,
                         err_taken,
@@ -784,11 +864,11 @@ impl Recovery<'_> {
                         &arm.body,
                         &mut rejected,
                     );
-                    if let Some(guard) = &mut arm.guard {
-                        let GuardKind::IfLet { lhs, rhs } = &mut guard.kind;
+                    if let Some(guard) = &arm.guard {
+                        let GuardKind::IfLet { lhs, rhs } = &guard.kind;
                         // On an `Err` the guard does not take, Rust falls
                         // through to the next arms; the model does not.
-                        if self.types.holds(&rhs.ty, false) && !covers_err(lhs) {
+                        if self.types.holds(&rhs.ty, false) && !covers_err(lhs) && !later_err[i] {
                             rejected.push(pat_diagnostic(
                                 lhs,
                                 RECOVERY_CONTEXT,
@@ -798,7 +878,12 @@ impl Recovery<'_> {
                                 ),
                             ));
                         }
-                        self.pat(lhs, None, &arm.body, &mut rejected);
+                        // The guard runs before the arm, which the model may
+                        // drop.
+                        self.pat(lhs, Some(rhs), &arm.body, &mut rejected);
+                    }
+                    if let Some(guard) = &mut arm.guard {
+                        let GuardKind::IfLet { rhs, .. } = &mut guard.kind;
                         self.expr(rhs, true);
                     }
                     err_taken |= arm.guard.is_none() && covers_err(&arm.pat);
@@ -848,7 +933,10 @@ impl Recovery<'_> {
                 let generics_hold = generic_args
                     .iter()
                     .any(|g| matches!(g, GenericValue::Ty(t) if self.types.holds(t, true)));
-                let lib = callee.as_ref().and_then(lib_call);
+                let lib = callee
+                    .as_ref()
+                    .and_then(lib_call)
+                    .filter(|l| *l != LibCall::Convert || self.types.holds(&e.ty, false));
                 let arg_carried = |i: usize, arg: &Expr| match callee {
                     Some(g) if g == never_to_any => true,
                     Some(g) if g.is_projector() => {
@@ -865,7 +953,12 @@ impl Recovery<'_> {
                                 .is_some_and(|t| self.types.holds(t, true))
                     }
                     _ if i == 0 && lib == Some(LibCall::PanicOnErr) => true,
-                    _ if i == 0 && matches!(lib, Some(LibCall::KeepErr | LibCall::MapErr)) => {
+                    _ if i == 0
+                        && matches!(
+                            lib,
+                            Some(LibCall::KeepErr | LibCall::MapErr | LibCall::Convert)
+                        ) =>
+                    {
                         carried
                     }
                     _ => false,
@@ -1268,8 +1361,9 @@ impl UnknownErrors<'_> {
         if g.is_projector() {
             return Ok(payload(first));
         }
-        Ok(match lib_call(g) {
-            Some(LibCall::KeepErr) => all,
+        let lib = lib_call(g).filter(|l| *l != LibCall::Convert || self.types.may_hold(ty));
+        Ok(match lib {
+            Some(LibCall::KeepErr | LibCall::Convert) => all,
             // The error is mapped through an opaque closure.
             Some(LibCall::MapErr) => all.max(Taint::Results),
             Some(LibCall::OkOr) => first.max(args.get(1).copied().unwrap_or_default().in_err()),
@@ -1515,44 +1609,57 @@ fn bare_term_names(items: &[Item]) -> HashSet<String> {
     names
 }
 
-/// Wraps each verbatim body (as `replace_body`, `pv_extern` and
-/// `pv_inverse_of` make it) of a function returning a `Result`, so that its
-/// value is one: an `Ok` or an `Err` is kept, any other value becomes an `Ok`,
-/// and a failure an `Err`, with an unknown error.
-fn wrap_bare_results(items: &mut [Item]) {
-    let wrap = |body: &mut Expr| {
-        let returns_result = matches!(body.ty.kind(), TyKind::App { head, .. }
+/// Wraps each verbatim term of type `Result` (as `replace_body`,
+/// `pv_extern` and `pv_inverse_of` make them), so that its value is one: an
+/// `Ok` or an `Err` is kept, any other value becomes an `Ok`, and a failure an
+/// `Err`, with an unknown error. A verbatim term of another type holding a
+/// `Result` cannot be normalised, and is rejected.
+#[setup_error_handling_struct]
+#[derive(Default)]
+struct WrapQuotes {
+    types: ResultTypes,
+}
+
+impl VisitorWithContext for WrapQuotes {
+    fn context(&self) -> Context {
+        Context::Phase(UNKNOWN_CONTEXT.to_string())
+    }
+}
+
+impl AstVisitorMut for WrapQuotes {
+    setup_error_handling_impl!();
+
+    fn visit_expr(&mut self, expr: &mut Expr) {
+        self.visit_inner(expr);
+        let is_result = matches!(expr.ty.kind(), TyKind::App { head, .. }
             if *head == crate::names::core::result::Result);
-        let body = match &mut *body.kind {
-            ExprKind::Block { body, .. } => body,
-            _ => body,
-        };
-        if let ExprKind::Quote { contents } = &mut *body.kind
-            && returns_result
-        {
-            contents
-                .0
-                .insert(0, QuoteContent::Verbatim("let hax__model = (".into()));
-            contents.0.push(QuoteContent::Verbatim(
-                ") in (let core__result__Result__Ok(hax__v) = hax__model in hax__model \
-                 else let core__result__Result__Err(hax__v) = hax__model in hax__model \
-                 else hax_result_ok(hax__model)) \
-                 else hax_result_err(rust_primitives__hax__Tuple0__Tuple0)"
-                    .into(),
-            ));
-        }
-    };
-    for item in items.iter_mut() {
-        match &mut item.kind {
-            ItemKind::Fn { body, .. } => wrap(body),
-            ItemKind::Impl { items, .. } => {
-                for ii in items.iter_mut() {
-                    if let ImplItemKind::Fn { body, .. } = &mut ii.kind {
-                        wrap(body)
-                    }
-                }
+        let holds = self.types.holds(&expr.ty, false);
+        if let ExprKind::Quote { contents } = &mut *expr.kind {
+            if is_result {
+                contents
+                    .0
+                    .insert(0, QuoteContent::Verbatim("let hax__model = (".into()));
+                contents.0.push(QuoteContent::Verbatim(
+                    ") in (let core__result__Result__Ok(hax__v) = hax__model in hax__model \
+                     else let core__result__Result__Err(hax__v) = hax__model in hax__model \
+                     else hax_result_ok(hax__model)) \
+                     else hax_result_err(rust_primitives__hax__Tuple0__Tuple0)"
+                        .into(),
+                ));
+            } else if holds {
+                self.error(
+                    expr.clone(),
+                    DiagnosticInfoKind::Unimplemented {
+                        issue_id: None,
+                        details: Some(
+                            "under `--result-errors`, a verbatim model of a value holding a \
+                             `Result` cannot be checked to build each `Result` as `Ok` or `Err`; \
+                             model each `Result` by a function of its own"
+                                .into(),
+                        ),
+                    },
+                )
             }
-            _ => {}
         }
     }
 }
@@ -1613,7 +1720,11 @@ impl Phase for ProverifRejectUnknownErrors {
     fn apply(&self, items: &mut Vec<Item>) {
         let types = ResultTypes::new(items);
         let bare = bare_term_names(items);
-        wrap_bare_results(items);
+        WrapQuotes {
+            types: ResultTypes::new(items),
+            ..Default::default()
+        }
+        .visit(items);
         let extracted = extracted_fns(items);
 
         let mut analysis = UnknownErrors {

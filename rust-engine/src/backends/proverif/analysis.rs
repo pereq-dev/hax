@@ -743,7 +743,12 @@ pub(crate) fn scan_declared_names(text: &str) -> Vec<String> {
 /// `text`, as its keyword and the name it introduces.
 pub(crate) fn scan_declarations(text: &str) -> Vec<(&'static str, String)> {
     let mut out = Vec::new();
-    for line in text.lines().map(str::trim_start) {
+    // A declaration starts a line, or follows the `.` ending another one.
+    let starts = text
+        .lines()
+        .flat_map(|line| line.split(". "))
+        .map(str::trim_start);
+    for line in starts {
         for kw in ["fun", "letfun", "const"] {
             if let Some(rest) = line.strip_prefix(kw).and_then(|r| r.strip_prefix(' ')) {
                 let end = rest.find(['(', ':', ' ', '\t']).unwrap_or(rest.len());
@@ -756,10 +761,10 @@ pub(crate) fn scan_declarations(text: &str) -> Vec<(&'static str, String)> {
     // A `reduc forall …; NAME(…) = …` header may span several lines.
     let mut rest = text;
     while let Some(i) = rest.find("reduc") {
-        let starts_line = rest[..i]
-            .rsplit('\n')
-            .next()
-            .is_none_or(|indent| indent.trim().is_empty());
+        let starts_line = rest[..i].rsplit('\n').next().is_none_or(|before| {
+            let before = before.trim_end();
+            before.is_empty() || before.ends_with('.')
+        });
         rest = &rest[i + "reduc".len()..];
         if !starts_line || !rest.trim_start().starts_with("forall") {
             continue;
