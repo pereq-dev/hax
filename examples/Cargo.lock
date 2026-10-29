@@ -11,8 +11,9 @@ dependencies = [
 
 [[package]]
 name = "anodized"
-version = "0.5.1"
-source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79933632536403ffb0ac407ff5334b1f5568a07b4585c12b285e8fa1a6e58c6a"
 dependencies = [
  "anodized-logic",
  "anodized-macros",
@@ -20,8 +21,9 @@ dependencies = [
 
 [[package]]
 name = "anodized-core"
-version = "0.5.1"
-source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40b3ab9425cb61b9916d45b6b4285899ab1b658f58f58568e40e1ea9c96df34d"
 dependencies = [
  "bitflags",
  "proc-macro2",
@@ -39,16 +41,19 @@ dependencies = [
 
 [[package]]
 name = "anodized-logic"
-version = "0.5.1"
-source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eec223e8af98e51e947305771f5977c6a125804f5396ad15406ccc11b0082653"
 dependencies = [
+ "anodized-macros",
  "num-bigint",
 ]
 
 [[package]]
 name = "anodized-macros"
-version = "0.5.1"
-source = "git+https://github.com/mkovaxx/anodized.git?rev=f9334c40e4e3afd0a01ed88747e9f5932d3ac35a#f9334c40e4e3afd0a01ed88747e9f5932d3ac35a"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6dd17e20e649225fdb73b37f19f5950a869cdba62591bf62794cc6c49af5338e"
 dependencies = [
  "anodized-core",
  "proc-macro2",
@@ -302,7 +307,7 @@ checksum = "f93e7192158dbcda357bdec5fb5788eebf8bbac027f3f33e719d29135ae84156"
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.4.0-rc.1"
+version = "0.4.2"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -311,7 +316,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.4.0-rc.1"
+version = "0.4.2"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -320,7 +325,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.4.0-rc.1"
+version = "0.4.2"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro2",
@@ -330,7 +335,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.4.0-rc.1"
+version = "0.4.2"
 dependencies = [
  "proc-macro2",
  "quote",
