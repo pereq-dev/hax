@@ -1,9 +1,11 @@
-name: Publish to crates.io
+name: Publish
 
 # Publishes every releasable crate of the workspace at its current version:
 # what `cargo release --workspace --execute` on a `main` checkout does, run
 # here so that publishing needs no crates.io token on any machine. The job
-# authenticates with crates.io trusted publishing.
+# authenticates with crates.io trusted publishing, which identifies the workflow
+# by its file name: renaming this file breaks publishing until every crate's
+# trusted publisher on crates.io names the new file.
 #
 # Started by the `Release PR` workflow when the version-bump PR merges, or
 # dispatched by hand on `main`.
@@ -23,6 +25,7 @@ concurrency:
 
 jobs:
   publish:
+    name: "publish: publish"
     if: github.repository == 'pereq-dev/hax' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 45

@@ -34,6 +34,7 @@ jobs:
   # The version bump of the release procedure (PUBLISHING.md), run on a
   # runner instead of a maintainer's machine.
   bump:
+    name: "release-pr: bump"
     if: >-
       github.repository == 'pereq-dev/hax' &&
       github.event_name == 'workflow_dispatch'
@@ -160,6 +161,7 @@ jobs:
   # keeps a fork branch that happens to be named `release/...` from counting
   # as a release.
   start-publish:
+    name: "release-pr: start-publish"
     if: >-
       github.repository == 'pereq-dev/hax' &&
       github.event_name == 'pull_request' &&

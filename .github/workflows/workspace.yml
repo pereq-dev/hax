@@ -1,4 +1,4 @@
-name: Test Workspace
+name: Workspace
 
 on:
   push:
@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   test-workspace:
+    name: "workspace: test (${{ matrix.os }})"
     strategy:
       fail-fast: false
       matrix:
@@ -55,6 +56,7 @@ jobs:
         run: cargo check -p hax-frontend-exporter --no-default-features --verbose
 
   no-std-lib:
+    name: "workspace: no-std-lib"
     runs-on: ubuntu-latest
     steps:
       - uses: dtolnay/rust-toolchain@master

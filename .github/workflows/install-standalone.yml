@@ -1,4 +1,4 @@
-name: Standalone cargo-hax installation
+name: Install (standalone)
 
 # `cargo install cargo-hax`, as `cargo-run-bin` and friends do, installs it alone
 # under whatever toolchain the serving project has active, which supports the
@@ -33,6 +33,7 @@ env:
 
 jobs:
   install-and-extract:
+    name: "install-standalone: extract"
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
@@ -115,6 +116,7 @@ jobs:
   # The `rust-version` the manifest declares is a promise to those installations.
   # `--locked`, so a dependency raising its own reaches this only via the lockfile.
   install-msrv:
+    name: "install-standalone: msrv"
     runs-on: ubuntu-latest
     timeout-minutes: 30
 

@@ -1,4 +1,4 @@
-name: core-models
+name: Core models
 
 # Both extractions run through `cargo hax`, built from this checkout — the
 # Lean one via the charon and aeneas versions it pins. Any change to hax can
@@ -15,7 +15,7 @@ on:
       - 'flake.nix'
       - 'flake.lock'
       - 'rust-toolchain.toml'
-      - '.github/workflows/core_models.yml'
+      - '.github/workflows/core-models.yml'
   pull_request:
     branches: [main, dev]
     paths:
@@ -27,7 +27,7 @@ on:
       - 'flake.nix'
       - 'flake.lock'
       - 'rust-toolchain.toml'
-      - '.github/workflows/core_models.yml'
+      - '.github/workflows/core-models.yml'
 
 defaults:
   run:
@@ -36,7 +36,7 @@ defaults:
 jobs:
   # ---------------------------------------------------------------- formatting
   rust-fmt:
-    name: cargo fmt
+    name: "core-models: fmt"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -64,7 +64,7 @@ jobs:
   # The models must build under both toolchains client code is compiled with:
   # hax's, for the F* extraction, and the pinned charon's, for the Lean one.
   rust-test:
-    name: cargo test (${{ matrix.toolchain }} toolchain)
+    name: "core-models: test (${{ matrix.toolchain }})"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -114,7 +114,7 @@ jobs:
   # differently (`for` desugaring, `format!` arguments) without any line or
   # function being missed.
   test-coverage:
-    name: llvm-cov test coverage
+    name: "core-models: coverage"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -139,7 +139,7 @@ jobs:
 
   # ----------------------------------------------------------- lean extraction
   lean-build:
-    name: aeneas extraction + lake build
+    name: "core-models: lean"
     runs-on: ubuntu-latest
     needs: [rust-fmt]   # don't waste cycles on a formatting-broken PR
     steps:
@@ -149,7 +149,7 @@ jobs:
 
       # ---- hax, built from this checkout; it downloads charon and aeneas
       # into its own tool cache. Same setup as `fstar-build` below and as the
-      # `examples` job of `verify_extraction.yml`, which also runs
+      # `examples` job of `examples.yml`, which also runs
       # `cargo hax into lean`.
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: cachix/cachix-action@v15
@@ -212,7 +212,7 @@ jobs:
           fi
 
   fstar-build:
-    name: hax F* extraction + typecheck
+    name: "core-models: fstar"
     runs-on: ubuntu-latest
     needs: [rust-fmt]
     defaults:
@@ -249,7 +249,7 @@ jobs:
         run: nix develop .#fstar --command make -C hax-lib/proof-libs/fstar/core
 
   core-models-tests:
-    name: core-models-tests
+    name: "core-models: tests"
     runs-on: ubuntu-latest
     defaults:
       run:

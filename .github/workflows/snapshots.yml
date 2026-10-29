@@ -1,4 +1,4 @@
-name: Verify snapshots
+name: Snapshots
 
 on:
   pull_request:
@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   changes:
+    name: "snapshots: changes"
     runs-on: ubuntu-latest
     outputs:
       fstar: ${{ github.event_name == 'pull_request' && steps.filter.outputs.fstar || 'true' }}
@@ -32,7 +33,7 @@ jobs:
               - 'justfile'
               - 'flake.nix'
               - 'flake.lock'
-              - '.github/workflows/verify_snapshots.yml'
+              - '.github/workflows/snapshots.yml'
             lean:
               - 'tests/snapshots/**/legacy-lean/**'
               - 'hax-lib/proof-libs/legacy-lean/**'
@@ -40,10 +41,10 @@ jobs:
               - 'justfile'
               - 'flake.nix'
               - 'flake.lock'
-              - '.github/workflows/verify_snapshots.yml'
+              - '.github/workflows/snapshots.yml'
 
   fstar:
-    name: fstar
+    name: "snapshots: fstar"
     needs: changes
     if: needs.changes.outputs.fstar == 'true'
     runs-on: ubuntu-latest
@@ -60,7 +61,7 @@ jobs:
         run: nix develop .#verify-fstar --command just verify-fstar
 
   lean:
-    name: lean
+    name: "snapshots: lean"
     needs: changes
     if: needs.changes.outputs.lean == 'true'
     runs-on: ubuntu-latest
@@ -76,7 +77,7 @@ jobs:
         run: nix develop .#verify-lean --command just verify-lean
 
   result:
-    name: result
+    name: "snapshots: result"
     needs: [changes, fstar, lean]
     if: always()
     runs-on: ubuntu-latest

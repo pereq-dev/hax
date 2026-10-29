@@ -1,4 +1,4 @@
-name: Tool management end-to-end
+name: Tools e2e
 
 # Installs the managed tools from their real artifacts and runs them, natively
 # on every supported platform.
@@ -27,6 +27,7 @@ jobs:
   # Whether this run can change the outcome: on a pull request, only one
   # touching tool management can; every other event runs unconditionally.
   changes:
+    name: "tools-e2e: changes"
     runs-on: ubuntu-latest
     outputs:
       relevant: ${{ steps.diff.outputs.relevant }}
@@ -53,7 +54,7 @@ jobs:
             hax-types \
             justfile \
             examples/barrett \
-            .github/workflows/tools_end_to_end.yml
+            .github/workflows/tools-e2e.yml
           then
             echo relevant=true >> "$GITHUB_OUTPUT"
           else
@@ -61,6 +62,7 @@ jobs:
           fi
 
   install-and-run:
+    name: "tools-e2e: run (${{ matrix.os }})"
     needs: changes
     if: needs.changes.outputs.relevant == 'true'
     strategy:
@@ -102,7 +104,8 @@ jobs:
   # a repository setting; without that, a failure here does not stop a merge.
   # The matrix must have succeeded, or been skipped because the change is not
   # relevant; anything else, including a cancelled or unexplained skip, fails.
-  install-and-run-result:
+  result:
+    name: "tools-e2e: result"
     if: always()
     needs: [changes, install-and-run]
     runs-on: ubuntu-latest

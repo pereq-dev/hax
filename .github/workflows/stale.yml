@@ -1,4 +1,4 @@
-name: 'Triage stale issues and PRs'
+name: Stale
 on:
   schedule:
     - cron: '00 00 * * 4'
@@ -6,6 +6,7 @@ on:
 
 jobs:
   stale:
+    name: "stale: stale"
     permissions:
       issues: write
       pull-requests: write

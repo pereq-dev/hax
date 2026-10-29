@@ -1,4 +1,4 @@
-name: Release binaries
+name: Release
 
 # The `publish` workflow starts this by dispatch after pushing the release's
 # tags, which its repository token raises no push events for. The push trigger
@@ -26,6 +26,7 @@ jobs:
   # the assets published under it already; and the platform matrix for
   # `cargo-hax`.
   tag:
+    name: "release: tag"
     if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     outputs:
@@ -83,6 +84,7 @@ jobs:
             >> "$GITHUB_OUTPUT"
 
   release-cargo-hax:
+    name: "release: cargo-hax (${{ matrix.target }})"
     needs: tag
     if: needs.tag.outputs.tag != ''
     strategy:
@@ -161,10 +163,11 @@ jobs:
   # Installs the release the way every user's `cargo binstall` does, once the
   # archives it fetches are all published.
   binstall:
+    name: "release: binstall"
     needs: [tag, release-cargo-hax]
     permissions:
       contents: read
-    uses: ./.github/workflows/binstall.yml
+    uses: ./.github/workflows/release-binstall.yml
     with:
       version: ${{ needs.tag.outputs.version }}
 
@@ -172,6 +175,7 @@ jobs:
   # This excludes pre-releases or patch versions of older releases.
   # Only if the current release is "latest", we need to redeploy the manual.
   latest-release:
+    name: "release: latest"
     needs: [tag, release-cargo-hax]
     runs-on: ubuntu-latest
     permissions:
@@ -196,13 +200,14 @@ jobs:
   # need to call it here because that release raises no `release` event that
   # would start it on its own.
   deploy-website:
+    name: "release: deploy-website"
     needs: [latest-release]
     if: needs.latest-release.outputs.deploy == 'true'
     permissions:
       contents: read
       pages: write
       id-token: write
-    uses: ./.github/workflows/gh_pages.yml
+    uses: ./.github/workflows/docs-deploy.yml
 
   # Files an issue when any part of the release failed, so a failed run
   # surfaces without anyone checking back on it. A repeated
@@ -210,6 +215,7 @@ jobs:
   # a duplicate. A dispatch on a ref that is not a release tag skips every
   # job and files nothing.
   notify-failure:
+    name: "release: notify-failure"
     needs: [tag, release-cargo-hax, binstall, latest-release, deploy-website]
     if: failure()
     runs-on: ubuntu-latest

@@ -1,10 +1,11 @@
-name: Playwright Docs Tests
+name: Docs Playwright
 on:
   schedule:
     - cron: '0 0 * * *'
   workflow_dispatch:
 jobs:
   test:
+    name: "docs-playwright: test"
     if: github.repository == 'pereq-dev/hax'
     permissions:
       contents: read
@@ -68,6 +69,6 @@ jobs:
         label: tests
         title: Scheduled Playwright docs tests are failing
         body: |-
-          The scheduled [Playwright Docs Tests](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
+          The scheduled [Docs Playwright](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
 
           Download the `playwright-report` artifact from that run to see which checks failed.

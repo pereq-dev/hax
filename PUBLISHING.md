@@ -39,7 +39,7 @@ The directories the root `Cargo.toml` excludes from the workspace (currently `te
 
 ## Procedure
 
-1. Start the `Release PR` workflow with the bump level: `gh workflow run release_pr.yml -f level=patch` (or `minor`/`major`; add `-f rc=true` for a release candidate), or the "Run workflow" button under Actions.
+1. Start the `Release PR` workflow with the bump level: `gh workflow run release-pr.yml -f level=patch` (or `minor`/`major`; add `-f rc=true` for a release candidate), or the "Run workflow" button under Actions.
 2. Open the version-bump PR through the prefilled link in the workflow's run summary.
 3. Work through the pre-merge checklist in the PR's description, then review and merge the PR.
 4. Have a maintainer other than yourself approve, under Actions, the `publish` run that the merge queued.
@@ -62,9 +62,9 @@ The merge starts the `publish` workflow on `main`, pinned to the PR's merge comm
 
 ### The release run
 
-The `release` workflow attaches a `cargo-hax` archive per platform to the GitHub release it creates at the `cargo-hax-v*` tag. `cargo binstall cargo-hax` downloads those, at the names `package.metadata.binstall` in `cli/cargo-hax/Cargo.toml` declares, so both the archives and the published manifest have to be in place for a version to be binstallable. The `binstall` workflow verifies that pairing at the end of every `release` run; a manual dispatch re-checks a released version at any time. A failed run files an issue; it, or a run that never started, can be restarted with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z`. The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
+The `release` workflow attaches a `cargo-hax` archive per platform to the GitHub release it creates at the `cargo-hax-v*` tag. `cargo binstall cargo-hax` downloads those, at the names `package.metadata.binstall` in `cli/cargo-hax/Cargo.toml` declares, so both the archives and the published manifest have to be in place for a version to be binstallable. The `release-binstall` workflow verifies that pairing at the end of every `release` run; a manual dispatch re-checks a released version at any time. A failed run files an issue; it, or a run that never started, can be restarted with `gh workflow run release.yml --ref cargo-hax-vX.Y.Z`. The tag must be the ref: a dispatch on any other ref is recognized as not being a release and skipped.
 
-The website serves the manual of the latest stable GitHub release rather than of `main`, so a stable release also runs the `Deploy to GH Pages` workflow.
+The website serves the manual of the latest stable GitHub release rather than of `main`, so a stable release also runs the `Docs deploy` workflow.
 
 ### Trusted publishing
 

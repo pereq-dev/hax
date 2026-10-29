@@ -16,7 +16,7 @@
 # does, and record the provenance in a comment when it is not obvious from
 # the URL.
 #
-# The `tools_manifest` CI workflow checks these entries against the artifacts
+# The `tools-manifest` CI workflow checks these entries against the artifacts
 # they name: a pull request touching this file verifies every version listed
 # here, the nightly run verifies the defaults and checks the rest still resolve.
 

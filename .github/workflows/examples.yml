@@ -1,4 +1,4 @@
-name: Test backend verification
+name: Examples
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   list-examples:
-    name: list-examples
+    name: "examples: list"
     runs-on: ubuntu-latest
     outputs:
       examples: ${{ steps.list.outputs.examples }}
@@ -23,7 +23,7 @@ jobs:
         echo "examples=$examples" >> "$GITHUB_OUTPUT"
 
   examples:
-    name: example-${{ matrix.example }}
+    name: "examples: check (${{ matrix.example }})"
     needs: list-examples
     runs-on: ubuntu-latest
     strategy:
@@ -50,8 +50,8 @@ jobs:
 
   # Stable check for all examples: a skipped matrix (e.g. because listing the
   # examples failed) must be reported as a failure, not as a success.
-  examples-result:
-    name: examples-result
+  result:
+    name: "examples: result"
     needs: [list-examples, examples]
     if: always()
     runs-on: ubuntu-latest

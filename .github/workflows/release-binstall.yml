@@ -1,4 +1,4 @@
-name: Install a release with cargo-binstall
+name: Release binstall
 
 # Installs a published `cargo-hax` release the way `cargo binstall` does, on
 # every supported platform, and extracts with it.
@@ -32,6 +32,7 @@ jobs:
   # The platforms the release workflow builds archives for, read from the file
   # both workflows share, so a release is tested on every platform it ships.
   targets:
+    name: "release-binstall: targets"
     if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     outputs:
@@ -63,6 +64,7 @@ jobs:
             >> "$GITHUB_OUTPUT"
 
   binstall:
+    name: "release-binstall: binstall (${{ matrix.target }})"
     needs: targets
 
     strategy:
