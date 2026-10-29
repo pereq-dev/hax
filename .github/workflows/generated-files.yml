@@ -1,4 +1,4 @@
-name: Make sure generated files are up-to-date
+name: Generated files
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
 
 jobs:
   flake_lock_up_to_date:
+    name: "generated-files: flake-lock"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -17,6 +18,7 @@ jobs:
       run: git diff --exit-code flake.lock
 
   opam_file_up_to_date:
+    name: "generated-files: opam-file"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -33,3 +35,16 @@ jobs:
         git diff --exit-code engine/hax-engine.opam \
           || { echo "hax-engine.opam is out of date;" \
             "commit the regenerated file shown above"; exit 1; }
+
+  result:
+    name: "generated-files: result"
+    needs: [flake_lock_up_to_date, opam_file_up_to_date]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}

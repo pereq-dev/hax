@@ -42,6 +42,7 @@ permissions:
 
 jobs:
   plan:
+    name: "projects: plan"
     if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     outputs:
@@ -77,8 +78,8 @@ jobs:
           jq '.include | map(.name)' <<< "$matrix"
 
   run:
+    name: "projects: run (${{ matrix.name }})"
     needs: plan
-    name: ${{ matrix.name }}
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}

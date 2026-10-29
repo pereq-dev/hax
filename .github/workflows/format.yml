@@ -1,4 +1,4 @@
-name: Ensure formatting
+name: Format
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   ocamlformat:
-    name: ocamlformat
+    name: "format: ocamlformat"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -20,10 +20,23 @@ jobs:
           ocamlformat --check $(find . -name '*.ml')
       working-directory: engine
   rustfmt:
-    name: rustfmt
+    name: "format: rustfmt"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Run Rust formatter
       run: |
         cargo fmt --check
+
+  result:
+    name: "format: result"
+    needs: [ocamlformat, rustfmt]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}

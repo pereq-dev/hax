@@ -1,4 +1,4 @@
-name: Test installations
+name: Install (scripts)
 
 on:
   pull_request:
@@ -9,12 +9,14 @@ on:
     
 jobs:
   docker:
+    name: "install-scripts: docker"
     if: ${{ github.event_name == 'workflow_dispatch'  || github.event_name == 'merge_group'  }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - run: docker build -f .docker/Dockerfile . -t hax
   setup_sh:
+    name: "install-scripts: setup-sh (${{ matrix.os }})"
     if: ${{ github.event_name == 'workflow_dispatch'  || github.event_name == 'merge_group'   }}
     strategy:
       matrix:
@@ -45,16 +47,16 @@ jobs:
         cd examples/chacha20
         eval $(opam env)
         cargo hax extract chacha20
-  setup_sh_status:
-    if: |
-      always() &&
-      github.event_name ==  'workflow_dispatch'  ||github.event_name ==  'merge_group'  
-    needs: setup_sh
+  result:
+    name: "install-scripts: result"
+    needs: [docker, setup_sh]
+    if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Successful
-        if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: exit 0
-      - name: Failing
-        if: ${{ contains(needs.*.result, 'failure') }}
-        run: exit 1
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ join(needs.*.result, ' ') }}
+          allow-skipped: ${{ github.event_name != 'merge_group' && github.event_name != 'workflow_dispatch' }}

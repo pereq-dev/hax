@@ -1,4 +1,4 @@
-name: Check Changelog Update
+name: Changelog
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
 
 jobs:
   check-changelog:
+    name: "changelog: check"
     if: github.actor != 'github-merge-queue[bot]'
     runs-on: ubuntu-latest
 

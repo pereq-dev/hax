@@ -1,0 +1,21 @@
+name: Workflows
+
+on:
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+  push:
+    branches: [main, dev]
+
+jobs:
+  names:
+    name: "workflows: names"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install pyyaml==6.0.3
+      - name: Check the workflow and job names
+        run: python .utils/check-workflow-names.py

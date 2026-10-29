@@ -1,6 +1,6 @@
 
 
-⚠️ **Note: A CI workflow (deploy_hax_lean.yml) will copy this directory into the repo https://github.com/cryspen/hax-lean. Use that repo as a dependency in your lakefile because Lean's Reservoir supports only that repo.** ⚠️
+⚠️ **Note: A CI workflow (hax-lean-deploy.yml) will copy this directory into the repo https://github.com/cryspen/hax-lean. Use that repo as a dependency in your lakefile because Lean's Reservoir supports only that repo.** ⚠️
 
 
 # Support library for hax/Lean-translated Rust code

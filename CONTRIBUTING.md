@@ -90,6 +90,17 @@ Alternatively, `nix run .#serve-docs` builds the site with Nix and serves the re
 
 The [`pymdownx.snippets`](https://facelessuser.github.io/pymdown-extensions/extensions/snippets/) extension can include files from anywhere in the repository, resolved relative to the repository root. For example, `--8<-- "README.md:subcommands"` on its own line includes the part of `README.md` between the `<!-- --8<-- [start:subcommands] -->` and `<!-- --8<-- [end:subcommands] -->` markers. Prefer such named sections over the line-range form (`--8<-- "README.md:107:114"`), which silently includes the wrong content when the target file's lines shift.
 
+### CI workflows
+
+Required status checks match on job names alone, ignoring the workflow. The workflows in `.github/workflows` therefore follow a naming convention that keeps job names unique:
+
+- Workflow files are named in kebab-case, subject first (`docs-build.yml`, `docs-deploy.yml`), with the extension `.yml`. The workflow `name` describes the same subject in sentence case.
+- Every job has a `name` of the form `<file basename>: <job>`, in kebab-case, e.g. `snapshots: lean`. A matrix job names all its matrix values, e.g. `workspace: test (${{ matrix.os }})`. A matrix job that its `if` skips reports this name unexpanded, as GitHub skips it before expanding the matrix.
+- Only a workflow that runs on `pull_request` and `merge_group` without `paths` filters reports on every pull request, so only such a workflow can provide a required check. If it has several jobs or a matrix job, it has a job `result` named `<file basename>: result`, which runs `if: always()`, needs every other job of the workflow and checks their results with the action `.github/actions/check-results`. The ruleset requires this job only, or else the single job of the workflow.
+- `check-results` accepts skipped jobs unless its input `allow-skipped` is `false`. A workflow that skips jobs on purpose allows skips only in those cases, e.g. with `allow-skipped: ${{ needs.changes.outputs.relevant != 'true' }}` as in `tools-e2e.yml`, so that a wrongly skipped job fails.
+
+`.utils/check-workflow-names.py` checks these rules in CI, except the subject-first order, the workflow `name` and when skips are allowed. Renaming a required job or a workflow file requires switching the required checks of the `main` ruleset to the new names while the merge queue is empty, and then queuing the change on its own: entries ahead of it would report only the old names, and the change itself only the new ones.
+
 ## Pull Requests
 
 We use the GitHub-based PR workflow.

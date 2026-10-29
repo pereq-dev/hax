@@ -1,10 +1,10 @@
-name: Deploy cryspen/hax-lean
+name: hax-lean deploy
 
 # On every commit that lands on `main`, mirror the current state of
 # `hax-lib/proof-libs/lean` into the `cryspen/hax-lean` repository, and tag the
 # resulting snapshot with the library's version.
 #
-# The workflow `check_hax_lean_version.yml` checks that the version is valid and pinned.
+# The workflow `hax-lean-version.yml` checks that the version is valid and pinned.
 
 on:
   push:
@@ -20,6 +20,7 @@ concurrency:
 
 jobs:
   sync:
+    name: "hax-lean-deploy: sync"
     # Don't run on forks.
     if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest

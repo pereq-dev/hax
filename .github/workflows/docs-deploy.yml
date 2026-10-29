@@ -1,4 +1,4 @@
-name: Deploy to GH Pages
+name: Docs deploy
 
 # Runs on every push to `main` and, for a release that becomes the latest,
 # called from the `release` workflow.
@@ -11,6 +11,7 @@ on:
 jobs:
   # Build job
   build:
+    name: "docs-deploy: build"
     if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     steps:
@@ -60,6 +61,7 @@ jobs:
           path: result/
   # Deploy job
   deploy:
+    name: "docs-deploy: deploy"
     if: github.repository == 'pereq-dev/hax'
     needs: build
     permissions:

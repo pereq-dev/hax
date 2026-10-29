@@ -1,4 +1,4 @@
-name: Install & test
+name: Install (nix)
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   tests:
-    name: nix-action
+    name: "install-nix: test"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

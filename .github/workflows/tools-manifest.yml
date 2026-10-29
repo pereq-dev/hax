@@ -1,4 +1,4 @@
-name: Tool manifest artifacts
+name: Tools manifest
 
 # Checks the tool version manifest against the artifacts it names: that every
 # URL still resolves, and that each archive matches its recorded checksum and
@@ -21,7 +21,7 @@ on:
       - cli/cargo-hax/defaults.toml
       - cli/cargo-hax/src/tools.rs
       - cli/cargo-hax/src/tools/**
-      - .github/workflows/tools_manifest.yml
+      - .github/workflows/tools-manifest.yml
   schedule:
     - cron: '23 5 * * *'
   workflow_dispatch:
@@ -32,6 +32,7 @@ concurrency:
 
 jobs:
   artifacts:
+    name: "tools-manifest: artifacts"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -17,11 +17,12 @@ on:
       - "rust-toolchain.toml"
       - "**.nix"
       - "flake.lock"
-      - ".github/workflows/docs_build.yml"
+      - ".github/workflows/docs-build.yml"
   workflow_dispatch:
 
 jobs:
   build:
+    name: "docs-build: build"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

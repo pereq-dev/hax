@@ -1,4 +1,4 @@
-name: Generate This Month in hax
+name: This month in hax
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
 
 jobs:
   generate:
+    name: "this-month-in-hax: generate"
     permissions:
       issues: write
       contents: write

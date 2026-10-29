@@ -1,4 +1,4 @@
-name: Markdown links
+name: Docs links
 
 # Checks the links in all repository markdown outside docs/, which is
 # part of the website; the links on the website itself are checked by
@@ -11,6 +11,7 @@ on:
 
 jobs:
   lychee:
+    name: "docs-links: lychee"
     if: github.repository == 'pereq-dev/hax'
     permissions:
       contents: read
@@ -43,6 +44,6 @@ jobs:
           label: tests
           title: Scheduled markdown link checks are failing
           body: |-
-            The scheduled [Markdown links](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
+            The scheduled [Docs links](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) run failed on `${{ github.sha }}`.
 
             See the run's log for the broken links.

@@ -1,7 +1,7 @@
-name: Check hax-lean version
+name: hax-lean version
 
 # The Lean library in `hax-lib/proof-libs/lean` is published as its own
-# repository: `deploy_hax_lean.yml` mirrors it to `cryspen/hax-lean` on
+# repository: `hax-lean-deploy.yml` mirrors it to `cryspen/hax-lean` on
 # every commit that lands on `main`, and tags each snapshot with the
 # library's version.
 #
@@ -29,7 +29,7 @@ concurrency:
 
 jobs:
   check-version:
-    name: Check the Lean library version
+    name: "hax-lean-version: check"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

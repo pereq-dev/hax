@@ -1,4 +1,4 @@
-name: Check licenses
+name: Licenses
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   tests:
-    name: nix-action
+    name: "licenses: check"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

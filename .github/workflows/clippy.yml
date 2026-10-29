@@ -1,4 +1,4 @@
-name: Linting for the Rust engine and cargo-hax
+name: Clippy
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   clippy:
-    name: clippy
+    name: "clippy: check"
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

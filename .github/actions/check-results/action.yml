@@ -1,0 +1,29 @@
+name: Check job results
+description: >-
+  Fail unless every given job result is `success`, or `skipped` where skips
+  are allowed.
+
+inputs:
+  results:
+    description: Space-separated job results.
+    required: true
+  allow-skipped:
+    description: Whether a skipped job passes, "true" or "false".
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        RESULTS: ${{ inputs.results }}
+        ALLOW_SKIPPED: ${{ inputs.allow-skipped }}
+      run: |
+        echo "$RESULTS"
+        for result in $RESULTS; do
+          case $result in
+            success) ;;
+            skipped) [ "$ALLOW_SKIPPED" = true ] || { echo "a job was skipped"; exit 1; } ;;
+            *) echo "a job did not pass: $result"; exit 1 ;;
+          esac
+        done

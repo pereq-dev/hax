@@ -1,8 +1,8 @@
-name: core-models mutants
+name: Core models mutants
 
 # Mutation testing of the core/alloc models: does the test suite notice when a
 # model's behaviour changes? Coverage (the `test-coverage` job in
-# core_models.yml) only proves the code ran.
+# core-models.yml) only proves the code ran.
 #
 # A full sweep is many hours per cfg serially, and still hours with the
 # `MUTANTS_JOBS` parallelism below, so the sweep is sharded across runners and
@@ -34,7 +34,7 @@ defaults:
 
 jobs:
   sweep:
-    name: mutants (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})
+    name: "core-models-mutants: sweep (${{ matrix.cfg }} cfg, shard ${{ matrix.shard }})"
     if: github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     timeout-minutes: 90
@@ -90,7 +90,7 @@ jobs:
           if-no-files-found: error
 
   report:
-    name: survivors common to both cfgs
+    name: "core-models-mutants: report"
     needs: sweep
     if: github.repository == 'pereq-dev/hax' && always() && needs.sweep.result != 'skipped'
     runs-on: ubuntu-latest

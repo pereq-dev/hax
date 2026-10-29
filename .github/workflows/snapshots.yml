@@ -1,4 +1,4 @@
-name: Verify snapshots
+name: Snapshots
 
 on:
   pull_request:
@@ -13,6 +13,7 @@ concurrency:
 
 jobs:
   changes:
+    name: "snapshots: changes"
     runs-on: ubuntu-latest
     outputs:
       fstar: ${{ github.event_name == 'pull_request' && steps.filter.outputs.fstar || 'true' }}
@@ -32,7 +33,7 @@ jobs:
               - 'justfile'
               - 'flake.nix'
               - 'flake.lock'
-              - '.github/workflows/verify_snapshots.yml'
+              - '.github/workflows/snapshots.yml'
             lean:
               - 'tests/snapshots/**/legacy-lean/**'
               - 'hax-lib/proof-libs/legacy-lean/**'
@@ -40,10 +41,10 @@ jobs:
               - 'justfile'
               - 'flake.nix'
               - 'flake.lock'
-              - '.github/workflows/verify_snapshots.yml'
+              - '.github/workflows/snapshots.yml'
 
   fstar:
-    name: fstar
+    name: "snapshots: fstar"
     needs: changes
     if: needs.changes.outputs.fstar == 'true'
     runs-on: ubuntu-latest
@@ -60,7 +61,7 @@ jobs:
         run: nix develop .#verify-fstar --command just verify-fstar
 
   lean:
-    name: lean
+    name: "snapshots: lean"
     needs: changes
     if: needs.changes.outputs.lean == 'true'
     runs-on: ubuntu-latest
@@ -76,19 +77,23 @@ jobs:
         run: nix develop .#verify-lean --command just verify-lean
 
   result:
-    name: result
+    name: "snapshots: result"
     needs: [changes, fstar, lean]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - name: Check the results
-        env:
-          RESULTS: ${{ needs.changes.result }} ${{ needs.fstar.result }} ${{ needs.lean.result }}
-        run: |
-          echo "$RESULTS"
-          for result in $RESULTS; do
-            case $result in
-              success | skipped) ;;
-              *) echo "a job did not pass: $result"; exit 1 ;;
-            esac
-          done
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/actions
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ needs.changes.result }}
+          allow-skipped: false
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ needs.fstar.result }}
+          allow-skipped: ${{ needs.changes.outputs.fstar != 'true' }}
+      - uses: ./.github/actions/check-results
+        with:
+          results: ${{ needs.lean.result }}
+          allow-skipped: ${{ needs.changes.outputs.lean != 'true' }}
