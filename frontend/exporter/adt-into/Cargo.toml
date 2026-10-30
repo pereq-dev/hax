@@ -20,3 +20,8 @@ quote = "1.0"
 
 [dev-dependencies]
 tracing.workspace = true
+
+[lints.rust]
+# `AdtInto` emits `#[cfg(feature = "rustc")]` into the crates that derive it,
+# including this crate's tests.
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("rustc"))'] }

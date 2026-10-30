@@ -23,7 +23,7 @@ pub mod source {
 /// `AdtInto` will have a field or a variant of type String while the
 /// original type was `StringId`, the lookup will be done
 /// automatically.
-mod mirrored {
+pub mod mirrored {
     use super::{sinto::*, source};
     use hax_adt_into::*;
 

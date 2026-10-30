@@ -8,6 +8,10 @@
     unused_crate_dependencies
 )]
 
+// `hax-lib` is a dev-dependency only so that docs can link to it.
+#[cfg(test)]
+use hax_lib as _;
+
 pub mod ast;
 pub mod attributes;
 pub mod backends;
