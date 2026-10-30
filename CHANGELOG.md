@@ -28,6 +28,8 @@ F* backend and library:
 Miscellaneous:
  - Add a test suite for the Rust language constructs, organized by the chapters of
    the FLS
+ - Document the input language in the manual, with the FLS coverage report of the Lean
+   backend
 
 ### Fixed
 

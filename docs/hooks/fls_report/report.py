@@ -14,6 +14,11 @@ from pathlib import Path
 FLS_RENDERING = "https://rust-lang.github.io/fls"
 # The coverage page, relative to the backend pages (`manual/<backend>/support.md`).
 COVERAGE = "../fls-coverage.md"
+# The input-language section of the manual, relative to the backend pages
+# (`manual/<backend>/support.md`) and to the coverage page (`manual/fls-coverage.md`).
+INPUT_LANGUAGE = "../input-language/index.md"
+INPUT_LANGUAGE_TIERS = f"{INPUT_LANGUAGE}#status-vocabulary"
+INPUT_LANGUAGE_FROM_COVERAGE = "input-language/index.md"
 FLS_SOURCES = "https://github.com/rust-lang/fls"
 # The revision the test links point at. The deployed site renders the report
 # from a release, and its build replaces this with that release's commit.
@@ -131,6 +136,10 @@ class Report:
     backends: dict[str, Backend]
     pending_chapters: list[str]
     exclusions: list[ExclusionTable]
+    # Whether the manual has the input-language section. The site may build
+    # the manual of a release that predates it, so the pages link to it only
+    # when it is there.
+    input_language: bool = True
     # The header of every test file by its path. A test claims its paragraphs
     # whether or not a results file lists it, as in the coverage check.
     headers: dict[str, Header] = field(default_factory=dict)
@@ -289,10 +298,15 @@ def load(repo_root: Path) -> Report:
     for path in sorted((tests / "fls-results").glob("*.toml")):
         backend = parse_results(path.read_text(), headers.__getitem__)
         backends[backend.name] = backend
-    return Report(ids, backends, pending, exclusions, headers=headers)
+    input_language = (repo_root / "docs" / "manual" / "input-language" / "index.md").exists()
+    return Report(ids, backends, pending, exclusions, input_language, headers)
 
 
 # --------------------------------------------------------------- rendering
+
+
+def input_language_link(report: Report, text: str, target: str) -> str:
+    return f"[{text}]({target})" if report.input_language else text
 
 
 def front_matter(weight: int, headless: bool = False) -> str:
@@ -422,7 +436,9 @@ def render_backend(report: Report, backend_name: str) -> str:
     out += (
         "Every construct has a test in the FLS test suite, which claims the paragraphs "
         f"it covers of the [FLS]({FLS_RENDERING}/), the Rust project's language "
-        "specification. The *status* compares the support the input-language reference "
+        f"specification. The {input_language_link(report, '*status*', INPUT_LANGUAGE_TIERS)} "
+        "compares the support the "
+        f"{input_language_link(report, 'input-language reference', INPUT_LANGUAGE)} "
         "intends for the construct with "
         "how far the pipeline gets on the test; a status with a reason shows it on "
         "hover.\n\n"
@@ -465,8 +481,9 @@ def render_backend(report: Report, backend_name: str) -> str:
     out += "## Planned\n\n"
     if planned:
         out += (
-            "Constructs the input-language reference intends to support that the pipeline does "
-            "not carry through yet.\n\n"
+            f"Constructs the {input_language_link(report, 'input-language reference', INPUT_LANGUAGE)} "
+            "intends to support "
+            "that the pipeline does not carry through yet.\n\n"
         )
         out += table(
             ["Test", "Stage", "Reason"],
@@ -484,8 +501,10 @@ def render_backend(report: Report, backend_name: str) -> str:
     if unexpected:
         out += "## Unexpectedly accepted\n\n"
         out += (
-            "Constructs the input-language reference places outside the value model that the "
-            "pipeline accepts. Each is either an outdated entry of the input-language reference or "
+            f"Constructs the {input_language_link(report, 'input-language reference', INPUT_LANGUAGE)} "
+            "places outside the "
+            "value model that the pipeline accepts. Each is either an outdated entry of the "
+            "input-language reference or "
             "a soundness question, and is triaged before the next release.\n\n"
         )
         out += table(
@@ -511,7 +530,9 @@ def render_coverage(report: Report) -> str:
         "claimed by a test, excluded with a reason, informational, or in a chapter not "
         "yet triaged, so this page has no list of uncovered paragraphs. The `hax` "
         "chapter lists the specification surface of `hax-lib`, which is not part of "
-        "the FLS.\n\n"
+        "the FLS; the "
+        f"{input_language_link(report, 'input-language reference', INPUT_LANGUAGE_FROM_COVERAGE)} "
+        "describes it.\n\n"
     )
     out += revision_note(report)
 
