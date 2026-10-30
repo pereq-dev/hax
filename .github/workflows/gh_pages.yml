@@ -43,6 +43,26 @@ jobs:
           # The manual includes sections of the readme as snippets, so the
           # readme must come from the same release.
           cp /tmp/hax-release/README.md README.md
+          # The FLS report pages of the manual render from these files, so
+          # they come from the release too. A release without all of them
+          # gets no report, since the hook adds the pages only when every
+          # input exists.
+          for input in tests/fls/src tests/fls-results tests/fls-excluded.toml tests/fls-ids.txt tests/hax-ids.txt; do
+            rm -rf "$input"
+            if [ -e "/tmp/hax-release/$input" ]; then
+              cp -r "/tmp/hax-release/$input" "$input"
+            fi
+            git add -A "$input"
+          done
+          # The renderer of the report reads these files, so it comes from
+          # the same release; a release without it keeps the one of `main`.
+          for renderer in docs/hooks/fls_report docs/stylesheets/fls_report.css; do
+            if [ -e "/tmp/hax-release/$renderer" ]; then
+              rm -rf "$renderer"
+              cp -r "/tmp/hax-release/$renderer" "$renderer"
+              git add -A "$renderer"
+            fi
+          done
           # The playable snippets of the manual must be run by the very hax
           # version they document.
           js=docs/javascripts/hax_playground.js
@@ -50,7 +70,13 @@ jobs:
           grep -q 'const HAX_PLAYGROUND_FORCED_VERSION = false;' "$js" \
             || { echo "::error::no HAX_PLAYGROUND_FORCED_VERSION line to replace in $js"; exit 1; }
           sed -i "s/const HAX_PLAYGROUND_FORCED_VERSION = false;/const HAX_PLAYGROUND_FORCED_VERSION = \"$commit\";/" "$js"
-          git add -A docs/manual README.md "$js" # For nix to pick up the replacement
+          # The test links of the FLS report point at the release the report
+          # renders from.
+          report=docs/hooks/fls_report/report.py
+          grep -q '^TESTS_REF = "main"$' "$report" \
+            || { echo "::error::no TESTS_REF line to replace in $report"; exit 1; }
+          sed -i "s/^TESTS_REF = \"main\"$/TESTS_REF = \"$commit\"/" "$report"
+          git add -A docs/manual README.md "$js" "$report" # For nix to pick up the replacement
       - name: Build documentation
         run: nix build .#docs
       - name: Upload static files as artifact

@@ -1,0 +1,104 @@
+name: FLS drift
+
+# Compares the vendored paragraph identifiers of the FLS test suite,
+# `tests/fls-ids.txt`, with the newest release of rust-lang/fls and keeps
+# one issue open while they differ. Writes nothing to the repository.
+on:
+  schedule:
+    - cron: '23 4 1 * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  drift:
+    if: github.repository == 'pereq-dev/hax'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Compare the identifier list with the newest FLS release
+        id: check
+        # `bash` runs with `pipefail`, so `status` records the exit code of
+        # `fls refresh --check` rather than that of `tee`: 3 for drift, any
+        # other non-zero code for a failure of the check itself. The driver
+        # is built first, so that only its output reaches the issue.
+        shell: bash
+        # rust-lang/fls tags one release per Rust version, named like `1.98`.
+        # The newest such tag is the revision the suite tracks, unless the
+        # vendored revision is already past it: a chapter reworked after a
+        # release is vendored from the commit that reworked it, and comparing
+        # that with the older tag would report every later paragraph as drift.
+        run: |
+          git clone --quiet --filter=blob:none --no-checkout https://github.com/rust-lang/fls fls-upstream
+          tag="$(git -C fls-upstream tag --list --sort=v:refname | { grep -E '^[0-9]+\.[0-9]+(\.[0-9]+)?$' || true; } | tail -1)"
+          if [ -z "$tag" ]; then
+            echo "No release tag found in rust-lang/fls."
+            exit 1
+          fi
+          rev="$(sed -n 's/^# fls-revision: //p' tests/fls-ids.txt)"
+          vendored="$(sed -n 's/^# fls-version: //p' tests/fls-ids.txt)"
+          vendored="${vendored:-$(echo "$rev" | cut -c1-10)}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "vendored=$vendored" >> "$GITHUB_OUTPUT"
+          status=0
+          # Exit code 1 means "not an ancestor"; any other failure, such as a
+          # vendored revision unknown to the clone, must not pass for that.
+          ancestor=0
+          git -C fls-upstream merge-base --is-ancestor "$rev" "refs/tags/$tag" || ancestor=$?
+          if [ "$ancestor" = 0 ]; then
+            cargo build -q -p test-driver
+            cargo run -q -p test-driver -- tests fls refresh --rev "$tag" --check 2>&1 | tee drift.txt || status=$?
+            if [ "$status" != 0 ] && [ "$status" != 3 ]; then
+              exit "$status"
+            fi
+            resolution="The vendored identifier list agrees with the FLS release \`$tag\`."
+          elif [ "$ancestor" = 1 ]; then
+            echo "The vendored revision $rev is not an ancestor of $tag, so the identifier list is ahead of the newest release."
+            resolution="The vendored identifier list is ahead of the FLS release \`$tag\`; there is no comparison until the next release."
+          else
+            echo "Cannot compare the vendored revision $rev with $tag."
+            exit 1
+          fi
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "resolution=$resolution" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the drift issue
+        if: steps.check.outputs.status != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.check.outputs.tag }}
+          VENDORED: ${{ steps.check.outputs.vendored }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          {
+            echo "The paragraph identifiers of the FLS release [\`$TAG\`](https://github.com/rust-lang/fls/tree/$TAG/src) differ from the vendored \`tests/fls-ids.txt\` at \`$VENDORED\`."
+            echo
+            echo 'To update the suite, run from the repository root:'
+            echo
+            echo '```'
+            echo "cargo run -p test-driver -- tests fls refresh --rev $TAG"
+            echo 'cargo run -p test-driver -- tests fls coverage'
+            echo '```'
+            echo
+            echo 'and triage in a pull request: paragraphs the new revision added show up as uncovered, claims and exclusions of removed paragraphs fail the coverage check.'
+            echo
+            echo "Output of \`fls refresh --check\` ($RUN_URL):"
+            echo
+            echo '```'
+            cat drift.txt
+            echo '```'
+            echo
+            echo "This issue is kept current by \`fls_drift.yml\` and closed once the lists agree."
+          } > issue.md
+          .utils/upsert-issue.sh fls-drift "FLS identifiers drifted from \`$VENDORED\`" issue.md
+
+      - name: Close the drift issue
+        if: steps.check.outputs.status == '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RESOLUTION: ${{ steps.check.outputs.resolution }}
+        run: .utils/upsert-issue.sh --resolve fls-drift "$RESOLUTION"

@@ -2,8 +2,8 @@ name: Docs build
 
 # The .#docs derivation builds the mkdocs site (which snippet-includes
 # markdown from anywhere in the repository) and the frontend rustdoc, so
-# the paths cover the snippet sources, the Rust sources, and the pinned
-# toolchain besides docs/ itself.
+# the paths cover the snippet sources, the Rust sources, the pinned
+# toolchain, and the inputs of the FLS report besides docs/ itself.
 on:
   pull_request:
     paths:
@@ -17,6 +17,10 @@ on:
       - "rust-toolchain.toml"
       - "**.nix"
       - "flake.lock"
+      - "tests/fls/src/**"
+      - "tests/fls-results/**"
+      - "tests/fls-excluded.toml"
+      - "tests/*-ids.txt"
       - ".github/workflows/docs_build.yml"
   workflow_dispatch:
 

@@ -15,6 +15,7 @@ theme:
     - content.code.select
     - content.code.annotate
     - content.footnote.tooltips
+    - content.tooltips
     - navigation.sections
     - navigation.path
     - navigation.tabs
@@ -29,6 +30,7 @@ extra_javascript:
   - javascripts/fstar.js
   - javascripts/lz-string.js
 extra_css:
+  - stylesheets/fls_report.css
   - stylesheets/hax_playground.css
   - stylesheets/logo.css
 markdown_extensions:
@@ -63,6 +65,11 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+hooks:
+  - docs/hooks/fls_report/hook.py
+# The hook sources are build inputs, not pages.
+exclude_docs: |
+  hooks/
 plugins:
   - glightbox
   - search

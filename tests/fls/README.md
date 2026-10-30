@@ -13,6 +13,7 @@ One test file per language construct, each run through every backend as a whole 
    - `@no-equiv: <reason>` declares that the test has no `equiv` function on purpose; see step 5.
    - `@cli`, `@off`, and `@fail` are not accepted.
 3. **One construct per test.** A test exercises one construct with the smallest program that gives it an observable value. Use nothing beyond `core`, `alloc`, and `hax-lib`, and limit the supporting constructs to those the FLS chapters before it introduce, so that a stage change can be attributed to the construct under test. One section holds as many tests as it has constructs, typically one to four.
+   - **Formatting.** CI checks every test file with rustfmt. Syntax that rustfmt rewrites, such as an empty statement, an implicit `extern` ABI, `pub(in super)`, or nested parentheses, keeps its form under `#[rustfmt::skip]` on the item.
    - **Naming.** Snake case, naming the construct and the aspect exercised: `labeled_break_outer`, `tuple_struct`, `option_map`.
 4. **Semantic oracle.** Mark every guard function with `#[hax_test::equiv]`. A guard is a `pub fn <name>() -> bool` free function, at the crate root or in an inline module whose name aeneas keeps in Lean (not `core` or `alloc`, which it renames), without parameters or generics, and with no `#[cfg]` attribute on it or on an enclosing inline module, since the driver checks every guard on the backend side. The macro adds a `#[test]` that asserts the function returns `true`; the driver asserts the same on the backend side, for Lean with a `#guard (<name>).reducesTo true` line. The macro's arguments `skip_lean` and `panics` are not accepted in FLS tests.
 5. **Constructs without an observable value** declare `@no-equiv: <reason>` instead of a guard function: lifetimes, `#[repr]`, `PhantomData`, marker traits, and the other rows the input-language reference lists as erased by the value model. A test whose tier is `unsupported` for every backend needs neither.
@@ -77,6 +78,20 @@ cargo run -p test-driver -- tests fls refresh --rev <release> --check
 The revision is a release tag of `rust-lang/fls`, one per Rust version, which the list records as `fls-version` beside the commit it names; a commit hash or a branch works too and records no version. The suite tracks the newest release rather than `main`, so that the identifiers move in reviewed steps, except where a chapter was reworked after that release: there the list is vendored from the commit that reworked it and names no version, and the next release subsumes it.
 
 After a refresh, run `fls coverage`: paragraphs the new revision added show up as uncovered, and claims or exclusions of removed paragraphs fail.
+
+## Continuous integration
+
+`fls_tests.yml` runs on every pull request and in the merge queue:
+
+- The `coverage and Rust side` job runs `fls coverage`, runs `cargo test` on the `fls-tests` crate in hax mode and without it for the Rust side of the `equiv` functions, and runs the unit tests of the report renderer under `docs/hooks/fls_report`. It needs no backend toolchain.
+- The `select tests` job decides what the `lean backend` job runs, with `.utils/fls-changed-tests.sh <base>`: the tests whose file the pull request adds, modifies, or renames, or whose entry in a results file it adds or changes, passed as `--matching` values; everything when `cli/` (cargo-hax, the driver and its templates), `hax-lib` outside `core-models` and the proof libraries of the other backends, `hax-types`, the macros, the root manifest, the lockfile, the cargo configuration, the toolchain, the flake, the workflow, this selection script, or the header of a results file (its tool versions) changed; nothing when neither a test file nor a results entry changed, in which case the Lean job is skipped. A deleted test is caught by `fls coverage` without Lean.
+- The `lean backend` job builds the driver with `cargo run` and installs `cargo hax` with `nix profile install .`, so it uses the `cargo hax` of the checkout. Every run pays the setup of the Lean dependencies; there is no cache.
+
+The whole Lean suite runs weekly and on `workflow_dispatch`; the scheduled run skips the `coverage and Rust side` job, whose inputs the merge queue already checked. A failing weekly run keeps the issue labeled `fls-weekly` current and the next passing run closes it.
+
+When the Lean job fails because the observed stages differ from `tests/fls-results/lean.toml`, the job summary shows the diff and the artifact `fls-results-lean` holds the observed file: download it, copy it over the committed file, and commit, or apply the diff by hand. A change of the tool versions needs a full run, which the selection triggers on its own once the results file header changed.
+
+`fls_drift.yml` runs `fls refresh --check` against the newest release tag of `rust-lang/fls` every month and keeps the issue labeled `fls-drift` open while the vendored identifier list differs; it never writes to the repository. It compares only when the vendored revision is an ancestor of that tag, so a list vendored from a later commit reports no drift until the next release.
 
 ## Updating the results
 
