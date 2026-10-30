@@ -161,7 +161,8 @@ let ne_bad_message (_: Prims.unit) : Prims.unit =
   in
   ()
 
-/// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), proverif(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008)
 let main (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = eq_good () in
   let _:Prims.unit = eq_good_message () in

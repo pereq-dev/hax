@@ -56,7 +56,6 @@ let if_not (cond: bool) : Prims.unit =
     let _:Prims.unit = () in
     ()
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)

@@ -234,7 +234,7 @@ Backend-specific keys:
 
 - F\*: `z3rlimit`, `fuel`, `ifuel`, `interfaces`, and `line-width`. They mirror flags of `cargo hax into fstar`; see its `--help` for their effects.
 - Lean: `charon-args`, `aeneas-args`, and `project-files`. `charon-args` and `aeneas-args` are arrays passed verbatim, one element per process argument, after the arguments hax compiles from the structured keys; no shell splitting is applied. The per-scenario `project-files` key overrides the top-level one.
-- ProVerif: `assume-items`, mirroring the flag of `cargo hax into pro-verif`.
+- ProVerif: `assume-items`, `result-errors` and `keep-trait-calls`, mirroring the flags of `cargo hax into proverif`.
 
 Environment variables that supply defaults for `into` flags (currently `HAX_FSTAR_LINE_WIDTH`) do not apply to scenario runs, which never parse flags; set the corresponding key (`line-width`) instead.
 

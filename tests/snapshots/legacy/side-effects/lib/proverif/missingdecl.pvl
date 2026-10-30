@@ -1,0 +1,37 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
+fun core__iter__traits__iterator__Iterator__map(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__options *)
+fun core__num__Impl_6__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__add3, new_tests__legacy__side_effects__lib__early_returns, new_tests__legacy__side_effects__lib__local_mutation, new_tests__legacy__side_effects__lib__question_mark *)
+fun core__num__Impl_8__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__local_mutation *)
+fun core__num__Impl_8__wrapping_sub(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1083__f *)
+fun core__ops__try_trait__FromResidual__from_residual(bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1083__f *)
+(* result destructured as: core__ops__control_flow__ControlFlow__Break(_); core__ops__control_flow__ControlFlow__Continue(_) *)
+fun core__ops__try_trait__Try__branch(bitstring): bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__early_returns, new_tests__legacy__side_effects__lib__local_mutation, new_tests__legacy__side_effects__lib__monad_lifting *)
+const nat_123: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__simplifiable_question_mark *)
+const nat_20: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__early_returns *)
+const nat_30: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
+const nat_32: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__early_returns *)
+const nat_34: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__question_mark *)
+const nat_40: bitstring.
+(* referenced by: new_tests__legacy__side_effects__lib__question_mark *)
+const nat_90: bitstring.

@@ -1,122 +1,63 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
-
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct.
-
-fun new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_to_bitstring(
-      new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct [typeConverter].
-const new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_default_value: new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct.
-letfun new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_default() =
-       new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_default_value.
-letfun new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_err() =
-       let x = construct_fail() in new_tests__legacy__attribute_opaque__lib__t_OpaqueStruct_default_value.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
 
-type new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum.
 
-fun new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_to_bitstring(
-      new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum [typeConverter].
-const new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_default_value: new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum.
-letfun new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_default() =
-       new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_default_value.
-letfun new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_err() =
-       let x = construct_fail() in new_tests__legacy__attribute_opaque__lib__t_OpaqueEnum_default_value.
+(* src: src/legacy/attribute-opaque/lib.rs:17:0-19:1 new_tests__legacy__attribute_opaque__lib__f_generic *)
+(* opaque *)
+fun new_tests__legacy__attribute_opaque__lib__f_generic(bitstring): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:22:0-24:1 new_tests__legacy__attribute_opaque__lib__f *)
+(* opaque *)
+fun new_tests__legacy__attribute_opaque__lib__f(bitstring, bitstring): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:29:0-31:1 new_tests__legacy__attribute_opaque__lib__f_pre_post *)
+(* opaque *)
+fun new_tests__legacy__attribute_opaque__lib__f_pre_post(bitstring, bitstring): bitstring [data].
 
 
-type new_tests__legacy__attribute_opaque__lib__t_S1.
-
-fun new_tests__legacy__attribute_opaque__lib__t_S1_to_bitstring(
-      new_tests__legacy__attribute_opaque__lib__t_S1
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attribute_opaque__lib__t_S1_from_bitstring(bitstring)
-    : new_tests__legacy__attribute_opaque__lib__t_S1 [typeConverter].
-const new_tests__legacy__attribute_opaque__lib__t_S1_default_value: new_tests__legacy__attribute_opaque__lib__t_S1.
-letfun new_tests__legacy__attribute_opaque__lib__t_S1_default() =
-       new_tests__legacy__attribute_opaque__lib__t_S1_default_value.
-letfun new_tests__legacy__attribute_opaque__lib__t_S1_err() =
-       let x = construct_fail() in new_tests__legacy__attribute_opaque__lib__t_S1_default_value.
-fun new_tests__legacy__attribute_opaque__lib__S1()
-    : new_tests__legacy__attribute_opaque__lib__t_S1 [data].
 
 
-type new_tests__legacy__attribute_opaque__lib__t_S2.
-
-fun new_tests__legacy__attribute_opaque__lib__t_S2_to_bitstring(
-      new_tests__legacy__attribute_opaque__lib__t_S2
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__attribute_opaque__lib__t_S2_from_bitstring(bitstring)
-    : new_tests__legacy__attribute_opaque__lib__t_S2 [typeConverter].
-const new_tests__legacy__attribute_opaque__lib__t_S2_default_value: new_tests__legacy__attribute_opaque__lib__t_S2.
-letfun new_tests__legacy__attribute_opaque__lib__t_S2_default() =
-       new_tests__legacy__attribute_opaque__lib__t_S2_default_value.
-letfun new_tests__legacy__attribute_opaque__lib__t_S2_err() =
-       let x = construct_fail() in new_tests__legacy__attribute_opaque__lib__t_S2_default_value.
-fun new_tests__legacy__attribute_opaque__lib__S2()
-    : new_tests__legacy__attribute_opaque__lib__t_S2 [data].
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__attribute_opaque__lib__ff_generic(x : v_U) =
-       rust_primitives__hax__dropped_body.
-
-letfun new_tests__legacy__attribute_opaque__lib__f(x : bool, y : bool) =
-       rust_primitives__hax__dropped_body.
-
-letfun new_tests__legacy__attribute_opaque__lib__ff_pre_post(x : bool, y : bool) =
-       rust_primitives__hax__dropped_body.
-
-const new_tests__legacy__attribute_opaque__lib__v_C: bitstring.
-
-letfun new_tests__legacy__attribute_opaque__lib__impl_S1__ff_s1(
-         wildcard1 : bitstring
-       ) =
-       rust_primitives__hax__dropped_body.
-
-letfun new_tests__legacy__attribute_opaque__lib__impl_S2__ff_s2(
-         wildcard2 : bitstring
-       ) =
-       rust_primitives__hax__dropped_body.
-
+(* src: src/legacy/attribute-opaque/lib.rs:74:0-74:20 new_tests__legacy__attribute_opaque__lib__C *)
+const new_tests__legacy__attribute_opaque__lib__C: bitstring.
+(* src: src/legacy/attribute-opaque/lib.rs:76:0-76:12 new_tests__legacy__attribute_opaque__lib__S1 *)
+fun new_tests__legacy__attribute_opaque__lib__S1__S1(): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:80:4-80:16 new_tests__legacy__attribute_opaque__lib__Impl__f_s1 *)
+(* opaque *)
+fun new_tests__legacy__attribute_opaque__lib__Impl__f_s1(bitstring): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:83:0-83:12 new_tests__legacy__attribute_opaque__lib__S2 *)
+fun new_tests__legacy__attribute_opaque__lib__S2__S2(): bitstring [data].
+(* src: src/legacy/attribute-opaque/lib.rs:87:4-87:16 new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2 *)
+(* opaque *)
+fun new_tests__legacy__attribute_opaque__lib__Impl_3__f_s2(bitstring): bitstring [data].

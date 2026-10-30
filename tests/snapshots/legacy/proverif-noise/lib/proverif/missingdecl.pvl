@@ -1,0 +1,101 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__kdf_next, new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric, new_tests__legacy__proverif_noise__lib__noise_lib__mix_hash *)
+fun alloc__slice__Impl__concat(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_lib__mix_key, new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash, new_tests__legacy__proverif_noise__lib__noise_lib__split *)
+fun alloc__vec__Impl_1__truncate(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt, new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt *)
+fun hax_lib_protocol__crypto__AEADAlgorithm__Chacha20Poly1305(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__dh, new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair *)
+fun hax_lib_protocol__crypto__DHGroup__X25519(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash *)
+fun hax_lib_protocol__crypto__HMACAlgorithm__Sha256(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__hash *)
+fun hax_lib_protocol__crypto__HashAlgorithm__Sha256(): bitstring [data].
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__dh *)
+fun hax_lib_protocol__crypto__Impl_1__from_bytes(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt, new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt *)
+fun hax_lib_protocol__crypto__Impl_4__from_bytes(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt, new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt *)
+fun hax_lib_protocol__crypto__Impl_5__from_bytes(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt *)
+fun hax_lib_protocol__crypto__Impl_6__from_bytes(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair *)
+fun hax_lib_protocol__crypto__Impl__from_bytes(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__decrypt *)
+fun hax_lib_protocol__crypto__aead_decrypt(bitstring, bitstring, bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__encrypt *)
+(* result destructured as: rust_primitives__hax__Tuple2__Tuple2(_, _) *)
+fun hax_lib_protocol__crypto__aead_encrypt(bitstring, bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__dh *)
+fun hax_lib_protocol__crypto__dh_scalar_multiply(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__generate_keypair *)
+fun hax_lib_protocol__crypto__dh_scalar_multiply_base(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__hash *)
+fun hax_lib_protocol__crypto__hash(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__hmac_hash *)
+fun hax_lib_protocol__crypto__hmac(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_101: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_104: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_105: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_107: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_108: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_111: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_112: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_115: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_121: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__rekey, new_tests__legacy__proverif_noise__lib__noise_lib__decrypt_with_ad, new_tests__legacy__proverif_noise__lib__noise_lib__encrypt_with_ad *)
+const nat_18446744073709551615: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__DHLEN, new_tests__legacy__proverif_noise__lib__noise_crypto__HASHLEN, new_tests__legacy__proverif_noise__lib__noise_crypto__rekey, new_tests__legacy__proverif_noise__lib__noise_lib__initialize_symmetric, new_tests__legacy__proverif_noise__lib__noise_lib__mix_key, new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash, new_tests__legacy__proverif_noise__lib__noise_lib__split *)
+const nat_32: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256, new_tests__legacy__proverif_noise__lib__noise_kkpsk0__ProtocolName, new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_initiator, new_tests__legacy__proverif_noise__lib__noise_kkpsk0__initialize_responder *)
+const nat_36: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_48: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_49: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_50: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_53: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_54: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_57: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_crypto__BLOCKLEN, new_tests__legacy__proverif_noise__lib__noise_lib__mix_key, new_tests__legacy__proverif_noise__lib__noise_lib__mix_key_and_hash, new_tests__legacy__proverif_noise__lib__noise_lib__split *)
+const nat_64: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_65: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_67: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_72: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_75: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_78: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_80: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_83: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_95: bitstring.
+(* referenced by: new_tests__legacy__proverif_noise__lib__noise_kkpsk0__Noise_KKpsk0_25519_ChaChaPoly_SHA256 *)
+const nat_97: bitstring.

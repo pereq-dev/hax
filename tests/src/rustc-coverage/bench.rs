@@ -1,3 +1,4 @@
+//! @fail(tc): proverif(2)
 //! @fail(tc): fstar(2), legacy-lean(1)
 #![feature(test)]
 //@ edition: 2021

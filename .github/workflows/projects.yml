@@ -1,7 +1,16 @@
 name: Projects
 
 # Runs the hax pipeline of the projects that use hax against the hax in this
-# checkout. The projects are listed in `.github/hax-projects.json`.
+# checkout. The projects are listed in `.github/hax-projects.json`: each has a
+# `backend` (`fstar` when unset, or `proverif`), a `repository` and optionally
+# a `ref` to check out (its default branch otherwise), the `directory` to run
+# in, and the commands of its stages: `extract`, and optionally `lax` and
+# `prove`. For F*, `lax` lax-checks and `prove` proves; for ProVerif, `lax`
+# checks that the model loads and `prove` runs the analysis and checks its
+# verdicts. A project without a `lax` command only extracts at that stage.
+#
+# The nightly runs in pereq-dev/hax only; any repository with this workflow can
+# dispatch it.
 
 on:
   schedule:
@@ -20,8 +29,10 @@ on:
         default: ''
       project-ref:
         description: >-
-          The branch, tag or commit of each project repository. Defaults to
-          its default branch.
+          The branch, tag or commit of the project repositories: one for every
+          selected project, or comma-separated `name=ref` pairs. A project
+          without one uses the `ref` of .github/hax-projects.json, or else its
+          default branch.
         default: ''
       stage:
         description: >-
@@ -42,7 +53,7 @@ permissions:
 
 jobs:
   plan:
-    if: github.repository == 'pereq-dev/hax'
+    if: github.event_name != 'schedule' || github.repository == 'pereq-dev/hax'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -54,19 +65,39 @@ jobs:
       - id: plan
         env:
           PROJECTS: ${{ inputs.projects || 'all' }}
+          PROJECT_REF: ${{ inputs.project-ref }}
         run: |
           set -euo pipefail
-          names=$(jq -cn --arg s "$PROJECTS" \
-            '$s | split(",") | map(sub("^ +";"") | sub(" +$";"")) | map(select(. != ""))')
-          matrix=$(jq -c --argjson names "$names" '
+          list() {
+            jq -cn --arg s "$1" \
+              '$s | split(",") | map(sub("^ +";"") | sub(" +$";"")) | map(select(. != ""))'
+          }
+          names=$(list "$PROJECTS")
+          # Either one ref for every project, or `name=ref` pairs.
+          refs=$(list "$PROJECT_REF" | jq -c '
+            if all(contains("=")) then
+              {pairs: map(split("=") | {key: .[0], value: (.[1:] | join("="))})
+                      | from_entries}
+            elif length == 1 then {all: .[0]}
+            else "project-ref: give one ref, or only name=ref pairs" | halt_error
+            end')
+          matrix=$(jq -c --argjson names "$names" --argjson refs "$refs" '
             [.[].name] as $known
             | ($names - ["all"]) as $requested
             | ($requested - $known) as $unknown
+            | ((($refs.pairs // {}) | keys) - $known) as $unknown_refs
             | if ($unknown | length) > 0 then
                 ("unknown project(s): " + ($unknown | join(", "))
                   + ". Known projects: " + ($known | join(", "))) | halt_error
-              elif ($names | index("all")) then {include: .}
-              else {include: [.[] | select(.name | IN($requested[]))]}
+              elif ($unknown_refs | length) > 0 then
+                ("project-ref names unknown project(s): "
+                  + ($unknown_refs | join(", "))) | halt_error
+              else
+                map(.backend //= "fstar"
+                    | .ref = ($refs.pairs[.name] // $refs.all // .ref // ""))
+                | if ($names | index("all")) then {include: .}
+                  else {include: [.[] | select(.name | IN($requested[]))]}
+                  end
               end
           ' .github/hax-projects.json)
           if [ "$(jq '.include | length' <<< "$matrix")" -eq 0 ]; then
@@ -74,7 +105,7 @@ jobs:
             exit 1
           fi
           echo "matrix=$matrix" >> "$GITHUB_OUTPUT"
-          jq '.include | map(.name)' <<< "$matrix"
+          jq '.include | map({name, ref})' <<< "$matrix"
 
   run:
     needs: plan
@@ -116,7 +147,7 @@ jobs:
         with:
           repository: ${{ matrix.repository }}
           path: project
-          ref: ${{ inputs.project-ref }}
+          ref: ${{ matrix.ref }}
 
       - if: runner.environment == 'github-hosted'
         uses: DeterminateSystems/nix-installer-action@main
@@ -130,6 +161,7 @@ jobs:
         run: nix profile install ./hax
 
       - name: Install F* ${{ matrix.fstar }}
+        if: matrix.backend == 'fstar'
         env:
           VERSION: ${{ matrix.fstar }}
         run: |
@@ -147,11 +179,16 @@ jobs:
 
       # Separate, so the `PATH` the step above exported is in effect.
       - name: Locate the F* installation
+        if: matrix.backend == 'fstar'
         run: |
           set -euo pipefail
           home="$(cd "$(dirname "$(command -v fstar.exe)")/.." && pwd)"
           echo "FSTAR_HOME=$home" >> "$GITHUB_ENV"
           fstar.exe --version
+
+      - name: Install ProVerif
+        if: matrix.backend == 'proverif'
+        run: nix profile install ./hax#proverif
 
       - name: Install ${{ matrix.packages }}
         if: matrix.packages != ''
@@ -178,7 +215,7 @@ jobs:
       # later `make` treats as done.
       - name: Lax-check
         id: lax
-        if: env.STAGE == 'lax'
+        if: env.STAGE == 'lax' && matrix.lax != ''
         working-directory: project/${{ matrix.directory }}
         run: ${{ matrix.lax }}
 
@@ -206,6 +243,7 @@ jobs:
             |---|---|
             | hax | [`${{ steps.hax.outputs.commit }}`](${{ github.server_url }}/${{ github.repository }}/commit/${{ steps.hax.outputs.commit }}) |
             | ${{ matrix.repository }} | [`${{ steps.project.outputs.commit }}`](${{ github.server_url }}/${{ matrix.repository }}/commit/${{ steps.project.outputs.commit }}) |
+            | backend | `${{ matrix.backend }}` |
             | extraction | `${{ steps.extract.outcome }}` |
             | lax-check | `${{ env.STAGE == 'lax' && steps.lax.outcome || 'not requested' }}` |
             | proofs | `${{ env.STAGE == 'prove' && steps.prove.outcome || 'not requested' }}` |
@@ -220,5 +258,5 @@ jobs:
             gh workflow run projects.yml \
               -f projects=${{ matrix.name }} \
               -f hax-ref=<hax branch> \
-              -f project-ref=<${{ matrix.repository }} branch>
+              -f project-ref=${{ matrix.name }}=<${{ matrix.repository }} branch>
             ```

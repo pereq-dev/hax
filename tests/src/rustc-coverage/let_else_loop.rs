@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001)
 //! @fail(tc): legacy-lean(1), fstar(2)
 #![feature(coverage_attribute)]
 //@ edition: 2021
@@ -7,14 +8,14 @@
 // counter to a node and also one of its in-edges, because that is allowed
 // when the node contains a tight loop to itself.
 
-/// @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001), proverif(HAX0008)
+/// @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001)
 fn loopy(cond: bool) {
     let true = cond else { loop {} };
 }
 
 // Variant that also has `loop {}` on the success path.
 // This isn't needed to catch the original ICE, but might help detect regressions.
-/// @fail(extraction): fstar(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008)
+/// @fail(extraction): fstar(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), coq(HAX0001, HAX0001)
 fn _loop_either_way(cond: bool) {
     let true = cond else { loop {} };
     loop {}
@@ -22,7 +23,7 @@ fn _loop_either_way(cond: bool) {
 
 // Variant using regular `if` instead of let-else.
 // This doesn't trigger the original ICE, but might help detect regressions.
-/// @fail(extraction): proverif(HAX0008, HAX0008), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
+/// @fail(extraction): legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
 fn _if(cond: bool) {
     if cond {
         loop {}

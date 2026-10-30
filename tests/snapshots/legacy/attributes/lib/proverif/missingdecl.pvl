@@ -1,0 +1,58 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__attributes__lib__fib *)
+fun core__num__Impl_11__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__future_and_result_order__two_mut_and_result *)
+fun core__num__Impl_6__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__future_and_result_order__one_mut_and_result, new_tests__legacy__attributes__lib__future_and_result_order__one_mut_no_result *)
+fun core__num__Impl_8__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__future_and_result_order__two_mut_and_result *)
+fun core__num__Impl_9__wrapping_add(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__refinement_types__double_abs_i16 *)
+fun core__ops__arith__Mul__mul__unextracted_impl(bitstring, bitstring): bitstring [data].
+(* referenced by: new_tests__legacy__attributes__lib__refinement_types__double_abs_i16, new_tests__legacy__attributes__lib__refinement_types__double_refine *)
+fun hax_lib__RefineAs__into_checked__unextracted_impl(bitstring): bitstring [data].
+(* referenced by: new_tests__legacy__attributes__lib__nested_refinement_elim__elim_twice, new_tests__legacy__attributes__lib__refinement_types__bounded_u8 *)
+fun hax_lib__Refinement__get_kw__unextracted_impl(bitstring): bitstring [data].
+(* referenced by: new_tests__legacy__attributes__lib__nested_refinement_elim__elim_twice, new_tests__legacy__attributes__lib__refinement_types__bounded_u8, new_tests__legacy__attributes__lib__refinement_types__double *)
+fun hax_lib__Refinement__new_kw__unextracted_impl(bitstring): bitstring [data].
+(* referenced by: new_tests__legacy__attributes__lib__props *)
+fun hax_lib__assert_prop(bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props *)
+fun hax_lib__prop__Impl__from_bool(bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+fun hax_lib__prop__constructors__and(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+fun hax_lib__prop__constructors__exists(bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+fun hax_lib__prop__constructors__forall_kw(bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+fun hax_lib__prop__constructors__implies(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+fun hax_lib__prop__constructors__not_kw(bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+fun hax_lib__prop__constructors__or_kw(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__ensures_on_arity_zero_fns__basically_a_constant *)
+const nat_127: bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__props__f *)
+const nat_300: bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__pre_post_on_traits_and_impls__test *)
+const nat_88: bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__u32_max *)
+const nat_90000: bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__refined_indexes__mutation_example *)
+fun rust_primitives__hax__update_at(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__replace_body__Impl_1__to_string *)
+const string_lit__Hello: bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__verifcation_status__a_function_which_only_laxes *)
+const string_lit__assertion_x20failed_x3a_x20false: bitstring.
+(* referenced by: new_tests__legacy__attributes__lib__some_function *)
+const string_lit__hello_x20from_x20Rust: bitstring.

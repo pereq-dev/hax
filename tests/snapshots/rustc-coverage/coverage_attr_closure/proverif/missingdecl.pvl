@@ -1,0 +1,14 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF, new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on *)
+const string_lit___empty: bitstring.
+(* referenced by: new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_OFF, new_tests__rustc_coverage__coverage_attr_closure__GLOBAL_CLOSURE_ON, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_off, new_tests__rustc_coverage__coverage_attr_closure__contains_closures_on *)
+const string_lit___x0a: bitstring.

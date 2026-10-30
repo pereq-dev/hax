@@ -47,7 +47,7 @@ pub mod codegen {
     /// Replace the crate name `"hax_engine_names"` with `"rust_primitives"` in the given `DefId`.
     fn rename_krate(def_id: &mut ExplicitDefId) {
         if def_id.def_id.krate == "hax_engine_names" {
-            def_id.def_id.rename_krate("rust_primitives");
+            def_id.def_id = def_id.def_id.rename_krate("rust_primitives");
         }
     }
 

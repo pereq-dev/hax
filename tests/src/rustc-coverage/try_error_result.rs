@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001)
 //! @fail(tc): legacy-lean(1)
 #![allow(unused_assignments)]
 #![cfg_attr(rustfmt, rustfmt::skip)]
@@ -10,7 +11,6 @@ fn call(return_error: bool) -> Result<(), ()> {
         Ok(())
     }
 }
-/// @fail(extraction): proverif(HAX0008)
 
 fn test1() -> Result<(), ()> {
     let mut
@@ -59,7 +59,6 @@ impl Thing2 {
         }
     }
 }
-/// @fail(extraction): proverif(HAX0008)
 
 fn test2() -> Result<(), ()> {
     let thing1 = Thing1{};

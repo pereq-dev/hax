@@ -19,7 +19,6 @@ def say (message : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box String message);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def branch_not (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -51,7 +50,6 @@ def branch_not (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
   else do
     (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def branch_not_as (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -82,7 +80,6 @@ def branch_not_as (a : Bool) : RustM rust_primitives.hax.Tuple0 := do
   else do
     (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -102,7 +99,6 @@ def branch_and (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
     let _ ← (say "not both");
     (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -122,7 +118,6 @@ def branch_or (a : Bool) (b : Bool) : RustM rust_primitives.hax.Tuple0 := do
     let _ ← (say "neither");
     (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008, HAX0008)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM

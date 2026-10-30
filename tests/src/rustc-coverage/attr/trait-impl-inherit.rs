@@ -6,7 +6,7 @@
 //@ edition: 2021
 //@ reference: attributes.coverage.trait-impl-inherit
 
-/// @fail(extraction): ssprove(HAX0008), proverif(HAX0008), fstar(HAX0008), coq(HAX0008)
+/// @fail(extraction): ssprove(HAX0008), fstar(HAX0008), coq(HAX0008)
 trait T {
     #[coverage(off)]
     fn f(&self) {

@@ -5,7 +5,7 @@ open Core_models
 
 type t_DebugTest = | DebugTest : t_DebugTest
 
-/// @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), proverif(HAX0008, HAX0008), ssprove(HAX0001, HAX0001)
+/// @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl: Core_models.Fmt.t_Debug t_DebugTest =
   {
@@ -268,7 +268,7 @@ let impl: Core_models.Fmt.t_Debug t_DebugTest =
 
 type t_DisplayTest = | DisplayTest : t_DisplayTest
 
-/// @fail(extraction): proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
+/// @fail(extraction): coq(HAX0001, HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
 [@@ FStar.Tactics.Typeclasses.tcinstance]
 let impl_1: Core_models.Fmt.t_Display t_DisplayTest =
   {

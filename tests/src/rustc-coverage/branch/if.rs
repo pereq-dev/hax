@@ -10,7 +10,6 @@ macro_rules! no_merge {
     };
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn branch_not(a: bool) {
     no_merge!();
 
@@ -28,7 +27,6 @@ fn branch_not(a: bool) {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn branch_not_as(a: bool) {
     no_merge!();
 
@@ -43,7 +41,6 @@ fn branch_not_as(a: bool) {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn branch_and(a: bool, b: bool) {
     no_merge!();
 
@@ -54,7 +51,6 @@ fn branch_and(a: bool, b: bool) {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn branch_or(a: bool, b: bool) {
     no_merge!();
 
@@ -71,7 +67,6 @@ fn say(message: &str) {
 }
 
 #[coverage(off)]
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 fn main() {
     for a in [false, true, true] {
         branch_not(a);

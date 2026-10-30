@@ -3,7 +3,7 @@ module New_tests.Legacy__loops__lib.Control_flow
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): coq(HAX0001), ssprove(HAX0001), proverif(HAX0008)
+/// @fail(extraction): coq(HAX0001), ssprove(HAX0001)
 let double_sum (_: Prims.unit) : i32 =
   let sum:i32 = mk_i32 0 in
   let sum:i32 =
@@ -29,7 +29,7 @@ let double_sum (_: Prims.unit) : i32 =
   in
   sum *! mk_i32 2
 
-/// @fail(extraction): coq(HAX0001), ssprove(HAX0001), proverif(HAX0008)
+/// @fail(extraction): coq(HAX0001), ssprove(HAX0001)
 let double_sum2 (_: Prims.unit) : i32 =
   let sum:i32 = mk_i32 0 in
   let sum2:i32 = mk_i32 0 in
@@ -58,7 +58,6 @@ let double_sum2 (_: Prims.unit) : i32 =
   in
   sum +! sum2
 
-/// @fail(extraction): proverif(HAX0008)
 let double_sum_return (v: t_Slice i32) : i32 =
   let sum:i32 = mk_i32 0 in
   match
@@ -92,7 +91,6 @@ let double_sum_return (v: t_Slice i32) : i32 =
   | Core_models.Ops.Control_flow.ControlFlow_Break ret -> ret
   | Core_models.Ops.Control_flow.ControlFlow_Continue sum -> sum *! mk_i32 2
 
-/// @fail(extraction): proverif(HAX0008)
 let double_sum2_return (v: t_Slice i32) : i32 =
   let sum:i32 = mk_i32 0 in
   let sum2:i32 = mk_i32 0 in
@@ -130,7 +128,7 @@ let double_sum2_return (v: t_Slice i32) : i32 =
   | Core_models.Ops.Control_flow.ControlFlow_Break ret -> ret
   | Core_models.Ops.Control_flow.ControlFlow_Continue (sum, sum2) -> sum +! sum2
 
-/// @fail(extraction): coq(HAX0001, HAX0001, HAX0001), proverif(HAX0008), ssprove(HAX0001, HAX0001)
+/// @fail(extraction): coq(HAX0001, HAX0001, HAX0001), ssprove(HAX0001, HAX0001)
 let bigger_power_2_ (x: i32) : i32 =
   let pow:i32 = mk_i32 1 in
   Rust_primitives.Hax.while_loop_cf (fun pow ->
@@ -214,7 +212,7 @@ let impl_M__decoded_message (self: t_M)
     <:
     Core_models.Option.t_Option (Alloc.Vec.t_Vec u8 Alloc.Alloc.t_Global)
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001)
 let nested (_: Prims.unit) : i32 =
   let sum:i32 = mk_i32 0 in
   let sum:i32 =
@@ -253,7 +251,6 @@ let nested (_: Prims.unit) : i32 =
   in
   sum *! mk_i32 2
 
-/// @fail(extraction): proverif(HAX0008)
 let nested_return (_: Prims.unit) : i32 =
   let sum:i32 = mk_i32 0 in
   match
@@ -314,7 +311,7 @@ let nested_return (_: Prims.unit) : i32 =
   | Core_models.Ops.Control_flow.ControlFlow_Break ret -> ret
   | Core_models.Ops.Control_flow.ControlFlow_Continue sum -> sum *! mk_i32 2
 
-/// @fail(extraction): ssprove(HAX0008), coq(HAX0008), proverif(HAX0008, HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008)
 let continue_only (x: t_Slice i32) : (i32 & Prims.unit) =
   let product:i32 = mk_i32 1 in
   Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Slice i32
@@ -337,7 +334,7 @@ let continue_only (x: t_Slice i32) : (i32 & Prims.unit) =
   <:
   (i32 & Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008, HAX0008), ssprove(HAX0001, HAX0008), coq(HAX0008, HAX0001)
+/// @fail(extraction): ssprove(HAX0001, HAX0008), coq(HAX0008, HAX0001)
 let continue_and_break (x: t_Slice i32) : (i32 & Prims.unit) =
   let product:i32 = mk_i32 1 in
   Rust_primitives.Hax.Folds.fold_cf (Core_models.Iter.Traits.Collect.f_into_iter #(t_Slice i32)

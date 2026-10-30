@@ -1,0 +1,40 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const char_lit___x27: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__sizes *)
+fun core__mem__size_of(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const float_lit__neg_1_x2e5: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const nat_122: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__Code__B__AnonConst *)
+const nat_20: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__sign_change *)
+const nat_255: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__labels_differ *)
+const nat_32: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const nat_340282366920938463463374607431768211455: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__Impl_1__TAG *)
+const nat_42: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const nat_97: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const nat_98: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const nat_neg_9223372036854775808: bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__Tagged *)
+fun new_tests__legacy__proverif_expressions__lib__Tagged__TAG(): bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__Tagged *)
+fun new_tests__legacy__proverif_expressions__lib__Tagged__tag(bitstring): bitstring.
+(* referenced by: new_tests__legacy__proverif_expressions__lib__literals *)
+const string_lit__quote_x20_x22_x20_x28_x2a_x20not_x20a_x20comment_x20_x2a_x29: bitstring.

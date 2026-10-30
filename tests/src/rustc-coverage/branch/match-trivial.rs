@@ -20,7 +20,6 @@ enum Trivial {
     Value,
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn _uninhabited(x: Uninhabited) {
     no_merge!();
 
@@ -29,7 +28,6 @@ fn _uninhabited(x: Uninhabited) {
     consume("done");
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn trivial(x: Trivial) {
     no_merge!();
 

@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001)
 //! @fail(tc): legacy-lean(1), fstar(2)
 #![feature(coverage_attribute)]
 //@ edition: 2021
@@ -14,7 +15,7 @@ macro_rules! no_merge {
     };
 }
 
-/// @fail(extraction): proverif(HAX0008, HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 fn while_cond() {
     no_merge!();
 
@@ -24,7 +25,7 @@ fn while_cond() {
     }
 }
 
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 fn while_cond_not() {
     no_merge!();
 
@@ -34,7 +35,7 @@ fn while_cond_not() {
     }
 }
 
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 fn while_op_and() {
     no_merge!();
 
@@ -46,7 +47,7 @@ fn while_op_and() {
     }
 }
 
-/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001), proverif(HAX0008, HAX0008)
+/// @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
 fn while_op_or() {
     no_merge!();
 

@@ -1,6 +1,7 @@
+//! @fail(extraction): proverif(HAX0001)
 //@ edition: 2021
 
-/// @fail(extraction): legacy-lean(HAX0001), fstar(HAX0001), coq(HAX0001, HAX0001), ssprove(HAX0001), proverif(HAX0008)
+/// @fail(extraction): legacy-lean(HAX0001), fstar(HAX0001), coq(HAX0001, HAX0001), ssprove(HAX0001)
 fn main() {
     loop {
         if core::hint::black_box(true) {

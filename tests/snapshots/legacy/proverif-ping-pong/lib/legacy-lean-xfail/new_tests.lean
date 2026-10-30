@@ -115,7 +115,6 @@ def read_ping
       (pure (core_models.result.Result.Err
         hax_lib_protocol.ProtocolError.InvalidMessage))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def read_ping_alt
     (_state : B0)

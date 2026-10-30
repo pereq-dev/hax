@@ -17,7 +17,6 @@ let consume (#v_T: Type0) (x: v_T) : Prims.unit =
   let _:v_T = Core_models.Hint.black_box #v_T x in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let e_uninhabited (x: t_Uninhabited) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -35,7 +34,6 @@ let e_uninhabited (x: t_Uninhabited) : Prims.unit =
   let _:Prims.unit = Rust_primitives.Hax.never_to_any (match x <: t_Uninhabited with ) in
   Rust_primitives.Hax.never_to_any (consume #string "done" <: Prims.unit)
 
-/// @fail(extraction): proverif(HAX0008)
 let trivial (x: t_Trivial) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)

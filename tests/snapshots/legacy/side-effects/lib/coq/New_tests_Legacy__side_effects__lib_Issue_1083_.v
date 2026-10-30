@@ -19,7 +19,7 @@ Class t_MyFrom (v_Self : Type) (v_T : Type) : Type :=
   }.
 Arguments t_MyFrom (_) (_).
 
-Instance t_MyFrom_560893093 : t_MyFrom ((t_u16)) ((t_u8)) :=
+Instance t_MyFrom_417668315 : t_MyFrom ((t_u16)) ((t_u8)) :=
   {
     implaabbcc_t_MyFrom_f_my_from := fun  (x : t_u8)=>
       cast (x);

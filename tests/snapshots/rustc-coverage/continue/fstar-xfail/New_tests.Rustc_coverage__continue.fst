@@ -9,7 +9,7 @@ let _ =
   let open Std.Env in
   ()
 
-/// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001), proverif(HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008, HAX0008), ssprove(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001)
+/// @fail(extraction): coq(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001), ssprove(HAX0008, HAX0008, HAX0008, HAX0008, HAX0001)
 let main (_: Prims.unit) : Prims.unit =
   let is_true:bool =
     (Core_models.Iter.Traits.Exact_size.f_len #Std.Env.t_Args

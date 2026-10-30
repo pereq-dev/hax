@@ -1,219 +1,204 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(*****************************************************************)
+(*  WARNINGS — branches the model may not follow as Rust does.   *)
+(*                                                               *)
+(*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
+(*  the model cannot always evaluate. When it cannot, no arm of  *)
+(*  a `match` is taken (the trace ends) and an `if` takes its    *)
+(*  `else` branch, whatever Rust does. A query about the other   *)
+(*  branch may then hold for lack of any trace.                  *)
+(*                                                               *)
+(*  - 4 × branch on a result of `std__env__args`, which the model does not define *)
+(*****************************************************************)
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:35:0-37:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_bin_crate_generic_function *)
+(*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_bin_crate_generic_function(
-         arg : v_T
-       ) =
-       let args = ((arg)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard2: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(
-             ["used_only_from_bin_crate_generic_function with ","
-"], args
-           )
-         )
-       ) in
-       let wildcard1: bitstring = (()) in
-       ().
-
+  arg: bitstring
+) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__used_x5fonly_x5ffrom_x5fbin_x5fcrate_x5fgeneric_x5ffunction_x20with_x20, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(arg))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:42:0-44:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_this_lib_crate_generic_function *)
+(*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_this_lib_crate_generic_function(
-         arg : v_T
-       ) =
-       let args = ((arg)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard4: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(
-             ["used_only_from_this_lib_crate_generic_function with ","
-"], args
-           )
-         )
-       ) in
-       let wildcard3: bitstring = (()) in
-       ().
-
+  arg: bitstring
+) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__used_x5fonly_x5ffrom_x5fthis_x5flib_x5fcrate_x5fgeneric_x5ffunction_x20with_x20, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(arg))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:48:0-50:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__used_from_bin_crate_and_lib_crate_generic_function *)
+(*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_from_bin_crate_and_lib_crate_generic_function(
-         arg : v_T
-       ) =
-       let args = ((arg)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard6: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(
-             ["used_from_bin_crate_and_lib_crate_generic_function with ","
-"],
-             args
-           )
-         )
-       ) in
-       let wildcard5: bitstring = (()) in
-       ().
-
+  arg: bitstring
+) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__used_x5ffrom_x5fbin_x5fcrate_x5fand_x5flib_x5fcrate_x5fgeneric_x5ffunction_x20with_x20, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(arg))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:54:0-56:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__used_with_same_type_from_bin_crate_and_lib_crate_generic_function *)
+(*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_with_same_type_from_bin_crate_and_lib_crate_generic_function(
-         arg : v_T
-       ) =
-       let args = ((arg)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard8: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(
-             ["used_with_same_type_from_bin_crate_and_lib_crate_generic_function with ","
-"],
-             args
-           )
-         )
-       ) in
-       let wildcard7: bitstring = (()) in
-       ().
-
+  arg: bitstring
+) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__used_x5fwith_x5fsame_x5ftype_x5ffrom_x5fbin_x5fcrate_x5fand_x5flib_x5fcrate_x5fgeneric_x5ffunction_x20with_x20, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(arg))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:60:0-62:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__unused_generic_function *)
+(*  @fail(extraction): ssprove(HAX0001) *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__unused_generic_function(
-         arg : v_T
-       ) =
-       let args = ((arg)) in
-       let args = ([core_models__fmt__rt__impl__new_debug(args.0)]) in
-       let wildcard10: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_v1(
-             ["unused_generic_function with ","
-"], args
-           )
-         )
-       ) in
-       let wildcard9: bitstring = (()) in
-       ().
-
+  arg: bitstring
+) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_v1(
+      rust_primitives__hax__array_cons(string_lit__unused_x5fgeneric_x5ffunction_x20with_x20, rust_primitives__hax__array_cons(string_lit___x0a, rust_primitives__hax__array_nil())),
+      rust_primitives__hax__array_cons(core__fmt__rt__Impl__new_debug(
+        rust_primitives__hax__Tuple1__Tuple1__0(rust_primitives__hax__Tuple1__Tuple1(arg))
+      ), rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:65:0-71:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__unused_function *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__unused_function(
-         wildcard11 : bitstring
-       ) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (2) in
-       if core_models__ops__bit__f_not(is_true)
-       then
-         (let countdown = (20) in
-          ())
-       else (()).
-
+  wildcard: bitstring
+) =
+  (* HAX WARNING: branch on a result of `std__env__args`, which the model does not define *)
+  let hax__cond0 = core__ops__bit__Not__not_kw(
+    rust_primitives__hax__machine_int__eq(
+      core__iter__traits__exact_size__ExactSizeIterator__len(
+        std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+      ),
+      nat_1
+    )
+  ) in
+  let (=True()) = hax__cond0
+    in rust_primitives__hax__Tuple0__Tuple0
+    else rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:75:0-81:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__unused_private_function *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__unused_private_function(
-         wildcard12 : bitstring
-       ) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (2) in
-       if core_models__ops__bit__f_not(is_true)
-       then
-         (let countdown = (20) in
-          ())
-       else (()).
-
-letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__uuse_this_lib_crate(
-         wildcard17 : bitstring
-       ) =
-       let wildcard16: bitstring = (
-         new_tests__rustc_coverage__auxiliary__used_inline_crate__used_from_bin_crate_and_lib_crate_generic_function(
-           "used from library used_crate.rs"
-         )
-       ) in
-       let wildcard15: bitstring = (
-         new_tests__rustc_coverage__auxiliary__used_inline_crate__used_with_same_type_from_bin_crate_and_lib_crate_generic_function(
-           "used from library used_crate.rs"
-         )
-       ) in
-       let some_vec = (alloc__slice__impl__into_vec([5,6,7,8])) in
-       let wildcard14: bitstring = (
-         new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_this_lib_crate_generic_function(
-           some_vec
-         )
-       ) in
-       let wildcard13: bitstring = (
-         new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_this_lib_crate_generic_function(
-           "used ONLY from library used_crate.rs"
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_function(
-         wildcard19 : bitstring
-       ) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if is_true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let wildcard18: bitstring = (
-         new_tests__rustc_coverage__auxiliary__used_inline_crate__uuse_this_lib_crate(
-           ()
-         )
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  (* HAX WARNING: branch on a result of `std__env__args`, which the model does not define *)
+  let hax__cond0 = core__ops__bit__Not__not_kw(
+    rust_primitives__hax__machine_int__eq(
+      core__iter__traits__exact_size__ExactSizeIterator__len(
+        std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+      ),
+      nat_1
+    )
+  ) in
+  let (=True()) = hax__cond0
+    in rust_primitives__hax__Tuple0__Tuple0
+    else rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:83:0-91:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__use_this_lib_crate *)
+letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__use_this_lib_crate(
+  wildcard: bitstring
+) =
+  let wildcard_1 = new_tests__rustc_coverage__auxiliary__used_inline_crate__used_from_bin_crate_and_lib_crate_generic_function(
+    string_lit__used_x20from_x20library_x20used_x5fcrate_x2ers
+  ) in
+  let wildcard_2 = new_tests__rustc_coverage__auxiliary__used_inline_crate__used_with_same_type_from_bin_crate_and_lib_crate_generic_function(
+    string_lit__used_x20from_x20library_x20used_x5fcrate_x2ers
+  ) in
+  let wildcard_3 = new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_this_lib_crate_generic_function(
+    alloc__slice__Impl__into_vec(
+      rust_primitives__hax__array_cons(nat_5, rust_primitives__hax__array_cons(nat_6, rust_primitives__hax__array_cons(nat_7, rust_primitives__hax__array_cons(nat_8, rust_primitives__hax__array_nil()))))
+    )
+  ) in
+  let wildcard_4 = new_tests__rustc_coverage__auxiliary__used_inline_crate__used_only_from_this_lib_crate_generic_function(
+    string_lit__used_x20ONLY_x20from_x20library_x20used_x5fcrate_x2ers
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:8:0-18:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__used_function *)
+letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_function(wildcard: bitstring) =
+  let countdown_2 = ((* HAX WARNING: branch on a result of `std__env__args`, which the model does not define *)
+  let hax__cond0 = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_1
+  ) in
+  let (=True()) = hax__cond0 in nat_10 else nat_0) in
+  let wildcard_1 = new_tests__rustc_coverage__auxiliary__used_inline_crate__use_this_lib_crate(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/auxiliary/used_inline_crate.rs:21:0-31:1 new_tests__rustc_coverage__auxiliary__used_inline_crate__used_inline_function *)
 letfun new_tests__rustc_coverage__auxiliary__used_inline_crate__used_inline_function(
-         wildcard21 : bitstring
-       ) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if is_true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let wildcard20: bitstring = (
-         new_tests__rustc_coverage__auxiliary__used_inline_crate__uuse_this_lib_crate(
-           ()
-         )
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  let countdown_2 = ((* HAX WARNING: branch on a result of `std__env__args`, which the model does not define *)
+  let hax__cond0 = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_1
+  ) in
+  let (=True()) = hax__cond0 in nat_10 else nat_0) in
+  let wildcard_1 = new_tests__rustc_coverage__auxiliary__used_inline_crate__use_this_lib_crate(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

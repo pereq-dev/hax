@@ -10,7 +10,6 @@ macro_rules! no_merge {
     };
 }
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 fn branch_match_guard(x: Option<u32>) {
     no_merge!();
 

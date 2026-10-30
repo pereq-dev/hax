@@ -220,6 +220,8 @@ jobs:
         working-directory: .
     steps:
       - uses: actions/checkout@v5
+      - name: Free disk space by removing preinstalled packages
+        uses: jlumbroso/free-disk-space@main
 
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: cachix/cachix-action@v15

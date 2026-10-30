@@ -82,7 +82,7 @@ dependencies = [
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -91,7 +91,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -100,7 +100,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro2",
@@ -110,7 +110,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -121,14 +121,14 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-protocol"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "libcrux",
 ]
 
 [[package]]
 name = "hax-lib-protocol-macros"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "proc-macro2",
  "quote",

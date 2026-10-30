@@ -3,7 +3,6 @@ module New_tests.Legacy__loops__lib.And_mut_side_effect_loop
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008)
 let looping (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
   let array:t_Array u8 (mk_usize 5) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)
@@ -24,7 +23,6 @@ let looping (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
   in
   array
 
-/// @fail(extraction): proverif(HAX0008)
 let looping_2_ (array: t_Array u8 (mk_usize 5)) : t_Array u8 (mk_usize 5) =
   let (array: t_Array u8 (mk_usize 5)), (result: Prims.unit) =
     Rust_primitives.Hax.Folds.fold_range (mk_usize 0)

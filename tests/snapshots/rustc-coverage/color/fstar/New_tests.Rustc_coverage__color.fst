@@ -3,7 +3,6 @@ module New_tests.Rustc_coverage__color
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008)
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
     (mk_i32 0)

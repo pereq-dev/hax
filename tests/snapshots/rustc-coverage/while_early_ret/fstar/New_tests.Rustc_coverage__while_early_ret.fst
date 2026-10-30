@@ -3,7 +3,7 @@ module New_tests.Rustc_coverage__while_early_ret
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0001), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 let main (_: Prims.unit) : Core_models.Result.t_Result Prims.unit u8 =
   let countdown:i32 = mk_i32 10 in
   match

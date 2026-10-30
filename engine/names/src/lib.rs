@@ -80,6 +80,14 @@ fn dummy_hax_concrete_ident_wrapper<I: core::iter::Iterator<Item = u8>>(x: I, mu
         let _ = [()].chunks_exact(2);
         let _ = [()].iter();
         let _ = (&[()] as &[()]).iter();
+        let _ = it.clone().any(|_| true);
+        let _ = it.clone().find(|_| true);
+        let _ = it.clone().find_map(Some);
+        let _ = it.clone().filter_map(Some);
+        it.clone().for_each(|_| ());
+        let _: Vec<_> = it.clone().map(|x| x).collect();
+        let _ = Some(()).map(|x| x);
+        let _ = true.then(|| ());
     }
 
     {
@@ -230,6 +238,10 @@ mod hax {
     // TODO: Should that live here? (this is F* specific)
     fn array_of_list() {}
     fn never_to_any() {}
+
+    // Cons-list encoding of fixed-size collections, used by the ProVerif backend.
+    fn array_cons() {}
+    fn array_nil() {}
 
     mod folds {
         fn fold_range() {}

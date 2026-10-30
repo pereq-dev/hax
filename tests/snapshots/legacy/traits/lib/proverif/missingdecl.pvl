@@ -1,0 +1,21 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__traits__lib__for_clauses__issue_495__minimized_1, new_tests__legacy__traits__lib__for_clauses__issue_495__original_function_from_495 *)
+fun core__iter__traits__iterator__Iterator__filter(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__closure_impl_expr_fngen *)
+fun core__iter__traits__iterator__Iterator__map(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__use_impl_trait *)
+(* result destructured as: rust_primitives__hax__Tuple2__Tuple2(_, _) *)
+fun core__iter__traits__iterator__Iterator__next(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__Impl__function_of_super_trait *)
+fun core__num__Impl_2__abs(bitstring): bitstring.
+(* referenced by: new_tests__legacy__traits__lib__Impl_1__N *)
+const nat_32: bitstring.

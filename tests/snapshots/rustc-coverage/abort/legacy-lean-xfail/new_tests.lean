@@ -34,7 +34,7 @@ def might_abort (should_abort : Bool) : RustM rust_primitives.hax.Tuple0 := do
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do

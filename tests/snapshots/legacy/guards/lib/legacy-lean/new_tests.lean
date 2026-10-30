@@ -14,7 +14,6 @@ set_option linter.unusedVariables false
 
 namespace new_tests.legacy__guards__lib
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def if_let_guard
     (x : (core_models.option.Option (core_models.result.Result i32 i32))) :
@@ -63,7 +62,6 @@ def equivalent
               (pure y)
             | _ => do (pure (1 : i32))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def multiple_guards
     (x : (core_models.option.Option (core_models.result.Result i32 i32))) :
@@ -100,7 +98,6 @@ def multiple_guards
                   (pure y)
                 | _ => do (pure (1 : i32))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def if_guard (x : (core_models.option.Option i32)) : RustM i32 := do
   match

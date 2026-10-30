@@ -27,16 +27,21 @@ responder protocol logic.
 
 A handwritten ProVerif model of this protocol is included in `psk.pv` for comparison.
 
-### On the use of `proverif::replace()`
-Since ProVerif operates in a symbolic world, certain operations have
-to be represented abstractly, in in symbolic terms. In this case, we
-give symbolic replacements for serialization and deserialization, as
-well as cryptographic operations such as encryption and
-decryption. They are thus treated as ideal implementations of their
-respective functionality in ProVerif's analysis of the protocol. To
-obtain assurance that these operations are correct and implemented
-securely, one of hax' other backends can be used.
+### Modelling the cryptography and the wire format
+ProVerif works on symbolic terms, so some functions get an abstract model
+instead of their Rust body:
 
+- The cryptographic operations (key derivation, encryption, decryption) are
+  `#[hax_lib::proverif::replace_body(...)]`: their body becomes a call to the
+  ideal functionality of `cryptolib.pvl`. hax's other backends can prove that
+  the implementations are correct.
+- The wire format is `#[hax_lib::pv_constructor]` for serialization, an
+  injective encoding, and `#[hax_lib::pv_inverse_of(serialize_key_iv)]` for
+  deserialization, which then recovers exactly what was serialized and fails
+  on anything else.
+
+The `proverif-nsl` example models its cryptography through a trait instead,
+and uses `#[hax_lib::pv_extern]` for its key derivation.
 
 ## Extracting into ProVerif
 To obtain a ProVerif model of the protocol logic functions, run the `psk`
@@ -54,10 +59,16 @@ using the extracted functions in `lib.pvl` and uses ProVerif to verify
 - that initiator and receiver can both complete the protocol, as well as
 - confidentiality of the pre-shared key and the protocol payload
 
-To let ProVerif perform the analysis, from the crate root, run:
+To let ProVerif perform the analysis, from the crate root, run `make check`.
+It fails unless the verdicts are the expected ones below, and runs:
 
 ```
-proverif -lib ./proofs/psk/proverif/extraction/lib.pvl ./proofs/psk/proverif/analysis.pv
+proverif -lib ../../hax-lib/proof-libs/proverif/primitives \
+         -lib ../../hax-lib/proof-libs/proverif/result \
+         -lib ../../hax-lib/proof-libs/proverif/cryptolib \
+         -lib ./proofs/psk/proverif/extraction/missingdecl \
+         -lib ./proofs/psk/proverif/extraction/lib \
+         ./proofs/psk/proverif/analysis.pv
 ```
 
 The expected final output is

@@ -1,148 +1,134 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - a node of kind [Raw_pointer] have been found in the AST *)
+(*  - use of a const generic parameter as a value *)
+(*  - use of a const generic parameter as a value *)
+(*  - `new_tests__legacy__cli__interface_only__lib__padlen` is recursive; its body is dropped *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__legacy__cli__interface_only__lib__t_Bar.
-
-fun new_tests__legacy__cli__interface_only__lib__t_Bar_to_bitstring(
-      new_tests__legacy__cli__interface_only__lib__t_Bar
+(* src: src/legacy/cli/interface-only/lib.rs:19:0-27:1 new_tests__legacy__cli__interface_only__lib__f *)
+(*  This item contains unsafe blocks and raw references, two features *)
+(*  not supported by hax. Thanks to the `-i` flag and the `+:` *)
+(*  modifier, `f` is still extractable as an interface. *)
+(* *)
+(*  Expressions within type are still extracted, as well as pre- and *)
+(*  post-conditions. *)
+(*  @fail(extraction): ssprove(HAX0008, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0008), fstar(HAX0008, HAX0008, HAX0008, HAX0008) *)
+(*  @fail(extraction): legacy-lean(HAX0008, HAX0008, HAX0008, HAX0008) *)
+(*  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0008) *)
+letfun new_tests__legacy__cli__interface_only__lib__f(x: bitstring) =
+  bitstring_err() (* HAX ERROR: a node of kind [Raw_pointer] have been found in the AST *).
+(* src: src/legacy/cli/interface-only/lib.rs:39:0-39:11 new_tests__legacy__cli__interface_only__lib__Bar *)
+fun new_tests__legacy__cli__interface_only__lib__Bar__Bar(): bitstring [data].
+(*  Non-inherent implementations are extracted, their bodies are not *)
+(*  dropped. This might be a bit surprising: see *)
+(*  https://github.com/pereq-dev/hax/issues/616. *)
+(* src: src/legacy/cli/interface-only/lib.rs:45:4-47:5 new_tests__legacy__cli__interface_only__lib__Impl__from *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl__from(wildcard: bitstring) =
+  new_tests__legacy__cli__interface_only__lib__Bar__Bar().
+(* src: src/legacy/cli/interface-only/lib.rs:53:8-55:9 new_tests__legacy__cli__interface_only__lib__Impl_1__from__from *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl_1__from__from(wildcard: bitstring) =
+  new_tests__legacy__cli__interface_only__lib__Bar__Bar().
+(*  If you need to drop the body of a method, please hoist it: *)
+(* src: src/legacy/cli/interface-only/lib.rs:52:4-57:5 new_tests__legacy__cli__interface_only__lib__Impl_1__from *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl_1__from(x: bitstring) =
+  new_tests__legacy__cli__interface_only__lib__Impl_1__from__from(x).
+(* src: src/legacy/cli/interface-only/lib.rs:60:0-62:1 new_tests__legacy__cli__interface_only__lib__Holder *)
+fun new_tests__legacy__cli__interface_only__lib__Holder__Holder(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__cli__interface_only__lib__Holder__Holder__value(
+    new_tests__legacy__cli__interface_only__lib__Holder__Holder(v_0)
+  ) = v_0.
+(* src: src/legacy/cli/interface-only/lib.rs:65:4-67:5 new_tests__legacy__cli__interface_only__lib__Impl_2__from *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl_2__from(wildcard: bitstring) =
+  new_tests__legacy__cli__interface_only__lib__Holder__Holder(
+    alloc__vec__Impl__new_kw(rust_primitives__hax__Tuple0__Tuple0)
+  ).
+(* src: src/legacy/cli/interface-only/lib.rs:70:0-72:1 new_tests__legacy__cli__interface_only__lib__Param *)
+fun new_tests__legacy__cli__interface_only__lib__Param__Param(bitstring): bitstring [data].
+reduc forall v_0: bitstring;
+  new_tests__legacy__cli__interface_only__lib__Param__Param__value(
+    new_tests__legacy__cli__interface_only__lib__Param__Param(v_0)
+  ) = v_0.
+(* src: src/legacy/cli/interface-only/lib.rs:75:4-77:5 new_tests__legacy__cli__interface_only__lib__Impl_3__from *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl_3__from(wildcard: bitstring) =
+  new_tests__legacy__cli__interface_only__lib__Param__Param(
+    rust_primitives__hax__repeat(
+      nat_0,
+      bitstring_err() (* HAX ERROR: use of a const generic parameter as a value *)
     )
-    : bitstring [typeConverter].
-fun new_tests__legacy__cli__interface_only__lib__t_Bar_from_bitstring(bitstring)
-    : new_tests__legacy__cli__interface_only__lib__t_Bar [typeConverter].
-const new_tests__legacy__cli__interface_only__lib__t_Bar_default_value: new_tests__legacy__cli__interface_only__lib__t_Bar.
-letfun new_tests__legacy__cli__interface_only__lib__t_Bar_default() =
-       new_tests__legacy__cli__interface_only__lib__t_Bar_default_value.
-letfun new_tests__legacy__cli__interface_only__lib__t_Bar_err() =
-       let x = construct_fail() in new_tests__legacy__cli__interface_only__lib__t_Bar_default_value.
-fun new_tests__legacy__cli__interface_only__lib__Bar()
-    : new_tests__legacy__cli__interface_only__lib__t_Bar [data].
-
-
-type new_tests__legacy__cli__interface_only__lib__t_Holder.
-
-fun new_tests__legacy__cli__interface_only__lib__t_Holder_to_bitstring(
-      new_tests__legacy__cli__interface_only__lib__t_Holder
+  ).
+(* src: src/legacy/cli/interface-only/lib.rs:80:0-82:1 new_tests__legacy__cli__interface_only__lib__f_generic *)
+letfun new_tests__legacy__cli__interface_only__lib__f_generic(u_x: bitstring) =
+  new_tests__legacy__cli__interface_only__lib__Param__Param(
+    rust_primitives__hax__repeat(
+      nat_0,
+      bitstring_err() (* HAX ERROR: use of a const generic parameter as a value *)
     )
-    : bitstring [typeConverter].
-fun new_tests__legacy__cli__interface_only__lib__t_Holder_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__cli__interface_only__lib__t_Holder [typeConverter].
-const new_tests__legacy__cli__interface_only__lib__t_Holder_default_value: new_tests__legacy__cli__interface_only__lib__t_Holder.
-letfun new_tests__legacy__cli__interface_only__lib__t_Holder_default() =
-       new_tests__legacy__cli__interface_only__lib__t_Holder_default_value.
-letfun new_tests__legacy__cli__interface_only__lib__t_Holder_err() =
-       let x = construct_fail() in new_tests__legacy__cli__interface_only__lib__t_Holder_default_value.
-fun new_tests__legacy__cli__interface_only__lib__Holder(bitstring)
-    : new_tests__legacy__cli__interface_only__lib__t_Holder [data].
-reduc forall new_tests__legacy__cli__interface_only__lib__f_value: bitstring;
-    accessor_new_tests__legacy__cli__interface_only__lib__t_Holder_new_tests__legacy__cli__interface_only__lib__f_value(
-      new_tests__legacy__cli__interface_only__lib__Holder(
-        new_tests__legacy__cli__interface_only__lib__f_value
-      )
-    ) = new_tests__legacy__cli__interface_only__lib__f_value.
+  ).
 
-type new_tests__legacy__cli__interface_only__lib__t_Param.
+(*  Impls with associated types are not erased *)
 
-fun new_tests__legacy__cli__interface_only__lib__t_Param_to_bitstring(
-      new_tests__legacy__cli__interface_only__lib__t_Param
-    )
-    : bitstring [typeConverter].
-fun new_tests__legacy__cli__interface_only__lib__t_Param_from_bitstring(
-      bitstring
-    )
-    : new_tests__legacy__cli__interface_only__lib__t_Param [typeConverter].
-const new_tests__legacy__cli__interface_only__lib__t_Param_default_value: new_tests__legacy__cli__interface_only__lib__t_Param.
-letfun new_tests__legacy__cli__interface_only__lib__t_Param_default() =
-       new_tests__legacy__cli__interface_only__lib__t_Param_default_value.
-letfun new_tests__legacy__cli__interface_only__lib__t_Param_err() =
-       let x = construct_fail() in new_tests__legacy__cli__interface_only__lib__t_Param_default_value.
-fun new_tests__legacy__cli__interface_only__lib__Param(bitstring)
-    : new_tests__legacy__cli__interface_only__lib__t_Param [data].
-reduc forall new_tests__legacy__cli__interface_only__lib__f_value: bitstring;
-    accessor_new_tests__legacy__cli__interface_only__lib__t_Param_new_tests__legacy__cli__interface_only__lib__f_value(
-      new_tests__legacy__cli__interface_only__lib__Param(
-        new_tests__legacy__cli__interface_only__lib__f_value
-      )
-    ) = new_tests__legacy__cli__interface_only__lib__f_value.
+(* src: src/legacy/cli/interface-only/lib.rs:92:4-92:13 new_tests__legacy__cli__interface_only__lib__Impl_4__d *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl_4__d(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
 
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__legacy__cli__interface_only__lib__f(x : nat) =
-       rust_primitives__hax__failure(
-         "Explicit rejection by a phase in the Hax engine:
-a node of kind [Raw_pointer] have been found in the AST
-
-Note: the error was labeled with context `reject_RawOrMutPointer`.
-",
-         "{
- let y: raw_pointer!() = { cast(x) };
- {
- let _: tuple0 = {
- {
- let _: tuple0 = {
- {
- let _: tuple0 = {
- std::io::stdio::e_print({
- let args: tuple1<&int> = { Tuple1(&(deref(y))) };
- {
- let args: [c..."
-       ).
-
-letfun new_tests__legacy__cli__interface_only__lib__f_from__impl_1__from(
-         wildcard1 : nat
-       ) =
-       new_tests__legacy__cli__interface_only__lib__Bar().
-
-letfun new_tests__legacy__cli__interface_only__lib__ff_generic(e_x : v_U) =
-       new_tests__legacy__cli__interface_only__lib__Param(
-         rust_primitives__hax__repeat(0, v_X)
-       ).
-
-letfun new_tests__legacy__cli__interface_only__lib__padlen(
-         b : bitstring, n : nat
-       ) =
-       if
-         core_models__cmp__f_gt(n, 0) && core_models__cmp__f_eq(
-             core_models__ops__index__f_index(
-               b, core_models__ops__arith__f_sub(n, 1)
-             ),
-             0
-           )
-       then
-         (core_models__ops__arith__f_add(
-            1,
-            new_tests__legacy__cli__interface_only__lib__padlen(
-              b, core_models__ops__arith__f_sub(n, 1)
-            )
-          ))
-       else (0).
-
+(*  Items can be forced to be transparent *)
+(* src: src/legacy/cli/interface-only/lib.rs:103:4-103:13 new_tests__legacy__cli__interface_only__lib__Impl_5__d *)
+letfun new_tests__legacy__cli__interface_only__lib__Impl_5__d(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/legacy/cli/interface-only/lib.rs:108:0-114:1 new_tests__legacy__cli__interface_only__lib__padlen *)
+(* HAX ERROR: `new_tests__legacy__cli__interface_only__lib__padlen` is recursive; its body is dropped *)
+(* It is modelled as an uninterpreted injective one-way symbol, which *)
+(* the real function need not be. Replace with a hand-written model  *)
+(* before trusting any result that depends on it.                    *)
+fun new_tests__legacy__cli__interface_only__lib__padlen(bitstring, bitstring): bitstring.

@@ -17,7 +17,6 @@ namespace new_tests.legacy__mut_ref_functionalization__lib
 structure S where
   b : (RustArray u8 5)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def foo (lhs : S) (rhs : S) : RustM S := do
   let lhs : S ←
@@ -143,7 +142,6 @@ structure Pair (T : Type) where
   a : T
   b : Foo
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def g (x : (Pair (alloc.vec.Vec u8 alloc.alloc.Global))) :
     RustM (alloc.vec.Vec u8 alloc.alloc.Global) := do

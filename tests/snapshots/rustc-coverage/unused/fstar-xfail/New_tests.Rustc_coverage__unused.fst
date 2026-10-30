@@ -3,7 +3,7 @@ module New_tests.Rustc_coverage__unused
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 let foo (#v_T: Type0) (x: v_T) : (i32 & Prims.unit) =
   let i:i32 = mk_i32 0 in
   Rust_primitives.Hax.while_loop (fun i ->
@@ -25,7 +25,7 @@ let foo (#v_T: Type0) (x: v_T) : (i32 & Prims.unit) =
   <:
   (i32 & Prims.unit)
 
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008), coq(HAX0001, HAX0001)
+/// @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 let unused_template_func (#v_T: Type0) (x: v_T) : (i32 & Prims.unit) =
   let i:i32 = mk_i32 0 in
   Rust_primitives.Hax.while_loop (fun i ->

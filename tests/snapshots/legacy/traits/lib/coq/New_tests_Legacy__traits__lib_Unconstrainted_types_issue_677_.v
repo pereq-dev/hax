@@ -26,7 +26,7 @@ Record Plus_record : Type :=
 #[export]
 Notation "'Plus_Plus_record'" := Build_Plus_record.
 
-Instance t_PolyOp_474931878 : t_PolyOp ((t_Plus)) :=
+Instance t_PolyOp_311731118 : t_PolyOp ((t_Plus)) :=
   {
     implaabbcc_t_PolyOp_f_op := fun  (x : t_u32) (y : t_u32)=>
       f_add (x) (y);
@@ -39,7 +39,7 @@ Record Times_record : Type :=
 #[export]
 Notation "'Times_Times_record'" := Build_Times_record.
 
-Instance t_PolyOp_795246301 : t_PolyOp ((t_Times)) :=
+Instance t_PolyOp_79350215 : t_PolyOp ((t_Times)) :=
   {
     implaabbcc_t_PolyOp_f_op := fun  (x : t_u32) (y : t_u32)=>
       f_mul (x) (y);

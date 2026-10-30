@@ -17,7 +17,6 @@ macro_rules! no_merge {
     };
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn branch_and(a: bool, b: bool) {
     no_merge!();
 
@@ -26,7 +25,6 @@ fn branch_and(a: bool, b: bool) {
     black_box(c);
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn branch_or(a: bool, b: bool) {
     no_merge!();
 
@@ -36,7 +34,6 @@ fn branch_or(a: bool, b: bool) {
 }
 
 // Test for chaining one operator several times.
-/// @fail(extraction): proverif(HAX0008)
 fn chain(x: u32) {
     no_merge!();
 
@@ -50,7 +47,6 @@ fn chain(x: u32) {
 }
 
 // Test for nested combinations of different operators.
-/// @fail(extraction): proverif(HAX0008)
 fn nested_mixed(x: u32) {
     no_merge!();
 
@@ -64,7 +60,6 @@ fn nested_mixed(x: u32) {
 }
 
 #[coverage(off)]
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 fn main() {
     // Use each set of arguments (2^n) times, so that each combination has a
     // unique sum, and we can use those sums to verify expected control flow.

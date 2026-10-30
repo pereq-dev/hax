@@ -6,7 +6,8 @@
 // <https://github.com/rust-lang/rust/pull/83666>.
 
 #[rustfmt::skip]
-/// @fail(extraction): coq(HAX0006, HAX0003), proverif(HAX0006, HAX0003), fstar(HAX0006, HAX0003), ssprove(HAX0006, HAX0003), legacy-lean(HAX0003, HAX0006)
+/// @fail(extraction): coq(HAX0006, HAX0003), fstar(HAX0006, HAX0003), ssprove(HAX0006, HAX0003), legacy-lean(HAX0003, HAX0006)
+/// @fail(extraction): proverif(HAX0003, HAX0006)
 fn main() {
     // Initialize test constants in a way that cannot be determined at compile time, to ensure
     // rustc and LLVM cannot optimize out statements (or coverage counters) downstream from

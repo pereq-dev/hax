@@ -30,6 +30,187 @@ pub mod mappers {
             }
         }
     }
+
+    /// How a [`ScopedRenamer`] renames binders.
+    pub trait Renaming {
+        /// A use of a local refers to the binder in scope with the same key.
+        type Key: Eq + std::hash::Hash + Clone;
+        /// The key of a local.
+        fn key(&self, id: &LocalId) -> Self::Key;
+        /// The new name of a binder of `id`.
+        fn fresh(&mut self, id: &LocalId) -> LocalId;
+    }
+
+    /// Visitor that renames every binder of an expression with a [`Renaming`],
+    /// and every use to the new name of the binder in scope. Free variables
+    /// are left untouched.
+    pub struct ScopedRenamer<R: Renaming> {
+        /// The renaming policy.
+        pub renaming: R,
+        scope: HashMap<R::Key, LocalId>,
+    }
+
+    impl<R: Renaming> ScopedRenamer<R> {
+        /// A renamer with an empty scope.
+        pub fn new(renaming: R) -> Self {
+            Self {
+                renaming,
+                scope: HashMap::new(),
+            }
+        }
+
+        /// Rename the binders of `pat`, which then scope over what is visited
+        /// next.
+        pub fn bind(&mut self, pat: &mut Pat) {
+            BindPat(self).visit_pat(pat)
+        }
+
+        /// Bring `id` into scope under its own name.
+        pub fn declare(&mut self, id: LocalId) {
+            self.scope.insert(self.renaming.key(&id), id);
+        }
+
+        fn bind_var(&mut self, var: &mut LocalId) {
+            let new = self.renaming.fresh(var);
+            self.scope.insert(self.renaming.key(var), new.clone());
+            *var = new;
+        }
+
+        fn rename_use(&self, id: &mut LocalId) {
+            if let Some(new) = self.scope.get(&self.renaming.key(id)) {
+                *id = new.clone();
+            }
+        }
+
+        /// Rename the binders of `pat` to the names `scope` already gives
+        /// them, as for the alternatives of an or-pattern.
+        fn rename_pat(&self, pat: &mut Pat) {
+            struct RenamePat<'a, R: Renaming>(&'a ScopedRenamer<R>);
+            impl<R: Renaming> AstVisitorMut for RenamePat<'_, R> {
+                fn visit_pat_kind(&mut self, kind: &mut PatKind) {
+                    if let PatKind::Binding { var, .. } = kind {
+                        self.0.rename_use(var);
+                    }
+                    self.visit_inner(kind)
+                }
+            }
+            RenamePat(self).visit_pat(pat)
+        }
+
+        fn scoped(&mut self, f: impl FnOnce(&mut Self)) {
+            let saved = self.scope.clone();
+            f(self);
+            self.scope = saved;
+        }
+    }
+
+    struct BindPat<'a, R: Renaming>(&'a mut ScopedRenamer<R>);
+
+    impl<R: Renaming> AstVisitorMut for BindPat<'_, R> {
+        fn visit_pat_kind(&mut self, kind: &mut PatKind) {
+            match kind {
+                PatKind::Binding { var, sub_pat, .. } => {
+                    self.0.bind_var(var);
+                    if let Some(sub_pat) = sub_pat {
+                        self.visit_pat(sub_pat)
+                    }
+                }
+                // The alternatives bind the same variables.
+                PatKind::Or { sub_pats } => {
+                    if let Some((first, rest)) = sub_pats.split_first_mut() {
+                        self.visit_pat(first);
+                        for p in rest {
+                            self.0.rename_pat(p);
+                        }
+                    }
+                }
+                _ => self.visit_inner(kind),
+            }
+        }
+    }
+
+    impl<R: Renaming> AstVisitorMut for ScopedRenamer<R> {
+        fn visit_expr(&mut self, expr: &mut Expr) {
+            match &mut *expr.kind {
+                ExprKind::LocalId(id) => self.rename_use(id),
+                ExprKind::Let { lhs, rhs, body } => {
+                    self.visit_expr(rhs);
+                    self.scoped(|this| {
+                        this.bind(lhs);
+                        this.visit_expr(body)
+                    })
+                }
+                ExprKind::Match { scrutinee, arms } => {
+                    self.visit_expr(scrutinee);
+                    for arm in arms {
+                        self.scoped(|this| {
+                            this.bind(&mut arm.pat);
+                            if let Some(guard) = &mut arm.guard {
+                                let GuardKind::IfLet { lhs, rhs } = &mut guard.kind;
+                                this.visit_expr(rhs);
+                                this.bind(lhs);
+                            }
+                            this.visit_expr(&mut arm.body)
+                        })
+                    }
+                }
+                ExprKind::Closure {
+                    params,
+                    body,
+                    captures,
+                } => {
+                    for capture in captures {
+                        self.visit_expr(capture);
+                    }
+                    self.scoped(|this| {
+                        for param in params {
+                            this.bind(param);
+                        }
+                        this.visit_expr(body)
+                    })
+                }
+                ExprKind::Loop {
+                    body, kind, state, ..
+                } => {
+                    match &mut **kind {
+                        LoopKind::ForLoop { iterator, .. } => self.visit_expr(iterator),
+                        LoopKind::ForIndexLoop { start, end, .. } => {
+                            self.visit_expr(start);
+                            self.visit_expr(end);
+                        }
+                        LoopKind::WhileLoop { .. } | LoopKind::UnconditionalLoop => {}
+                    }
+                    if let Some(state) = state {
+                        self.visit_expr(&mut state.init);
+                    }
+                    self.scoped(|this| {
+                        match &mut **kind {
+                            LoopKind::ForLoop { pat, .. } => this.bind(pat),
+                            LoopKind::ForIndexLoop { var, .. } => this.bind_var(var),
+                            LoopKind::WhileLoop { .. } | LoopKind::UnconditionalLoop => {}
+                        }
+                        if let Some(state) = state {
+                            this.bind(&mut state.body_pat);
+                        }
+                        if let LoopKind::WhileLoop { condition } = &mut **kind {
+                            this.visit_expr(condition);
+                        }
+                        this.visit_expr(body)
+                    })
+                }
+                ExprKind::Quote { contents } => {
+                    for content in &mut contents.0 {
+                        match content {
+                            QuoteContent::Expr(e) => self.visit_expr(e),
+                            QuoteContent::Pattern(p) => self.rename_pat(p),
+                            QuoteContent::Verbatim(_) | QuoteContent::Ty(_) => {}
+                        }
+                    }
+                }
+                _ => self.visit_inner(expr),
+            }
+        }
+    }
 }
 
 impl Expr {
@@ -51,6 +232,58 @@ impl Expr {
     pub fn unit(span: Span) -> Self {
         ExprKind::GlobalId(global_id::TupleId::Constructor { length: 0 }.into())
             .promote(TyKind::unit().promote(), span)
+    }
+
+    /// The value `constructor(fields)` of an enum variant.
+    pub fn variant(
+        constructor: GlobalId,
+        fields: Vec<(GlobalId, Expr)>,
+        ty: Ty,
+        span: Span,
+    ) -> Self {
+        ExprKind::Construct {
+            constructor,
+            is_record: false,
+            is_struct: false,
+            fields,
+            base: None,
+        }
+        .promote(ty, span)
+    }
+
+    /// The value `Some(value)` of type `ty`.
+    pub fn some(value: Expr, ty: Ty, span: Span) -> Self {
+        use crate::names::core::option::Option::Some;
+        Self::variant(Some::Constructor, vec![(Some::_0, value)], ty, span)
+    }
+
+    /// The value `None` of type `ty`.
+    pub fn none(ty: Ty, span: Span) -> Self {
+        use crate::names::core::option::Option::None;
+        Self::variant(None::Constructor, vec![], ty, span)
+    }
+
+    /// Whether the expression is a local, a global or a literal, under any
+    /// ascriptions.
+    pub fn is_leaf(&self) -> bool {
+        match &*self.kind {
+            ExprKind::LocalId(_) | ExprKind::GlobalId(_) | ExprKind::Literal(_) => true,
+            ExprKind::Ascription { e, .. } => e.is_leaf(),
+            _ => false,
+        }
+    }
+
+    /// Whether the expression refers to the global `id`.
+    pub fn mentions(&self, id: GlobalId) -> bool {
+        struct Mentions(GlobalId, bool);
+        impl AstVisitor for Mentions {
+            fn enter_expr_kind(&mut self, kind: &ExprKind) {
+                self.1 |= matches!(kind, ExprKind::GlobalId(g) if *g == self.0);
+            }
+        }
+        let mut visitor = Mentions(id, false);
+        visitor.visit_expr(self);
+        visitor.1
     }
 
     /// Creates a `App` node for a standalone function.
@@ -206,6 +439,46 @@ impl Metadata {
 }
 
 impl Pat {
+    /// The variable bound by a plain binding pattern `x`, under any
+    /// ascriptions.
+    pub fn as_binder(&self) -> Option<&LocalId> {
+        match &*self.kind {
+            PatKind::Binding {
+                var, sub_pat: None, ..
+            } => Some(var),
+            PatKind::Ascription { pat, .. } => pat.as_binder(),
+            _ => None,
+        }
+    }
+
+    /// The pattern `constructor(fields)` of an enum variant.
+    pub fn variant(
+        constructor: GlobalId,
+        fields: Vec<(GlobalId, Pat)>,
+        ty: Ty,
+        span: Span,
+    ) -> Self {
+        PatKind::Construct {
+            constructor,
+            is_record: false,
+            is_struct: false,
+            fields,
+        }
+        .promote(ty, span)
+    }
+
+    /// The pattern `Some(inner)` of type `ty`.
+    pub fn some(inner: Pat, ty: Ty, span: Span) -> Self {
+        use crate::names::core::option::Option::Some;
+        Self::variant(Some::Constructor, vec![(Some::_0, inner)], ty, span)
+    }
+
+    /// The pattern `None` of type `ty`.
+    pub fn none(ty: Ty, span: Span) -> Self {
+        use crate::names::core::option::Option::None;
+        Self::variant(None::Constructor, vec![], ty, span)
+    }
+
     /// Expects the pattern to be a simple binding `self`.
     pub fn expect_self(&self) -> Option<LocalId> {
         if let PatKind::Binding { var, .. } = self.kind()

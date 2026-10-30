@@ -60,7 +60,6 @@ impl ReadState<B1> for B0 {
 }*/
 
 #[hax_lib_protocol_macros::read(B0, B1alt, Message)]
-/// @fail(extraction): proverif(HAX0008)
 fn read_ping_alt(_state: B0, msg: Message) -> ProtocolResult<B1alt> {
     match msg {
         Message::Ping(received) if received == 42 => Ok(B1alt {}),

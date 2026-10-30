@@ -3,7 +3,6 @@ module New_tests.Rustc_coverage__branch__lazy_boolean
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008)
 let branch_and (a b: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -22,7 +21,6 @@ let branch_and (a b: bool) : Prims.unit =
   let _:bool = Core_models.Hint.black_box #bool c in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let branch_or (a b: bool) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -41,7 +39,6 @@ let branch_or (a b: bool) : Prims.unit =
   let _:bool = Core_models.Hint.black_box #bool c in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let chain (x: u32) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -62,7 +59,6 @@ let chain (x: u32) : Prims.unit =
   let _:bool = Core_models.Hint.black_box #bool d in
   ()
 
-/// @fail(extraction): proverif(HAX0008)
 let nested_mixed (x: u32) : Prims.unit =
   let _:Prims.unit =
     Rust_primitives.Hax.Folds.fold_range (mk_i32 0)
@@ -83,7 +79,6 @@ let nested_mixed (x: u32) : Prims.unit =
   let _:bool = Core_models.Hint.black_box #bool d in
   ()
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let main (_: Prims.unit) : (Prims.unit & Prims.unit) =
   let _:Prims.unit =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(t_Array

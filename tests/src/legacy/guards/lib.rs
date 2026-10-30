@@ -1,7 +1,6 @@
 #![feature(if_let_guard)]
 #![allow(dead_code)]
 
-/// @fail(extraction): proverif(HAX0008)
 pub fn if_let_guard(x: Option<Result<i32, i32>>) -> i32 {
     match x {
         None => 0,
@@ -30,7 +29,6 @@ pub fn equivalent(x: Option<Result<i32, i32>>) -> i32 {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008)
 pub fn multiple_guards(x: Option<Result<i32, i32>>) -> i32 {
     match x {
         None => 0,
@@ -41,7 +39,6 @@ pub fn multiple_guards(x: Option<Result<i32, i32>>) -> i32 {
     }
 }
 
-/// @fail(extraction): proverif(HAX0008)
 pub fn if_guard(x: Option<i32>) -> i32 {
     match x {
         Some(v) if v > 0 => v,

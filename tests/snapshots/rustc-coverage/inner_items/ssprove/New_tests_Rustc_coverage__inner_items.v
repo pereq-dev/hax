@@ -65,7 +65,7 @@ Note: the error was labeled with context `reject_TraitItemDefault`.
 
 Last available AST for this item:
 
-/** @fail(extraction): ssprove(HAX0008), fstar(HAX0008), proverif(HAX0008), coq(HAX0008)*/#[allow(unused_assignments, unused_variables, dead_code)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
+/** @fail(extraction): ssprove(HAX0008), fstar(HAX0008), coq(HAX0008)*/#[allow(unused_assignments, unused_variables, dead_code)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]trait main__t_InTrait<Self_>{#[allow(unused_assignments, unused_variables, dead_code)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,
 yield_expr, coroutines, coroutine_trait, no_core, core_intrinsics)]#[register_tool(_hax)]fn main__f_trait_func(_: Self,_: int) -> Self;
 #[allow(unused_assignments, unused_variables, dead_code)]#[allow(dead_code, unused, unconditional_recursion)]#[feature(register_tool, if_let_guard)]#[feature(coverage_attribute, stmt_expr_attributes, custom_inner_attributes, test,

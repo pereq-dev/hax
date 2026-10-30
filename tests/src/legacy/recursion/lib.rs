@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001)
 #![allow(dead_code)]
 
 pub fn f(n: u8) -> u8 {

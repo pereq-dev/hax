@@ -27,7 +27,6 @@ def dup
     (← (core_models.clone.Clone.clone T x))
     (← (core_models.clone.Clone.clone T x))))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def foo (LEN : usize) (arr : (RustArray usize LEN)) : RustM usize := do
   let acc : usize ← (LEN +? (9 : usize));

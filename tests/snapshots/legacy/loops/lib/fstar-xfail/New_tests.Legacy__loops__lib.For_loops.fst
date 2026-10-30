@@ -3,7 +3,6 @@ module New_tests.Legacy__loops__lib.For_loops
 open FStar.Mul
 open Core_models
 
-/// @fail(extraction): proverif(HAX0008)
 let range1 (_: Prims.unit) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -21,7 +20,6 @@ let range1 (_: Prims.unit) : usize =
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008)
 let range2 (n: usize) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -39,7 +37,6 @@ let range2 (n: usize) : usize =
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008)
 let composed_range (n: usize) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -72,7 +69,6 @@ let composed_range (n: usize) : usize =
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008)
 let rev_range (n: usize) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -96,7 +92,6 @@ let rev_range (n: usize) : usize =
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008, HAX0008)
 let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let chunks:Core_models.Slice.Iter.t_ChunksExact usize =
@@ -151,7 +146,6 @@ let chunks (v_CHUNK_LEN: usize) (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008)
 let iterator (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -171,7 +165,7 @@ let iterator (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   in
   acc
 
-/// @fail(extraction): ssprove(HAX0001), proverif(HAX0008)
+/// @fail(extraction): ssprove(HAX0001)
 let nested (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -240,7 +234,6 @@ let nested (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008)
 let pattern (arr: Alloc.Vec.t_Vec (usize & usize) Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -258,7 +251,6 @@ let pattern (arr: Alloc.Vec.t_Vec (usize & usize) Alloc.Alloc.t_Global) : usize 
   in
   acc
 
-/// @fail(extraction): proverif(HAX0008)
 let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
   let acc:usize = mk_usize 0 in
   let acc:usize =
@@ -297,7 +289,6 @@ let enumerate_chunks (arr: Alloc.Vec.t_Vec usize Alloc.Alloc.t_Global) : usize =
 
 let bool_returning (x: u8) : bool = x <. mk_u8 10
 
-/// @fail(extraction): proverif(HAX0008)
 let f (_: Prims.unit) : (u8 & Prims.unit) =
   let acc:u8 = mk_u8 0 in
   Rust_primitives.Hax.Folds.fold_range (mk_u8 1)

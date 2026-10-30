@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__let_else_loop
 
---  @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001), proverif(HAX0008)
+--  @fail(extraction): fstar(HAX0001), legacy-lean(HAX0001), coq(HAX0001)
 @[spec]
 def loopy (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   match cond with
@@ -22,7 +22,7 @@ def loopy (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
     | _ => do
       (pure (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
 
---  @fail(extraction): fstar(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008)
+--  @fail(extraction): fstar(HAX0001, HAX0001), legacy-lean(HAX0001, HAX0001), coq(HAX0001, HAX0001)
 @[spec]
 def _loop_either_way (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   match cond with
@@ -32,7 +32,7 @@ def _loop_either_way (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
     | _ => do
       (pure (rust_primitives.hax.Tuple2.mk sorry rust_primitives.hax.Tuple0.mk))
 
---  @fail(extraction): proverif(HAX0008, HAX0008), legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
+--  @fail(extraction): legacy-lean(HAX0001, HAX0001), fstar(HAX0001, HAX0001), coq(HAX0001, HAX0001)
 @[spec]
 def _if (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
   if cond then do

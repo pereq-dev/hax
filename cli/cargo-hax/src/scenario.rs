@@ -514,6 +514,8 @@ fn scenario_options(
         ScenarioBackend::Easycrypt => Backend::Easycrypt,
         ScenarioBackend::Proverif => Backend::ProVerif(ProVerifOptions {
             assume_items: entry.assume_items.clone(),
+            result_errors: entry.result_errors,
+            keep_trait_calls: entry.keep_trait_calls.clone(),
         }),
     };
     let output_dir = match BackendName::from(entry.backend).output_subdir() {
@@ -736,6 +738,8 @@ mod tests {
             aeneas_args: vec!["-aeneas-flag".to_string()],
             project_files: Some(false),
             assume_items: vec![clause("+**::assumed")],
+            result_errors: true,
+            keep_trait_calls: vec!["kept::**".to_string()],
         }
     }
 
@@ -856,6 +860,8 @@ mod tests {
             .map(ToString::to_string)
             .collect();
         assert_eq!(assumed, ["+**::assumed"]);
+        assert!(proverif.result_errors);
+        assert_eq!(proverif.keep_trait_calls, ["kept::**"]);
     }
 
     /// A scenario of `package`, extracting into `output_dir`.

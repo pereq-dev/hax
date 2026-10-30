@@ -1,0 +1,45 @@
+(*****************************************************************)
+(* missingdecl.pvl — UNDEFINED externals referenced by lib.pvl   *)
+(*                                                               *)
+(* Each symbol below is referenced by lib.pvl but defined by     *)
+(* none of the hax libraries, so it is declared abstract here.   *)
+(* Define it — by hand or by extracting the crate that owns it — *)
+(* or deliberately leave it abstract, as an ideal-functionality  *)
+(* boundary. Only Rust constructors are declared `[data]`: any   *)
+(* other function may be one-way.                                *)
+(*****************************************************************)
+(* referenced by: new_tests__legacy__lean_core_models__lib__default__enums__Impl__default *)
+fun core__default__Default__default(bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__phantom__Impl__new_kw *)
+fun core__marker__PhantomData__PhantomData(): bitstring [data].
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__and_then(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__is_none_or(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__is_some_and(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__map_or(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__map_or_else(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__ok_or_else(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+(* result destructured as: rust_primitives__hax__Tuple2__Tuple2(_, _) *)
+fun core__option__Impl__take(bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__unwrap_or_default(bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+fun core__option__Impl__unwrap_or_else(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__result__tests *)
+fun core__result__Impl__and_then(bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__result__tests *)
+fun core__result__Impl__map_or(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__result__tests *)
+fun core__result__Impl__map_or_else(bitstring, bitstring, bitstring): bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__Impl__default *)
+const nat_42: bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__result__tests *)
+const string_lit__Should_x20be_x20Ok: bitstring.
+(* referenced by: new_tests__legacy__lean_core_models__lib__option__test *)
+const string_lit__Should_x20be_x20Some: bitstring.

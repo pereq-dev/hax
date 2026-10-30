@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001)
 //! @fail(tc): legacy-lean(1)
 
 #![allow(dead_code)]
@@ -6,7 +7,6 @@ fn dup<T: Clone>(x: T) -> (T, T) {
     (x.clone(), x.clone())
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn foo<const LEN: usize>(arr: [usize; LEN]) -> usize {
     let mut acc = LEN + 9;
     for i in 0..LEN {

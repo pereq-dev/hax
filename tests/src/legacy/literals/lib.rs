@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001)
 //! @fail(tc): legacy-lean(1)
 #![allow(dead_code)]
 use hax_lib::*;

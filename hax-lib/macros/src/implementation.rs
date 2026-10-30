@@ -653,6 +653,89 @@ pub fn opaque(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream 
     quote! {#attr #charon #item}.into()
 }
 
+pub fn pv_inline(_attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    quote! {
+        #[cfg_attr(hax_compilation, _hax::pv_inline)]
+        #item
+    }
+    .into()
+}
+
+pub fn pv_extern(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let item: ItemFn = parse_macro_input!(item);
+    // A proc-macro cannot see the module path, so same-named functions in
+    // different modules would share one symbol unless given an explicit name.
+    let explicit_name = if attr.is_empty() {
+        None
+    } else {
+        Some(parse_macro_input!(attr as syn::LitStr).value())
+    };
+    let fn_name = explicit_name.unwrap_or_else(|| item.sig.ident.to_string());
+    let arity = item.sig.inputs.len();
+    // Each argument is spliced in as a `${x}` antiquotation, so the backend
+    // prints the parameter under the name it gives it (escaped, renamed).
+    // That needs a name to refer to, so only plain binders are accepted.
+    let mut arg_names: Vec<String> = Vec::with_capacity(arity);
+    for arg in &item.sig.inputs {
+        match arg {
+            syn::FnArg::Receiver(_) => arg_names.push("${self}".to_string()),
+            syn::FnArg::Typed(pat_type) => match &*pat_type.pat {
+                syn::Pat::Ident(pat_ident) if pat_ident.subpat.is_none() => {
+                    arg_names.push(format!("${{{}}}", pat_ident.ident))
+                }
+                pat => {
+                    return syn::Error::new(
+                        pat.span(),
+                        "`pv_extern` needs every parameter to be a plain identifier, \
+                         so that the generated body can refer to it",
+                    )
+                    .to_compile_error()
+                    .into();
+                }
+            },
+        }
+    }
+    let bitstring_args = std::iter::repeat("bitstring")
+        .take(arity)
+        .collect::<Vec<_>>()
+        .join(", ");
+    let decl = format!("fun extern__{fn_name}({bitstring_args}): bitstring.");
+    let body_call = format!("extern__{fn_name}({})", arg_names.join(", "));
+    let decl_lit = syn::LitStr::new(&decl, ::proc_macro2::Span::call_site());
+    let body_lit = syn::LitStr::new(&body_call, ::proc_macro2::Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::before(#decl_lit)]
+        #[::hax_lib::proverif::replace_body(#body_lit)]
+        #item
+    }
+    .into()
+}
+
+pub fn pv_stub(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let payload: syn::LitStr = parse_macro_input!(attr);
+    let item: ::proc_macro2::TokenStream = item.into();
+    quote! {
+        #[::hax_lib::proverif::replace_body(#payload)]
+        #item
+    }
+    .into()
+}
+
+pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenStream {
+    let other_path = parse_macro_input!(attr as syn::Path);
+    let other_str = other_path.to_token_stream().to_string().replace(' ', "");
+    let item_fn: ItemFn = parse_macro_input!(item);
+    let self_name = item_fn.sig.ident.to_string();
+    let body = format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.");
+    let body_lit = syn::LitStr::new(&body, ::proc_macro2::Span::call_site());
+    quote! {
+        #[::hax_lib::proverif::replace(#body_lit)]
+        #item_fn
+    }
+    .into()
+}
+
 pub fn int(payload: pm::TokenStream) -> pm::TokenStream {
     let n: LitInt = parse_macro_input!(payload);
     let suffix = n.suffix();

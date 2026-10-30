@@ -49,7 +49,7 @@ def main.Impl.trait_func_hoisted (self : main.InStruct) (incr : u32) :
 
 abbrev main.InType : Type := alloc.string.String
 
---  @fail(extraction): ssprove(HAX0008), fstar(HAX0008), proverif(HAX0008), coq(HAX0008)
+--  @fail(extraction): ssprove(HAX0008), fstar(HAX0008), coq(HAX0008)
 class main.InTrait.AssociatedTypes (Self : Type) where
 
 class main.InTrait (Self : Type)

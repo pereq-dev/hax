@@ -380,7 +380,8 @@ Last AST:
 const _: () = ();
  *)
 
-/// @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), proverif(HAX0002, HAX0008, HAX0008, HAX0008), legacy-lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), legacy-lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008)
+/// @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0002)
 let test1 (_: Prims.unit) : Prims.unit =
   let _:Prims.unit =
     if
@@ -480,7 +481,8 @@ let test2__call_print (s: string) : Prims.unit =
   let _:Prims.unit = () in
   ()
 
-/// @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008), legacy-lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008)
+/// @fail(extraction): ssprove(HAX0008), coq(HAX0008), legacy-lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008)
+/// @fail(extraction): proverif(HAX0008)
 let test2 (_: Prims.unit) : Prims.unit =
   let _:Prims.unit = test2__call_print "called from call_debug: " in
   let _:Prims.unit =

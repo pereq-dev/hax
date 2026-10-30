@@ -34,7 +34,6 @@ def consume (T : Type) (x : T) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (core_models.hint.black_box T x);
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def _uninhabited (x : Uninhabited) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←
@@ -50,7 +49,6 @@ def _uninhabited (x : Uninhabited) : RustM rust_primitives.hax.Tuple0 := do
   let _ ← (rust_primitives.hax.never_to_any (← match x with ));
   (rust_primitives.hax.never_to_any (← (consume String "done")))
 
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def trivial (x : Trivial) : RustM rust_primitives.hax.Tuple0 := do
   let _ ←

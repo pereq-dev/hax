@@ -22,7 +22,6 @@ def add3 (x : u32) (y : u32) (z : u32) : RustM u32 := do
     z)
 
 --  Exercise local mutation with control flow and loops
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def local_mutation (x : u32) : RustM u32 := do
   let y : u32 := (0 : u32);
@@ -360,7 +359,7 @@ structure Foo where
   bar : Bar
 
 --  Test assignation on non-trivial places
---  @fail(extraction): proverif(HAX0002, HAX0002, HAX0002, HAX0002), coq(HAX0002, HAX0002), ssprove(HAX0001)
+--  @fail(extraction): coq(HAX0002, HAX0002), ssprove(HAX0001)
 @[spec]
 def assign_non_trivial_lhs (foo : Foo) : RustM Foo := do
   let foo : Foo := {foo with x := true};

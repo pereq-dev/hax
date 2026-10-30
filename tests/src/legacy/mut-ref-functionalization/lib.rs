@@ -7,7 +7,6 @@ struct S {
     b: [u8; 5],
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn foo(mut lhs: S, rhs: &S) -> S {
     for i in 0..1 {
         lhs.b[i] += rhs.b[i];
@@ -66,7 +65,6 @@ struct Pair<T> {
     b: Foo,
 }
 
-/// @fail(extraction): proverif(HAX0008)
 fn g(x: Pair<Vec<u8>>) -> Vec<u8> {
     let mut x = x;
     for i in 1..10 {

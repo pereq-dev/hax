@@ -24,7 +24,6 @@ def サビ (_ : rust_primitives.hax.Tuple0) :
   (pure rust_primitives.hax.Tuple0.mk)
 
 --  @fail(extraction): ssprove(HAX0001)
---  @fail(extraction): proverif(HAX0008)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

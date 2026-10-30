@@ -14,7 +14,7 @@ set_option linter.unusedVariables false
 
 namespace new_tests.rustc_coverage__branch__while
 
---  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008)
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 @[spec]
 def while_cond (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do
@@ -41,7 +41,7 @@ def while_cond (_ : rust_primitives.hax.Tuple0) :
       (fun a => (do let a : i32 ← (a -? (1 : i32)); (pure a) : RustM i32))))
     rust_primitives.hax.Tuple0.mk))
 
---  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008)
+--  @fail(extraction): ssprove(HAX0001), coq(HAX0001, HAX0001)
 @[spec]
 def while_cond_not (_ : rust_primitives.hax.Tuple0) :
     RustM (rust_primitives.hax.Tuple2 i32 rust_primitives.hax.Tuple0) := do
@@ -68,7 +68,7 @@ def while_cond_not (_ : rust_primitives.hax.Tuple0) :
       (fun a => (do let a : i32 ← (a -? (1 : i32)); (pure a) : RustM i32))))
     rust_primitives.hax.Tuple0.mk))
 
---  @fail(extraction): coq(HAX0001, HAX0001), proverif(HAX0008, HAX0008), ssprove(HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
 @[spec]
 def while_op_and (_ : rust_primitives.hax.Tuple0) :
     RustM
@@ -106,7 +106,7 @@ def while_op_and (_ : rust_primitives.hax.Tuple0) :
         RustM (rust_primitives.hax.Tuple2 i32 i32)))))
     rust_primitives.hax.Tuple0.mk))
 
---  @fail(extraction): proverif(HAX0008, HAX0008), coq(HAX0001, HAX0001), ssprove(HAX0001)
+--  @fail(extraction): coq(HAX0001, HAX0001), ssprove(HAX0001)
 @[spec]
 def while_op_or (_ : rust_primitives.hax.Tuple0) :
     RustM

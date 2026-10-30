@@ -1,269 +1,213 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
-
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
+(* src: src/rustc-coverage/no_cov_crate.rs:41:8-47:9 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner(
-         is_true : bool
-       ) =
-       if is_true
-       then
-         (let wildcard2: bitstring = (
-            std__io__stdio__e_print(
-              core_models__fmt__rt__impl_1__new_const(["called and covered
-"])
-            )
-          ) in
-          let wildcard1: bitstring = (()) in
-          ())
-       else (
-         let wildcard4: bitstring = (
-           std__io__stdio__e_print(
-             core_models__fmt__rt__impl_1__new_const(["absolutely not covered
-"]
-             )
-           )
-         ) in
-         let wildcard3: bitstring = (()) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered(
-         is_true : bool
-       ) =
-       let wildcard7: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called but not covered
-"])
-         )
-       ) in
-       let wildcard6: bitstring = (()) in
-       let wildcard5: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner(
-           is_true
-         )
-       ) in
-       ().
-
+  is_true: bitstring
+) =
+  let (=True()) = is_true
+    in (let wildcard = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__called_x20and_x20covered_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard_2 = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__absolutely_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard_3 = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/rustc-coverage/no_cov_crate.rs:40:4-50:5 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered *)
+letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered(is_true: bitstring) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20but_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard_2 = new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered__inner(
+    is_true
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:57:8-63:9 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered(
-         is_true : bool
-       ) =
-       if is_true
-       then
-         (let wildcard9: bitstring = (
-            std__io__stdio__e_print(
-              core_models__fmt__rt__impl_1__new_const(
-                ["called but not covered
-"]
-              )
-            )
-          ) in
-          let wildcard8: bitstring = (()) in
-          ())
-       else (
-         let wildcard11: bitstring = (
-           std__io__stdio__e_print(
-             core_models__fmt__rt__impl_1__new_const(["absolutely not covered
-"]
-             )
-           )
-         ) in
-         let wildcard10: bitstring = (()) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer(is_true : bool
-       ) =
-       let wildcard14: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called and covered
-"])
-         )
-       ) in
-       let wildcard13: bitstring = (()) in
-       let wildcard12: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered(
-           is_true
-         )
-       ) in
-       ().
-
+  is_true: bitstring
+) =
+  let (=True()) = is_true
+    in (let wildcard = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__called_x20but_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard_2 = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__absolutely_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard_3 = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/rustc-coverage/no_cov_crate.rs:52:4-64:5 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer *)
+letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer(is_true: bitstring) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20and_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard_2 = new_tests__rustc_coverage__no_cov_crate__nested_fns__outer__inner_not_covered(
+    is_true
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:70:8-76:9 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner *)
 letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner(
-         is_true : bool
-       ) =
-       if is_true
-       then
-         (let wildcard16: bitstring = (
-            std__io__stdio__e_print(
-              core_models__fmt__rt__impl_1__new_const(["called and covered
-"])
-            )
-          ) in
-          let wildcard15: bitstring = (()) in
-          ())
-       else (
-         let wildcard18: bitstring = (
-           std__io__stdio__e_print(
-             core_models__fmt__rt__impl_1__new_const(["absolutely not covered
-"]
-             )
-           )
-         ) in
-         let wildcard17: bitstring = (()) in
-         ()
-       ).
-
-letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered(
-         is_true : bool
-       ) =
-       let wildcard21: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called and covered
-"])
-         )
-       ) in
-       let wildcard20: bitstring = (()) in
-       let wildcard19: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner(
-           is_true
-         )
-       ) in
-       ().
-
-letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1_(
-         wildcard24 : bitstring
-       ) =
-       let wildcard23: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called but not covered
-"])
-         )
-       ) in
-       let wildcard22: bitstring = (()) in
-       ().
-
-letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2_(
-         wildcard27 : bitstring
-       ) =
-       let wildcard26: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called but not covered
-"])
-         )
-       ) in
-       let wildcard25: bitstring = (()) in
-       ().
-
+  is_true: bitstring
+) =
+  let (=True()) = is_true
+    in (let wildcard = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__called_x20and_x20covered_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0)
+    else (let wildcard_2 = std__io__stdio__u_print(
+      core__fmt__rt__Impl_1__new_const(
+        rust_primitives__hax__array_cons(string_lit__absolutely_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+      )
+    ) in
+    let wildcard_3 = rust_primitives__hax__Tuple0__Tuple0 in
+    rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/rustc-coverage/no_cov_crate.rs:66:4-77:5 new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered *)
+letfun new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered(is_true: bitstring) =
+  let wildcard = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20and_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_1 = rust_primitives__hax__Tuple0__Tuple0 in
+  let wildcard_2 = new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered__inner(
+    is_true
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:8:0-10:1 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1 *)
+letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1(wildcard: bitstring) =
+  let wildcard_1 = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20but_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:12:0-15:1 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2 *)
+letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2(wildcard: bitstring) =
+  let wildcard_1 = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20but_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:19:0-21:1 new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called *)
 letfun new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_not_called(
-         wildcard30 : bitstring
-       ) =
-       let wildcard29: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(
-             ["not called and not covered
-"]
-           )
-         )
-       ) in
-       let wildcard28: bitstring = (()) in
-       ().
-
-letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_1_(
-         wildcard33 : bitstring
-       ) =
-       let wildcard32: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called and covered
-"])
-         )
-       ) in
-       let wildcard31: bitstring = (()) in
-       ().
-
-letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_2_(
-         wildcard36 : bitstring
-       ) =
-       let wildcard35: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["called and covered
-"])
-         )
-       ) in
-       let wildcard34: bitstring = (()) in
-       ().
-
-letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called(
-         wildcard39 : bitstring
-       ) =
-       let wildcard38: bitstring = (
-         std__io__stdio__e_print(
-           core_models__fmt__rt__impl_1__new_const(["not called but covered
-"])
-         )
-       ) in
-       let wildcard37: bitstring = (()) in
-       ().
-
-letfun new_tests__rustc_coverage__no_cov_crate__main(wildcard47 : bitstring) =
-       let is_true = (
-         core_models__cmp__f_eq(
-           core_models__iter__traits__exact_size__f_len(std__env__args(())), 1
-         )
-       ) in
-       let wildcard46: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1_(())
-       ) in
-       let wildcard45: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2_(())
-       ) in
-       let wildcard44: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__add_coverage_1_(())
-       ) in
-       let wildcard43: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__add_coverage_2_(())
-       ) in
-       let wildcard42: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered(
-           is_true
-         )
-       ) in
-       let wildcard41: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__nested_fns__outer(is_true)
-       ) in
-       let wildcard40: bitstring = (
-         new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered(
-           is_true
-         )
-       ) in
-       ().
-
+  wildcard: bitstring
+) =
+  let wildcard_1 = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__not_x20called_x20and_x20not_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:23:0-25:1 new_tests__rustc_coverage__no_cov_crate__add_coverage_1 *)
+letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_1(wildcard: bitstring) =
+  let wildcard_1 = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20and_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:27:0-29:1 new_tests__rustc_coverage__no_cov_crate__add_coverage_2 *)
+letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_2(wildcard: bitstring) =
+  let wildcard_1 = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__called_x20and_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:32:0-34:1 new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called *)
+letfun new_tests__rustc_coverage__no_cov_crate__add_coverage_not_called(wildcard: bitstring) =
+  let wildcard_1 = std__io__stdio__u_print(
+    core__fmt__rt__Impl_1__new_const(
+      rust_primitives__hax__array_cons(string_lit__not_x20called_x20but_x20covered_x0a, rust_primitives__hax__array_nil())
+    )
+  ) in
+  let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/no_cov_crate.rs:80:0-91:1 new_tests__rustc_coverage__no_cov_crate__main *)
+letfun new_tests__rustc_coverage__no_cov_crate__main(wildcard: bitstring) =
+  let is_true = rust_primitives__hax__machine_int__eq(
+    core__iter__traits__exact_size__ExactSizeIterator__len(
+      std__env__args(rust_primitives__hax__Tuple0__Tuple0)
+    ),
+    nat_1
+  ) in
+  let wildcard_1 = new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_1(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard_2 = new_tests__rustc_coverage__no_cov_crate__do_not_add_coverage_2(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard_3 = new_tests__rustc_coverage__no_cov_crate__add_coverage_1(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard_4 = new_tests__rustc_coverage__no_cov_crate__add_coverage_2(
+    rust_primitives__hax__Tuple0__Tuple0
+  ) in
+  let wildcard_5 = new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_not_covered(
+    is_true
+  ) in
+  let wildcard_6 = new_tests__rustc_coverage__no_cov_crate__nested_fns__outer(is_true) in
+  let wildcard_7 = new_tests__rustc_coverage__no_cov_crate__nested_fns__outer_both_covered(
+    is_true
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

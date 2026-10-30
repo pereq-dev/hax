@@ -1,83 +1,63 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(* src: src/rustc-coverage/attr/impl.rs:8:0-8:16 new_tests__rustc_coverage__attr__impl__MyStruct *)
+fun new_tests__rustc_coverage__attr__impl__MyStruct__MyStruct(): bitstring [data].
+(* src: src/rustc-coverage/attr/impl.rs:12:4-12:23 new_tests__rustc_coverage__attr__impl__Impl__off_inherit *)
+letfun new_tests__rustc_coverage__attr__impl__Impl__off_inherit(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/impl.rs:15:4-15:18 new_tests__rustc_coverage__attr__impl__Impl__off_on *)
+letfun new_tests__rustc_coverage__attr__impl__Impl__off_on(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/impl.rs:18:4-18:19 new_tests__rustc_coverage__attr__impl__Impl__off_off *)
+letfun new_tests__rustc_coverage__attr__impl__Impl__off_off(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/impl.rs:23:4-23:22 new_tests__rustc_coverage__attr__impl__Impl_1__on_inherit *)
+letfun new_tests__rustc_coverage__attr__impl__Impl_1__on_inherit(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/impl.rs:26:4-26:17 new_tests__rustc_coverage__attr__impl__Impl_1__on_on *)
+letfun new_tests__rustc_coverage__attr__impl__Impl_1__on_on(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/impl.rs:29:4-29:18 new_tests__rustc_coverage__attr__impl__Impl_1__on_off *)
+letfun new_tests__rustc_coverage__attr__impl__Impl_1__on_off(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-type new_tests__rustc_coverage__attr__impl__t_MyStruct.
-
-fun new_tests__rustc_coverage__attr__impl__t_MyStruct_to_bitstring(
-      new_tests__rustc_coverage__attr__impl__t_MyStruct
-    )
-    : bitstring [typeConverter].
-fun new_tests__rustc_coverage__attr__impl__t_MyStruct_from_bitstring(bitstring)
-    : new_tests__rustc_coverage__attr__impl__t_MyStruct [typeConverter].
-const new_tests__rustc_coverage__attr__impl__t_MyStruct_default_value: new_tests__rustc_coverage__attr__impl__t_MyStruct.
-letfun new_tests__rustc_coverage__attr__impl__t_MyStruct_default() =
-       new_tests__rustc_coverage__attr__impl__t_MyStruct_default_value.
-letfun new_tests__rustc_coverage__attr__impl__t_MyStruct_err() =
-       let x = construct_fail() in new_tests__rustc_coverage__attr__impl__t_MyStruct_default_value.
-fun new_tests__rustc_coverage__attr__impl__MyStruct()
-    : new_tests__rustc_coverage__attr__impl__t_MyStruct [data].
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__attr__impl__impl_MyStruct__off_inherit(
-         wildcard1 : bitstring
-       ) =
-       ().
-
-letfun new_tests__rustc_coverage__attr__impl__impl_MyStruct__off_on(
-         wildcard2 : bitstring
-       ) =
-       ().
-
-letfun new_tests__rustc_coverage__attr__impl__impl_MyStruct__off_off(
-         wildcard3 : bitstring
-       ) =
-       ().
-
-letfun new_tests__rustc_coverage__attr__impl__impl_MyStruct__on_inherit(
-         wildcard4 : bitstring
-       ) =
-       ().
-
-letfun new_tests__rustc_coverage__attr__impl__impl_MyStruct__on_on(
-         wildcard5 : bitstring
-       ) =
-       ().
-
-letfun new_tests__rustc_coverage__attr__impl__impl_MyStruct__on_off(
-         wildcard6 : bitstring
-       ) =
-       ().
-
-letfun new_tests__rustc_coverage__attr__impl__main(wildcard7 : bitstring) =
-       ().
-
+(* src: src/rustc-coverage/attr/impl.rs:38:4-38:18 new_tests__rustc_coverage__attr__impl__Impl_2__method *)
+letfun new_tests__rustc_coverage__attr__impl__Impl_2__method(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.
+(* src: src/rustc-coverage/attr/impl.rs:42:0-42:12 new_tests__rustc_coverage__attr__impl__main *)
+letfun new_tests__rustc_coverage__attr__impl__main(wildcard: bitstring) =
+  rust_primitives__hax__Tuple0__Tuple0.

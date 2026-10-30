@@ -378,7 +378,8 @@ def test3 (_ : rust_primitives.hax.Tuple0) :
           (← (core_models.cmp.PartialEq.eq Foo Foo left_val right_val)));
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), proverif(HAX0002, HAX0008, HAX0008, HAX0008), legacy-lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): ssprove(HAX0002, HAX0008, HAX0008, HAX0008), coq(HAX0008, HAX0008, HAX0008, HAX0002), fstar(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008), legacy-lean(HAX0002, HAX0002, HAX0008, HAX0008, HAX0008)
+--  @fail(extraction): proverif(HAX0008, HAX0008, HAX0008, HAX0002)
 @[spec]
 def test1 (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do
@@ -443,7 +444,8 @@ def test2.call_print (s : String) : RustM rust_primitives.hax.Tuple0 := do
   let _ := rust_primitives.hax.Tuple0.mk;
   (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008), ssprove(HAX0008), coq(HAX0008), legacy-lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008)
+--  @fail(extraction): ssprove(HAX0008), coq(HAX0008), legacy-lean(HAX0002, HAX0008), fstar(HAX0002, HAX0008)
+--  @fail(extraction): proverif(HAX0008)
 @[spec]
 def test2 (_ : rust_primitives.hax.Tuple0) :
     RustM rust_primitives.hax.Tuple0 := do

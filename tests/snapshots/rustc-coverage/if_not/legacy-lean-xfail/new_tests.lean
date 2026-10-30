@@ -51,7 +51,6 @@ def if_not (cond : Bool) : RustM rust_primitives.hax.Tuple0 := do
     let _ := rust_primitives.hax.Tuple0.mk;
     (pure rust_primitives.hax.Tuple0.mk)
 
---  @fail(extraction): proverif(HAX0008, HAX0008)
 @[spec]
 def main (_ : rust_primitives.hax.Tuple0) :
     RustM

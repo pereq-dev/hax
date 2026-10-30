@@ -1,64 +1,68 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - Pat:Array *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-letfun new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(
-         bool_arr : bitstring
-       ) =
-       rust_primitives__hax__failure(
-         "something is not implemented yet.
-Pat:Array
-
-This is discussed in issue https://github.com/pereq-dev/hax/issues/804.
-Please upvote or comment this issue if you see this error message.
-Note: the error was labeled with context `AST import`.
-",
-         ""
-       ).
-
-letfun new_tests__rustc_coverage__mcdc__condition_limit__main(
-         wildcard3 : bitstring
-       ) =
-       let wildcard2: bitstring = (
-         new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(
-           rust_primitives__hax__repeat(false, 7)
-         )
-       ) in
-       let wildcard1: bitstring = (
-         new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(
-           rust_primitives__hax__repeat(true, 7)
-         )
-       ) in
-       ().
-
+(* src: src/rustc-coverage/mcdc/condition-limit.rs:8:0-13:1 new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions *)
+(*  @fail(extraction): coq(HAX0001), fstar(HAX0001), ssprove(HAX0001), legacy-lean(HAX0001) *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(bool_arr: bitstring) =
+  bitstring_err() (* HAX ERROR: Pat:Array *).
+(* src: src/rustc-coverage/mcdc/condition-limit.rs:16:0-19:1 new_tests__rustc_coverage__mcdc__condition_limit__main *)
+letfun new_tests__rustc_coverage__mcdc__condition_limit__main(wildcard: bitstring) =
+  let wildcard_1 = new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(
+    rust_primitives__hax__repeat(False(), nat_7)
+  ) in
+  let wildcard_2 = new_tests__rustc_coverage__mcdc__condition_limit__accept_7_conditions(
+    rust_primitives__hax__repeat(True(), nat_7)
+  ) in
+  rust_primitives__hax__Tuple0__Tuple0.

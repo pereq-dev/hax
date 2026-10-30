@@ -95,7 +95,10 @@ impl TestModule {
 
     /// Whether `backend` type-checks its output at all.
     fn has_type_checker(backend: BackendName) -> bool {
-        matches!(backend, BackendName::Fstar | BackendName::LegacyLean)
+        matches!(
+            backend,
+            BackendName::Fstar | BackendName::LegacyLean | BackendName::ProVerif
+        )
     }
 
     /// The subdirectory this test's `backend` snapshots go in: `<backend>`, or

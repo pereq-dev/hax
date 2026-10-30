@@ -44,7 +44,7 @@ Class t_Foo (v_Self : Type) : Type :=
   }.
 Arguments t_Foo (_).
 
-Instance t_Foo_1014067588 : t_Foo ((t_usize)) :=
+Instance t_Foo_546235402 : t_Foo ((t_usize)) :=
   {
     implaabbcc_t_Foo_f_const_add := fun  (self : t_usize)=>
       f_add (self) (v_N);

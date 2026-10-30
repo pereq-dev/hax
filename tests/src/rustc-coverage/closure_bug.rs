@@ -1,3 +1,4 @@
+//! @fail(extraction): proverif(HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001, HAX0001)
 //! @fail(tc): fstar(2), legacy-lean(1)
 // Regression test for #115930.
 // All of these closures are identical, and should produce identical output in

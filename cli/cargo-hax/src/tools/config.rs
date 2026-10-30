@@ -154,6 +154,10 @@ pub struct ScenarioEntry {
     pub project_files: Option<bool>,
     /// ProVerif `--assume-items` clauses.
     pub assume_items: Vec<InclusionClause>,
+    /// ProVerif `--result-errors`.
+    pub result_errors: bool,
+    /// ProVerif `--keep-trait-calls` paths.
+    pub keep_trait_calls: Vec<String>,
 }
 
 impl ScenarioEntry {
@@ -608,6 +612,14 @@ fn parse_scenario(name: &str, value: &toml::Value) -> Result<ScenarioEntry, Stri
                 only(backend == ScenarioBackend::Proverif, key, "")?;
                 entry.assume_items = clause_list(key, value)?;
             }
+            "result-errors" => {
+                only(backend == ScenarioBackend::Proverif, key, "")?;
+                entry.result_errors = boolean(key, value)?;
+            }
+            "keep-trait-calls" => {
+                only(backend == ScenarioBackend::Proverif, key, "")?;
+                entry.keep_trait_calls = string_list(key, value)?;
+            }
             other => {
                 return Err(format!(
                     "{context}: unknown key `{other}`; this version of hax \
@@ -1013,6 +1025,7 @@ line-width = 120
             ("fstar", "charon-args = []"),
             ("fstar", "project-files = true"),
             ("fstar", "assume-items = []"),
+            ("fstar", "keep-trait-calls = []"),
             ("proverif", "interfaces = []"),
         ] {
             let err =

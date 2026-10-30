@@ -44,6 +44,10 @@ F* backend and library:
  - `Formatter::write_str` is now `Core_models.Fmt.impl_11__write_str`, the name
    extracted client code calls, instead of `impl_Formatter__write_str`
 
+ProVerif backend and library:
+ - Breaking: full re-implementation of the backend under the Rust engine. The library
+   scope and its interface with extracted code is also refactored.
+
 ### Changed
 
 Changes to `cargo-hax`:
@@ -95,6 +99,7 @@ F* backend and library:
  - Breaking: `Core_models.Ops.Range.impl` to `impl_4` are now the `RangeBounds`
    instances, with the `Iterator` instances of `Range` moving to `impl_5` to
    `impl_16`
+
 
 ## [0.4.1] - 2026-09-23
 

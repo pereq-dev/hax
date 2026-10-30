@@ -1,213 +1,1560 @@
-(*****************************************)
-(* Preamble *)
-(*****************************************)
+(*
+  Run with:
+    proverif -lib <hax>/hax-lib/proof-libs/proverif/primitives.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/result.pvl \
+             -lib <hax>/hax-lib/proof-libs/proverif/cryptolib.pvl  \
+             -lib missingdecl.pvl \
+             -lib lib.pvl your_analysis.pv
 
-channel c.
+  These libraries ship with hax.
 
-fun construct_fail() : bitstring
-reduc construct_fail() = fail.
+  primitives.pvl declares the symbols this file uses but does not
+  define: the public channel c, the construct_fail sink,
+  bitstring_default and bitstring_err, the Some/None and True/False
+  constructors, the nat_0 to nat_16 literal constants, and the
+  rust_primitives, core, and hax_lib helpers.
 
-type Option.
-fun Some(bitstring): Option [data].
-fun None(): Option [data].
-letfun Option_err() = let x = construct_fail() in None().
+  result.pvl models Result and its methods.
+  This model was extracted without --result-errors: a Result is its
+  Ok payload and producing an Err ends the trace, so error paths are
+  pruned from the model.
 
-const empty: bitstring.
-letfun bitstring_default() = empty.
-letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+  cryptolib.pvl is the shared Dolev-Yao crypto model (hash, AEAD,
+  KDF, DH, KEM, signatures, MAC, serialization) that a crate wires
+  itself to with #[hax_lib::proverif::replace_body("crypto__...")].
+  It is needed whenever the crate does so, and harmless otherwise.
 
-letfun nat_default() = 0.
-fun nat_to_bitstring(nat): bitstring.
-letfun nat_err() = let x = construct_fail() in nat_default().
+  missingdecl.pvl, extracted next to this file, declares every symbol
+  this file uses that none of these libraries defines, such as string
+  literals and integer literals above 16. Each is left abstract:
+  replace its declaration by a definition — by hand or from another
+  crate's extraction — or keep it as an ideal-functionality boundary.
+*)
 
-letfun bool_default() = false.
+(* Only typechecks with result.pvl loaded. *)
+letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
+(*****************************************************************)
+(*  WARNINGS — branches the model may not follow as Rust does.   *)
+(*                                                               *)
+(*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
+(*  the model cannot always evaluate. When it cannot, no arm of  *)
+(*  a `match` is taken (the trace ends) and an `if` takes its    *)
+(*  `else` branch, whatever Rust does. A query about the other   *)
+(*  branch may then hold for lack of any trace.                  *)
+(*                                                               *)
+(*  - 129 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
+(*****************************************************************)
 
-(*****************************************)
-(* Types and Constructors *)
-(*****************************************)
-
-
-
-(*****************************************)
-(* Functions *)
-(*****************************************)
-
-const new_tests__rustc_coverage__conditions__main__v_B: bitstring.
-
-letfun new_tests__rustc_coverage__conditions__main(wildcard4 : bitstring) =
-       let countdown = (0) in
-       let countdown = (
-         if true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let (countdown: nat, x: nat) = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            (countdown, new_tests__rustc_coverage__conditions__main__v_B))
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
+(* src: src/rustc-coverage/conditions.rs:10:4-10:23 new_tests__rustc_coverage__conditions__main__B *)
+letfun new_tests__rustc_coverage__conditions__main__B() = nat_100.
+(* src: src/rustc-coverage/conditions.rs:4:0-88:1 new_tests__rustc_coverage__conditions__main *)
+letfun new_tests__rustc_coverage__conditions__main(wildcard: bitstring) =
+  let countdown_2 = (let (=True()) = True() in nat_10 else nat_0) in
+  (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+  let hax__cond0 = rust_primitives__hax__machine_int__gt(countdown_2, nat_7) in
+  let (=True()) = hax__cond0
+    in (let rust_primitives__hax__Tuple2__Tuple2(
+      countdown_4: bitstring,
+      x: bitstring
+    ) = rust_primitives__hax__Tuple2__Tuple2(
+      rust_primitives__hax__machine_int__sub(countdown_2, nat_4),
+      new_tests__rustc_coverage__conditions__main__B()
+    ) in (let countdown_7 = (let (=True()) = True() in nat_10 else nat_0) in
+    (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+    let hax__cond1 = rust_primitives__hax__machine_int__gt(countdown_7, nat_7) in
+    let (=True()) = hax__cond1
+      in (let countdown_8 = rust_primitives__hax__machine_int__sub(countdown_7, nat_4) in
+      let (=True()) = True()
+        in (let countdown_11 = (let (=True()) = True() in nat_10 else nat_0) in
+        (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+        let hax__cond2 = rust_primitives__hax__machine_int__gt(countdown_11, nat_7) in
+        let (=True()) = hax__cond2
+          in (let countdown_12 = rust_primitives__hax__machine_int__sub(countdown_11, nat_4) in
+          let countdown_15 = (let (=True()) = True() in nat_1 else nat_0) in
+          (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond3 = rust_primitives__hax__machine_int__gt(countdown_15, nat_7) in
+          let (=True()) = hax__cond3
+            in (let rust_primitives__hax__Tuple2__Tuple2(
+              countdown_17: bitstring,
+              z: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(
+              rust_primitives__hax__machine_int__sub(countdown_15, nat_4),
+              rust_primitives__hax__Tuple0__Tuple0
+            ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond4 = rust_primitives__hax__machine_int__gt(countdown_17, nat_7) in
+            let (=True()) = hax__cond4
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_19: bitstring,
+                w: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_17, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond5 = rust_primitives__hax__machine_int__gt(countdown_17, nat_2) in
+              let (=True()) = hax__cond5
+                in (let countdown_21 = (let hax__cond6 = (let hax__cond7 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond8 = rust_primitives__hax__machine_int__lt(countdown_17, nat_1) in
+                let (=True()) = hax__cond8
+                  in True()
+                  else let (=False()) = hax__cond8
+                  in rust_primitives__hax__machine_int__gt(countdown_17, nat_5)
+                  else logical_or_opaque(hax__cond8)) in
+                let (=True()) = hax__cond7
+                  in True()
+                  else let (=False()) = hax__cond7
+                  in rust_primitives__hax__machine_int__ne(countdown_17, nat_9)
+                  else logical_or_opaque(hax__cond7)) in
+                let (=True()) = hax__cond6 in nat_0 else countdown_17) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_23: bitstring,
+                  w_1: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_21, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+            else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond9 = rust_primitives__hax__machine_int__gt(countdown_15, nat_2) in
+            let (=True()) = hax__cond9
+              in (let countdown_25 = (let hax__cond10 = (let hax__cond11 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond12 = rust_primitives__hax__machine_int__lt(countdown_15, nat_1) in
+              let (=True()) = hax__cond12
+                in True()
+                else let (=False()) = hax__cond12
+                in rust_primitives__hax__machine_int__gt(countdown_15, nat_5)
+                else logical_or_opaque(hax__cond12)) in
+              let (=True()) = hax__cond11
+                in True()
+                else let (=False()) = hax__cond11
+                in rust_primitives__hax__machine_int__ne(countdown_15, nat_9)
+                else logical_or_opaque(hax__cond11)) in
+              let (=True()) = hax__cond10 in nat_0 else countdown_15) in
+              let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_27: bitstring,
+                z_1: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_25, nat_5),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond13 = rust_primitives__hax__machine_int__gt(countdown_27, nat_7) in
+              let (=True()) = hax__cond13
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_29: bitstring,
+                  w_2: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_27, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond14 = rust_primitives__hax__machine_int__gt(countdown_27, nat_2) in
+                let (=True()) = hax__cond14
+                  in (let countdown_31 = (let hax__cond15 = (let hax__cond16 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond17 = rust_primitives__hax__machine_int__lt(countdown_27, nat_1) in
+                  let (=True()) = hax__cond17
+                    in True()
+                    else let (=False()) = hax__cond17
+                    in rust_primitives__hax__machine_int__gt(countdown_27, nat_5)
+                    else logical_or_opaque(hax__cond17)) in
+                  let (=True()) = hax__cond16
+                    in True()
+                    else let (=False()) = hax__cond16
+                    in rust_primitives__hax__machine_int__ne(countdown_27, nat_9)
+                    else logical_or_opaque(hax__cond16)) in
+                  let (=True()) = hax__cond15 in nat_0 else countdown_27) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_33: bitstring,
+                    w_3: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_31, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else (let wildcard_1 = std__io__stdio__u_print(
+                core__fmt__rt__Impl_1__new_const(
+                  rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                )
               ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              (countdown, countdown))
-           else (
-             let hoist1 = (todo return;) in
-             (countdown, nat_err())
-           )
-         )
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if true
-         then
-           (let countdown = (10) in
-            countdown)
-         else (countdown)
-       ) in
-       let countdown = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            countdown)
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
-              ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              countdown)
-           else (
-             let hoist2 = (todo return;) in
-             countdown
-           )
-         )
-       ) in
-       let wildcard3: bitstring = (
-         if true
-         then
-           (let countdown = (0) in
-            let countdown = (
-              if true
-              then
-                (let countdown = (10) in
-                 countdown)
-              else (countdown)
-            ) in
-            if core_models__cmp__f_gt(countdown, 7)
-            then
-              (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-               ())
-            else (
-              if core_models__cmp__f_gt(countdown, 2)
-              then
-                (let countdown = (
-                   if
-                     core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                         countdown, 5
-                       ) || core_models__cmp__f_ne(countdown, 9)
-                   then
-                     (let countdown = (0) in
-                      countdown)
-                   else (countdown)
-                 ) in
-                 let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-                 ())
-              else (
-                let hoist3 = (todo return;) in
-                bitstring_err()
+              let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0)))
+          else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond18 = rust_primitives__hax__machine_int__gt(countdown_11, nat_2) in
+          let (=True()) = hax__cond18
+            in (let countdown_35 = (let hax__cond19 = (let hax__cond20 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond21 = rust_primitives__hax__machine_int__lt(countdown_11, nat_1) in
+            let (=True()) = hax__cond21
+              in True()
+              else let (=False()) = hax__cond21
+              in rust_primitives__hax__machine_int__gt(countdown_11, nat_5)
+              else logical_or_opaque(hax__cond21)) in
+            let (=True()) = hax__cond20
+              in True()
+              else let (=False()) = hax__cond20
+              in rust_primitives__hax__machine_int__ne(countdown_11, nat_9)
+              else logical_or_opaque(hax__cond20)) in
+            let (=True()) = hax__cond19 in nat_0 else countdown_11) in
+            let countdown_36 = rust_primitives__hax__machine_int__sub(countdown_35, nat_5) in
+            let countdown_39 = (let (=True()) = True() in nat_1 else nat_0) in
+            (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond22 = rust_primitives__hax__machine_int__gt(countdown_39, nat_7) in
+            let (=True()) = hax__cond22
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_41: bitstring,
+                z_2: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_39, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond23 = rust_primitives__hax__machine_int__gt(countdown_41, nat_7) in
+              let (=True()) = hax__cond23
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_43: bitstring,
+                  w_4: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_41, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond24 = rust_primitives__hax__machine_int__gt(countdown_41, nat_2) in
+                let (=True()) = hax__cond24
+                  in (let countdown_45 = (let hax__cond25 = (let hax__cond26 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond27 = rust_primitives__hax__machine_int__lt(countdown_41, nat_1) in
+                  let (=True()) = hax__cond27
+                    in True()
+                    else let (=False()) = hax__cond27
+                    in rust_primitives__hax__machine_int__gt(countdown_41, nat_5)
+                    else logical_or_opaque(hax__cond27)) in
+                  let (=True()) = hax__cond26
+                    in True()
+                    else let (=False()) = hax__cond26
+                    in rust_primitives__hax__machine_int__ne(countdown_41, nat_9)
+                    else logical_or_opaque(hax__cond26)) in
+                  let (=True()) = hax__cond25 in nat_0 else countdown_41) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_47: bitstring,
+                    w_5: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_45, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond28 = rust_primitives__hax__machine_int__gt(countdown_39, nat_2) in
+              let (=True()) = hax__cond28
+                in (let countdown_49 = (let hax__cond29 = (let hax__cond30 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond31 = rust_primitives__hax__machine_int__lt(countdown_39, nat_1) in
+                let (=True()) = hax__cond31
+                  in True()
+                  else let (=False()) = hax__cond31
+                  in rust_primitives__hax__machine_int__gt(countdown_39, nat_5)
+                  else logical_or_opaque(hax__cond31)) in
+                let (=True()) = hax__cond30
+                  in True()
+                  else let (=False()) = hax__cond30
+                  in rust_primitives__hax__machine_int__ne(countdown_39, nat_9)
+                  else logical_or_opaque(hax__cond30)) in
+                let (=True()) = hax__cond29 in nat_0 else countdown_39) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_51: bitstring,
+                  z_3: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_49, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond32 = rust_primitives__hax__machine_int__gt(countdown_51, nat_7) in
+                let (=True()) = hax__cond32
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_53: bitstring,
+                    w_6: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_51, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond33 = rust_primitives__hax__machine_int__gt(countdown_51, nat_2) in
+                  let (=True()) = hax__cond33
+                    in (let countdown_55 = (let hax__cond34 = (let hax__cond35 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond36 = rust_primitives__hax__machine_int__lt(countdown_51, nat_1) in
+                    let (=True()) = hax__cond36
+                      in True()
+                      else let (=False()) = hax__cond36
+                      in rust_primitives__hax__machine_int__gt(countdown_51, nat_5)
+                      else logical_or_opaque(hax__cond36)) in
+                    let (=True()) = hax__cond35
+                      in True()
+                      else let (=False()) = hax__cond35
+                      in rust_primitives__hax__machine_int__ne(countdown_51, nat_9)
+                      else logical_or_opaque(hax__cond35)) in
+                    let (=True()) = hax__cond34 in nat_0 else countdown_51) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_57: bitstring,
+                      w_7: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_55, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else (let wildcard_3 = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard_4 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)))
+            else rust_primitives__hax__Tuple0__Tuple0))
+        else (let countdown_60 = (let (=True()) = True() in nat_1 else nat_0) in
+        (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+        let hax__cond37 = rust_primitives__hax__machine_int__gt(countdown_60, nat_7) in
+        let (=True()) = hax__cond37
+          in (let rust_primitives__hax__Tuple2__Tuple2(
+            countdown_62: bitstring,
+            z_4: bitstring
+          ) = rust_primitives__hax__Tuple2__Tuple2(
+            rust_primitives__hax__machine_int__sub(countdown_60, nat_4),
+            rust_primitives__hax__Tuple0__Tuple0
+          ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond38 = rust_primitives__hax__machine_int__gt(countdown_62, nat_7) in
+          let (=True()) = hax__cond38
+            in (let rust_primitives__hax__Tuple2__Tuple2(
+              countdown_64: bitstring,
+              w_8: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(
+              rust_primitives__hax__machine_int__sub(countdown_62, nat_4),
+              rust_primitives__hax__Tuple0__Tuple0
+            ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+            else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond39 = rust_primitives__hax__machine_int__gt(countdown_62, nat_2) in
+            let (=True()) = hax__cond39
+              in (let countdown_66 = (let hax__cond40 = (let hax__cond41 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond42 = rust_primitives__hax__machine_int__lt(countdown_62, nat_1) in
+              let (=True()) = hax__cond42
+                in True()
+                else let (=False()) = hax__cond42
+                in rust_primitives__hax__machine_int__gt(countdown_62, nat_5)
+                else logical_or_opaque(hax__cond42)) in
+              let (=True()) = hax__cond41
+                in True()
+                else let (=False()) = hax__cond41
+                in rust_primitives__hax__machine_int__ne(countdown_62, nat_9)
+                else logical_or_opaque(hax__cond41)) in
+              let (=True()) = hax__cond40 in nat_0 else countdown_62) in
+              let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_68: bitstring,
+                w_9: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_66, nat_5),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+              else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+          else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond43 = rust_primitives__hax__machine_int__gt(countdown_60, nat_2) in
+          let (=True()) = hax__cond43
+            in (let countdown_70 = (let hax__cond44 = (let hax__cond45 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond46 = rust_primitives__hax__machine_int__lt(countdown_60, nat_1) in
+            let (=True()) = hax__cond46
+              in True()
+              else let (=False()) = hax__cond46
+              in rust_primitives__hax__machine_int__gt(countdown_60, nat_5)
+              else logical_or_opaque(hax__cond46)) in
+            let (=True()) = hax__cond45
+              in True()
+              else let (=False()) = hax__cond45
+              in rust_primitives__hax__machine_int__ne(countdown_60, nat_9)
+              else logical_or_opaque(hax__cond45)) in
+            let (=True()) = hax__cond44 in nat_0 else countdown_60) in
+            let rust_primitives__hax__Tuple2__Tuple2(
+              countdown_72: bitstring,
+              z_5: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(
+              rust_primitives__hax__machine_int__sub(countdown_70, nat_5),
+              rust_primitives__hax__Tuple0__Tuple0
+            ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond47 = rust_primitives__hax__machine_int__gt(countdown_72, nat_7) in
+            let (=True()) = hax__cond47
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_74: bitstring,
+                w_10: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_72, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond48 = rust_primitives__hax__machine_int__gt(countdown_72, nat_2) in
+              let (=True()) = hax__cond48
+                in (let countdown_76 = (let hax__cond49 = (let hax__cond50 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond51 = rust_primitives__hax__machine_int__lt(countdown_72, nat_1) in
+                let (=True()) = hax__cond51
+                  in True()
+                  else let (=False()) = hax__cond51
+                  in rust_primitives__hax__machine_int__gt(countdown_72, nat_5)
+                  else logical_or_opaque(hax__cond51)) in
+                let (=True()) = hax__cond50
+                  in True()
+                  else let (=False()) = hax__cond50
+                  in rust_primitives__hax__machine_int__ne(countdown_72, nat_9)
+                  else logical_or_opaque(hax__cond50)) in
+                let (=True()) = hax__cond49 in nat_0 else countdown_72) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_78: bitstring,
+                  w_11: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_76, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+            else (let wildcard_5 = std__io__stdio__u_print(
+              core__fmt__rt__Impl_1__new_const(
+                rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
               )
-            ))
-         else (())
-       ) in
-       let countdown = (0) in
-       let countdown = (
-         if true
-         then
-           (let countdown = (1) in
-            countdown)
-         else (countdown)
-       ) in
-       let (countdown: nat, z: bitstring) = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            (countdown, ()))
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
+            ) in
+            let wildcard_6 = rust_primitives__hax__Tuple0__Tuple0 in
+            rust_primitives__hax__Tuple0__Tuple0))))
+      else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+      let hax__cond52 = rust_primitives__hax__machine_int__gt(countdown_7, nat_2) in
+      let (=True()) = hax__cond52
+        in (let countdown_80 = (let hax__cond53 = (let hax__cond54 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+        let hax__cond55 = rust_primitives__hax__machine_int__lt(countdown_7, nat_1) in
+        let (=True()) = hax__cond55
+          in True()
+          else let (=False()) = hax__cond55
+          in rust_primitives__hax__machine_int__gt(countdown_7, nat_5)
+          else logical_or_opaque(hax__cond55)) in
+        let (=True()) = hax__cond54
+          in True()
+          else let (=False()) = hax__cond54
+          in rust_primitives__hax__machine_int__ne(countdown_7, nat_9)
+          else logical_or_opaque(hax__cond54)) in
+        let (=True()) = hax__cond53 in nat_0 else countdown_7) in
+        let countdown_81 = rust_primitives__hax__machine_int__sub(countdown_80, nat_5) in
+        let (=True()) = True()
+          in (let countdown_84 = (let (=True()) = True() in nat_10 else nat_0) in
+          (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond56 = rust_primitives__hax__machine_int__gt(countdown_84, nat_7) in
+          let (=True()) = hax__cond56
+            in (let countdown_85 = rust_primitives__hax__machine_int__sub(countdown_84, nat_4) in
+            let countdown_88 = (let (=True()) = True() in nat_1 else nat_0) in
+            (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond57 = rust_primitives__hax__machine_int__gt(countdown_88, nat_7) in
+            let (=True()) = hax__cond57
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_90: bitstring,
+                z_6: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_88, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond58 = rust_primitives__hax__machine_int__gt(countdown_90, nat_7) in
+              let (=True()) = hax__cond58
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_92: bitstring,
+                  w_12: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_90, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond59 = rust_primitives__hax__machine_int__gt(countdown_90, nat_2) in
+                let (=True()) = hax__cond59
+                  in (let countdown_94 = (let hax__cond60 = (let hax__cond61 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond62 = rust_primitives__hax__machine_int__lt(countdown_90, nat_1) in
+                  let (=True()) = hax__cond62
+                    in True()
+                    else let (=False()) = hax__cond62
+                    in rust_primitives__hax__machine_int__gt(countdown_90, nat_5)
+                    else logical_or_opaque(hax__cond62)) in
+                  let (=True()) = hax__cond61
+                    in True()
+                    else let (=False()) = hax__cond61
+                    in rust_primitives__hax__machine_int__ne(countdown_90, nat_9)
+                    else logical_or_opaque(hax__cond61)) in
+                  let (=True()) = hax__cond60 in nat_0 else countdown_90) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_96: bitstring,
+                    w_13: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_94, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond63 = rust_primitives__hax__machine_int__gt(countdown_88, nat_2) in
+              let (=True()) = hax__cond63
+                in (let countdown_98 = (let hax__cond64 = (let hax__cond65 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond66 = rust_primitives__hax__machine_int__lt(countdown_88, nat_1) in
+                let (=True()) = hax__cond66
+                  in True()
+                  else let (=False()) = hax__cond66
+                  in rust_primitives__hax__machine_int__gt(countdown_88, nat_5)
+                  else logical_or_opaque(hax__cond66)) in
+                let (=True()) = hax__cond65
+                  in True()
+                  else let (=False()) = hax__cond65
+                  in rust_primitives__hax__machine_int__ne(countdown_88, nat_9)
+                  else logical_or_opaque(hax__cond65)) in
+                let (=True()) = hax__cond64 in nat_0 else countdown_88) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_100: bitstring,
+                  z_7: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_98, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond67 = rust_primitives__hax__machine_int__gt(countdown_100, nat_7) in
+                let (=True()) = hax__cond67
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_102: bitstring,
+                    w_14: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_100, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond68 = rust_primitives__hax__machine_int__gt(countdown_100, nat_2) in
+                  let (=True()) = hax__cond68
+                    in (let countdown_104 = (let hax__cond69 = (let hax__cond70 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond71 = rust_primitives__hax__machine_int__lt(countdown_100, nat_1) in
+                    let (=True()) = hax__cond71
+                      in True()
+                      else let (=False()) = hax__cond71
+                      in rust_primitives__hax__machine_int__gt(countdown_100, nat_5)
+                      else logical_or_opaque(hax__cond71)) in
+                    let (=True()) = hax__cond70
+                      in True()
+                      else let (=False()) = hax__cond70
+                      in rust_primitives__hax__machine_int__ne(countdown_100, nat_9)
+                      else logical_or_opaque(hax__cond70)) in
+                    let (=True()) = hax__cond69 in nat_0 else countdown_100) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_106: bitstring,
+                      w_15: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_104, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else (let wildcard_7 = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard_8 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)))
+            else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond72 = rust_primitives__hax__machine_int__gt(countdown_84, nat_2) in
+            let (=True()) = hax__cond72
+              in (let countdown_108 = (let hax__cond73 = (let hax__cond74 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond75 = rust_primitives__hax__machine_int__lt(countdown_84, nat_1) in
+              let (=True()) = hax__cond75
+                in True()
+                else let (=False()) = hax__cond75
+                in rust_primitives__hax__machine_int__gt(countdown_84, nat_5)
+                else logical_or_opaque(hax__cond75)) in
+              let (=True()) = hax__cond74
+                in True()
+                else let (=False()) = hax__cond74
+                in rust_primitives__hax__machine_int__ne(countdown_84, nat_9)
+                else logical_or_opaque(hax__cond74)) in
+              let (=True()) = hax__cond73 in nat_0 else countdown_84) in
+              let countdown_109 = rust_primitives__hax__machine_int__sub(countdown_108, nat_5) in
+              let countdown_112 = (let (=True()) = True() in nat_1 else nat_0) in
+              (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond76 = rust_primitives__hax__machine_int__gt(countdown_112, nat_7) in
+              let (=True()) = hax__cond76
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_114: bitstring,
+                  z_8: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_112, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond77 = rust_primitives__hax__machine_int__gt(countdown_114, nat_7) in
+                let (=True()) = hax__cond77
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_116: bitstring,
+                    w_16: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_114, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond78 = rust_primitives__hax__machine_int__gt(countdown_114, nat_2) in
+                  let (=True()) = hax__cond78
+                    in (let countdown_118 = (let hax__cond79 = (let hax__cond80 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond81 = rust_primitives__hax__machine_int__lt(countdown_114, nat_1) in
+                    let (=True()) = hax__cond81
+                      in True()
+                      else let (=False()) = hax__cond81
+                      in rust_primitives__hax__machine_int__gt(countdown_114, nat_5)
+                      else logical_or_opaque(hax__cond81)) in
+                    let (=True()) = hax__cond80
+                      in True()
+                      else let (=False()) = hax__cond80
+                      in rust_primitives__hax__machine_int__ne(countdown_114, nat_9)
+                      else logical_or_opaque(hax__cond80)) in
+                    let (=True()) = hax__cond79 in nat_0 else countdown_114) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_120: bitstring,
+                      w_17: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_118, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond82 = rust_primitives__hax__machine_int__gt(countdown_112, nat_2) in
+                let (=True()) = hax__cond82
+                  in (let countdown_122 = (let hax__cond83 = (let hax__cond84 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond85 = rust_primitives__hax__machine_int__lt(countdown_112, nat_1) in
+                  let (=True()) = hax__cond85
+                    in True()
+                    else let (=False()) = hax__cond85
+                    in rust_primitives__hax__machine_int__gt(countdown_112, nat_5)
+                    else logical_or_opaque(hax__cond85)) in
+                  let (=True()) = hax__cond84
+                    in True()
+                    else let (=False()) = hax__cond84
+                    in rust_primitives__hax__machine_int__ne(countdown_112, nat_9)
+                    else logical_or_opaque(hax__cond84)) in
+                  let (=True()) = hax__cond83 in nat_0 else countdown_112) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_124: bitstring,
+                    z_9: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_122, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond86 = rust_primitives__hax__machine_int__gt(countdown_124, nat_7) in
+                  let (=True()) = hax__cond86
+                    in (let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_126: bitstring,
+                      w_18: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_124, nat_4),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond87 = rust_primitives__hax__machine_int__gt(countdown_124, nat_2) in
+                    let (=True()) = hax__cond87
+                      in (let countdown_128 = (let hax__cond88 = (let hax__cond89 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                      let hax__cond90 = rust_primitives__hax__machine_int__lt(
+                        countdown_124,
+                        nat_1
+                      ) in
+                      let (=True()) = hax__cond90
+                        in True()
+                        else let (=False()) = hax__cond90
+                        in rust_primitives__hax__machine_int__gt(countdown_124, nat_5)
+                        else logical_or_opaque(hax__cond90)) in
+                      let (=True()) = hax__cond89
+                        in True()
+                        else let (=False()) = hax__cond89
+                        in rust_primitives__hax__machine_int__ne(countdown_124, nat_9)
+                        else logical_or_opaque(hax__cond89)) in
+                      let (=True()) = hax__cond88 in nat_0 else countdown_124) in
+                      let rust_primitives__hax__Tuple2__Tuple2(
+                        countdown_130: bitstring,
+                        w_19: bitstring
+                      ) = rust_primitives__hax__Tuple2__Tuple2(
+                        rust_primitives__hax__machine_int__sub(countdown_128, nat_5),
+                        rust_primitives__hax__Tuple0__Tuple0
+                      ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                      else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                  else (let wildcard_9 = std__io__stdio__u_print(
+                    core__fmt__rt__Impl_1__new_const(
+                      rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                    )
+                  ) in
+                  let wildcard_10 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)))
+              else rust_primitives__hax__Tuple0__Tuple0))
+          else (let countdown_133 = (let (=True()) = True() in nat_1 else nat_0) in
+          (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond91 = rust_primitives__hax__machine_int__gt(countdown_133, nat_7) in
+          let (=True()) = hax__cond91
+            in (let rust_primitives__hax__Tuple2__Tuple2(
+              countdown_135: bitstring,
+              z_10: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(
+              rust_primitives__hax__machine_int__sub(countdown_133, nat_4),
+              rust_primitives__hax__Tuple0__Tuple0
+            ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond92 = rust_primitives__hax__machine_int__gt(countdown_135, nat_7) in
+            let (=True()) = hax__cond92
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_137: bitstring,
+                w_20: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_135, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond93 = rust_primitives__hax__machine_int__gt(countdown_135, nat_2) in
+              let (=True()) = hax__cond93
+                in (let countdown_139 = (let hax__cond94 = (let hax__cond95 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond96 = rust_primitives__hax__machine_int__lt(countdown_135, nat_1) in
+                let (=True()) = hax__cond96
+                  in True()
+                  else let (=False()) = hax__cond96
+                  in rust_primitives__hax__machine_int__gt(countdown_135, nat_5)
+                  else logical_or_opaque(hax__cond96)) in
+                let (=True()) = hax__cond95
+                  in True()
+                  else let (=False()) = hax__cond95
+                  in rust_primitives__hax__machine_int__ne(countdown_135, nat_9)
+                  else logical_or_opaque(hax__cond95)) in
+                let (=True()) = hax__cond94 in nat_0 else countdown_135) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_141: bitstring,
+                  w_21: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_139, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+            else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond97 = rust_primitives__hax__machine_int__gt(countdown_133, nat_2) in
+            let (=True()) = hax__cond97
+              in (let countdown_143 = (let hax__cond98 = (let hax__cond99 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond100 = rust_primitives__hax__machine_int__lt(countdown_133, nat_1) in
+              let (=True()) = hax__cond100
+                in True()
+                else let (=False()) = hax__cond100
+                in rust_primitives__hax__machine_int__gt(countdown_133, nat_5)
+                else logical_or_opaque(hax__cond100)) in
+              let (=True()) = hax__cond99
+                in True()
+                else let (=False()) = hax__cond99
+                in rust_primitives__hax__machine_int__ne(countdown_133, nat_9)
+                else logical_or_opaque(hax__cond99)) in
+              let (=True()) = hax__cond98 in nat_0 else countdown_133) in
+              let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_145: bitstring,
+                z_11: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_143, nat_5),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond101 = rust_primitives__hax__machine_int__gt(countdown_145, nat_7) in
+              let (=True()) = hax__cond101
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_147: bitstring,
+                  w_22: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_145, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond102 = rust_primitives__hax__machine_int__gt(countdown_145, nat_2) in
+                let (=True()) = hax__cond102
+                  in (let countdown_149 = (let hax__cond103 = (let hax__cond104 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond105 = rust_primitives__hax__machine_int__lt(countdown_145, nat_1) in
+                  let (=True()) = hax__cond105
+                    in True()
+                    else let (=False()) = hax__cond105
+                    in rust_primitives__hax__machine_int__gt(countdown_145, nat_5)
+                    else logical_or_opaque(hax__cond105)) in
+                  let (=True()) = hax__cond104
+                    in True()
+                    else let (=False()) = hax__cond104
+                    in rust_primitives__hax__machine_int__ne(countdown_145, nat_9)
+                    else logical_or_opaque(hax__cond104)) in
+                  let (=True()) = hax__cond103 in nat_0 else countdown_145) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_151: bitstring,
+                    w_23: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_149, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else (let wildcard_11 = std__io__stdio__u_print(
+                core__fmt__rt__Impl_1__new_const(
+                  rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                )
               ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              (countdown, ()))
-           else (
-             let should_be_reachable = (countdown) in
-             let wildcard2: bitstring = (
-               std__io__stdio__e_print(
-                 core_models__fmt__rt__impl_1__new_const(["reached
-"])
-               )
-             ) in
-             let wildcard1: bitstring = (()) in
-             let hoist4 = (todo return;) in
-             (countdown, bitstring_err())
-           )
-         )
-       ) in
-       let (countdown: nat, w: bitstring) = (
-         if core_models__cmp__f_gt(countdown, 7)
-         then
-           (let countdown = (core_models__ops__arith__f_sub(countdown, 4)) in
-            (countdown, ()))
-         else (
-           if core_models__cmp__f_gt(countdown, 2)
-           then
-             (let countdown = (
-                if
-                  core_models__cmp__f_lt(countdown, 1) || core_models__cmp__f_gt(
-                      countdown, 5
-                    ) || core_models__cmp__f_ne(countdown, 9)
-                then
-                  (let countdown = (0) in
-                   countdown)
-                else (countdown)
+              let wildcard_12 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0))))
+        else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+    else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+    let hax__cond106 = rust_primitives__hax__machine_int__gt(countdown_2, nat_2) in
+    let (=True()) = hax__cond106
+      in (let countdown_153 = (let hax__cond107 = (let hax__cond108 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+      let hax__cond109 = rust_primitives__hax__machine_int__lt(countdown_2, nat_1) in
+      let (=True()) = hax__cond109
+        in True()
+        else let (=False()) = hax__cond109
+        in rust_primitives__hax__machine_int__gt(countdown_2, nat_5)
+        else logical_or_opaque(hax__cond109)) in
+      let (=True()) = hax__cond108
+        in True()
+        else let (=False()) = hax__cond108
+        in rust_primitives__hax__machine_int__ne(countdown_2, nat_9)
+        else logical_or_opaque(hax__cond108)) in
+      let (=True()) = hax__cond107 in nat_0 else countdown_2) in
+      let countdown_154 = rust_primitives__hax__machine_int__sub(countdown_153, nat_5) in
+      let rust_primitives__hax__Tuple2__Tuple2(
+        countdown_155: bitstring,
+        x_1: bitstring
+      ) = rust_primitives__hax__Tuple2__Tuple2(
+        countdown_154,
+        countdown_154
+      ) in (let countdown_158 = (let (=True()) = True() in nat_10 else nat_0) in
+      (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+      let hax__cond110 = rust_primitives__hax__machine_int__gt(countdown_158, nat_7) in
+      let (=True()) = hax__cond110
+        in (let countdown_159 = rust_primitives__hax__machine_int__sub(countdown_158, nat_4) in
+        let (=True()) = True()
+          in (let countdown_162 = (let (=True()) = True() in nat_10 else nat_0) in
+          (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond111 = rust_primitives__hax__machine_int__gt(countdown_162, nat_7) in
+          let (=True()) = hax__cond111
+            in (let countdown_163 = rust_primitives__hax__machine_int__sub(countdown_162, nat_4) in
+            let countdown_166 = (let (=True()) = True() in nat_1 else nat_0) in
+            (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond112 = rust_primitives__hax__machine_int__gt(countdown_166, nat_7) in
+            let (=True()) = hax__cond112
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_168: bitstring,
+                z_12: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_166, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond113 = rust_primitives__hax__machine_int__gt(countdown_168, nat_7) in
+              let (=True()) = hax__cond113
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_170: bitstring,
+                  w_24: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_168, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond114 = rust_primitives__hax__machine_int__gt(countdown_168, nat_2) in
+                let (=True()) = hax__cond114
+                  in (let countdown_172 = (let hax__cond115 = (let hax__cond116 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond117 = rust_primitives__hax__machine_int__lt(countdown_168, nat_1) in
+                  let (=True()) = hax__cond117
+                    in True()
+                    else let (=False()) = hax__cond117
+                    in rust_primitives__hax__machine_int__gt(countdown_168, nat_5)
+                    else logical_or_opaque(hax__cond117)) in
+                  let (=True()) = hax__cond116
+                    in True()
+                    else let (=False()) = hax__cond116
+                    in rust_primitives__hax__machine_int__ne(countdown_168, nat_9)
+                    else logical_or_opaque(hax__cond116)) in
+                  let (=True()) = hax__cond115 in nat_0 else countdown_168) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_174: bitstring,
+                    w_25: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_172, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond118 = rust_primitives__hax__machine_int__gt(countdown_166, nat_2) in
+              let (=True()) = hax__cond118
+                in (let countdown_176 = (let hax__cond119 = (let hax__cond120 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond121 = rust_primitives__hax__machine_int__lt(countdown_166, nat_1) in
+                let (=True()) = hax__cond121
+                  in True()
+                  else let (=False()) = hax__cond121
+                  in rust_primitives__hax__machine_int__gt(countdown_166, nat_5)
+                  else logical_or_opaque(hax__cond121)) in
+                let (=True()) = hax__cond120
+                  in True()
+                  else let (=False()) = hax__cond120
+                  in rust_primitives__hax__machine_int__ne(countdown_166, nat_9)
+                  else logical_or_opaque(hax__cond120)) in
+                let (=True()) = hax__cond119 in nat_0 else countdown_166) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_178: bitstring,
+                  z_13: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_176, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond122 = rust_primitives__hax__machine_int__gt(countdown_178, nat_7) in
+                let (=True()) = hax__cond122
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_180: bitstring,
+                    w_26: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_178, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond123 = rust_primitives__hax__machine_int__gt(countdown_178, nat_2) in
+                  let (=True()) = hax__cond123
+                    in (let countdown_182 = (let hax__cond124 = (let hax__cond125 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond126 = rust_primitives__hax__machine_int__lt(
+                      countdown_178,
+                      nat_1
+                    ) in
+                    let (=True()) = hax__cond126
+                      in True()
+                      else let (=False()) = hax__cond126
+                      in rust_primitives__hax__machine_int__gt(countdown_178, nat_5)
+                      else logical_or_opaque(hax__cond126)) in
+                    let (=True()) = hax__cond125
+                      in True()
+                      else let (=False()) = hax__cond125
+                      in rust_primitives__hax__machine_int__ne(countdown_178, nat_9)
+                      else logical_or_opaque(hax__cond125)) in
+                    let (=True()) = hax__cond124 in nat_0 else countdown_178) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_184: bitstring,
+                      w_27: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_182, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else (let wildcard_13 = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard_14 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0)))
+            else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond127 = rust_primitives__hax__machine_int__gt(countdown_162, nat_2) in
+            let (=True()) = hax__cond127
+              in (let countdown_186 = (let hax__cond128 = (let hax__cond129 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond130 = rust_primitives__hax__machine_int__lt(countdown_162, nat_1) in
+              let (=True()) = hax__cond130
+                in True()
+                else let (=False()) = hax__cond130
+                in rust_primitives__hax__machine_int__gt(countdown_162, nat_5)
+                else logical_or_opaque(hax__cond130)) in
+              let (=True()) = hax__cond129
+                in True()
+                else let (=False()) = hax__cond129
+                in rust_primitives__hax__machine_int__ne(countdown_162, nat_9)
+                else logical_or_opaque(hax__cond129)) in
+              let (=True()) = hax__cond128 in nat_0 else countdown_162) in
+              let countdown_187 = rust_primitives__hax__machine_int__sub(countdown_186, nat_5) in
+              let countdown_190 = (let (=True()) = True() in nat_1 else nat_0) in
+              (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond131 = rust_primitives__hax__machine_int__gt(countdown_190, nat_7) in
+              let (=True()) = hax__cond131
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_192: bitstring,
+                  z_14: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_190, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond132 = rust_primitives__hax__machine_int__gt(countdown_192, nat_7) in
+                let (=True()) = hax__cond132
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_194: bitstring,
+                    w_28: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_192, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond133 = rust_primitives__hax__machine_int__gt(countdown_192, nat_2) in
+                  let (=True()) = hax__cond133
+                    in (let countdown_196 = (let hax__cond134 = (let hax__cond135 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond136 = rust_primitives__hax__machine_int__lt(
+                      countdown_192,
+                      nat_1
+                    ) in
+                    let (=True()) = hax__cond136
+                      in True()
+                      else let (=False()) = hax__cond136
+                      in rust_primitives__hax__machine_int__gt(countdown_192, nat_5)
+                      else logical_or_opaque(hax__cond136)) in
+                    let (=True()) = hax__cond135
+                      in True()
+                      else let (=False()) = hax__cond135
+                      in rust_primitives__hax__machine_int__ne(countdown_192, nat_9)
+                      else logical_or_opaque(hax__cond135)) in
+                    let (=True()) = hax__cond134 in nat_0 else countdown_192) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_198: bitstring,
+                      w_29: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_196, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond137 = rust_primitives__hax__machine_int__gt(countdown_190, nat_2) in
+                let (=True()) = hax__cond137
+                  in (let countdown_200 = (let hax__cond138 = (let hax__cond139 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond140 = rust_primitives__hax__machine_int__lt(countdown_190, nat_1) in
+                  let (=True()) = hax__cond140
+                    in True()
+                    else let (=False()) = hax__cond140
+                    in rust_primitives__hax__machine_int__gt(countdown_190, nat_5)
+                    else logical_or_opaque(hax__cond140)) in
+                  let (=True()) = hax__cond139
+                    in True()
+                    else let (=False()) = hax__cond139
+                    in rust_primitives__hax__machine_int__ne(countdown_190, nat_9)
+                    else logical_or_opaque(hax__cond139)) in
+                  let (=True()) = hax__cond138 in nat_0 else countdown_190) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_202: bitstring,
+                    z_15: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_200, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond141 = rust_primitives__hax__machine_int__gt(countdown_202, nat_7) in
+                  let (=True()) = hax__cond141
+                    in (let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_204: bitstring,
+                      w_30: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_202, nat_4),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond142 = rust_primitives__hax__machine_int__gt(
+                      countdown_202,
+                      nat_2
+                    ) in
+                    let (=True()) = hax__cond142
+                      in (let countdown_206 = (let hax__cond143 = (let hax__cond144 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                      let hax__cond145 = rust_primitives__hax__machine_int__lt(
+                        countdown_202,
+                        nat_1
+                      ) in
+                      let (=True()) = hax__cond145
+                        in True()
+                        else let (=False()) = hax__cond145
+                        in rust_primitives__hax__machine_int__gt(countdown_202, nat_5)
+                        else logical_or_opaque(hax__cond145)) in
+                      let (=True()) = hax__cond144
+                        in True()
+                        else let (=False()) = hax__cond144
+                        in rust_primitives__hax__machine_int__ne(countdown_202, nat_9)
+                        else logical_or_opaque(hax__cond144)) in
+                      let (=True()) = hax__cond143 in nat_0 else countdown_202) in
+                      let rust_primitives__hax__Tuple2__Tuple2(
+                        countdown_208: bitstring,
+                        w_31: bitstring
+                      ) = rust_primitives__hax__Tuple2__Tuple2(
+                        rust_primitives__hax__machine_int__sub(countdown_206, nat_5),
+                        rust_primitives__hax__Tuple0__Tuple0
+                      ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                      else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                  else (let wildcard_15 = std__io__stdio__u_print(
+                    core__fmt__rt__Impl_1__new_const(
+                      rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                    )
+                  ) in
+                  let wildcard_16 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)))
+              else rust_primitives__hax__Tuple0__Tuple0))
+          else (let countdown_211 = (let (=True()) = True() in nat_1 else nat_0) in
+          (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond146 = rust_primitives__hax__machine_int__gt(countdown_211, nat_7) in
+          let (=True()) = hax__cond146
+            in (let rust_primitives__hax__Tuple2__Tuple2(
+              countdown_213: bitstring,
+              z_16: bitstring
+            ) = rust_primitives__hax__Tuple2__Tuple2(
+              rust_primitives__hax__machine_int__sub(countdown_211, nat_4),
+              rust_primitives__hax__Tuple0__Tuple0
+            ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond147 = rust_primitives__hax__machine_int__gt(countdown_213, nat_7) in
+            let (=True()) = hax__cond147
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_215: bitstring,
+                w_32: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_213, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond148 = rust_primitives__hax__machine_int__gt(countdown_213, nat_2) in
+              let (=True()) = hax__cond148
+                in (let countdown_217 = (let hax__cond149 = (let hax__cond150 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond151 = rust_primitives__hax__machine_int__lt(countdown_213, nat_1) in
+                let (=True()) = hax__cond151
+                  in True()
+                  else let (=False()) = hax__cond151
+                  in rust_primitives__hax__machine_int__gt(countdown_213, nat_5)
+                  else logical_or_opaque(hax__cond151)) in
+                let (=True()) = hax__cond150
+                  in True()
+                  else let (=False()) = hax__cond150
+                  in rust_primitives__hax__machine_int__ne(countdown_213, nat_9)
+                  else logical_or_opaque(hax__cond150)) in
+                let (=True()) = hax__cond149 in nat_0 else countdown_213) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_219: bitstring,
+                  w_33: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_217, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+            else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond152 = rust_primitives__hax__machine_int__gt(countdown_211, nat_2) in
+            let (=True()) = hax__cond152
+              in (let countdown_221 = (let hax__cond153 = (let hax__cond154 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond155 = rust_primitives__hax__machine_int__lt(countdown_211, nat_1) in
+              let (=True()) = hax__cond155
+                in True()
+                else let (=False()) = hax__cond155
+                in rust_primitives__hax__machine_int__gt(countdown_211, nat_5)
+                else logical_or_opaque(hax__cond155)) in
+              let (=True()) = hax__cond154
+                in True()
+                else let (=False()) = hax__cond154
+                in rust_primitives__hax__machine_int__ne(countdown_211, nat_9)
+                else logical_or_opaque(hax__cond154)) in
+              let (=True()) = hax__cond153 in nat_0 else countdown_211) in
+              let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_223: bitstring,
+                z_17: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_221, nat_5),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond156 = rust_primitives__hax__machine_int__gt(countdown_223, nat_7) in
+              let (=True()) = hax__cond156
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_225: bitstring,
+                  w_34: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_223, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond157 = rust_primitives__hax__machine_int__gt(countdown_223, nat_2) in
+                let (=True()) = hax__cond157
+                  in (let countdown_227 = (let hax__cond158 = (let hax__cond159 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond160 = rust_primitives__hax__machine_int__lt(countdown_223, nat_1) in
+                  let (=True()) = hax__cond160
+                    in True()
+                    else let (=False()) = hax__cond160
+                    in rust_primitives__hax__machine_int__gt(countdown_223, nat_5)
+                    else logical_or_opaque(hax__cond160)) in
+                  let (=True()) = hax__cond159
+                    in True()
+                    else let (=False()) = hax__cond159
+                    in rust_primitives__hax__machine_int__ne(countdown_223, nat_9)
+                    else logical_or_opaque(hax__cond159)) in
+                  let (=True()) = hax__cond158 in nat_0 else countdown_223) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_229: bitstring,
+                    w_35: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_227, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else (let wildcard_17 = std__io__stdio__u_print(
+                core__fmt__rt__Impl_1__new_const(
+                  rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                )
               ) in
-              let countdown = (core_models__ops__arith__f_sub(countdown, 5)) in
-              (countdown, ()))
-           else (
-             let hoist5 = (todo return;) in
-             (countdown, bitstring_err())
-           )
-         )
-       ) in
-       ().
-
+              let wildcard_18 = rust_primitives__hax__Tuple0__Tuple0 in
+              rust_primitives__hax__Tuple0__Tuple0))))
+        else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+        let hax__cond161 = rust_primitives__hax__machine_int__gt(countdown_158, nat_2) in
+        let (=True()) = hax__cond161
+          in (let countdown_231 = (let hax__cond162 = (let hax__cond163 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+          let hax__cond164 = rust_primitives__hax__machine_int__lt(countdown_158, nat_1) in
+          let (=True()) = hax__cond164
+            in True()
+            else let (=False()) = hax__cond164
+            in rust_primitives__hax__machine_int__gt(countdown_158, nat_5)
+            else logical_or_opaque(hax__cond164)) in
+          let (=True()) = hax__cond163
+            in True()
+            else let (=False()) = hax__cond163
+            in rust_primitives__hax__machine_int__ne(countdown_158, nat_9)
+            else logical_or_opaque(hax__cond163)) in
+          let (=True()) = hax__cond162 in nat_0 else countdown_158) in
+          let countdown_232 = rust_primitives__hax__machine_int__sub(countdown_231, nat_5) in
+          let (=True()) = True()
+            in (let countdown_235 = (let (=True()) = True() in nat_10 else nat_0) in
+            (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond165 = rust_primitives__hax__machine_int__gt(countdown_235, nat_7) in
+            let (=True()) = hax__cond165
+              in (let countdown_236 = rust_primitives__hax__machine_int__sub(
+                countdown_235,
+                nat_4
+              ) in
+              let countdown_239 = (let (=True()) = True() in nat_1 else nat_0) in
+              (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond166 = rust_primitives__hax__machine_int__gt(countdown_239, nat_7) in
+              let (=True()) = hax__cond166
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_241: bitstring,
+                  z_18: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_239, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond167 = rust_primitives__hax__machine_int__gt(countdown_241, nat_7) in
+                let (=True()) = hax__cond167
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_243: bitstring,
+                    w_36: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_241, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond168 = rust_primitives__hax__machine_int__gt(countdown_241, nat_2) in
+                  let (=True()) = hax__cond168
+                    in (let countdown_245 = (let hax__cond169 = (let hax__cond170 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond171 = rust_primitives__hax__machine_int__lt(
+                      countdown_241,
+                      nat_1
+                    ) in
+                    let (=True()) = hax__cond171
+                      in True()
+                      else let (=False()) = hax__cond171
+                      in rust_primitives__hax__machine_int__gt(countdown_241, nat_5)
+                      else logical_or_opaque(hax__cond171)) in
+                    let (=True()) = hax__cond170
+                      in True()
+                      else let (=False()) = hax__cond170
+                      in rust_primitives__hax__machine_int__ne(countdown_241, nat_9)
+                      else logical_or_opaque(hax__cond170)) in
+                    let (=True()) = hax__cond169 in nat_0 else countdown_241) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_247: bitstring,
+                      w_37: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_245, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond172 = rust_primitives__hax__machine_int__gt(countdown_239, nat_2) in
+                let (=True()) = hax__cond172
+                  in (let countdown_249 = (let hax__cond173 = (let hax__cond174 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond175 = rust_primitives__hax__machine_int__lt(countdown_239, nat_1) in
+                  let (=True()) = hax__cond175
+                    in True()
+                    else let (=False()) = hax__cond175
+                    in rust_primitives__hax__machine_int__gt(countdown_239, nat_5)
+                    else logical_or_opaque(hax__cond175)) in
+                  let (=True()) = hax__cond174
+                    in True()
+                    else let (=False()) = hax__cond174
+                    in rust_primitives__hax__machine_int__ne(countdown_239, nat_9)
+                    else logical_or_opaque(hax__cond174)) in
+                  let (=True()) = hax__cond173 in nat_0 else countdown_239) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_251: bitstring,
+                    z_19: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_249, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond176 = rust_primitives__hax__machine_int__gt(countdown_251, nat_7) in
+                  let (=True()) = hax__cond176
+                    in (let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_253: bitstring,
+                      w_38: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_251, nat_4),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond177 = rust_primitives__hax__machine_int__gt(
+                      countdown_251,
+                      nat_2
+                    ) in
+                    let (=True()) = hax__cond177
+                      in (let countdown_255 = (let hax__cond178 = (let hax__cond179 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                      let hax__cond180 = rust_primitives__hax__machine_int__lt(
+                        countdown_251,
+                        nat_1
+                      ) in
+                      let (=True()) = hax__cond180
+                        in True()
+                        else let (=False()) = hax__cond180
+                        in rust_primitives__hax__machine_int__gt(countdown_251, nat_5)
+                        else logical_or_opaque(hax__cond180)) in
+                      let (=True()) = hax__cond179
+                        in True()
+                        else let (=False()) = hax__cond179
+                        in rust_primitives__hax__machine_int__ne(countdown_251, nat_9)
+                        else logical_or_opaque(hax__cond179)) in
+                      let (=True()) = hax__cond178 in nat_0 else countdown_251) in
+                      let rust_primitives__hax__Tuple2__Tuple2(
+                        countdown_257: bitstring,
+                        w_39: bitstring
+                      ) = rust_primitives__hax__Tuple2__Tuple2(
+                        rust_primitives__hax__machine_int__sub(countdown_255, nat_5),
+                        rust_primitives__hax__Tuple0__Tuple0
+                      ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                      else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                  else (let wildcard_19 = std__io__stdio__u_print(
+                    core__fmt__rt__Impl_1__new_const(
+                      rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                    )
+                  ) in
+                  let wildcard_20 = rust_primitives__hax__Tuple0__Tuple0 in
+                  rust_primitives__hax__Tuple0__Tuple0)))
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond181 = rust_primitives__hax__machine_int__gt(countdown_235, nat_2) in
+              let (=True()) = hax__cond181
+                in (let countdown_259 = (let hax__cond182 = (let hax__cond183 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond184 = rust_primitives__hax__machine_int__lt(countdown_235, nat_1) in
+                let (=True()) = hax__cond184
+                  in True()
+                  else let (=False()) = hax__cond184
+                  in rust_primitives__hax__machine_int__gt(countdown_235, nat_5)
+                  else logical_or_opaque(hax__cond184)) in
+                let (=True()) = hax__cond183
+                  in True()
+                  else let (=False()) = hax__cond183
+                  in rust_primitives__hax__machine_int__ne(countdown_235, nat_9)
+                  else logical_or_opaque(hax__cond183)) in
+                let (=True()) = hax__cond182 in nat_0 else countdown_235) in
+                let countdown_260 = rust_primitives__hax__machine_int__sub(countdown_259, nat_5) in
+                let countdown_263 = (let (=True()) = True() in nat_1 else nat_0) in
+                (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond185 = rust_primitives__hax__machine_int__gt(countdown_263, nat_7) in
+                let (=True()) = hax__cond185
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_265: bitstring,
+                    z_20: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_263, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond186 = rust_primitives__hax__machine_int__gt(countdown_265, nat_7) in
+                  let (=True()) = hax__cond186
+                    in (let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_267: bitstring,
+                      w_40: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_265, nat_4),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond187 = rust_primitives__hax__machine_int__gt(
+                      countdown_265,
+                      nat_2
+                    ) in
+                    let (=True()) = hax__cond187
+                      in (let countdown_269 = (let hax__cond188 = (let hax__cond189 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                      let hax__cond190 = rust_primitives__hax__machine_int__lt(
+                        countdown_265,
+                        nat_1
+                      ) in
+                      let (=True()) = hax__cond190
+                        in True()
+                        else let (=False()) = hax__cond190
+                        in rust_primitives__hax__machine_int__gt(countdown_265, nat_5)
+                        else logical_or_opaque(hax__cond190)) in
+                      let (=True()) = hax__cond189
+                        in True()
+                        else let (=False()) = hax__cond189
+                        in rust_primitives__hax__machine_int__ne(countdown_265, nat_9)
+                        else logical_or_opaque(hax__cond189)) in
+                      let (=True()) = hax__cond188 in nat_0 else countdown_265) in
+                      let rust_primitives__hax__Tuple2__Tuple2(
+                        countdown_271: bitstring,
+                        w_41: bitstring
+                      ) = rust_primitives__hax__Tuple2__Tuple2(
+                        rust_primitives__hax__machine_int__sub(countdown_269, nat_5),
+                        rust_primitives__hax__Tuple0__Tuple0
+                      ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                      else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond191 = rust_primitives__hax__machine_int__gt(countdown_263, nat_2) in
+                  let (=True()) = hax__cond191
+                    in (let countdown_273 = (let hax__cond192 = (let hax__cond193 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond194 = rust_primitives__hax__machine_int__lt(
+                      countdown_263,
+                      nat_1
+                    ) in
+                    let (=True()) = hax__cond194
+                      in True()
+                      else let (=False()) = hax__cond194
+                      in rust_primitives__hax__machine_int__gt(countdown_263, nat_5)
+                      else logical_or_opaque(hax__cond194)) in
+                    let (=True()) = hax__cond193
+                      in True()
+                      else let (=False()) = hax__cond193
+                      in rust_primitives__hax__machine_int__ne(countdown_263, nat_9)
+                      else logical_or_opaque(hax__cond193)) in
+                    let (=True()) = hax__cond192 in nat_0 else countdown_263) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_275: bitstring,
+                      z_21: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_273, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond195 = rust_primitives__hax__machine_int__gt(
+                      countdown_275,
+                      nat_7
+                    ) in
+                    let (=True()) = hax__cond195
+                      in (let rust_primitives__hax__Tuple2__Tuple2(
+                        countdown_277: bitstring,
+                        w_42: bitstring
+                      ) = rust_primitives__hax__Tuple2__Tuple2(
+                        rust_primitives__hax__machine_int__sub(countdown_275, nat_4),
+                        rust_primitives__hax__Tuple0__Tuple0
+                      ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                      else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                      let hax__cond196 = rust_primitives__hax__machine_int__gt(
+                        countdown_275,
+                        nat_2
+                      ) in
+                      let (=True()) = hax__cond196
+                        in (let countdown_279 = (let hax__cond197 = (let hax__cond198 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                        let hax__cond199 = rust_primitives__hax__machine_int__lt(
+                          countdown_275,
+                          nat_1
+                        ) in
+                        let (=True()) = hax__cond199
+                          in True()
+                          else let (=False()) = hax__cond199
+                          in rust_primitives__hax__machine_int__gt(countdown_275, nat_5)
+                          else logical_or_opaque(hax__cond199)) in
+                        let (=True()) = hax__cond198
+                          in True()
+                          else let (=False()) = hax__cond198
+                          in rust_primitives__hax__machine_int__ne(countdown_275, nat_9)
+                          else logical_or_opaque(hax__cond198)) in
+                        let (=True()) = hax__cond197 in nat_0 else countdown_275) in
+                        let rust_primitives__hax__Tuple2__Tuple2(
+                          countdown_281: bitstring,
+                          w_43: bitstring
+                        ) = rust_primitives__hax__Tuple2__Tuple2(
+                          rust_primitives__hax__machine_int__sub(countdown_279, nat_5),
+                          rust_primitives__hax__Tuple0__Tuple0
+                        ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                        else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                    else (let wildcard_21 = std__io__stdio__u_print(
+                      core__fmt__rt__Impl_1__new_const(
+                        rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                      )
+                    ) in
+                    let wildcard_22 = rust_primitives__hax__Tuple0__Tuple0 in
+                    rust_primitives__hax__Tuple0__Tuple0)))
+                else rust_primitives__hax__Tuple0__Tuple0))
+            else (let countdown_284 = (let (=True()) = True() in nat_1 else nat_0) in
+            (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+            let hax__cond200 = rust_primitives__hax__machine_int__gt(countdown_284, nat_7) in
+            let (=True()) = hax__cond200
+              in (let rust_primitives__hax__Tuple2__Tuple2(
+                countdown_286: bitstring,
+                z_22: bitstring
+              ) = rust_primitives__hax__Tuple2__Tuple2(
+                rust_primitives__hax__machine_int__sub(countdown_284, nat_4),
+                rust_primitives__hax__Tuple0__Tuple0
+              ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond201 = rust_primitives__hax__machine_int__gt(countdown_286, nat_7) in
+              let (=True()) = hax__cond201
+                in (let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_288: bitstring,
+                  w_44: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_286, nat_4),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond202 = rust_primitives__hax__machine_int__gt(countdown_286, nat_2) in
+                let (=True()) = hax__cond202
+                  in (let countdown_290 = (let hax__cond203 = (let hax__cond204 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond205 = rust_primitives__hax__machine_int__lt(countdown_286, nat_1) in
+                  let (=True()) = hax__cond205
+                    in True()
+                    else let (=False()) = hax__cond205
+                    in rust_primitives__hax__machine_int__gt(countdown_286, nat_5)
+                    else logical_or_opaque(hax__cond205)) in
+                  let (=True()) = hax__cond204
+                    in True()
+                    else let (=False()) = hax__cond204
+                    in rust_primitives__hax__machine_int__ne(countdown_286, nat_9)
+                    else logical_or_opaque(hax__cond204)) in
+                  let (=True()) = hax__cond203 in nat_0 else countdown_286) in
+                  let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_292: bitstring,
+                    w_45: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_290, nat_5),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+              else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+              let hax__cond206 = rust_primitives__hax__machine_int__gt(countdown_284, nat_2) in
+              let (=True()) = hax__cond206
+                in (let countdown_294 = (let hax__cond207 = (let hax__cond208 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond209 = rust_primitives__hax__machine_int__lt(countdown_284, nat_1) in
+                let (=True()) = hax__cond209
+                  in True()
+                  else let (=False()) = hax__cond209
+                  in rust_primitives__hax__machine_int__gt(countdown_284, nat_5)
+                  else logical_or_opaque(hax__cond209)) in
+                let (=True()) = hax__cond208
+                  in True()
+                  else let (=False()) = hax__cond208
+                  in rust_primitives__hax__machine_int__ne(countdown_284, nat_9)
+                  else logical_or_opaque(hax__cond208)) in
+                let (=True()) = hax__cond207 in nat_0 else countdown_284) in
+                let rust_primitives__hax__Tuple2__Tuple2(
+                  countdown_296: bitstring,
+                  z_23: bitstring
+                ) = rust_primitives__hax__Tuple2__Tuple2(
+                  rust_primitives__hax__machine_int__sub(countdown_294, nat_5),
+                  rust_primitives__hax__Tuple0__Tuple0
+                ) in ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                let hax__cond210 = rust_primitives__hax__machine_int__gt(countdown_296, nat_7) in
+                let (=True()) = hax__cond210
+                  in (let rust_primitives__hax__Tuple2__Tuple2(
+                    countdown_298: bitstring,
+                    w_46: bitstring
+                  ) = rust_primitives__hax__Tuple2__Tuple2(
+                    rust_primitives__hax__machine_int__sub(countdown_296, nat_4),
+                    rust_primitives__hax__Tuple0__Tuple0
+                  ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                  else ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                  let hax__cond211 = rust_primitives__hax__machine_int__gt(countdown_296, nat_2) in
+                  let (=True()) = hax__cond211
+                    in (let countdown_300 = (let hax__cond212 = (let hax__cond213 = ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+                    let hax__cond214 = rust_primitives__hax__machine_int__lt(
+                      countdown_296,
+                      nat_1
+                    ) in
+                    let (=True()) = hax__cond214
+                      in True()
+                      else let (=False()) = hax__cond214
+                      in rust_primitives__hax__machine_int__gt(countdown_296, nat_5)
+                      else logical_or_opaque(hax__cond214)) in
+                    let (=True()) = hax__cond213
+                      in True()
+                      else let (=False()) = hax__cond213
+                      in rust_primitives__hax__machine_int__ne(countdown_296, nat_9)
+                      else logical_or_opaque(hax__cond213)) in
+                    let (=True()) = hax__cond212 in nat_0 else countdown_296) in
+                    let rust_primitives__hax__Tuple2__Tuple2(
+                      countdown_302: bitstring,
+                      w_47: bitstring
+                    ) = rust_primitives__hax__Tuple2__Tuple2(
+                      rust_primitives__hax__machine_int__sub(countdown_300, nat_5),
+                      rust_primitives__hax__Tuple0__Tuple0
+                    ) in rust_primitives__hax__Tuple0__Tuple0 else bitstring_err())
+                    else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+                else (let wildcard_23 = std__io__stdio__u_print(
+                  core__fmt__rt__Impl_1__new_const(
+                    rust_primitives__hax__array_cons(string_lit__reached_x0a, rust_primitives__hax__array_nil())
+                  )
+                ) in
+                let wildcard_24 = rust_primitives__hax__Tuple0__Tuple0 in
+                rust_primitives__hax__Tuple0__Tuple0))))
+          else rust_primitives__hax__Tuple0__Tuple0)) else bitstring_err())
+      else rust_primitives__hax__Tuple0__Tuple0).
