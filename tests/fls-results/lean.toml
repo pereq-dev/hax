@@ -28,7 +28,382 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."patterns/binding-modes/default_binding_modes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/identifier-patterns/identifier_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/literal-patterns/char_literal_pattern"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/literal-patterns/literal_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/literal-patterns/negative_literal_pattern"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/parenthesized-patterns/parenthesized_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/path-patterns/path_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/pattern-destructuring/destructuring"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/patterns/or_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/range-patterns/range_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/record-struct-patterns/indexed_deconstructor"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/record-struct-patterns/record_struct_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/reference-patterns/reference_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/refutability/refutable_and_irrefutable"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/rest-patterns/rest_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/rest-patterns/rest_pattern_array_binding"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/slice-patterns/slice_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/slice-patterns/slice_pattern_on_slice"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."patterns/tuple-patterns/tuple_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/tuple-struct-patterns/tuple_struct_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."patterns/underscore-patterns/underscore_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/array-types/array_type"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/bool-type/bool_operations"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/bool-type/bool_ordering"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/char-type/char_ordering"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/char-type/char_scalar_value"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/closure-types/closure_copy_clone"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/closure-types/closure_send_sync"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/closure-types/closure_to_fn_pointer"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/closure-types/closure_traits"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/enum-types/enum_discriminants"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/enum-types/enum_variant_kinds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/enum-types/zero_variant_enum"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/floating-point-types/float_arithmetic"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/function-item-types/fn_item_as_argument"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/function-item-types/fn_item_to_pointer"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/function-lifetime-elision/elided_lifetimes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/function-pointer-types/fn_pointer_call"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/impl-header-lifetime-elision/impl_for_reference"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/impl-header-lifetime-elision/impl_with_anonymous_lifetime"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/impl-trait-types/impl_trait_argument"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/impl-trait-types/impl_trait_return"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/inferred-types/inferred_type_let"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/integer-types/integer_ranges"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/interior-mutability/cell_mutation"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."types-and-traits/lifetimes/lifetime_annotation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/never-type/never_type_diverging"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/parenthesized-types/parenthesized_type"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/raw-pointer-types/raw_pointer_deref"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."types-and-traits/recursive-types/recursive_enum"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/reference-types/mutable_reference"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/reference-types/shared_reference"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/slice-types/slice_type"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/static-lifetime-elision/static_str_constant"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/str-type/str_type"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/struct-types/record_struct"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."types-and-traits/struct-types/tuple_struct"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/struct-types/unit_struct"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/structural-equality/structural_equality"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/higher_ranked_trait_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/lifetime_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/opt_out_sized_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-and-lifetime-bounds/trait_bound"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/trait-object-lifetime-elision/boxed_dyn_alias"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/trait-object-types/dyn_dispatch"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/traits/auto_trait_bounds"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/traits/send_sync_bounds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/traits/supertrait"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/traits/trait_definition"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/tuple-types/tuple_type"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/type-aliases/type_alias"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/type-coercion/implicit_coercions"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/type-parameters/type_parameter_substitution"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/union-types/union_field_read"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."types-and-traits/visible-emptiness/visible_empty_array"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."types-and-traits/visible-emptiness/visible_empty_types"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
