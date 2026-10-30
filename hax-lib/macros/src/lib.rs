@@ -183,8 +183,12 @@ passthrough_attributes! {
     /// constant stubs such as `#[pv_stub("nat_0")]`.
     pv_stub;
 
-    /// Declare this function as the one-sided inverse of another, emitting
-    /// `reduc forall x: bitstring; self(other(x)) = x.`.
+    /// Declare this function `g`, of one argument or a `self` receiver, as the
+    /// one-sided inverse of another function `f`, emitting
+    /// `reduc forall x: bitstring; f__inverse__g(f(x)) = x.` and making `g`
+    /// apply it. With
+    /// `--result-errors`, a function returning a `Result` returns `Ok`, and an
+    /// `Err` off the image of the other function.
     ///
     /// A ProVerif `reduc` rewrites on *constructors*, so the other function has
     /// to be one — annotate it `#[hax_lib::pv_constructor]` (or

@@ -8,8 +8,6 @@
 (* boundary. Only Rust constructors are declared `[data]`: any   *)
 (* other function may be one-way.                                *)
 (*****************************************************************)
-(* referenced by: new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
-fun core__iter__traits__iterator__Iterator__map(bitstring, bitstring): bitstring.
 (* referenced by: new_tests__legacy__side_effects__lib__options *)
 fun core__num__Impl_6__wrapping_add(bitstring, bitstring): bitstring.
 (* referenced by: new_tests__legacy__side_effects__lib__add3, new_tests__legacy__side_effects__lib__early_returns, new_tests__legacy__side_effects__lib__local_mutation, new_tests__legacy__side_effects__lib__question_mark *)

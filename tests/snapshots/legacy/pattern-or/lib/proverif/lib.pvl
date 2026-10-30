@@ -34,27 +34,45 @@
 (* Only typechecks with result.pvl loaded. *)
 letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
-(* src: src/legacy/pattern-or/lib.rs:3:0-6:1 new_tests__legacy__pattern_or__lib__E *)
+(*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
+
+(* src: src/legacy/pattern-or/lib.rs:4:0-7:1 new_tests__legacy__pattern_or__lib__E *)
 fun new_tests__legacy__pattern_or__lib__E__A(): bitstring [data].
 fun new_tests__legacy__pattern_or__lib__E__B(): bitstring [data].
-(* src: src/legacy/pattern-or/lib.rs:3:0-6:1 new_tests__legacy__pattern_or__lib__E_cast_to_repr *)
+(* src: src/legacy/pattern-or/lib.rs:4:0-7:1 new_tests__legacy__pattern_or__lib__E_cast_to_repr *)
 letfun new_tests__legacy__pattern_or__lib__E_cast_to_repr(x: bitstring) =
   let new_tests__legacy__pattern_or__lib__E__A() = x in nat_0
   else let new_tests__legacy__pattern_or__lib__E__B() = x in nat_1
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:8:0-12:1 new_tests__legacy__pattern_or__lib__bar *)
+(* src: src/legacy/pattern-or/lib.rs:9:0-13:1 new_tests__legacy__pattern_or__lib__bar *)
 letfun new_tests__legacy__pattern_or__lib__bar(x: bitstring) =
   let new_tests__legacy__pattern_or__lib__E__A() = x in rust_primitives__hax__Tuple0__Tuple0()
   else let new_tests__legacy__pattern_or__lib__E__B() = x in rust_primitives__hax__Tuple0__Tuple0()
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:13:0-19:1 new_tests__legacy__pattern_or__lib__nested *)
+(* src: src/legacy/pattern-or/lib.rs:14:0-20:1 new_tests__legacy__pattern_or__lib__nested *)
 letfun new_tests__legacy__pattern_or__lib__nested(x: bitstring) =
   let Some((=nat_1)) = x in nat_1
   else let Some((=nat_2)) = x in nat_1
   else let Some(x_1) = x in x_1
   else let None() = x in nat_0
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:21:0-26:1 new_tests__legacy__pattern_or__lib__deep *)
+(* src: src/legacy/pattern-or/lib.rs:22:0-27:1 new_tests__legacy__pattern_or__lib__deep *)
 letfun new_tests__legacy__pattern_or__lib__deep(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_3))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_4))) = x in nat_0
@@ -62,7 +80,7 @@ letfun new_tests__legacy__pattern_or__lib__deep(x: bitstring) =
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_2), Some((=nat_4))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2(x_1: bitstring, wildcard: bitstring) = x in x_1
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:28:0-33:1 new_tests__legacy__pattern_or__lib__equivalent *)
+(* src: src/legacy/pattern-or/lib.rs:29:0-34:1 new_tests__legacy__pattern_or__lib__equivalent *)
 letfun new_tests__legacy__pattern_or__lib__equivalent(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_3))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_1), Some((=nat_4))) = x in nat_0
@@ -70,9 +88,6 @@ letfun new_tests__legacy__pattern_or__lib__equivalent(x: bitstring) =
   else let rust_primitives__hax__Tuple2__Tuple2((=nat_2), Some((=nat_4))) = x in nat_0
   else let rust_primitives__hax__Tuple2__Tuple2(x_1: bitstring, wildcard: bitstring) = x in x_1
   else bitstring_err().
-(* src: src/legacy/pattern-or/lib.rs:35:0-40:1 new_tests__legacy__pattern_or__lib__deep_capture *)
+(* src: src/legacy/pattern-or/lib.rs:36:0-41:1 new_tests__legacy__pattern_or__lib__deep_capture *)
 letfun new_tests__legacy__pattern_or__lib__deep_capture(x: bitstring) =
-  let rust_primitives__hax__Tuple2__Tuple2((=nat_1), x_1: bitstring) = x in x_1
-  else let rust_primitives__hax__Tuple2__Tuple2((=nat_2), x_1: bitstring) = x in x_1
-  else let rust_primitives__hax__Tuple2__Tuple2(x_2: bitstring, wildcard: bitstring) = x in x_2
-  else bitstring_err().
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).

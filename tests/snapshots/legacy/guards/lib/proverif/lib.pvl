@@ -35,6 +35,26 @@
 letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
 (*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
+
+(*****************************************************************)
 (*  WARNINGS — branches the model may not follow as Rust does.   *)
 (*                                                               *)
 (*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
@@ -46,35 +66,16 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  - 1 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
 (*****************************************************************)
 
-(* src: src/legacy/guards/lib.rs:4:0-11:1 new_tests__legacy__guards__lib__if_let_guard *)
+(* src: src/legacy/guards/lib.rs:5:0-12:1 new_tests__legacy__guards__lib__if_let_guard *)
 letfun new_tests__legacy__guards__lib__if_let_guard(x: bitstring) =
-  let None() = x in nat_0
-  else let hax__arm0 = (let Some(v) = x in (let y = v in Some(y))
-  else None()) in
-  let Some(hax__val1) = hax__arm0 in hax__val1
-  else nat_1.
-(* src: src/legacy/guards/lib.rs:13:0-30:1 new_tests__legacy__guards__lib__equivalent *)
+  bitstring_err() (* HAX ERROR: on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
+(* src: src/legacy/guards/lib.rs:14:0-31:1 new_tests__legacy__guards__lib__equivalent *)
 letfun new_tests__legacy__guards__lib__equivalent(x: bitstring) =
-  let None() = x in nat_0
-  else let hax__scrut0 = (let Some(v) = x in (let y = v in Some(y))
-  else None()) in
-  let Some(y_1) = hax__scrut0 in y_1
-  else let None() = hax__scrut0 in (nat_1)
-  else bitstring_err().
-(* src: src/legacy/guards/lib.rs:32:0-40:1 new_tests__legacy__guards__lib__multiple_guards *)
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
+(* src: src/legacy/guards/lib.rs:33:0-41:1 new_tests__legacy__guards__lib__multiple_guards *)
 letfun new_tests__legacy__guards__lib__multiple_guards(x: bitstring) =
-  let None() = x in nat_0
-  else let hax__arm1 = (let Some(v) = x in
-    (let hax__cond0 = Some(rust_primitives__hax__machine_int__add(v, nat_1)) in
-    let Some((=nat_1)) = hax__cond0 in Some(nat_0)
-    else None())
-  else None()) in
-  let Some(hax__val2) = hax__arm1 in hax__val2
-  else let hax__arm3 = (let Some(v_1) = x in (let y = v_1 in Some(y))
-  else None()) in
-  let Some(hax__val4) = hax__arm3 in hax__val4
-  else nat_1.
-(* src: src/legacy/guards/lib.rs:42:0-47:1 new_tests__legacy__guards__lib__if_guard *)
+  bitstring_err() (* HAX ERROR: on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
+(* src: src/legacy/guards/lib.rs:43:0-48:1 new_tests__legacy__guards__lib__if_guard *)
 letfun new_tests__legacy__guards__lib__if_guard(x: bitstring) =
   let hax__arm1 = (let Some(v) = x in
     ((* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)

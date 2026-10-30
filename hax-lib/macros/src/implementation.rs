@@ -726,11 +726,42 @@ pub fn pv_inverse_of(attr: pm::TokenStream, item: pm::TokenStream) -> pm::TokenS
     let other_path = parse_macro_input!(attr as syn::Path);
     let other_str = other_path.to_token_stream().to_string().replace(' ', "");
     let item_fn: ItemFn = parse_macro_input!(item);
-    let self_name = item_fn.sig.ident.to_string();
-    let body = format!("reduc forall x: bitstring; ${{{self_name}}}(${{{other_str}}}(x)) = x.");
+    let self_name = &item_fn.sig.ident;
+    // A quote outside an `impl` cannot name its items, so the `reduc` is named
+    // after the other function.
+    let reduc_name = format!("${{{other_str}}}__inverse__{self_name}");
+    let arg = match item_fn.sig.inputs.iter().collect::<Vec<_>>().as_slice() {
+        [syn::FnArg::Receiver(_)] => "self".to_string(),
+        [syn::FnArg::Typed(pat_type)] => match &*pat_type.pat {
+            syn::Pat::Ident(pat_ident) if pat_ident.subpat.is_none() => pat_ident.ident.to_string(),
+            pat => {
+                return syn::Error::new(
+                    pat.span(),
+                    "`pv_inverse_of` needs its parameter to be a plain identifier",
+                )
+                .to_compile_error()
+                .into();
+            }
+        },
+        _ => {
+            return syn::Error::new(
+                item_fn.sig.inputs.span(),
+                "`pv_inverse_of` needs exactly one parameter, `self` or a plain identifier: a \
+                 `reduc` inverts a function of one argument",
+            )
+            .to_compile_error()
+            .into();
+        }
+    };
+    // The function applies the `reduc`; for a function returning a `Result`,
+    // the backend makes that an `Ok`, and an `Err` off the image.
+    let reduc = format!("reduc forall x: bitstring; {reduc_name}(${{{other_str}}}(x)) = x.");
+    let body = format!("{reduc_name}(${{{arg}}})");
+    let reduc_lit = syn::LitStr::new(&reduc, ::proc_macro2::Span::call_site());
     let body_lit = syn::LitStr::new(&body, ::proc_macro2::Span::call_site());
     quote! {
-        #[::hax_lib::proverif::replace(#body_lit)]
+        #[::hax_lib::proverif::before(#reduc_lit)]
+        #[::hax_lib::proverif::replace_body(#body_lit)]
         #item_fn
     }
     .into()

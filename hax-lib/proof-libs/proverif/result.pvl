@@ -11,7 +11,10 @@
 (* `Err`. No value is ever an `Err`, so error paths are pruned:   *)
 (* the state space stays small, but a property that depends on an *)
 (* error path cannot be checked in this model. The definitions    *)
-(* below follow the same rule.                                    *)
+(* below follow the same rule. This is only sound for code that   *)
+(* never goes on after an `Err`, so the backend rejects any other *)
+(* use of a `Result`, including the calls of `is_ok`, `is_err`,   *)
+(* `ok`, `err`, `unwrap_or` and `unwrap_or_else` below.           *)
 (*****************************************************************)
 
 (* Named by the extracted `lib.pvl`, so that it only loads with this file. *)

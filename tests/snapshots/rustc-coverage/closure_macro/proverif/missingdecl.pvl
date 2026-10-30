@@ -9,28 +9,10 @@
 (* other function may be one-way.                                *)
 (*****************************************************************)
 (* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-fun alloc__string__Impl__len(bitstring): bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
 fun core__result__Impl__or_else(bitstring, bitstring): bitstring.
 (* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-fun core__str__Impl__len(bitstring): bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit__Error_x20loading_x20configs_x3a_x20: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
 const string_lit__Starting_x20service_x0a: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit___empty: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit___x0a: bitstring.
 (* referenced by: new_tests__rustc_coverage__closure_macro__main *)
 const string_lit__arg: bitstring.
 (* referenced by: new_tests__rustc_coverage__closure_macro__load_configuration_files *)
 const string_lit__config: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit__error: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit__error_x0a: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit__no_x20msg_x0a: bitstring.
-(* referenced by: new_tests__rustc_coverage__closure_macro__main *)
-const string_lit__ok: bitstring.

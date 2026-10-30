@@ -63,3 +63,29 @@ fn unpack(bytes: [u8; 1]) -> Option<u8> {
     let first = |b: [u8; 1]| b[0];
     Some(first(bytes))
 }
+
+// The inverse of a constructor, as a method.
+struct Bytes([u8; 1]);
+
+#[hax_lib::pv_constructor]
+fn pack_bytes(x: u8) -> Bytes {
+    Bytes([x])
+}
+
+impl Bytes {
+    #[hax_lib::pv_inverse_of(pack_bytes)]
+    fn unpack(self) -> u8 {
+        self.0[0]
+    }
+}
+
+fn round_trip(x: u8) -> u8 {
+    pack_bytes(x).unpack()
+}
+
+impl Bytes {
+    #[hax_lib::pv_inverse_of(pack_bytes)]
+    fn unpack_assoc(b: Bytes) -> u8 {
+        b.0[0]
+    }
+}

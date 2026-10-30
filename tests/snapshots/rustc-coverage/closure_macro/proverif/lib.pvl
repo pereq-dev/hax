@@ -47,7 +47,8 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - Closures not supported in ProVerif *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -78,13 +79,11 @@ letfun new_tests__rustc_coverage__closure_macro__main(wildcard: bitstring) =
   let wildcard_2 = rust_primitives__hax__Tuple0__Tuple0 in
   (* HAX WARNING: branch on a result of `core__result__Impl__or_else`, which the model does not define *)
   let hax__scrut0 = core__result__Impl__or_else(
-    new_tests__rustc_coverage__closure_macro__load_configuration_files(
-      rust_primitives__hax__Tuple0__Tuple0
-    ),
-    bitstring_err() (* HAX ERROR: Closures not supported in ProVerif *)
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *),
+    bitstring_err() (* HAX ERROR: this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
   ) in
   let config = hax__scrut0 in
-    let wildcard_10 = rust_primitives__hax__Tuple2__Tuple2(
+    let wildcard_3 = rust_primitives__hax__Tuple2__Tuple2(
       config,
       core__convert__From__from(string_lit__arg)
     ) in

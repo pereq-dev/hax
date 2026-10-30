@@ -52,13 +52,14 @@ pub struct ProVerifPrinter {
 
 /// Bundled `primitives.pvl`, parsed so its names are not re-declared in
 /// `missingdecl.pvl`.
-const PRIMITIVES_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/primitives.pvl");
+pub(crate) const PRIMITIVES_PVL: &str =
+    include_str!("../../../hax-lib/proof-libs/proverif/primitives.pvl");
 
 /// Bundled `result.pvl` — the default Result model.
-const RESULT_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/result.pvl");
+pub(crate) const RESULT_PVL: &str = include_str!("../../../hax-lib/proof-libs/proverif/result.pvl");
 
 /// Bundled `result_errors.pvl` — the Result model of `--result-errors`.
-const RESULT_ERRORS_PVL: &str =
+pub(crate) const RESULT_ERRORS_PVL: &str =
     include_str!("../../../hax-lib/proof-libs/proverif/result_errors.pvl");
 
 /// The library that models `Result` in the chosen mode, without extension.
@@ -287,7 +288,12 @@ fn error_details(error: &ErrorNode) -> String {
                 .map(str::to_string),
             _ => None,
         })
-        .collect();
+        .fold(vec![], |mut details, d| {
+            if !details.contains(&d) {
+                details.push(d);
+            }
+            details
+        });
     if details.is_empty() {
         "error node".to_string()
     } else {
@@ -2263,7 +2269,7 @@ impl Backend for ProVerifBackend {
     fn phases(&self) -> Vec<PhaseKind> {
         use crate::phase::{PhaseKind::*, legacy::LegacyOCamlPhase::*};
         let result_model = if self.options.result_errors {
-            vec![ProverifRejectTryConversions]
+            vec![ProverifRejectTryConversions, ProverifRejectUnknownErrors]
         } else {
             vec![ProverifOkOnlyResults]
         };
@@ -2583,5 +2589,18 @@ mod tests {
                 }
             }
         }
+    }
+
+    /// Declarations are found after a `.` on the same line, past comments
+    /// and `private`, and every name of a `const` is.
+    #[test]
+    fn scan_declarations_skips_comments() {
+        let text = "(* fun commented(bitstring): bitstring. *) letfun f() = nat_0. \
+                    private fun g(bitstring): bitstring.\n\
+                    const c1, c2: bitstring. reduc h(nat_0) = nat_0.\n\
+                    reduc forall x: bitstring;\n  k(x) = x.\n\
+                    def M(t) {\n  fun m(t): t.\n  letfun n(x: t) = x.\n}\nfun o(t): t.";
+        let names = scan_declared_names(text);
+        assert_eq!(names, ["f", "g", "c1", "c2", "h", "k", "m", "n", "o"]);
     }
 }

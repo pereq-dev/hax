@@ -35,6 +35,27 @@
 letfun hax_result_model_check__new_tests() = hax_result_model__result.
 
 (*****************************************************************)
+(*  INCOMPLETE MODEL — this extraction did not fully succeed.    *)
+(*                                                               *)
+(*  Each `HAX ERROR` below marks a construct the ProVerif        *)
+(*  backend could not express; it renders as `bitstring_err()`,  *)
+(*  so the enclosing declaration has NO value and every process  *)
+(*  reaching it dies. Queries over the dead part come back       *)
+(*  `true` for lack of any trace, NOT because they hold.         *)
+(*                                                               *)
+(*  The `hax_extraction_error__*` query below fails on purpose,  *)
+(*  so this shows up in the verification summary. Fix the errors *)
+(*  (or model the items by hand) before trusting any result.     *)
+(*                                                               *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*****************************************************************)
+free hax_extraction_error__new_tests: bitstring.
+query attacker(hax_extraction_error__new_tests).
+
+(*****************************************************************)
 (*  WARNINGS — branches the model may not follow as Rust does.   *)
 (*                                                               *)
 (*  Each `HAX WARNING` below marks an `if` or `match` on a value *)
@@ -47,17 +68,14 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  - 1 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
 (*****************************************************************)
 
-(* src: src/legacy/proverif-soundness/lib.rs:9:0-11:1 new_tests__legacy__proverif_soundness__lib__check *)
+(* src: src/legacy/proverif-soundness/lib.rs:10:0-12:1 new_tests__legacy__proverif_soundness__lib__check *)
 letfun new_tests__legacy__proverif_soundness__lib__check(x: bitstring) =
   let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
   let (=True()) = hax__cond0 in bitstring_err() else x.
-(* src: src/legacy/proverif-soundness/lib.rs:13:0-15:1 new_tests__legacy__proverif_soundness__lib__reject_on_error *)
+(* src: src/legacy/proverif-soundness/lib.rs:14:0-16:1 new_tests__legacy__proverif_soundness__lib__reject_on_error *)
 letfun new_tests__legacy__proverif_soundness__lib__reject_on_error(x: bitstring) =
-  let hax__cond0 = core__result__Impl__is_err(
-    new_tests__legacy__proverif_soundness__lib__check(x)
-  ) in
-  let (=True()) = hax__cond0 in nat_0 else nat_1.
-(* src: src/legacy/proverif-soundness/lib.rs:17:0-19:1 new_tests__legacy__proverif_soundness__lib__short_circuit_or *)
+  bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
+(* src: src/legacy/proverif-soundness/lib.rs:18:0-20:1 new_tests__legacy__proverif_soundness__lib__short_circuit_or *)
 letfun new_tests__legacy__proverif_soundness__lib__short_circuit_or(o: bitstring, x: bitstring) =
   let hax__cond0 = core__option__Impl__is_none(o) in
   let (=True()) = hax__cond0
@@ -65,7 +83,7 @@ letfun new_tests__legacy__proverif_soundness__lib__short_circuit_or(o: bitstring
     else let (=False()) = hax__cond0
     in rust_primitives__hax__machine_int__ne(core__option__Impl__unwrap(o), x)
     else logical_or_opaque(hax__cond0).
-(* src: src/legacy/proverif-soundness/lib.rs:21:0-23:1 new_tests__legacy__proverif_soundness__lib__short_circuit_and *)
+(* src: src/legacy/proverif-soundness/lib.rs:22:0-24:1 new_tests__legacy__proverif_soundness__lib__short_circuit_and *)
 letfun new_tests__legacy__proverif_soundness__lib__short_circuit_and(o: bitstring, x: bitstring) =
   let hax__cond0 = core__option__Impl__is_some(o) in
   let (=True()) = hax__cond0
@@ -73,11 +91,11 @@ letfun new_tests__legacy__proverif_soundness__lib__short_circuit_and(o: bitstrin
     else let (=False()) = hax__cond0
     in False()
     else logical_and_opaque(hax__cond0).
-(* src: src/legacy/proverif-soundness/lib.rs:25:0-31:1 new_tests__legacy__proverif_soundness__lib__unit_patterns *)
+(* src: src/legacy/proverif-soundness/lib.rs:26:0-32:1 new_tests__legacy__proverif_soundness__lib__unit_patterns *)
 letfun new_tests__legacy__proverif_soundness__lib__unit_patterns(r: bitstring) =
-  let n = (let wildcard = r in nat_1) in
-  let wildcard_1 = r in n.
-(* src: src/legacy/proverif-soundness/lib.rs:33:0-39:1 new_tests__legacy__proverif_soundness__lib__external_constructors *)
+  let n = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)) in
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
+(* src: src/legacy/proverif-soundness/lib.rs:34:0-40:1 new_tests__legacy__proverif_soundness__lib__external_constructors *)
 letfun new_tests__legacy__proverif_soundness__lib__external_constructors(
   a: bitstring,
   b: bitstring
@@ -88,7 +106,7 @@ letfun new_tests__legacy__proverif_soundness__lib__external_constructors(
   else let core__cmp__Ordering__Equal() = hax__scrut0 in nat_1
   else let core__cmp__Ordering__Greater() = hax__scrut0 in nat_2
   else bitstring_err().
-(* src: src/legacy/proverif-soundness/lib.rs:41:0-44:1 new_tests__legacy__proverif_soundness__lib__nested_bindings *)
+(* src: src/legacy/proverif-soundness/lib.rs:42:0-45:1 new_tests__legacy__proverif_soundness__lib__nested_bindings *)
 letfun new_tests__legacy__proverif_soundness__lib__nested_bindings(x: bitstring) =
   let rust_primitives__hax__Tuple2__Tuple2(
     a: bitstring,
@@ -97,7 +115,7 @@ letfun new_tests__legacy__proverif_soundness__lib__nested_bindings(x: bitstring)
     c: bitstring,
     wildcard: bitstring
   ) = b in c else bitstring_err()) else bitstring_err().
-(* src: src/legacy/proverif-soundness/lib.rs:46:0-53:1 new_tests__legacy__proverif_soundness__lib__guarded *)
+(* src: src/legacy/proverif-soundness/lib.rs:47:0-54:1 new_tests__legacy__proverif_soundness__lib__guarded *)
 letfun new_tests__legacy__proverif_soundness__lib__guarded(x: bitstring, y: bitstring) =
   let hax__arm1 = (let Some(v) = x in
     (let hax__cond0 = rust_primitives__hax__machine_int__eq(v, y) in
@@ -114,14 +132,14 @@ letfun new_tests__legacy__proverif_soundness__lib__guarded(x: bitstring, y: bits
   let Some(hax__val5) = hax__arm4 in hax__val5
   else let hax__arm7 = (let Some(v_2) = x in
     (let hax__cond6 = core__result__Impl__is_ok(
-      new_tests__legacy__proverif_soundness__lib__check(v_2)
+      bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
     ) in
     let (=True()) = hax__cond6 in Some(nat_2)
     else None())
   else None()) in
   let Some(hax__val8) = hax__arm7 in hax__val8
   else nat_3.
-(* src: src/legacy/proverif-soundness/lib.rs:55:0-60:1 new_tests__legacy__proverif_soundness__lib__generated_names *)
+(* src: src/legacy/proverif-soundness/lib.rs:56:0-61:1 new_tests__legacy__proverif_soundness__lib__generated_names *)
 letfun new_tests__legacy__proverif_soundness__lib__generated_names(
   wildcard_v0: bitstring,
   wildcard: bitstring,
@@ -133,10 +151,10 @@ letfun new_tests__legacy__proverif_soundness__lib__generated_names(
       wildcard_v0
     )
   else bitstring_err().
-(* src: src/legacy/proverif-soundness/lib.rs:62:0-64:1 new_tests__legacy__proverif_soundness__lib__keyword *)
+(* src: src/legacy/proverif-soundness/lib.rs:63:0-65:1 new_tests__legacy__proverif_soundness__lib__keyword *)
 letfun new_tests__legacy__proverif_soundness__lib__keyword(public_vars_kw: bitstring) =
   public_vars_kw.
-(* src: src/legacy/proverif-soundness/lib.rs:66:0-78:1 new_tests__legacy__proverif_soundness__lib__five_pushes *)
+(* src: src/legacy/proverif-soundness/lib.rs:67:0-79:1 new_tests__legacy__proverif_soundness__lib__five_pushes *)
 letfun new_tests__legacy__proverif_soundness__lib__five_pushes(
   a: bitstring,
   b: bitstring,
