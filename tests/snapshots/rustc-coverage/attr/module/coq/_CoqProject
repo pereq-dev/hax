@@ -1,9 +1,0 @@
--R ./ TODO
--arg -w
--arg all
-
-New_tests_Rustc_coverage__attr__module_On.v
-New_tests_Rustc_coverage__attr__module_Off.v
-New_tests_Rustc_coverage__attr__module_Nested_a_Nested_b.v
-New_tests_Rustc_coverage__attr__module_Nested_a.v
-New_tests_Rustc_coverage__attr__module.v

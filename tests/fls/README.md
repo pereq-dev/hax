@@ -43,8 +43,7 @@ A chapter is triaged paragraph by paragraph, in specification order, into test c
 2. Write the tests under `tests/fls/src/<chapter>/<section>/`; `cargo test --manifest-path tests/fls/Cargo.toml` and `RUSTFLAGS="" cargo test --manifest-path tests/fls/Cargo.toml` run the guards in Rust.
 3. Add the tables to `tests/fls-excluded.toml`, remove the chapter from `pending-chapters` (closing pull request only), and run `fls coverage` until it reports no violation.
 4. Run the backend on the chapter, `test-driver tests --suite fls -b lean --update-results -m <chapter>/`, and review the stages: every stage below the tier gets a reason, an unexpected acceptance is resolved as above.
-5. Append the rustc coverage files whose constructs the tests now cover to `tests/fls/src/rustc-coverage-retired.txt`, one path per line relative to `tests/src/rustc-coverage/`, with `#` comments naming the FLS tests that replace a group; move files whose value lies in combining constructs to `tests/src/legacy`. `fls coverage` fails on a listed path that does not exist or is listed twice.
-6. Revert `tests/Cargo.lock`, which every driver run rewrites. The pull request description lists the tests per section and the exclusion counts per category.
+5. Revert `tests/Cargo.lock`, which every driver run rewrites. The pull request description lists the tests per section and the exclusion counts per category.
 
 ## Running the suite
 
@@ -62,7 +61,7 @@ The Lean backend also needs `rustup` on `PATH`, since charon installs its Rust t
 
 ## Coverage and identifier lists
 
-`fls coverage` reads the test headers, the identifier lists, the exclusion file, the results files, and the rustc coverage retirement list, and fails on any violation, including a results entry whose test is gone, has no tier for the backend, or has another tier, and a test without a reason for an entry not classified as supported; it runs no backend and needs neither `cargo-hax` nor a toolchain:
+`fls coverage` reads the test headers, the identifier lists, the exclusion file, and the results files, and fails on any violation, including a results entry whose test is gone, has no tier for the backend, or has another tier, and a test without a reason for an entry not classified as supported; it runs no backend and needs neither `cargo-hax` nor a toolchain:
 
 ```
 cargo run -p test-driver -- tests fls coverage

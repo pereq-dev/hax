@@ -14,8 +14,8 @@ use tokio::sync::{AcquireError, Semaphore, SemaphorePermit};
 /// The test suites the driver can run.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
 pub enum Suite {
-    /// Module-granular tests under `src/legacy` and `src/rustc-coverage`, run
-    /// through the hax frontend once per backend, with `@fail` directives.
+    /// Module-granular tests under `src/legacy`, run through the hax frontend
+    /// once per backend, with `@fail` directives.
     Legacy,
     /// Crate-granular tests under `fls/src`, one generated package per test,
     /// with support tiers and recorded pipeline stages.

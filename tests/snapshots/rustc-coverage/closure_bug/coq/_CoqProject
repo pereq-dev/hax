@@ -1,5 +1,0 @@
--R ./ TODO
--arg -w
--arg all
-
-New_tests_Rustc_coverage__closure_bug.v

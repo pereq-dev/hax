@@ -1,6 +1,0 @@
--R ./ TODO
--arg -w
--arg all
-
-New_tests_Rustc_coverage__unused_mod_Unused_module.v
-New_tests_Rustc_coverage__unused_mod.v
