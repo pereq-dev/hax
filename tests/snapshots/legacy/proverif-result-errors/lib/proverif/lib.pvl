@@ -46,20 +46,22 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result_errors.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
 (*  - `new_tests__legacy__proverif_result_errors__lib__opaque_result` returns a `Result`, but its model is a `fun`, a `reduc` or a `const`, whose value is neither `Ok(..)` nor `Err(..)` under `--result-errors`; give it a `replace_body` model *)
-(*  - a `Result` or an error coming from a hand-written model is passed to a function whose body is not extracted: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
-(*  - a `Result` or an error coming from a hand-written model is spliced into verbatim ProVerif: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - a `Result` or an error coming from a hand-written model is passed to a function whose body is not extracted: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
+(*  - a `Result` or an error coming from a hand-written model is spliced into verbatim ProVerif: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
 (*  - under `--result-errors`, a verbatim model of a value holding a `Result` cannot be checked to build each `Result` as `Ok` or `Err`; model each `Result` by a function of its own *)
 (*  - std fallible conversion under `--result-errors`, whose error is not modelled *)
+(*  - use of the trait item `C` that resolves to no impl of the crate (e.g. on a generic type) *)
+(*  - this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -74,6 +76,9 @@ query attacker(hax_extraction_error__new_tests).
 (*  branch may then hold for lack of any trace.                  *)
 (*                                                               *)
 (*  - 1 × `replace_body` keeps the `&mut` parameters `st` unchanged *)
+(*  - 1 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
+(*  - 1 × branch on a result of `core__str__converts__from_utf8`, which the model does not define *)
+(*  - 1 × `core__str__converts__from_utf8` returns a `Result` but has no model: unless its declaration in missingdecl.pvl is replaced by one returning `hax_result_ok(..)` or `hax_result_err(..)`, every path through this use is lost *)
 (*****************************************************************)
 
 (* src: src/legacy/proverif-result-errors/lib.rs:9:0-12:1 new_tests__legacy__proverif_result_errors__lib__Error *)
@@ -201,7 +206,7 @@ letfun new_tests__legacy__proverif_result_errors__lib__match_any(x: bitstring) =
 (* src: src/legacy/proverif-result-errors/lib.rs:142:0-148:1 new_tests__legacy__proverif_result_errors__lib__match_variant *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__match_variant(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:150:0-153:1 new_tests__legacy__proverif_result_errors__lib__forwarded *)
 letfun new_tests__legacy__proverif_result_errors__lib__forwarded(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
@@ -211,11 +216,11 @@ letfun new_tests__legacy__proverif_result_errors__lib__forwarded(x: bitstring) =
 (* src: src/legacy/proverif-result-errors/lib.rs:156:0-162:1 new_tests__legacy__proverif_result_errors__lib__match_forwarded *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__match_forwarded(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:165:0-170:1 new_tests__legacy__proverif_result_errors__lib__error_code *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__error_code(e: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:172:0-177:1 new_tests__legacy__proverif_result_errors__lib__inspected *)
 letfun new_tests__legacy__proverif_result_errors__lib__inspected(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
@@ -236,6 +241,21 @@ letfun new_tests__legacy__proverif_result_errors__lib__use_opaque(x: bitstring) 
 (* src: src/legacy/proverif-result-errors/lib.rs:191:0-193:1 new_tests__legacy__proverif_result_errors__lib__encode *)
 (* marked as constructor *)
 fun new_tests__legacy__proverif_result_errors__lib__encode(bitstring): bitstring [data].
+reduc forall x: bitstring; new_tests__legacy__proverif_result_errors__lib__encode__inverse__decode(new_tests__legacy__proverif_result_errors__lib__encode(x)) = x.
+(* src: src/legacy/proverif-result-errors/lib.rs:195:0-195:33 new_tests__legacy__proverif_result_errors__lib__decode *)
+letfun new_tests__legacy__proverif_result_errors__lib__decode(b: bitstring) =
+  let hax__model = (new_tests__legacy__proverif_result_errors__lib__encode__inverse__decode(b)) in (let core__result__Result__Ok(hax__v) = hax__model in hax__model else let core__result__Result__Err(hax__v) = hax__model in hax__model else hax_result_ok(hax__model)) else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/legacy/proverif-result-errors/lib.rs:200:0-202:1 new_tests__legacy__proverif_result_errors__lib__round_trip *)
+letfun new_tests__legacy__proverif_result_errors__lib__round_trip(x: bitstring) =
+  new_tests__legacy__proverif_result_errors__lib__decode(
+    new_tests__legacy__proverif_result_errors__lib__encode(x)
+  ).
+(* src: src/legacy/proverif-result-errors/lib.rs:204:0-209:1 new_tests__legacy__proverif_result_errors__lib__decode_or_zero *)
+letfun new_tests__legacy__proverif_result_errors__lib__decode_or_zero(b: bitstring) =
+  let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__decode(b) in
+  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in v
+  else let core__result__Result__Err(wildcard: bitstring) = hax__scrut0 in nat_0
+  else bitstring_err().
 event Recorded(bitstring).
 (* src: src/legacy/proverif-result-errors/lib.rs:214:0-214:64 new_tests__legacy__proverif_result_errors__lib__record *)
 letfun new_tests__legacy__proverif_result_errors__lib__record(x: bitstring) = event Recorded(x); x.
@@ -304,7 +324,7 @@ letfun new_tests__legacy__proverif_result_errors__lib__all_fields(x: bitstring) 
 (* src: src/legacy/proverif-result-errors/lib.rs:268:0-270:1 new_tests__legacy__proverif_result_errors__lib__equal_err *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__equal_err(x: bitstring) =
-  bitstring_err() (* HAX ERROR: a `Result` or an error coming from a hand-written model is passed to a function whose body is not extracted: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: a `Result` or an error coming from a hand-written model is passed to a function whose body is not extracted: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:273:0-283:1 new_tests__legacy__proverif_result_errors__lib__repacked *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__repacked(x: bitstring) =
@@ -313,7 +333,7 @@ letfun new_tests__legacy__proverif_result_errors__lib__repacked(x: bitstring) =
     core__result__Result__Err(rust_primitives__hax__Tuple0__Tuple0())
   else let core__result__Result__Err(e: bitstring) = hax__scrut0 in core__result__Result__Ok(e)
   else bitstring_err()) in
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 fun extern__derive(bitstring): bitstring.
 (* src: src/legacy/proverif-result-errors/lib.rs:285:0-285:21 new_tests__legacy__proverif_result_errors__lib__derive *)
 letfun new_tests__legacy__proverif_result_errors__lib__derive(k: bitstring) =
@@ -368,20 +388,20 @@ letfun new_tests__legacy__proverif_result_errors__lib__nested_unwrap(x: bitstrin
   let outer = core__result__Result__Ok(
     new_tests__legacy__proverif_result_errors__lib__modelled(x)
   ) in
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:334:0-341:1 new_tests__legacy__proverif_result_errors__lib__nested_ok *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__nested_ok(x: bitstring) =
   let outer = core__result__Result__Ok(
     new_tests__legacy__proverif_result_errors__lib__modelled(x)
   ) in
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:343:0-345:1 new_tests__legacy__proverif_result_errors__lib__identity *)
 letfun new_tests__legacy__proverif_result_errors__lib__identity(x: bitstring) = x.
 (* src: src/legacy/proverif-result-errors/lib.rs:348:0-354:1 new_tests__legacy__proverif_result_errors__lib__through_generic *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__through_generic(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:358:0-363:1 new_tests__legacy__proverif_result_errors__lib__guard_falls_through *)
 letfun new_tests__legacy__proverif_result_errors__lib__guard_falls_through(o: bitstring) =
   let hax__arm1 = (let Some(v) = o in
@@ -448,12 +468,12 @@ letfun new_tests__legacy__proverif_result_errors__lib__ok_or_repacked(x: bitstri
   else let core__result__Result__Ok(wildcard: bitstring) = hax__scrut0 in None()
   else bitstring_err()) in
   let swapped = core__option__Impl__ok_or(opt, rust_primitives__hax__Tuple0__Tuple0()) in
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 letfun new_tests__legacy__proverif_result_errors__lib__MODELLED_CONST() = hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
 (* src: src/legacy/proverif-result-errors/lib.rs:428:0-434:1 new_tests__legacy__proverif_result_errors__lib__match_const *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__match_const(wildcard: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)`; this pattern inspects an error value: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
 (* src: src/legacy/proverif-result-errors/lib.rs:436:0-446:1 new_tests__legacy__proverif_result_errors__lib__reused_name *)
 letfun new_tests__legacy__proverif_result_errors__lib__reused_name(x: bitstring) =
   let y = (let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
@@ -471,7 +491,7 @@ letfun new_tests__legacy__proverif_result_errors__lib__reused_name(x: bitstring)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__spliced(x: bitstring) =
   let r = new_tests__legacy__proverif_result_errors__lib__modelled(x) in
-  let wildcard = (bitstring_err() (* HAX ERROR: a `Result` or an error coming from a hand-written model is spliced into verbatim ProVerif: under `--result-errors`, the `Err` of a function whose body is not extracted (opaque, `replace_body`, `pv_inverse_of` or external) is a term of its hand-written model, not the Rust error value; only propagate it, or match it with `Err(_)` *)) in
+  let wildcard = (bitstring_err() (* HAX ERROR: a `Result` or an error coming from a hand-written model is spliced into verbatim ProVerif: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *)) in
   nat_0.
 
 (* src: src/legacy/proverif-result-errors/lib.rs:462:4-464:5 new_tests__legacy__proverif_result_errors__lib__Impl__tag *)
@@ -499,6 +519,10 @@ letfun new_tests__legacy__proverif_result_errors__lib__use_dec_let(k: bitstring,
   let core__result__Result__Ok(v: bitstring) = hax__scrut0 in core__result__Result__Ok(v)
   else let core__result__Result__Err(err: bitstring) = hax__scrut0 in core__result__Result__Err(err)
   else bitstring_err().
+reduc forall x: bitstring; new_tests__legacy__proverif_result_errors__lib__encode__inverse__decode_unchecked(new_tests__legacy__proverif_result_errors__lib__encode(x)) = x.
+(* src: src/legacy/proverif-result-errors/lib.rs:496:0-496:33 new_tests__legacy__proverif_result_errors__lib__decode_unchecked *)
+letfun new_tests__legacy__proverif_result_errors__lib__decode_unchecked(b: bitstring) =
+  new_tests__legacy__proverif_result_errors__lib__encode__inverse__decode_unchecked(b).
 table Recorded_table(bitstring).
 (* src: src/legacy/proverif-result-errors/lib.rs:504:0-504:71 new_tests__legacy__proverif_result_errors__lib__record_in_table *)
 letfun new_tests__legacy__proverif_result_errors__lib__record_in_table(x: bitstring) =
@@ -596,22 +620,73 @@ letfun new_tests__legacy__proverif_result_errors__lib__dec_pair(k: bitstring, c:
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result_errors__lib__narrow(x: bitstring) =
   bitstring_err() (* HAX ERROR: std fallible conversion under `--result-errors`, whose error is not modelled *).
-reduc forall x: bitstring; new_tests__legacy__proverif_result_errors__lib__decode__inverse(new_tests__legacy__proverif_result_errors__lib__encode(x)) = x.
-(* src: src/legacy/proverif-result-errors/lib.rs:195:0-195:33 new_tests__legacy__proverif_result_errors__lib__decode *)
-letfun new_tests__legacy__proverif_result_errors__lib__decode(b: bitstring) =
-  let hax__model = (new_tests__legacy__proverif_result_errors__lib__decode__inverse(b)) in (let core__result__Result__Ok(hax__v) = hax__model in hax__model else let core__result__Result__Err(hax__v) = hax__model in hax__model else hax_result_ok(hax__model)) else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
-reduc forall x: bitstring; new_tests__legacy__proverif_result_errors__lib__decode_unchecked__inverse(new_tests__legacy__proverif_result_errors__lib__encode(x)) = x.
-(* src: src/legacy/proverif-result-errors/lib.rs:496:0-496:33 new_tests__legacy__proverif_result_errors__lib__decode_unchecked *)
-letfun new_tests__legacy__proverif_result_errors__lib__decode_unchecked(b: bitstring) =
-  new_tests__legacy__proverif_result_errors__lib__decode_unchecked__inverse(b).
-(* src: src/legacy/proverif-result-errors/lib.rs:200:0-202:1 new_tests__legacy__proverif_result_errors__lib__round_trip *)
-letfun new_tests__legacy__proverif_result_errors__lib__round_trip(x: bitstring) =
-  new_tests__legacy__proverif_result_errors__lib__decode(
-    new_tests__legacy__proverif_result_errors__lib__encode(x)
-  ).
-(* src: src/legacy/proverif-result-errors/lib.rs:204:0-209:1 new_tests__legacy__proverif_result_errors__lib__decode_or_zero *)
-letfun new_tests__legacy__proverif_result_errors__lib__decode_or_zero(b: bitstring) =
-  let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__decode(b) in
-  let core__result__Result__Ok(v: bitstring) = hax__scrut0 in v
-  else let core__result__Result__Err(wildcard: bitstring) = hax__scrut0 in nat_0
+(* src: src/legacy/proverif-result-errors/lib.rs:627:0-629:1 new_tests__legacy__proverif_result_errors__lib__check_u8 *)
+letfun new_tests__legacy__proverif_result_errors__lib__check_u8(x: bitstring) =
+  let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
+  let (=True()) = hax__cond0 in core__result__Result__Err(nat_0) else core__result__Result__Ok(x).
+(* src: src/legacy/proverif-result-errors/lib.rs:631:0-636:1 new_tests__legacy__proverif_result_errors__lib__used_on_one_branch *)
+letfun new_tests__legacy__proverif_result_errors__lib__used_on_one_branch(x: bitstring) =
+  let r = new_tests__legacy__proverif_result_errors__lib__check_u8(x) in
+  (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+  let hax__cond0 = rust_primitives__hax__machine_int__gt(x, nat_1) in
+  let (=True()) = hax__cond0
+    in (let core__result__Result__Ok(ok: bitstring) = r in
+      (let core__result__Result__Ok(z: bitstring) = r in
+        core__result__Result__Ok(rust_primitives__hax__machine_int__add(ok, z))
+      else let core__result__Result__Err(err: bitstring) = r in core__result__Result__Err(err)
+      else bitstring_err())
+    else let core__result__Result__Err(err_1: bitstring) = r in core__result__Result__Err(err_1)
+    else bitstring_err())
+    else (let core__result__Result__Ok(z_1: bitstring) = r in
+      core__result__Result__Ok(rust_primitives__hax__machine_int__add(nat_1, z_1))
+    else let core__result__Result__Err(err_2: bitstring) = r in core__result__Result__Err(err_2)
+    else bitstring_err()).
+(* src: src/legacy/proverif-result-errors/lib.rs:638:0-643:1 new_tests__legacy__proverif_result_errors__lib__pure_quote_before_use *)
+letfun new_tests__legacy__proverif_result_errors__lib__pure_quote_before_use(x: bitstring) =
+  let r = new_tests__legacy__proverif_result_errors__lib__check_u8(x) in
+  let wildcard = (nat_0) in
+  let core__result__Result__Ok(v: bitstring) = r in core__result__Result__Ok(v)
+  else let core__result__Result__Err(err: bitstring) = r in core__result__Result__Err(err)
+  else bitstring_err().
+event Nullary_seen. letfun log_nullary() = event Nullary_seen; nat_0.
+(* src: src/legacy/proverif-result-errors/lib.rs:651:0-651:49 new_tests__legacy__proverif_result_errors__lib__nullary *)
+letfun new_tests__legacy__proverif_result_errors__lib__nullary(wildcard: bitstring) = log_nullary.
+(* src: src/legacy/proverif-result-errors/lib.rs:656:0-664:1 new_tests__legacy__proverif_result_errors__lib__err_arm_nullary *)
+letfun new_tests__legacy__proverif_result_errors__lib__err_arm_nullary(r: bitstring) =
+  let core__result__Result__Ok(v: bitstring) = r in core__result__Result__Ok(v)
+  else let core__result__Result__Err(e: bitstring) = r in
+    (let wildcard = new_tests__legacy__proverif_result_errors__lib__nullary(
+      rust_primitives__hax__Tuple0__Tuple0
+    ) in
+    core__result__Result__Err(e))
+  else bitstring_err().
+
+(* src: src/legacy/proverif-result-errors/lib.rs:671:0-679:1 new_tests__legacy__proverif_result_errors__lib__err_arm_trait_const *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result_errors__lib__err_arm_trait_const(r: bitstring) =
+  let core__result__Result__Ok(v: bitstring) = r in core__result__Result__Ok(v)
+  else let core__result__Result__Err(e: bitstring) = r in
+    (let u_c = (bitstring_err() (* HAX ERROR: use of the trait item `C` that resolves to no impl of the crate (e.g. on a generic type) *)) in
+    core__result__Result__Err(e))
+  else bitstring_err().
+(* src: src/legacy/proverif-result-errors/lib.rs:683:0-683:56 new_tests__legacy__proverif_result_errors__lib__modelled_both *)
+letfun new_tests__legacy__proverif_result_errors__lib__modelled_both(x: bitstring) =
+  let hax__model = (crypto__hash(x)) in (let core__result__Result__Ok(hax__v) = hax__model in hax__model else let core__result__Result__Err(hax__v) = hax__model in hax__model else hax_result_ok(hax__model)) else hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
+(* src: src/legacy/proverif-result-errors/lib.rs:689:0-697:1 new_tests__legacy__proverif_result_errors__lib__or_pattern_taint *)
+(*  @fail(extraction): proverif(HAX0001, HAX0001) *)
+letfun new_tests__legacy__proverif_result_errors__lib__or_pattern_taint(x: bitstring) =
+  let e_1 = (let hax__scrut0 = new_tests__legacy__proverif_result_errors__lib__modelled_both(x) in
+  let core__result__Result__Err(e: bitstring) = hax__scrut0 in e
+  else let core__result__Result__Ok(e: bitstring) = hax__scrut0 in e
+  else bitstring_err()) in
+  bitstring_err() (* HAX ERROR: this pattern inspects an error value: the `Err` of a function whose body is not extracted is a term of its model, not the Rust error value; only propagate it, or match it with `Err(_)` *).
+(* src: src/legacy/proverif-result-errors/lib.rs:701:0-706:1 new_tests__legacy__proverif_result_errors__lib__missing_model *)
+letfun new_tests__legacy__proverif_result_errors__lib__missing_model(b: bitstring) =
+  (* HAX WARNING: branch on a result of `core__str__converts__from_utf8`, which the model does not define *)
+  let hax__scrut0 = (* HAX WARNING: `core__str__converts__from_utf8` returns a `Result` but has no model: unless its declaration in missingdecl.pvl is replaced by one returning `hax_result_ok(..)` or `hax_result_err(..)`, every path through this use is lost *) core__str__converts__from_utf8(
+    b
+  ) in
+  let core__result__Result__Ok(wildcard: bitstring) = hax__scrut0 in core__result__Result__Ok(nat_1)
+  else let core__result__Result__Err(wildcard_1: bitstring) = hax__scrut0 in
+    core__result__Result__Err(new_tests__legacy__proverif_result_errors__lib__Error__Invalid())
   else bitstring_err().

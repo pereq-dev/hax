@@ -634,3 +634,88 @@ fn use_dec_mut(k: u8, c: u8) -> Result<u8, ()> {
 fn dec_pair(k: u8, c: u8) -> (u8, Result<u8, ()>) {
     (k, if k == c { Ok(k) } else { Err(()) })
 }
+
+// A `Result` used on some paths, then on every path; pure verbatim ProVerif
+// before a use.
+
+fn check_u8(x: u8) -> Result<u8, u8> {
+    if x == 0 { Err(0) } else { Ok(x) }
+}
+
+fn used_on_one_branch(x: u8) -> Result<u8, u8> {
+    let r = check_u8(x);
+    let y = if x > 1 { r? } else { 1 };
+    let z = r?;
+    Ok(y + z)
+}
+
+fn pure_quote_before_use(x: u8) -> Result<u8, u8> {
+    let r = check_u8(x);
+    hax_lib::proverif!("nat_0");
+    let v = r?;
+    Ok(v)
+}
+
+// Models observable through a nullary `letfun`, or a constant the crate does
+// not define.
+
+#[hax_lib::proverif::before(
+    "event Nullary_seen. letfun log_nullary() = event Nullary_seen; nat_0."
+)]
+#[hax_lib::proverif::replace_body("log_nullary")]
+fn nullary() -> u8 {
+    0
+}
+
+/// @fail(extraction): proverif(HAX0001)
+fn err_arm_nullary(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            nullary();
+            Err(e)
+        }
+    }
+}
+
+trait HasConst {
+    const C: u8;
+}
+
+/// @fail(extraction): proverif(HAX0001, HAX0001)
+fn err_arm_trait_const<T: HasConst>(r: Result<u8, Error>) -> Result<u8, Error> {
+    match r {
+        Ok(v) => Ok(v),
+        Err(e) => {
+            let _c = T::C;
+            Err(e)
+        }
+    }
+}
+
+// An or-pattern binding an error on one side.
+
+#[hax_lib::proverif::replace_body("crypto__hash(${x})")]
+fn modelled_both(x: u8) -> Result<Error, Error> {
+    if x == 0 { Err(Error::Other) } else { Ok(Error::Invalid) }
+}
+
+/// @fail(extraction): proverif(HAX0001)
+fn or_pattern_taint(x: u8) -> u8 {
+    let e = match modelled_both(x) {
+        Err(e) | Ok(e) => e,
+    };
+    match e {
+        Error::Invalid => 1,
+        Error::Other => 2,
+    }
+}
+
+// A library function returning a `Result`, without a model.
+
+fn missing_model(b: [u8; 1]) -> Result<u8, Error> {
+    match core::str::from_utf8(&b) {
+        Ok(_) => Ok(1),
+        Err(_) => Err(Error::Invalid),
+    }
+}

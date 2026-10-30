@@ -47,7 +47,7 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -555,7 +555,7 @@ letfun new_tests__legacy__side_effects__lib__assign_non_trivial_lhs(foo: bitstri
 (* src: src/legacy/side-effects/lib.rs:200:4-208:5 new_tests__legacy__side_effects__lib__issue_1300__fun_kw *)
 letfun new_tests__legacy__side_effects__lib__issue_1300__fun_kw(wildcard: bitstring) =
   let hax__scrut0 = core__iter__traits__iterator__Iterator__collect(
-    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
   ) in
   let val = hax__scrut0 in rust_primitives__hax__Tuple0__Tuple0().
 (* src: src/legacy/side-effects/lib.rs:183:4-185:5 new_tests__legacy__side_effects__lib__issue_1089__test *)

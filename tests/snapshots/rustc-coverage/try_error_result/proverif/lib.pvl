@@ -49,7 +49,7 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*                                                               *)
 (*  - Loops containing `return` not supported in ProVerif *)
 (*  - Loops containing `return` not supported in ProVerif *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -106,7 +106,7 @@ letfun new_tests__rustc_coverage__try_error_result__test2(wildcard: bitstring) =
 (* src: src/rustc-coverage/try_error_result.rs:115:0-121:1 new_tests__rustc_coverage__try_error_result__main *)
 letfun new_tests__rustc_coverage__try_error_result__main(wildcard: bitstring) =
   let wildcard_1 = core__result__Impl__expect_err(
-    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *),
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *),
     string_lit__test1_x20should_x20fail
   ) in
   let hax__scrut0 = new_tests__rustc_coverage__try_error_result__test2(

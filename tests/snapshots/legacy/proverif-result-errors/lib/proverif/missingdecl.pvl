@@ -8,5 +8,8 @@
 (* boundary. Only Rust constructors are declared `[data]`: any   *)
 (* other function may be one-way.                                *)
 (*****************************************************************)
+(* referenced by: new_tests__legacy__proverif_result_errors__lib__missing_model *)
+(* result destructured as: core__result__Result__Err(_); core__result__Result__Ok(_) *)
+fun core__str__converts__from_utf8(bitstring): bitstring.
 (* referenced by: new_tests__legacy__proverif_result_errors__lib__err_arm_then_catch_all, new_tests__legacy__proverif_result_errors__lib__panicking_arm *)
 const string_lit__explicit_x20panic: bitstring.

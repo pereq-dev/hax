@@ -78,10 +78,10 @@ letfun new_tests__legacy__proverif_opaque_branches__lib__uses_parse(x: bitstring
 (* src: src/legacy/proverif-opaque-branches/lib.rs:50:0-52:1 new_tests__legacy__proverif_opaque_branches__lib__encode *)
 (* marked as constructor *)
 fun new_tests__legacy__proverif_opaque_branches__lib__encode(bitstring): bitstring [data].
-reduc forall x: bitstring; new_tests__legacy__proverif_opaque_branches__lib__decode__inverse(new_tests__legacy__proverif_opaque_branches__lib__encode(x)) = x.
+reduc forall x: bitstring; new_tests__legacy__proverif_opaque_branches__lib__encode__inverse__decode(new_tests__legacy__proverif_opaque_branches__lib__encode(x)) = x.
 (* src: src/legacy/proverif-opaque-branches/lib.rs:54:0-54:33 new_tests__legacy__proverif_opaque_branches__lib__decode *)
 letfun new_tests__legacy__proverif_opaque_branches__lib__decode(x: bitstring) =
-  new_tests__legacy__proverif_opaque_branches__lib__decode__inverse(x).
+  new_tests__legacy__proverif_opaque_branches__lib__encode__inverse__decode(x).
 (* src: src/legacy/proverif-opaque-branches/lib.rs:59:0-64:1 new_tests__legacy__proverif_opaque_branches__lib__round_trip *)
 letfun new_tests__legacy__proverif_opaque_branches__lib__round_trip(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_opaque_branches__lib__decode(

@@ -50,6 +50,8 @@ ProVerif backend and library:
  - Reject the code that each Result model would get wrong: going on after an
    `Err` by default, inspecting the error of a hand-written model with
    `--result-errors`
+ - `#[pv_inverse_of(f)]` on `g` declares its `reduc` as `f__inverse__g`, and
+   accepts methods
 
 ### Changed
 

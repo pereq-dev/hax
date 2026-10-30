@@ -47,42 +47,45 @@ letfun hax_result_model_check__new_tests() = hax_result_model__result.
 (*  so this shows up in the verification summary. Fix the errors *)
 (*  (or model the items by hand) before trusting any result.     *)
 (*                                                               *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this pattern discards a `Result` field, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
-(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this pattern discards a `Result` field, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
+(*  - this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; use of the trait item `C` that resolves to no impl of the crate (e.g. on a generic type) *)
+(*  - this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
 (*****************************************************************)
 free hax_extraction_error__new_tests: bitstring.
 query attacker(hax_extraction_error__new_tests).
@@ -97,6 +100,8 @@ query attacker(hax_extraction_error__new_tests).
 (*  branch may then hold for lack of any trace.                  *)
 (*                                                               *)
 (*  - 1 × `replace_body` keeps the `&mut` parameters `st` unchanged *)
+(*  - 1 × branch on an ordering comparison, which the model decides only between literals up to 16 *)
+(*  - 1 × branch on a result of `core__str__converts__from_utf8`, which the model does not define *)
 (*****************************************************************)
 
 (* src: src/legacy/proverif-result/lib.rs:9:0-12:1 new_tests__legacy__proverif_result__lib__Error *)
@@ -120,16 +125,16 @@ letfun new_tests__legacy__proverif_result__lib__question_mark(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:24:0-30:1 new_tests__legacy__proverif_result__lib__err_arms_first *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__err_arms_first(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:33:0-39:1 new_tests__legacy__proverif_result__lib__nested_err *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__nested_err(o: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:42:0-44:1 new_tests__legacy__proverif_result__lib__is_ok *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__is_ok(r: bitstring) =
   core__result__Impl__is_ok(
-    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
   ).
 (* src: src/legacy/proverif-result/lib.rs:46:0-48:1 new_tests__legacy__proverif_result__lib__map_err *)
 letfun new_tests__legacy__proverif_result__lib__map_err(r: bitstring) = let hax__ok = r in hax__ok.
@@ -139,23 +144,23 @@ letfun new_tests__legacy__proverif_result__lib__transpose(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:58:0-60:1 new_tests__legacy__proverif_result__lib__if_let_else *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__if_let_else(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:63:0-68:1 new_tests__legacy__proverif_result__lib__wildcard_arm *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__wildcard_arm(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:71:0-74:1 new_tests__legacy__proverif_result__lib__discarded *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__discarded(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:77:0-79:1 new_tests__legacy__proverif_result__lib__unused_param *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__unused_param(u_r: bitstring, x: bitstring) =
-  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:82:0-85:1 new_tests__legacy__proverif_result__lib__used_on_one_path *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__used_on_one_path(c: bitstring, x: bitstring) =
-  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:89:0-94:1 new_tests__legacy__proverif_result__lib__propagating_arms *)
 letfun new_tests__legacy__proverif_result__lib__propagating_arms(r: bitstring) =
   let v = r in rust_primitives__hax__machine_int__add(v, nat_1).
@@ -189,11 +194,11 @@ letfun new_tests__legacy__proverif_result__lib__modelled(x: bitstring) = hax_res
 (* src: src/legacy/proverif-result/lib.rs:143:0-148:1 new_tests__legacy__proverif_result__lib__match_any *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__match_any(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:151:0-157:1 new_tests__legacy__proverif_result__lib__match_variant *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__match_variant(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:159:0-162:1 new_tests__legacy__proverif_result__lib__forwarded *)
 letfun new_tests__legacy__proverif_result__lib__forwarded(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result__lib__modelled(x) in
@@ -201,7 +206,7 @@ letfun new_tests__legacy__proverif_result__lib__forwarded(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:165:0-171:1 new_tests__legacy__proverif_result__lib__match_forwarded *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__match_forwarded(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:173:0-178:1 new_tests__legacy__proverif_result__lib__error_code *)
 letfun new_tests__legacy__proverif_result__lib__error_code(e: bitstring) =
   let new_tests__legacy__proverif_result__lib__Error__Invalid() = e in nat_1
@@ -210,7 +215,7 @@ letfun new_tests__legacy__proverif_result__lib__error_code(e: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:181:0-186:1 new_tests__legacy__proverif_result__lib__inspected *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__inspected(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:189:0-191:1 new_tests__legacy__proverif_result__lib__opaque_result *)
 (* opaque *)
 fun new_tests__legacy__proverif_result__lib__opaque_result(bitstring): bitstring [data].
@@ -221,23 +226,36 @@ letfun new_tests__legacy__proverif_result__lib__use_opaque(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:199:0-201:1 new_tests__legacy__proverif_result__lib__encode *)
 (* marked as constructor *)
 fun new_tests__legacy__proverif_result__lib__encode(bitstring): bitstring [data].
+reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__encode__inverse__decode(new_tests__legacy__proverif_result__lib__encode(x)) = x.
+(* src: src/legacy/proverif-result/lib.rs:203:0-203:33 new_tests__legacy__proverif_result__lib__decode *)
+letfun new_tests__legacy__proverif_result__lib__decode(b: bitstring) =
+  new_tests__legacy__proverif_result__lib__encode__inverse__decode(b).
+(* src: src/legacy/proverif-result/lib.rs:208:0-210:1 new_tests__legacy__proverif_result__lib__round_trip *)
+letfun new_tests__legacy__proverif_result__lib__round_trip(x: bitstring) =
+  new_tests__legacy__proverif_result__lib__decode(
+    new_tests__legacy__proverif_result__lib__encode(x)
+  ).
+(* src: src/legacy/proverif-result/lib.rs:213:0-218:1 new_tests__legacy__proverif_result__lib__decode_or_zero *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__decode_or_zero(b: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 event Recorded(bitstring).
 (* src: src/legacy/proverif-result/lib.rs:223:0-223:64 new_tests__legacy__proverif_result__lib__record *)
 letfun new_tests__legacy__proverif_result__lib__record(x: bitstring) = event Recorded(x); x.
 (* src: src/legacy/proverif-result/lib.rs:229:0-237:1 new_tests__legacy__proverif_result__lib__err_arm_effect *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__err_arm_effect(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:240:0-245:1 new_tests__legacy__proverif_result__lib__effect_before_propagation *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__effect_before_propagation(x: bitstring) =
-  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:248:0-250:1 new_tests__legacy__proverif_result__lib__effect_after_result *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__effect_after_result(x: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(
     new_tests__legacy__proverif_result__lib__check(x),
-    bitstring_err() (* HAX ERROR: this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+    bitstring_err() (* HAX ERROR: this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
   ).
 (* src: src/legacy/proverif-result/lib.rs:252:0-255:1 new_tests__legacy__proverif_result__lib__effect_after_propagation *)
 letfun new_tests__legacy__proverif_result__lib__effect_after_propagation(x: bitstring) =
@@ -262,7 +280,7 @@ letfun new_tests__legacy__proverif_result__lib__produce(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:267:0-270:1 new_tests__legacy__proverif_result__lib__rest_pattern *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__rest_pattern(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this pattern discards a `Result` field, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this pattern discards a `Result` field, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:272:0-276:1 new_tests__legacy__proverif_result__lib__all_fields *)
 letfun new_tests__legacy__proverif_result__lib__all_fields(x: bitstring) =
   let new_tests__legacy__proverif_result__lib__Out__Out(
@@ -273,12 +291,12 @@ letfun new_tests__legacy__proverif_result__lib__all_fields(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:281:0-283:1 new_tests__legacy__proverif_result__lib__equal_err *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__equal_err(x: bitstring) =
-  bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this may be observable, and runs after a `Result` that may be an `Err` is computed: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:286:0-296:1 new_tests__legacy__proverif_result__lib__repacked *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__repacked(x: bitstring) =
-  let swapped = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)) in
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  let swapped = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)) in
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 fun extern__derive(bitstring): bitstring.
 (* src: src/legacy/proverif-result/lib.rs:298:0-298:21 new_tests__legacy__proverif_result__lib__derive *)
 letfun new_tests__legacy__proverif_result__lib__derive(k: bitstring) = extern__derive(k).
@@ -313,22 +331,22 @@ letfun new_tests__legacy__proverif_result__lib__err_payload_effect(x: bitstring)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__nested_unwrap(x: bitstring) =
   let outer = new_tests__legacy__proverif_result__lib__modelled(x) in
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:347:0-354:1 new_tests__legacy__proverif_result__lib__nested_ok *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__nested_ok(x: bitstring) =
   let outer = new_tests__legacy__proverif_result__lib__modelled(x) in
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; this pattern discards a `Result`, which may be an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:356:0-358:1 new_tests__legacy__proverif_result__lib__identity *)
 letfun new_tests__legacy__proverif_result__lib__identity(x: bitstring) = x.
 (* src: src/legacy/proverif-result/lib.rs:361:0-367:1 new_tests__legacy__proverif_result__lib__through_generic *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__through_generic(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:372:0-377:1 new_tests__legacy__proverif_result__lib__guard_falls_through *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__guard_falls_through(o: bitstring) =
-  bitstring_err() (* HAX ERROR: on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: on an `Err`, this guard falls through to the next arms: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:379:0-384:1 new_tests__legacy__proverif_result__lib__err_taken_first *)
 letfun new_tests__legacy__proverif_result__lib__err_taken_first(x: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result__lib__check(x) in
@@ -367,18 +385,18 @@ letfun new_tests__legacy__proverif_result__lib__pure_loop_before_use(x: bitstrin
 (* src: src/legacy/proverif-result/lib.rs:423:0-434:1 new_tests__legacy__proverif_result__lib__ok_or_repacked *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__ok_or_repacked(x: bitstring) =
-  let opt = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)) in
+  let opt = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)) in
   let swapped = core__option__Impl__ok_or(opt, rust_primitives__hax__Tuple0__Tuple0()) in
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 letfun new_tests__legacy__proverif_result__lib__MODELLED_CONST() = hax_result_err(rust_primitives__hax__Tuple0__Tuple0).
 (* src: src/legacy/proverif-result/lib.rs:442:0-448:1 new_tests__legacy__proverif_result__lib__match_const *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__match_const(wildcard: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors`; this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:451:0-461:1 new_tests__legacy__proverif_result__lib__reused_name *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__reused_name(x: bitstring) =
-  let y = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)) in
+  let y = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)) in
   let hax__cond0 = rust_primitives__hax__machine_int__eq(
     rust_primitives__hax__machine_int__add(y, nat_1),
     nat_3
@@ -387,7 +405,9 @@ letfun new_tests__legacy__proverif_result__lib__reused_name(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:464:0-468:1 new_tests__legacy__proverif_result__lib__spliced *)
 (*  @fail(extraction): proverif(HAX0001, HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__spliced(x: bitstring) =
-  bitstring_err() (* HAX ERROR: the `Result` bound here is not used on every path before anything observable: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  let r = new_tests__legacy__proverif_result__lib__modelled(x) in
+  let wildcard = (bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)) in
+  nat_0.
 
 (* src: src/legacy/proverif-result/lib.rs:477:4-479:5 new_tests__legacy__proverif_result__lib__Impl__tag *)
 letfun new_tests__legacy__proverif_result__lib__Impl__tag(self: bitstring) = nat_3.
@@ -395,7 +415,7 @@ letfun new_tests__legacy__proverif_result__lib__Impl__tag(self: bitstring) = nat
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__generic_self(x: bitstring) =
   new_tests__legacy__proverif_result__lib__Impl__tag(
-    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *)
+    bitstring_err() (* HAX ERROR: a `Result` used here is not propagated: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)
   ).
 (* src: src/legacy/proverif-result/lib.rs:490:0-490:90 new_tests__legacy__proverif_result__lib__always_err *)
 letfun new_tests__legacy__proverif_result__lib__always_err(u_x: bitstring) =
@@ -403,7 +423,7 @@ letfun new_tests__legacy__proverif_result__lib__always_err(u_x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:496:0-501:1 new_tests__legacy__proverif_result__lib__recover_always_err *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__recover_always_err(x: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:503:0-503:102 new_tests__legacy__proverif_result__lib__dec_let *)
 letfun new_tests__legacy__proverif_result__lib__dec_let(k: bitstring, c: bitstring) =
   let k2 = crypto__hash(k) in crypto__aead_dec(k2, c, empty).
@@ -411,6 +431,10 @@ letfun new_tests__legacy__proverif_result__lib__dec_let(k: bitstring, c: bitstri
 letfun new_tests__legacy__proverif_result__lib__use_dec_let(k: bitstring, c: bitstring) =
   let hax__scrut0 = new_tests__legacy__proverif_result__lib__dec_let(k, c) in
   let v = hax__scrut0 in v.
+reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__encode__inverse__decode_unchecked(new_tests__legacy__proverif_result__lib__encode(x)) = x.
+(* src: src/legacy/proverif-result/lib.rs:513:0-513:33 new_tests__legacy__proverif_result__lib__decode_unchecked *)
+letfun new_tests__legacy__proverif_result__lib__decode_unchecked(b: bitstring) =
+  new_tests__legacy__proverif_result__lib__encode__inverse__decode_unchecked(b).
 table Recorded_table(bitstring).
 (* src: src/legacy/proverif-result/lib.rs:521:0-521:71 new_tests__legacy__proverif_result__lib__record_in_table *)
 letfun new_tests__legacy__proverif_result__lib__record_in_table(x: bitstring) =
@@ -418,14 +442,14 @@ letfun new_tests__legacy__proverif_result__lib__record_in_table(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:527:0-535:1 new_tests__legacy__proverif_result__lib__err_arm_table *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__err_arm_table(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:537:0-537:53 new_tests__legacy__proverif_result__lib__indirect_record *)
 letfun new_tests__legacy__proverif_result__lib__indirect_record(x: bitstring) =
   new_tests__legacy__proverif_result__lib__record(x).
 (* src: src/legacy/proverif-result/lib.rs:543:0-551:1 new_tests__legacy__proverif_result__lib__err_arm_indirect *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__err_arm_indirect(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:555:0-558:1 new_tests__legacy__proverif_result__lib__returns_other_err *)
 letfun new_tests__legacy__proverif_result__lib__returns_other_err(x: bitstring) =
   let u_r = new_tests__legacy__proverif_result__lib__check(x) in
@@ -436,7 +460,7 @@ letfun new_tests__legacy__proverif_result__lib__converted(x: bitstring) =
 (* src: src/legacy/proverif-result/lib.rs:568:0-573:1 new_tests__legacy__proverif_result__lib__guard_effect *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__guard_effect(o: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:575:0-580:1 new_tests__legacy__proverif_result__lib__guard_falls_to_err *)
 letfun new_tests__legacy__proverif_result__lib__guard_falls_to_err(o: bitstring) =
   let hax__arm1 = (let Some(v) = o in
@@ -451,12 +475,12 @@ letfun new_tests__legacy__proverif_result__lib__log(x: bitstring) = log_it(x).
 (* src: src/legacy/proverif-result/lib.rs:593:0-601:1 new_tests__legacy__proverif_result__lib__err_arm_log *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__err_arm_log(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 event Read. letfun new_tests__legacy__proverif_result__lib__OBSERVED() = event Read; nat_0.
 (* src: src/legacy/proverif-result/lib.rs:607:0-615:1 new_tests__legacy__proverif_result__lib__err_arm_constant *)
 (*  @fail(extraction): proverif(HAX0001) *)
 letfun new_tests__legacy__proverif_result__lib__err_arm_constant(r: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
 (* src: src/legacy/proverif-result/lib.rs:619:0-619:73 new_tests__legacy__proverif_result__lib__dec_mut *)
 (* HAX WARNING: `replace_body` keeps the `&mut` parameters `st` unchanged *)
 letfun new_tests__legacy__proverif_result__lib__dec_mut(st: bitstring, k: bitstring, c: bitstring) =
@@ -472,20 +496,46 @@ letfun new_tests__legacy__proverif_result__lib__use_dec_mut(k: bitstring, c: bit
 (* src: src/legacy/proverif-result/lib.rs:631:0-633:2 new_tests__legacy__proverif_result__lib__dec_pair *)
 letfun new_tests__legacy__proverif_result__lib__dec_pair(k: bitstring, c: bitstring) =
   rust_primitives__hax__Tuple2__Tuple2(k, crypto__aead_dec(k, c, empty)).
-reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__decode__inverse(new_tests__legacy__proverif_result__lib__encode(x)) = x.
-(* src: src/legacy/proverif-result/lib.rs:203:0-203:33 new_tests__legacy__proverif_result__lib__decode *)
-letfun new_tests__legacy__proverif_result__lib__decode(b: bitstring) =
-  new_tests__legacy__proverif_result__lib__decode__inverse(b).
-reduc forall x: bitstring; new_tests__legacy__proverif_result__lib__decode_unchecked__inverse(new_tests__legacy__proverif_result__lib__encode(x)) = x.
-(* src: src/legacy/proverif-result/lib.rs:513:0-513:33 new_tests__legacy__proverif_result__lib__decode_unchecked *)
-letfun new_tests__legacy__proverif_result__lib__decode_unchecked(b: bitstring) =
-  new_tests__legacy__proverif_result__lib__decode_unchecked__inverse(b).
-(* src: src/legacy/proverif-result/lib.rs:208:0-210:1 new_tests__legacy__proverif_result__lib__round_trip *)
-letfun new_tests__legacy__proverif_result__lib__round_trip(x: bitstring) =
-  new_tests__legacy__proverif_result__lib__decode(
-    new_tests__legacy__proverif_result__lib__encode(x)
-  ).
-(* src: src/legacy/proverif-result/lib.rs:213:0-218:1 new_tests__legacy__proverif_result__lib__decode_or_zero *)
+(* src: src/legacy/proverif-result/lib.rs:641:0-643:1 new_tests__legacy__proverif_result__lib__check_u8 *)
+letfun new_tests__legacy__proverif_result__lib__check_u8(x: bitstring) =
+  let hax__cond0 = rust_primitives__hax__machine_int__eq(x, nat_0) in
+  let (=True()) = hax__cond0 in bitstring_err() else x.
+(* src: src/legacy/proverif-result/lib.rs:645:0-650:1 new_tests__legacy__proverif_result__lib__used_on_one_branch *)
+letfun new_tests__legacy__proverif_result__lib__used_on_one_branch(x: bitstring) =
+  let r = new_tests__legacy__proverif_result__lib__check_u8(x) in
+  (* HAX WARNING: branch on an ordering comparison, which the model decides only between literals up to 16 *)
+  let hax__cond0 = rust_primitives__hax__machine_int__gt(x, nat_1) in
+  let (=True()) = hax__cond0
+    in (let ok = r in let z = r in rust_primitives__hax__machine_int__add(ok, z))
+    else (let z_1 = r in rust_primitives__hax__machine_int__add(nat_1, z_1)).
+(* src: src/legacy/proverif-result/lib.rs:652:0-657:1 new_tests__legacy__proverif_result__lib__pure_quote_before_use *)
+letfun new_tests__legacy__proverif_result__lib__pure_quote_before_use(x: bitstring) =
+  let r = new_tests__legacy__proverif_result__lib__check_u8(x) in
+  let wildcard = (nat_0) in
+  let v = r in v.
+event Nullary_seen. letfun log_nullary() = event Nullary_seen; nat_0.
+(* src: src/legacy/proverif-result/lib.rs:665:0-665:49 new_tests__legacy__proverif_result__lib__nullary *)
+letfun new_tests__legacy__proverif_result__lib__nullary(wildcard: bitstring) = log_nullary.
+(* src: src/legacy/proverif-result/lib.rs:671:0-679:1 new_tests__legacy__proverif_result__lib__err_arm_nullary *)
 (*  @fail(extraction): proverif(HAX0001) *)
-letfun new_tests__legacy__proverif_result__lib__decode_or_zero(b: bitstring) =
-  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`, so it cannot express code that goes on after one, or does anything observable before returning it; propagate the error at once, or pass `--result-errors` *).
+letfun new_tests__legacy__proverif_result__lib__err_arm_nullary(r: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *).
+
+(* src: src/legacy/proverif-result/lib.rs:686:0-694:1 new_tests__legacy__proverif_result__lib__err_arm_trait_const *)
+(*  @fail(extraction): proverif(HAX0001, HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__err_arm_trait_const(r: bitstring) =
+  bitstring_err() (* HAX ERROR: this arm handles an `Err`, and may do something observable before returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors`; use of the trait item `C` that resolves to no impl of the crate (e.g. on a generic type) *).
+(* src: src/legacy/proverif-result/lib.rs:698:0-698:56 new_tests__legacy__proverif_result__lib__modelled_both *)
+letfun new_tests__legacy__proverif_result__lib__modelled_both(x: bitstring) = crypto__hash(x).
+(* src: src/legacy/proverif-result/lib.rs:704:0-712:1 new_tests__legacy__proverif_result__lib__or_pattern_taint *)
+(*  @fail(extraction): proverif(HAX0001) *)
+letfun new_tests__legacy__proverif_result__lib__or_pattern_taint(x: bitstring) =
+  let e = (bitstring_err() (* HAX ERROR: this arm handles an `Err`, and goes on without returning one: the default Result model ends the trace on every `Err`; propagate it at once, or pass `--result-errors` *)) in
+  let new_tests__legacy__proverif_result__lib__Error__Invalid() = e in nat_1
+  else let new_tests__legacy__proverif_result__lib__Error__Other() = e in nat_2
+  else bitstring_err().
+(* src: src/legacy/proverif-result/lib.rs:716:0-721:1 new_tests__legacy__proverif_result__lib__missing_model *)
+letfun new_tests__legacy__proverif_result__lib__missing_model(b: bitstring) =
+  (* HAX WARNING: branch on a result of `core__str__converts__from_utf8`, which the model does not define *)
+  let hax__scrut0 = core__str__converts__from_utf8(b) in
+  nat_1.

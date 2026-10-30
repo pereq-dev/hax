@@ -288,7 +288,12 @@ fn error_details(error: &ErrorNode) -> String {
                 .map(str::to_string),
             _ => None,
         })
-        .collect();
+        .fold(vec![], |mut details, d| {
+            if !details.contains(&d) {
+                details.push(d);
+            }
+            details
+        });
     if details.is_empty() {
         "error node".to_string()
     } else {
@@ -2584,5 +2589,18 @@ mod tests {
                 }
             }
         }
+    }
+
+    /// Declarations are found after a `.` on the same line, past comments
+    /// and `private`, and every name of a `const` is.
+    #[test]
+    fn scan_declarations_skips_comments() {
+        let text = "(* fun commented(bitstring): bitstring. *) letfun f() = nat_0. \
+                    private fun g(bitstring): bitstring.\n\
+                    const c1, c2: bitstring. reduc h(nat_0) = nat_0.\n\
+                    reduc forall x: bitstring;\n  k(x) = x.\n\
+                    def M(t) {\n  fun m(t): t.\n  letfun n(x: t) = x.\n}\nfun o(t): t.";
+        let names = scan_declared_names(text);
+        assert_eq!(names, ["f", "g", "c1", "c2", "h", "k", "m", "n", "o"]);
     }
 }
