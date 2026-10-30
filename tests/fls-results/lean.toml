@@ -1,0 +1,39 @@
+backend = "lean"
+
+[tools]
+hax = "0.4.2"
+aeneas = "build-41977a5"
+charon = "nightly-2026.10.17"
+lean = "leanprover/lean4:v4.35.0"
+hax-lean-lib = "v0.3.39"
+aeneas-lean-lib = "build-41977a5"
+
+[tests."expressions/break-expressions/labeled_break_outer"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."expressions/method-call-expressions/option_map"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."expressions/method-call-expressions/vec_push_len"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/generic-parameters/lifetime_param"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."types-and-traits/struct-types/tuple_struct"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."values/statics/static_mut"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"

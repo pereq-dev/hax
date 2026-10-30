@@ -25,6 +25,10 @@ F* backend and library:
  - Add models of `contains` for `Range`, `RangeFrom`, `RangeTo` and
    `RangeToInclusive`, and of `Range::is_empty`
 
+Miscellaneous:
+ - Add a test suite for the Rust language constructs, organized by the chapters of
+   the FLS
+
 ### Fixed
 
 Changes to the hax-lib crate:

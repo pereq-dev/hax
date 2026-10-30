@@ -125,6 +125,15 @@ search = "(?m)^version: \"[a-z0-9\\.-]+\""
 replace = "version: \"{{version}}\""
 prerelease = true
 
+# The FLS results record the hax version they were observed with, which is
+# always the version of the checkout.
+[[package.metadata.release.pre-release-replacements]]
+file = "../../tests/fls-results/lean.toml"
+search = "(?m)^hax = \"[a-z0-9\\.-]+\""
+replace = "hax = \"{{version}}\""
+exactly = 1
+prerelease = true
+
 # Turns the `[Unreleased]` changelog section into the release's section. A
 # bump without that section fails here: recreate the header, with the entries
 # the release should carry, and bump again. Unlike the version replacements

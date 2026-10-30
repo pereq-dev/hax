@@ -158,22 +158,6 @@ fn format_command(cmd: &process::Command) -> String {
     quoted(&parts)
 }
 
-/// Convert a crate name to CamelCase for Lean: split on `-` and `_`,
-/// upper-case the first character of each segment, and concatenate. Not
-/// injective (`my-crate` and `my_crate` both yield `MyCrate`), which is
-/// harmless because a package directory holds exactly one package.
-pub fn to_camel_case(name: &str) -> String {
-    name.split(['-', '_'])
-        .map(|s| {
-            let mut c = s.chars();
-            match c.next() {
-                None => String::new(),
-                Some(f) => f.to_uppercase().to_string() + c.as_str(),
-            }
-        })
-        .collect()
-}
-
 /// Forward all aeneas output lines.
 fn report_output(lines: &[String], message_format: MessageFormat) {
     for line in lines {
@@ -332,7 +316,7 @@ pub fn run(
         ),
         (None, Some(crate_name)) => (
             crate_name.clone(),
-            to_camel_case(crate_name),
+            hax_types::lean::to_camel_case(crate_name),
             format!("derived from the crate name `{crate_name}`"),
         ),
         (None, None) => {
@@ -599,6 +583,14 @@ pub fn run(
         message_format,
     );
 
+    // Work on the package files is hax's own, not charon's or aeneas', so its
+    // failures are reported under a step of its own.
+    HaxMessage::Step {
+        verb: "Preparing".to_string(),
+        target: "hax package".to_string(),
+    }
+    .report(message_format, None);
+
     // Runs before the clearing below, which would destroy the files it
     // rescues. Like the clearing, the `Assumptions/` wiring is extraction
     // behavior, not scaffolding, so it stays active under
@@ -731,6 +723,16 @@ pub fn run(
         report_error_output(&all_lines, &lean_dir, verbose, message_format);
     } else if verbose > 0 {
         report_output(&all_lines, message_format);
+    }
+
+    // After a failed aeneas run, failures to write the package are part of
+    // that failure and stay under the aeneas step.
+    if output.status.success() {
+        HaxMessage::Step {
+            verb: "Running".to_string(),
+            target: "hax packaging".to_string(),
+        }
+        .report(message_format, None);
     }
 
     // Failures to write package or `Assumptions/` files are reported where

@@ -488,7 +488,7 @@ fn scenario_options(
             charon_args: None,
             aeneas_args: None,
             scenario: LeanScenarioOptions {
-                package_name: Some(aeneas::to_camel_case(&entry.name)),
+                package_name: Some(hax_types::lean::to_camel_case(&entry.name)),
                 project_files: entry.project_files,
                 include: entry.include.clone(),
                 exclude: entry.exclude.clone(),

@@ -33,6 +33,7 @@ use crate::{
 mod cli;
 mod commands;
 mod directives;
+mod fls;
 mod helpers;
 mod log;
 mod promote_directives;
@@ -312,6 +313,47 @@ const DISABLED_BACKENDS: &[BackendName] = &[
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Child processes may run in their own process groups, which the
+    // terminal's SIGINT does not reach; dropping the run on a signal kills
+    // them.
+    let result = tokio::select! {
+        result = run() => result,
+        signal = interrupted() => Err(anyhow::anyhow!("interrupted by {signal}")),
+    };
+    flush().await;
+    // Drift gets its own exit code, so that a caller can tell it from a
+    // failure; clap uses 2 for usage errors.
+    if let Err(e) = &result
+        && e.is::<fls::refresh::Drift>()
+    {
+        eprintln!("Error: {e:?}");
+        std::process::exit(3);
+    }
+    result
+}
+
+/// Waits for SIGINT or, on Unix, SIGTERM and returns its name.
+async fn interrupted() -> &'static str {
+    #[cfg(unix)]
+    {
+        use tokio::signal::unix::{SignalKind, signal};
+        let Ok(mut terminate) = signal(SignalKind::terminate()) else {
+            let _ = tokio::signal::ctrl_c().await;
+            return "SIGINT";
+        };
+        tokio::select! {
+            _ = tokio::signal::ctrl_c() => "SIGINT",
+            _ = terminate.recv() => "SIGTERM",
+        }
+    }
+    #[cfg(not(unix))]
+    {
+        let _ = tokio::signal::ctrl_c().await;
+        "SIGINT"
+    }
+}
+
+async fn run() -> Result<()> {
     let mut options = cli::Cli::parse();
     options.canonicalize()?;
 
@@ -321,14 +363,6 @@ async fn main() -> Result<()> {
             options.tests_crate_dir().display()
         )
     })?;
-
-    let backends: Vec<_> = if let Some(backend) = options.backend() {
-        vec![backend]
-    } else {
-        BackendName::iter()
-            .filter(|backend| !DISABLED_BACKENDS.contains(backend))
-            .collect()
-    };
 
     let cache_dir = options.cache_dir();
     tokio::fs::create_dir_all(&cache_dir)
@@ -340,9 +374,26 @@ async fn main() -> Result<()> {
             )
         })?;
 
+    if let Some(cli::Command::Fls(command)) = options.command() {
+        return fls::subcommand(&options, command.clone()).await;
+    }
+
+    // The FLS suite reads its tests from the files and never runs the frontend.
+    if options.suite() == cli::Suite::Fls {
+        return fls::run(options).await;
+    }
+
     let tests = JobKind::ResolveTests
         .run(|_| compute_test_modules())
         .await?;
+
+    let backends: Vec<_> = if let Some(backend) = options.backend() {
+        vec![backend]
+    } else {
+        BackendName::iter()
+            .filter(|backend| !DISABLED_BACKENDS.contains(backend))
+            .collect()
+    };
 
     let result = backends
         .iter()
@@ -352,11 +403,7 @@ async fn main() -> Result<()> {
                 tests: tests
                     .iter()
                     .filter(|test| !test.off().contains(&backend))
-                    .filter(|test| {
-                        options
-                            .matching()
-                            .map_or(true, |m| test.module_name.contains(m))
-                    })
+                    .filter(|test| options.selects(&test.module_name))
                     .cloned()
                     .collect(),
                 options: options.clone(),

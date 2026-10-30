@@ -13,12 +13,16 @@ use std::{
     sync::{Arc, LazyLock},
     time::{Duration, SystemTime},
 };
-use tokio::sync::mpsc;
+use tokio::sync::{mpsc, oneshot};
 
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 /// Job categorisations used by the renderer implementations.
 pub enum JobKind {
     ResolveTests,
+    /// A subcommand that runs no backend, e.g. the coverage check.
+    Command {
+        name: String,
+    },
     BackendJob {
         kind: BackendJobKind,
         backend: BackendName,
@@ -34,6 +38,10 @@ pub enum BackendJobKind {
     },
     Verification {
         test: String,
+    },
+    /// A phase of the FLS suite that spans all tests of a backend, e.g. one `lake build` pass.
+    Phase {
+        name: String,
     },
     /// The number of backend jobs for a given backend. (each can report a CargoHaxSerialize, a CargoHaxInto and a Verification)
     NumberBackendJobs(usize),
@@ -63,12 +71,14 @@ impl Display for JobKind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             JobKind::ResolveTests => write!(f, "discover tests"),
+            JobKind::Command { name } => write!(f, "{name}"),
             JobKind::BackendJob { kind, backend } => match kind {
                 BackendJobKind::CargoHaxSerialize => write!(f, "cargo: {backend}"),
                 BackendJobKind::CargoHaxInto { test } => write!(f, "engine: {backend}/{test}"),
                 BackendJobKind::Verification { test } => {
                     write!(f, "verification: {backend}: {test}")
                 }
+                BackendJobKind::Phase { name } => write!(f, "{backend}: {name}"),
                 BackendJobKind::NumberBackendJobs(_) => Ok(()),
             },
         }
@@ -78,23 +88,19 @@ impl Display for JobKind {
 impl JobKind {
     /// Sends a message to the logger.
     pub fn report(&self, message: ReportMessage) {
-        REPORTS
-            .send(JobReport {
-                job: self.clone(),
-                message: Some(message),
-                timestamp: SystemTime::now(),
-            })
-            .unwrap()
+        send(JobReport {
+            job: self.clone(),
+            message: Some(message),
+            timestamp: SystemTime::now(),
+        })
     }
     /// Signals progress for a job that has no additional payload.
     pub fn report_no_message(&self) {
-        REPORTS
-            .send(JobReport {
-                job: self.clone(),
-                message: None,
-                timestamp: SystemTime::now(),
-            })
-            .unwrap()
+        send(JobReport {
+            job: self.clone(),
+            message: None,
+            timestamp: SystemTime::now(),
+        })
     }
 
     /// Sends a human readable message.
@@ -218,12 +224,14 @@ fn format_duration(duration: Duration) -> String {
 fn format_job_title(job: &JobKind) -> String {
     match job {
         JobKind::ResolveTests => "discover tests".to_string(),
+        JobKind::Command { name } => name.clone(),
         JobKind::BackendJob { kind, backend } => match kind {
             BackendJobKind::CargoHaxSerialize => format!("{backend} metadata"),
             BackendJobKind::CargoHaxInto { test } => format!("{backend}/{test}"),
             BackendJobKind::Verification { test } => {
                 format!("verification {backend}/{test}")
             }
+            BackendJobKind::Phase { name } => format!("{backend}: {name}"),
             BackendJobKind::NumberBackendJobs(_) => backend.to_string(),
         },
     }
@@ -340,13 +348,18 @@ impl ReportRenderer for CiRenderer {
                 match &**result {
                     Ok(_) => {
                         println!("PASS {} ({})", report.job, format_duration(duration));
+                        if !is_test_job(&report.job) {
+                            for message in &messages {
+                                CiRenderer::print_message(message);
+                            }
+                        }
                     }
                     Err(err) => {
                         println!("FAIL {} ({})", report.job, format_duration(duration));
                         for message in &messages {
                             CiRenderer::print_message(message);
                         }
-                        if messages.is_empty() {
+                        if messages.is_empty() || !is_test_job(&report.job) {
                             if let Some(stderr) = &stderr {
                                 CiRenderer::print_labeled_block("stderr", stderr);
                             }
@@ -395,6 +408,7 @@ struct TuiRenderer {
     progress: ProgressBar,
     total_tests: u64,
     completed_tests: u64,
+    passed_tests: u64,
     jobs: HashMap<JobKind, TuiJobState>,
     failures: Vec<FailureDetails>,
     overall_start: Option<SystemTime>,
@@ -420,6 +434,7 @@ impl TuiRenderer {
             progress,
             total_tests: 0,
             completed_tests: 0,
+            passed_tests: 0,
             jobs: HashMap::new(),
             failures: Vec::new(),
             overall_start: None,
@@ -438,7 +453,7 @@ impl TuiRenderer {
             .iter()
             .filter(|failure| failure.is_test)
             .count() as u64;
-        let passed = self.completed_tests.saturating_sub(failed);
+        let passed = self.passed_tests;
         self.progress
             .set_message(format!("passed {passed}, failed {failed}"));
     }
@@ -458,18 +473,37 @@ impl TuiRenderer {
         }
     }
 
-    fn print_labeled_block(progress: &ProgressBar, label: &str, content: &str) {
-        progress.println(format!("    {label}:"));
-        let mut lines = content.lines();
-        if let Some(first) = lines.next() {
-            progress.println(format!("      → {first}"));
-        } else {
-            progress.println("      →");
-        }
-        for line in lines {
-            progress.println(format!("        {line}"));
+    fn print_messages(progress: &ProgressBar, messages: &[String]) {
+        for message in messages {
+            let mut lines = message.lines();
+            match lines.next() {
+                Some(first) => out(progress, format!("    → {first}")),
+                None => out(progress, "    →"),
+            }
+            for line in lines {
+                out(progress, format!("      {line}"));
+            }
         }
     }
+
+    fn print_labeled_block(progress: &ProgressBar, label: &str, content: &str) {
+        out(progress, format!("    {label}:"));
+        let mut lines = content.lines();
+        if let Some(first) = lines.next() {
+            out(progress, format!("      → {first}"));
+        } else {
+            out(progress, "      →");
+        }
+        for line in lines {
+            out(progress, format!("        {line}"));
+        }
+    }
+}
+
+/// Prints a line on stdout above the progress bar. `ProgressBar::println`
+/// draws on stderr and prints nothing when stderr is not a terminal.
+fn out(progress: &ProgressBar, line: impl Display) {
+    progress.suspend(|| println!("{line}"));
 }
 
 struct TuiJobState {
@@ -577,30 +611,22 @@ impl ReportRenderer for TuiRenderer {
                 }
 
                 match &**result {
-                    Ok(_) => {}
+                    // Test jobs pass silently; the messages of other jobs,
+                    // such as a summary, are their output.
+                    Ok(_) if is_test => self.passed_tests += 1,
+                    Ok(_) => Self::print_messages(&self.progress, &messages),
                     Err(err) => {
                         let mut line = format!("Error in {}", format_job_title(&report.job));
                         if let Some(duration) = duration {
                             line.push_str(&format!(" ({})", format_duration(duration)));
                         }
-                        self.progress.println(String::new());
-                        self.progress
-                            .println(line.black().on_red().bold().to_string());
-                        let mut had_messages = false;
-                        for message in &messages {
-                            let mut lines = message.lines();
-                            if let Some(first) = lines.next() {
-                                self.progress.println(format!("    → {first}"));
-                                had_messages = true;
-                            } else {
-                                self.progress.println("    →");
-                                had_messages = true;
-                            }
-                            for line in lines {
-                                self.progress.println(format!("      {line}"));
-                            }
-                        }
-                        if !had_messages {
+                        out(&self.progress, String::new());
+                        out(&self.progress, line.black().on_red().bold().to_string());
+                        Self::print_messages(&self.progress, &messages);
+                        // The captured output of a test job only repeats what
+                        // its messages say; a failed phase, such as the
+                        // canary, has no other trace of the tool's error.
+                        if messages.is_empty() || !is_test {
                             if let Some(stderr) = &stderr {
                                 Self::print_labeled_block(&self.progress, "stderr", stderr);
                             }
@@ -608,8 +634,7 @@ impl ReportRenderer for TuiRenderer {
                                 Self::print_labeled_block(&self.progress, "stdout", stdout);
                             }
                         }
-                        self.progress
-                            .println(format!("  error: {err}").red().to_string());
+                        out(&self.progress, format!("  error: {err}").red().to_string());
                         self.failures.push(FailureDetails {
                             job: report.job.clone(),
                             error: err.to_string(),
@@ -637,7 +662,7 @@ impl ReportRenderer for TuiRenderer {
             if let Some(duration) = duration {
                 line.push_str(&format!(" ({})", format_duration(duration)));
             }
-            self.progress.println(line);
+            out(&self.progress, line);
             let TuiJobState {
                 messages,
                 is_test,
@@ -645,21 +670,8 @@ impl ReportRenderer for TuiRenderer {
                 stderr,
                 ..
             } = state;
-            let mut had_messages = false;
-            for message in &messages {
-                let mut lines = message.lines();
-                if let Some(first) = lines.next() {
-                    self.progress.println(format!("    → {first}"));
-                    had_messages = true;
-                } else {
-                    self.progress.println("    →");
-                    had_messages = true;
-                }
-                for line in lines {
-                    self.progress.println(format!("      {line}"));
-                }
-            }
-            if !had_messages {
+            Self::print_messages(&self.progress, &messages);
+            if messages.is_empty() {
                 if let Some(stderr) = &stderr {
                     Self::print_labeled_block(&self.progress, "stderr", stderr);
                 }
@@ -690,7 +702,7 @@ impl ReportRenderer for TuiRenderer {
                 .iter()
                 .filter(|failure| failure.is_test)
                 .count() as u64;
-            let passed = self.completed_tests.saturating_sub(failed);
+            let passed = self.passed_tests;
             println!(
                 "Summary: {passed}/{total} tests passed, {failed} failed.",
                 total = self.total_tests
@@ -758,19 +770,47 @@ impl ReportRenderer for TuiRenderer {
     }
 }
 
-static REPORTS: LazyLock<mpsc::UnboundedSender<JobReport>> = LazyLock::new(|| {
-    let (tx, mut rx) = mpsc::unbounded_channel::<JobReport>();
+/// What the logging task receives: a report to render, or a request to
+/// render everything received so far, finish the renderers, and answer.
+enum Event {
+    Report(JobReport),
+    Flush(oneshot::Sender<()>),
+}
+
+static REPORTS: LazyLock<mpsc::UnboundedSender<Event>> = LazyLock::new(|| {
+    let (tx, mut rx) = mpsc::unbounded_channel::<Event>();
     tokio::spawn(async move {
         let mut renderers = build_renderers();
-        while let Some(report) = rx.recv().await {
-            for renderer in renderers.iter_mut() {
-                renderer.handle(&report);
+        while let Some(event) = rx.recv().await {
+            match event {
+                Event::Report(report) => {
+                    for renderer in renderers.iter_mut() {
+                        renderer.handle(&report);
+                    }
+                }
+                Event::Flush(done) => {
+                    for renderer in renderers.iter_mut() {
+                        renderer.finish();
+                    }
+                    let _ = done.send(());
+                }
             }
-        }
-
-        for renderer in renderers.iter_mut() {
-            renderer.finish();
         }
     });
     tx
 });
+
+fn send(report: JobReport) {
+    REPORTS.send(Event::Report(report)).unwrap()
+}
+
+/// Waits until every report sent so far is rendered, then finishes the
+/// renderers: open jobs count as incomplete failures, and the summary is
+/// printed. Called once before exit: the logging task runs independently of
+/// the jobs, so the process must not exit before this.
+pub async fn flush() {
+    let (tx, rx) = oneshot::channel();
+    if REPORTS.send(Event::Flush(tx)).is_ok() {
+        let _ = rx.await;
+    }
+}

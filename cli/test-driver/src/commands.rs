@@ -59,6 +59,24 @@ pub struct BackendOutput {
 }
 
 impl HaxEngineOutput {
+    /// Parses the output of a `cargo hax --message-format json` invocation.
+    pub fn from_output(out: &std::process::Output) -> Result<Self> {
+        Ok(Self {
+            error_code: out
+                .status
+                .code()
+                .context("No error code: was the process terminated?")?,
+            messages: String::from_utf8_lossy(&out.stdout)
+                .lines()
+                .map(|s| {
+                    serde_json::from_str::<OutMsg>(s)
+                        .unwrap_or_else(|_| OutMsg::Unknown(s.to_string()))
+                })
+                .collect(),
+            stderr: String::from_utf8_lossy(&out.stderr).to_string(),
+        })
+    }
+
     /// Forwards the captured stderr/stdout to the logging infrastructure.
     pub fn report_stderr_and_stdout(&self, job: JobKind) {
         job.report(ReportMessage::Stderr(self.stderr.clone()));
@@ -202,23 +220,7 @@ pub async fn hax_engine(
     command.args(into_flags);
     command.arg(backend.to_string());
     command.args(backend_flags);
-    let out = command.output().await?;
-    let stdout = String::from_utf8_lossy(&out.stdout);
-    let stderr = String::from_utf8_lossy(&out.stderr).to_string();
-    let messages = stdout
-        .lines()
-        .map(|s| {
-            serde_json::from_str::<OutMsg>(s).unwrap_or_else(|_| OutMsg::Unknown(s.to_string()))
-        })
-        .collect();
-    Ok(HaxEngineOutput {
-        error_code: out
-            .status
-            .code()
-            .context("No error code: was the process terminated?")?,
-        messages,
-        stderr,
-    })
+    HaxEngineOutput::from_output(&command.output().await?)
 }
 
 /// Executes F*

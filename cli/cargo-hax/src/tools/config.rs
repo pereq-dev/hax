@@ -407,7 +407,7 @@ pub fn validate_scenario_name(name: &str) -> Result<(), String> {
              scenario"
         ));
     }
-    let camel = crate::aeneas::to_camel_case(name);
+    let camel = hax_types::lean::to_camel_case(name);
     if crate::aeneas::package::RESERVED_MODULE_ROOTS.contains(&camel.as_str()) {
         return Err(format!(
             "`{name}` cannot name a scenario: as a Lean package name it \
