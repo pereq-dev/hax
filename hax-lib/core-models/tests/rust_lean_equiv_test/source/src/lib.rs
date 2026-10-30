@@ -1,13 +1,13 @@
 //! Rust↔Lean equivalence tests.
 //!
-//! Each `#[rust_lean_test] pub fn ... -> bool { ... }` in the submodules
+//! Each `#[hax_test::equiv] pub fn ... -> bool { ... }` in the submodules
 //! below pins down a single observation about how a `core::*` / `std::*`
 //! item behaves on a concrete input. The framework checks the same
 //! observation twice:
 //!
 //! - **Rust side**: `cargo test` runs the function and asserts it returns
-//!   `true`. (The `#[rust_lean_test]` attribute generates the
-//!   `#[test]` wrapper.)
+//!   `true`. (The `#[hax_test::equiv]` attribute, from the `hax-test-macros`
+//!   crate, generates the `#[test]` wrapper.)
 //! - **Lean side**: `gen_lean_tests.py` scans every file under `src/`
 //!   for these attributes and emits a `#guard <qualified-name> == .ok true`
 //!   per test into `lean/RustLeanTests/LeanTests.lean`, so the Lean build

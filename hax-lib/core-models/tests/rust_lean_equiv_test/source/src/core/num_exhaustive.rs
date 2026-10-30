@@ -24,8 +24,6 @@
 //! bug at 8 bits is a bug everywhere -- except for byte order, which one byte
 //! cannot distinguish, so `to_be_bytes`/`to_le_bytes` get 16-bit probes too.
 
-use rust_lean_test_macro::rust_lean_test;
-
 /// Second operands for the binary sweeps: 0/1 and the boundaries, plus a value
 /// with no special structure. Sweeping `x` fully against these covers the carry
 /// and overflow edges without the cost of a full 65536-case product.
@@ -96,7 +94,7 @@ fn clamp_i8(v: i32) -> i32 {
 
 // ----- count_ones ------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_count_ones_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -114,7 +112,7 @@ pub fn test_u8_count_ones_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_count_ones_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -134,7 +132,7 @@ pub fn test_i8_count_ones_exhaustive() -> bool {
 
 // ----- leading_zeros ---------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_leading_zeros_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -158,7 +156,7 @@ pub fn test_u8_leading_zeros_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_leading_zeros_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -184,7 +182,7 @@ pub fn test_i8_leading_zeros_exhaustive() -> bool {
 
 // ----- ilog2 (defined for x > 0) --------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_ilog2_exhaustive() -> bool {
     let mut ok = true;
     for i in 1..256usize {
@@ -207,7 +205,7 @@ pub fn test_u8_ilog2_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_ilog2_exhaustive() -> bool {
     let mut ok = true;
     for i in 1..128usize {
@@ -229,7 +227,7 @@ pub fn test_i8_ilog2_exhaustive() -> bool {
 
 // ----- abs (signed, defined for x > MIN) ------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_abs_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -247,7 +245,7 @@ pub fn test_i8_abs_exhaustive() -> bool {
 
 // ----- unsigned_abs (signed, total) -----------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_unsigned_abs_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -263,7 +261,7 @@ pub fn test_i8_unsigned_abs_exhaustive() -> bool {
 
 // ----- rotate_left / rotate_right -------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_rotate_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -289,7 +287,7 @@ pub fn test_u8_rotate_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_rotate_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -317,7 +315,7 @@ pub fn test_i8_rotate_exhaustive() -> bool {
 
 // ----- add -------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_add_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -342,7 +340,7 @@ pub fn test_u8_add_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_add_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -366,7 +364,7 @@ pub fn test_i8_add_exhaustive() -> bool {
 
 // ----- sub -------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_sub_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -390,7 +388,7 @@ pub fn test_u8_sub_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_sub_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -414,7 +412,7 @@ pub fn test_i8_sub_exhaustive() -> bool {
 
 // ----- mul -------------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_mul_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -439,7 +437,7 @@ pub fn test_u8_mul_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_mul_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -464,7 +462,7 @@ pub fn test_i8_mul_exhaustive() -> bool {
 
 // ----- rem_euclid ------------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_rem_euclid_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -479,7 +477,7 @@ pub fn test_u8_rem_euclid_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_rem_euclid_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -506,7 +504,7 @@ pub fn test_i8_rem_euclid_exhaustive() -> bool {
 
 // ----- saturating (signed) ---------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_saturating_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -536,7 +534,7 @@ pub fn test_i8_saturating_exhaustive() -> bool {
 // out-of-range flag) rather than by exponentiation-by-squaring as std does; this
 // sweep is what pins the two together.
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_pow_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -574,7 +572,7 @@ pub fn test_u8_pow_exhaustive() -> bool {
 
 /// The signed counterpart. `ioverflowing_pow` is a distinct Lean definition
 /// with a two-sided bound, so the `u8` sweep above says nothing about it.
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_pow_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -612,7 +610,7 @@ pub fn test_i8_pow_exhaustive() -> bool {
 
 // ----- byte conversions ------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u8_byte_conversions_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -627,7 +625,7 @@ pub fn test_u8_byte_conversions_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i8_byte_conversions_exhaustive() -> bool {
     let mut ok = true;
     for i in 0..256usize {
@@ -643,7 +641,7 @@ pub fn test_i8_byte_conversions_exhaustive() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_u16_byte_order() -> bool {
     let mut ok = true;
     for j in 0..7usize {
@@ -663,7 +661,7 @@ pub fn test_u16_byte_order() -> bool {
     ok
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_i16_byte_order() -> bool {
     let mut ok = true;
     for j in 0..7usize {

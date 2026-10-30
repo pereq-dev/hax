@@ -4,23 +4,21 @@
 //! Only `Range::count` is checked against Lean; every other `IteratorMethods`
 //! method is Rust-only, for the reason given above the `iterator_methods` module.
 
-use rust_lean_test_macro::rust_lean_test;
-
 // ----- step_by ---------------------------------------------------------------
 
 // ----- count over Range<usize> ----------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_range_count_zero() -> bool {
     (0..0usize).count() == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_range_count_five() -> bool {
     (0..5usize).count() == 5
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_range_count_offset() -> bool {
     (3..10usize).count() == 7
 }

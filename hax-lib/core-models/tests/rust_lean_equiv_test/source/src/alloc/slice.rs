@@ -12,39 +12,38 @@
 //! because direct `v[i]` is in `ALLOC_CHARON_EXCLUDES`.
 
 use crate::helpers::Bumped;
-use rust_lean_test_macro::rust_lean_test;
 
 // ----- [T]::to_vec -----------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_empty_len() -> bool {
     let s: [u8; 0] = [];
     let v = s.to_vec();
     v.len() == 0 && v.is_empty()
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_one_len() -> bool {
     let s: [u8; 1] = [7];
     let v = s.to_vec();
     v.len() == 1
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_one_value() -> bool {
     let s: [u8; 1] = [7];
     let mut v = s.to_vec();
     v.pop().unwrap_or(0) == 7
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_three_len() -> bool {
     let s: [u8; 3] = [1, 2, 3];
     let v = s.to_vec();
     v.len() == 3
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_three_order() -> bool {
     let s: [u8; 3] = [1, 2, 3];
     let mut v = s.to_vec();
@@ -52,14 +51,14 @@ pub fn test_slice_to_vec_three_order() -> bool {
     v.pop().unwrap_or(0) == 3 && v.pop().unwrap_or(0) == 2 && v.pop().unwrap_or(0) == 1
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_max_value() -> bool {
     let s: [u8; 2] = [u8::MAX, 0];
     let mut v = s.to_vec();
     v.len() == 2 && v.pop().unwrap_or(1) == 0 && v.pop().unwrap_or(0) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_slice_to_vec_then_push() -> bool {
     // to_vec produces a fresh Vec we can mutate.
     let s: [u8; 2] = [1, 2];
@@ -112,14 +111,14 @@ mod boxed_slice {
 // ----- dictionary-applying tests ---------------------------------------------
 
 // `to_vec` clones every element; there is nothing to move in.
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_to_vec_applies_element_clone() -> bool {
     let a = [Bumped(1), Bumped(2)];
     let v = a.as_slice().to_vec();
     v[0].0 == 2 && v[1].0 == 3
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_to_vec_empty_of_a_cloneable_element() -> bool {
     let a: [Bumped; 0] = [];
     a.as_slice().to_vec().len() == 0

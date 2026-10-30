@@ -10,62 +10,60 @@
 //! `black_box` from the Rust side. We compensate by hitting `black_box`
 //! across multiple integer widths plus `bool`.
 
-use rust_lean_test_macro::rust_lean_test;
-
 // ----- black_box: u8 ---------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_u8_zero() -> bool {
     core::hint::black_box(0u8) == 0u8
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_u8_max() -> bool {
     core::hint::black_box(u8::MAX) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_u8_mid() -> bool {
     core::hint::black_box(42u8) == 42u8
 }
 
 // ----- black_box: u32 --------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_u32_zero() -> bool {
     core::hint::black_box(0u32) == 0u32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_u32_max() -> bool {
     core::hint::black_box(u32::MAX) == u32::MAX
 }
 
 // ----- black_box: i8 ---------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_i8_min() -> bool {
     core::hint::black_box(i8::MIN) == i8::MIN
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_i8_max() -> bool {
     core::hint::black_box(i8::MAX) == i8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_i8_neg_one() -> bool {
     core::hint::black_box(-1i8) == -1i8
 }
 
 // ----- black_box: bool -------------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_bool_true() -> bool {
     core::hint::black_box(true) == true
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_black_box_bool_false() -> bool {
     core::hint::black_box(false) == false
 }

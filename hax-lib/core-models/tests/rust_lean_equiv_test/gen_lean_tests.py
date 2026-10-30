@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Generate `source/proofs/lean/RustLeanTests/LeanTests.lean` from
-`#[rust_lean_test]` functions found anywhere under `source/src/`.
+`#[hax_test::equiv]` functions found anywhere under `source/src/`.
 
-For each `#[rust_lean_test] pub fn <name>() -> bool` we emit
+For each `#[hax_test::equiv] pub fn <name>() -> bool` we emit
 `#guard rustLeanOk <fully-qualified-name>`, where the fully qualified
 name is read out of the extracted `RustLeanTests/Extraction/Funs.lean`
 rather than guessed from the source path: Aeneas's builtin name map rewrites some module
@@ -12,10 +12,10 @@ path. Reading the extracted def list directly keeps the gen script
 agnostic to that mapping.
 
 The Lean build then fails for any test whose Aeneas translation does
-not evaluate to `RustM.ok true`. A `#[rust_lean_test(panics)]` test
+not evaluate to `RustM.ok true`. A `#[hax_test::equiv(panics)]` test
 must instead evaluate to `.fail`, as its Rust half must panic.
 
-Tests marked `#[rust_lean_test(skip_lean = "why")]` get their guard
+Tests marked `#[hax_test::equiv(skip_lean = "why")]` get their guard
 written to `SkippedTests.lean` instead. Nothing imports that file, so a
 normal build ignores it; `--report-skipped` (driven by `make
 check-skipped`) builds it on purpose and fails if a skipped test has
@@ -39,17 +39,22 @@ OUT_SKIPPED = LEAN_ROOT / "SkippedTests.lean"
 # `source/Cargo.toml`).
 CRATE_NAMESPACE = "rust_lean_tests"
 
-# Marker attribute (with optional `(skip_lean = "...")`) + `pub fn NAME()
-# -> bool`. Body is ignored. The argument list steps over string literals
+# Marker attribute, spelled `hax_test::equiv` (with optional
+# `(skip_lean = "...")`), + `pub fn NAME() -> bool`. Body is
+# ignored. The argument list steps over string literals
 # rather than stopping at the first `)`, because a reason routinely contains
 # parenthesised prose.
 ATTR_FN_RE = re.compile(
-    r"#\[\s*rust_lean_test\s*(?:\((?P<args>(?:\"[^\"]*\"|[^()])*)\))?\s*\]"
+    r"#\[\s*hax_test::equiv\s*(?:\((?P<args>(?:\"[^\"]*\"|[^()])*)\))?\s*\]"
     r"(?:\s*#\[[^\]]*\])*"
     r"\s*pub\s+fn\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*\)"
     r"\s*->\s*bool",
     re.MULTILINE,
 )
+
+# The attribute imported by `use hax_test::equiv;`, which ATTR_FN_RE would
+# miss and leave the test without a Lean guard.
+SHORT_ATTR_RE = re.compile(r"#\[\s*equiv\s*[\]\(]")
 
 SKIP_RE = re.compile(r'skip_lean\s*=\s*"(?P<reason>[^"]*)"')
 PANICS_RE = re.compile(r'(?:^|,)\s*panics\s*(?:,|$)')
@@ -100,12 +105,17 @@ DEF_RE_TEMPLATE = r"^def\s+(?P<path>(?:[A-Za-z_][A-Za-z0-9_]*\.)*){name}\s"
 
 def collect_source_tests() -> list[tuple[str, str | None, bool]]:
     """Return ordered `(name, skip_reason, panics)` for every
-    `#[rust_lean_test]` function in the source tree; `skip_reason` is None
+    `#[hax_test::equiv]` function in the source tree; `skip_reason` is None
     when the Lean half is expected to pass."""
     tests: list[tuple[str, str | None, bool]] = []
     seen: set[str] = set()
     for rs in sorted(SRC_ROOT.rglob("*.rs")):
-        for m in ATTR_FN_RE.finditer(strip_comments(rs.read_text())):
+        text = strip_comments(rs.read_text())
+        if SHORT_ATTR_RE.search(text):
+            sys.exit(
+                f"gen_lean_tests.py: write `#[hax_test::equiv]` instead of `#[equiv]` (in {rs})"
+            )
+        for m in ATTR_FN_RE.finditer(text):
             name = m.group("name")
             if name in seen:
                 sys.exit(f"gen_lean_tests.py: duplicate test name: {name} (in {rs})")
@@ -174,7 +184,7 @@ def generate() -> None:
         listing = "\n".join(f"  - {n}" for n in missing)
         sys.exit(
             f"gen_lean_tests.py: {len(missing)} test(s) annotated "
-            f"`#[rust_lean_test]` have no matching `def` in {FUNS.name}:\n"
+            f"`#[hax_test::equiv]` have no matching `def` in {FUNS.name}:\n"
             f"{listing}\n"
             f"Either Aeneas didn't extract them, or their bodies rely on "
             f"something the extraction pipeline silently dropped."
@@ -185,7 +195,7 @@ def generate() -> None:
         render(
             active,
             [
-                "-- One `#guard` per `#[rust_lean_test]` function in `source/src/**/*.rs`.",
+                "-- One `#guard` per `#[hax_test::equiv]` function in `source/src/**/*.rs`.",
                 "-- Each guard fails the build if Aeneas's translation does not evaluate",
                 "-- to `RustM.ok true` (to `.fail`, for a `panics` test).",
             ],

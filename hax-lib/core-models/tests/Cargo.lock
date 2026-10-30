@@ -64,7 +64,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.4.0"
+version = "0.4.2"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -73,7 +73,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.4.0"
+version = "0.4.2"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro2",
@@ -83,13 +83,22 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.4.0"
+version = "0.4.2"
 dependencies = [
  "proc-macro2",
  "quote",
  "serde",
  "serde_json",
  "uuid",
+]
+
+[[package]]
+name = "hax-test-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.117",
 ]
 
 [[package]]
@@ -186,19 +195,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
 
 [[package]]
-name = "rust-lean-test-macro"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.117",
-]
-
-[[package]]
 name = "rust_lean_tests"
 version = "0.1.0"
 dependencies = [
- "rust-lean-test-macro",
+ "hax-test-macros",
 ]
 
 [[package]]

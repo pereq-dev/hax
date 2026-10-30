@@ -10,35 +10,34 @@
 //! double-deref via a reborrow.
 
 use crate::helpers::{Bumped, keyed};
-use rust_lean_test_macro::rust_lean_test;
 
 // ----- Box::new + single deref ----------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_zero() -> bool {
     let b: Box<u8> = Box::new(0);
     *b == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_max_u8() -> bool {
     let b: Box<u8> = Box::new(u8::MAX);
     *b == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_mid_u8() -> bool {
     let b: Box<u8> = Box::new(42);
     *b == 42
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_bool_true() -> bool {
     let b: Box<bool> = Box::new(true);
     *b == true
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_bool_false() -> bool {
     let b: Box<bool> = Box::new(false);
     *b == false
@@ -46,19 +45,19 @@ pub fn test_box_new_deref_bool_false() -> bool {
 
 // ----- Box::new wider integer ------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_u32_zero() -> bool {
     let b: Box<u32> = Box::new(0);
     *b == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_u32_max() -> bool {
     let b: Box<u32> = Box::new(u32::MAX);
     *b == u32::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_new_deref_i32_neg() -> bool {
     let b: Box<i32> = Box::new(-7);
     *b == -7
@@ -66,21 +65,21 @@ pub fn test_box_new_deref_i32_neg() -> bool {
 
 // ----- Double deref via reborrow --------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_double_deref_zero() -> bool {
     let b: Box<u8> = Box::new(0);
     let r: &Box<u8> = &b;
     **r == 0
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_double_deref_max() -> bool {
     let b: Box<u8> = Box::new(u8::MAX);
     let r: &Box<u8> = &b;
     **r == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_double_deref_mid() -> bool {
     let b: Box<u8> = Box::new(123);
     let r: &Box<u8> = &b;
@@ -89,14 +88,14 @@ pub fn test_box_double_deref_mid() -> bool {
 
 // ----- Mutation through Box -------------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_mut_assign() -> bool {
     let mut b: Box<u8> = Box::new(1);
     *b = 9;
     *b == 9
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_mut_increment() -> bool {
     let mut b: Box<u8> = Box::new(10);
     *b = *b + 5;
@@ -108,27 +107,27 @@ pub fn test_box_mut_increment() -> bool {
 // Extraction erases `Box`, but both impls still route through the payload's own
 // dictionary.
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_clone_applies_element_clone() -> bool {
     let b = Box::new(Bumped(1));
     b.clone().0 == 2
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_eq_goes_through_the_dictionary() -> bool {
     let a = Box::new(keyed(5, 1));
     let b = Box::new(keyed(5, 2));
     a == b
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_ne_goes_through_the_dictionary() -> bool {
     let a = Box::new(keyed(5, 1));
     let b = Box::new(keyed(5, 2));
     (a != b) == false
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_box_eq_differing_keys() -> bool {
     let a = Box::new(keyed(5, 1));
     let b = Box::new(keyed(6, 1));

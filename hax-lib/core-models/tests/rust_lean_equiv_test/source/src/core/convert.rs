@@ -19,32 +19,30 @@
 //! does not survive extraction cleanly, so we only assert `is_err()`
 //! for the overflow side.
 
-use rust_lean_test_macro::rust_lean_test;
-
 // ----- u8 identity From / Into / AsRef --------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_identity_zero() -> bool {
     u8::from(0u8) == 0u8
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_identity_max() -> bool {
     u8::from(u8::MAX) == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_identity_mid() -> bool {
     u8::from(42u8) == 42u8
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_into_u8_identity_zero() -> bool {
     let x: u8 = 0u8.into();
     x == 0u8
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_into_u8_identity_max() -> bool {
     let x: u8 = u8::MAX.into();
     x == u8::MAX
@@ -57,260 +55,260 @@ pub fn test_into_u8_identity_max() -> bool {
 
 // ----- Unsigned widening From: u8 -> u16 ------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_u16_zero() -> bool {
     u16::from(0u8) == 0u16
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_u16_max() -> bool {
     u16::from(u8::MAX) == 255u16
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_u16_mid() -> bool {
     u16::from(128u8) == 128u16
 }
 
 // ----- Unsigned widening From: u8 -> u32 ------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_u32_zero() -> bool {
     u32::from(0u8) == 0u32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_u32_max() -> bool {
     u32::from(u8::MAX) == 255u32
 }
 
 // ----- Unsigned widening From: u16 -> u32 -----------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u16_to_u32_zero() -> bool {
     u32::from(0u16) == 0u32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u16_to_u32_max() -> bool {
     u32::from(u16::MAX) == 65535u32
 }
 
 // ----- Unsigned widening From: u16 -> u64 -----------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u16_to_u64_zero() -> bool {
     u64::from(0u16) == 0u64
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u16_to_u64_max() -> bool {
     u64::from(u16::MAX) == 65535u64
 }
 
 // ----- Unsigned widening From: u32 -> u64 -----------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u32_to_u64_zero() -> bool {
     u64::from(0u32) == 0u64
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u32_to_u64_max() -> bool {
     u64::from(u32::MAX) == 4294967295u64
 }
 
 // ----- Unsigned widening From: u8 -> usize ----------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_usize_zero() -> bool {
     usize::from(0u8) == 0usize
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_u8_to_usize_max() -> bool {
     usize::from(u8::MAX) == 255usize
 }
 
 // ----- Signed widening From: i8 -> i16 --------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i16_zero() -> bool {
     i16::from(0i8) == 0i16
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i16_max() -> bool {
     i16::from(i8::MAX) == 127i16
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i16_min() -> bool {
     i16::from(i8::MIN) == -128i16
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i16_neg_one() -> bool {
     i16::from(-1i8) == -1i16
 }
 
 // ----- Signed widening From: i8 -> i32 --------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i32_zero() -> bool {
     i32::from(0i8) == 0i32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i32_max() -> bool {
     i32::from(i8::MAX) == 127i32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i8_to_i32_min() -> bool {
     i32::from(i8::MIN) == -128i32
 }
 
 // ----- Signed widening From: i16 -> i32 -------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i16_to_i32_zero() -> bool {
     i32::from(0i16) == 0i32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i16_to_i32_max() -> bool {
     i32::from(i16::MAX) == 32767i32
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i16_to_i32_min() -> bool {
     i32::from(i16::MIN) == -32768i32
 }
 
 // ----- Signed widening From: i32 -> i64 -------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i32_to_i64_zero() -> bool {
     i64::from(0i32) == 0i64
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i32_to_i64_max() -> bool {
     i64::from(i32::MAX) == 2147483647i64
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_from_i32_to_i64_min() -> bool {
     i64::from(i32::MIN) == -2147483648i64
 }
 
 // ----- Unsigned TryFrom: u16 -> u8 (Ok branch + overflow boundary) ----------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u16_to_u8_zero() -> bool {
     u8::try_from(0u16) == Ok(0u8)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u16_to_u8_max_ok() -> bool {
     u8::try_from(255u16) == Ok(u8::MAX)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u16_to_u8_overflow_is_err() -> bool {
     u8::try_from(256u16).is_err()
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u16_to_u8_far_overflow_is_err() -> bool {
     u8::try_from(u16::MAX).is_err()
 }
 
 // ----- Unsigned TryFrom: u32 -> u16 ------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u32_to_u16_zero() -> bool {
     u16::try_from(0u32) == Ok(0u16)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u32_to_u16_max_ok() -> bool {
     u16::try_from(65535u32) == Ok(u16::MAX)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u32_to_u16_overflow_is_err() -> bool {
     u16::try_from(65536u32).is_err()
 }
 
 // ----- Unsigned TryFrom: u64 -> u32 ------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u64_to_u32_zero() -> bool {
     u32::try_from(0u64) == Ok(0u32)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u64_to_u32_max_ok() -> bool {
     u32::try_from(4294967295u64) == Ok(u32::MAX)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_u64_to_u32_overflow_is_err() -> bool {
     u32::try_from(4294967296u64).is_err()
 }
 
 // ----- Signed TryFrom: i16 -> i8 ---------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i16_to_i8_zero() -> bool {
     i8::try_from(0i16) == Ok(0i8)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i16_to_i8_max_ok() -> bool {
     i8::try_from(127i16) == Ok(i8::MAX)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i16_to_i8_min_ok() -> bool {
     i8::try_from(-128i16) == Ok(i8::MIN)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i16_to_i8_above_max_is_err() -> bool {
     i8::try_from(128i16).is_err()
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i16_to_i8_below_min_is_err() -> bool {
     i8::try_from(-129i16).is_err()
 }
 
 // ----- Signed TryFrom: i32 -> i16 --------------------------------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i32_to_i16_zero() -> bool {
     i16::try_from(0i32) == Ok(0i16)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i32_to_i16_max_ok() -> bool {
     i16::try_from(32767i32) == Ok(i16::MAX)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i32_to_i16_min_ok() -> bool {
     i16::try_from(-32768i32) == Ok(i16::MIN)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i32_to_i16_above_max_is_err() -> bool {
     i16::try_from(32768i32).is_err()
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_try_from_i32_to_i16_below_min_is_err() -> bool {
     i16::try_from(-32769i32).is_err()
 }

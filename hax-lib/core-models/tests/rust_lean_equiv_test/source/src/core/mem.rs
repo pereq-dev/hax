@@ -7,11 +7,9 @@
 //! manual Lean def disagrees with std on a given input, the generated
 //! `#guard` fails the Lean build.
 
-use rust_lean_test_macro::rust_lean_test;
-
 // ----- mem::swap (manually defined in Lean, not extracted) ------------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_swap_u8_distinct() -> bool {
     let mut a: u8 = 1;
     let mut b: u8 = 2;
@@ -19,7 +17,7 @@ pub fn test_swap_u8_distinct() -> bool {
     a == 2 && b == 1
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_swap_u8_equal() -> bool {
     let mut a: u8 = 7;
     let mut b: u8 = 7;
@@ -27,7 +25,7 @@ pub fn test_swap_u8_equal() -> bool {
     a == 7 && b == 7
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_swap_u8_min_max() -> bool {
     let mut a: u8 = u8::MIN;
     let mut b: u8 = u8::MAX;
@@ -35,7 +33,7 @@ pub fn test_swap_u8_min_max() -> bool {
     a == u8::MAX && b == u8::MIN
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_swap_u32_distinct() -> bool {
     let mut a: u32 = 100;
     let mut b: u32 = 200;
@@ -43,7 +41,7 @@ pub fn test_swap_u32_distinct() -> bool {
     a == 200 && b == 100
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_swap_u32_min_max() -> bool {
     let mut a: u32 = u32::MIN;
     let mut b: u32 = u32::MAX;
@@ -51,7 +49,7 @@ pub fn test_swap_u32_min_max() -> bool {
     a == u32::MAX && b == u32::MIN
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_swap_tuple_u32() -> bool {
     let mut a: (u32, u32) = (1, 2);
     let mut b: (u32, u32) = (3, 4);
@@ -61,63 +59,63 @@ pub fn test_swap_tuple_u32() -> bool {
 
 // ----- mem::replace (manually defined in Lean, not extracted) ---------------
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_u8_returns_old() -> bool {
     let mut dst: u8 = 5;
     let old = core::mem::replace(&mut dst, 9);
     old == 5
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_u8_leaves_new() -> bool {
     let mut dst: u8 = 5;
     let _ = core::mem::replace(&mut dst, 9);
     dst == 9
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_u8_min_max() -> bool {
     let mut dst: u8 = u8::MIN;
     let old = core::mem::replace(&mut dst, u8::MAX);
     old == u8::MIN && dst == u8::MAX
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_u8_equal_values() -> bool {
     let mut dst: u8 = 3;
     let old = core::mem::replace(&mut dst, 3);
     old == 3 && dst == 3
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_tuple_returns_old() -> bool {
     let mut dst: (u32, u32) = (1, 2);
     let old = core::mem::replace(&mut dst, (3, 4));
     old.0 == 1 && old.1 == 2
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_tuple_leaves_new() -> bool {
     let mut dst: (u32, u32) = (1, 2);
     let _ = core::mem::replace(&mut dst, (3, 4));
     dst.0 == 3 && dst.1 == 4
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_option_some_with_none() -> bool {
     let mut dst: Option<u8> = Some(7);
     let _old = core::mem::replace(&mut dst, crate::helpers::none_u8());
     dst.is_none()
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_option_none_with_some() -> bool {
     let mut dst: Option<u8> = crate::helpers::none_u8();
     let old = core::mem::replace(&mut dst, Some(42));
     old.is_none() && dst == Some(42)
 }
 
-#[rust_lean_test]
+#[hax_test::equiv]
 pub fn test_replace_option_some_with_some() -> bool {
     let mut dst: Option<u8> = Some(1);
     let old = core::mem::replace(&mut dst, Some(2));
