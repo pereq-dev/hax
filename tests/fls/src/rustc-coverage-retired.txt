@@ -61,3 +61,55 @@ yield.rs
 # statements/let-statements/let_else
 branch/let-else.rs
 let_else_loop.rs
+
+# functions/functions/function_definition
+long_and_wide.rs
+trivial.rs
+ignore_map.rs
+ignore_run.rs
+
+# functions/functions/async_function, expressions/await-expressions/await_expression, types-and-traits/enum-types/zero_variant_enum
+issue-93054.rs
+auxiliary/executor.rs
+
+# associated-items/associated-items/associated_types, patterns/slice-patterns/slice_pattern
+generic-unused-impl.rs
+
+# generics/generic-parameters/type_and_const_parameters, generics/where-clauses/where_clause
+unused.rs
+branch/generics.rs
+auxiliary/used_crate.rs
+auxiliary/used_inline_crate.rs
+
+# generics/generic-arguments/generic_arguments
+sort_groups.rs
+
+# attributes/attribute-derive/derive, attributes/attribute-inline/inline, attributes/built-in-attributes/lint_attributes
+partial_eq.rs
+inline-dead.rs
+# #[coverage], #[test], and #[bench] are tool and testing attributes, out of scope for the value model
+no_cov_crate.rs
+coverage_attr_closure.rs
+attr/impl.rs
+attr/module.rs
+attr/nested.rs
+attr/off-on-sandwich.rs
+attr/trait-impl-inherit.rs
+bench.rs
+test_harness.rs
+
+# attributes/attribute-inline/inline, generics/generic-parameters/type_and_const_parameters, generics/where-clauses/where_clause, functions/functions/function_definition
+inline.rs
+auxiliary/discard_all_helper.rs
+auxiliary/inline_mixed_helper.rs
+auxiliary/inline_always_with_dead_code.rs
+
+# entities-and-resolution/scopes/nested_scopes
+inner_items.rs
+
+# entities-and-resolution/scopes/nested_scopes, statements/statements/statement_kinds
+holes.rs
+
+# ownership-and-deconstruction/destructors/drop_impl, ownership-and-deconstruction/passing-conventions/copy_and_move
+drop_trait.rs
+generics.rs

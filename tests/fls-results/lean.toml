@@ -8,6 +8,141 @@ lean = "leanprover/lean4:v4.35.0"
 hax-lean-lib = "v0.3.39"
 aeneas-lean-lib = "build-41977a5"
 
+[tests."associated-items/associated-items/associated_constants"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."associated-items/associated-items/associated_functions"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."associated-items/associated-items/associated_types"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."associated-items/associated-items/generic_associated_type"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."associated-items/associated-items/pin_self_parameter"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."associated-items/associated-items/return_position_impl_trait_in_trait"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."attributes/attribute-cfg-attr/cfg_attr"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-cfg/cfg"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-cfg/cfg_literals_and_options"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-cold/cold"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-derive/derive"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-inline/inline"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-non-exhaustive/non_exhaustive"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-repr/repr"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attribute-track-caller/track_caller"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/attributes/inner_attribute"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."attributes/built-in-attributes/lint_attributes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/namespaces/label_lifetime_namespaces"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/namespaces/namespace_separation"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."entities-and-resolution/paths/path_kinds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/preludes/prelude_names"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/resolution/auto_deref_resolution"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/scopes/nested_scopes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/shadowing/prelude_shadowing"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/shadowing/variable_shadowing"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/use-imports/use_imports"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."entities-and-resolution/visibility/visibility_modifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."expressions/arithmetic-expressions/division_overloading"]
 stage = "checked"
 tier = "supported"
@@ -398,7 +533,117 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."functions/functions/async_function"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."functions/functions/const_function"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/extern_c_function"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/function_definition"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/self_parameter"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."functions/functions/unsafe_function"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/generic-arguments/generic_arguments"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/generic-parameters/borrow_type_argument"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."generics/generic-parameters/inferred_constant"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."generics/generic-parameters/lifetime_param"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/generic-parameters/type_and_const_parameters"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."generics/where-clauses/where_clause"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."implementations/implementations/blanket_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."implementations/implementations/inherent_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."implementations/implementations/trait_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/borrowing/implicit_borrows"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/destructors/aggregate_drop_order"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."ownership-and-deconstruction/destructors/drop_impl"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/destructors/observable_drop_order"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."ownership-and-deconstruction/initialization/initialization"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/ownership/single_owner"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/passing-conventions/copy_and_move"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ownership-and-deconstruction/references/active_references"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
