@@ -113,3 +113,29 @@ holes.rs
 # ownership-and-deconstruction/destructors/drop_impl, ownership-and-deconstruction/passing-conventions/copy_and_move
 drop_trait.rs
 generics.rs
+
+# exceptions-and-errors/panic/panic_macro, exceptions-and-errors/panic/assertions
+abort.rs
+panic_unwind.rs
+unreachable.rs
+assert.rs
+assert-ne.rs
+assert_not.rs
+bad_counter_ids.rs
+issue-83601.rs
+issue-84561.rs
+
+# program-structure-and-compilation/modules/nested_modules, program-structure-and-compilation/conditional-compilation/cfg_removed_item
+no-core.rs
+unused_mod.rs
+auxiliary/unused_mod_helper.rs
+
+# macros/declarative-macros/macro_rules, macros/macro-invocation/builtin_macros
+macro_in_closure.rs
+closure_macro.rs
+no_spans.rs
+no_spans_if_not.rs
+auxiliary/macro_name_span_helper.rs
+
+# lexical-elements/identifiers/unicode_identifiers, lexical-elements/character-literals/unicode_char_literals
+unicode.rs

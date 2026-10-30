@@ -93,6 +93,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."concurrency/atomics/atomic_counter"]
+stage = "extracted"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."concurrency/send-and-sync/send_sync_bounds"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."entities-and-resolution/namespaces/label_lifetime_namespaces"]
 stage = "checked"
 tier = "supported"
@@ -139,6 +149,21 @@ tier = "supported"
 classification = "supported"
 
 [tests."entities-and-resolution/visibility/visibility_modifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."exceptions-and-errors/exceptions-and-errors/result_and_option"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."exceptions-and-errors/panic/assertions"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."exceptions-and-errors/panic/panic_macro"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -533,6 +558,16 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."ffi/abi/extern_c_abi"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."ffi/external-blocks/extern_block"]
+stage = "elaborates"
+tier = "supported"
+classification = "planned"
+
 [tests."functions/functions/async_function"]
 stage = "aeneas-rejected"
 tier = "unsupported"
@@ -593,6 +628,156 @@ stage = "checked"
 tier = "supported"
 classification = "supported"
 
+[tests."hax/contracts/attributes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/decreases"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/ensures"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/ensures_ref"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/future"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/contracts/loop_decreases"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/contracts/loop_invariant"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/contracts/requires"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/exclude"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/include"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/lemma"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/controlling-extraction/opaque"]
+stage = "elaborates"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/controlling-extraction/opaque_type"]
+stage = "elaborates"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/controlling-extraction/transparent"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/assert"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/logic-and-propositions/assert_prop"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/logic-and-propositions/assume"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/logic-and-propositions/debug_assert"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/exists"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/forall"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/implies"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/prop"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/logic-and-propositions/to_prop"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/refinement-and-abstraction/abstraction"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/refinement-and-abstraction/concretization"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/int"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."hax/refinement-and-abstraction/refine_as"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/refinement"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/refinement_type"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."hax/refinement-and-abstraction/to_int"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
 [tests."implementations/implementations/blanket_implementation"]
 stage = "checked"
 tier = "supported"
@@ -604,6 +789,141 @@ tier = "supported"
 classification = "supported"
 
 [tests."implementations/implementations/trait_implementation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."inline-assembly/macros-asm-global-asm-and-naked-asm/asm_block"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
+
+[tests."lexical-elements/boolean-literals/boolean_literals"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/byte-literals/byte_literals"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/character-literals/char_literals"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/character-literals/unicode_char_literals"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/comments/comments"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/comments/doc_comments"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/float-literals/float_literals"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/identifiers/raw_identifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/identifiers/unicode_identifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/integer-literals/integer_radixes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/integer-literals/integer_suffixes"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/integer-literals/unsuffixed_integer_inference"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/keywords/keyword_case"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."lexical-elements/raw-byte-string-literals/raw_byte_string"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/raw-c-string-literals/raw_c_string"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/raw-string-literals/raw_string"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-byte-string-literals/byte_string_escapes"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-c-string-literals/c_string"]
+stage = "aeneas-rejected"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-string-literals/string_continuation"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/simple-string-literals/string_escapes"]
+stage = "extracted"
+tier = "supported"
+classification = "planned"
+
+[tests."lexical-elements/weak-keywords/weak_keywords"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/declarative-macros/macro_rules"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/derive-macros/derive_invocation"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/macro-invocation/builtin_macros"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/metavariables/fragment_specifiers"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."macros/repetition/macro_repetition"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -749,6 +1069,16 @@ tier = "supported"
 classification = "supported"
 
 [tests."patterns/underscore-patterns/underscore_pattern"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."program-structure-and-compilation/conditional-compilation/cfg_removed_item"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."program-structure-and-compilation/modules/nested_modules"]
 stage = "checked"
 tier = "supported"
 classification = "supported"
@@ -1047,6 +1377,16 @@ classification = "planned"
 stage = "checked"
 tier = "supported"
 classification = "supported"
+
+[tests."unsafety/unsafety/unsafe_call"]
+stage = "checked"
+tier = "supported"
+classification = "supported"
+
+[tests."unsafety/unsafety/unsafe_operations"]
+stage = "aeneas-rejected"
+tier = "unsupported"
+classification = "unsupported"
 
 [tests."values/constant-promotion/promoted_borrow"]
 stage = "checked"
