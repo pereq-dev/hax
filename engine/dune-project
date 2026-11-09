@@ -2,7 +2,7 @@
 
 (name hax-engine)
 
-(version 0.4.3-rc.1)
+(version 0.5.0)
 
 (generate_opam_files true)
 

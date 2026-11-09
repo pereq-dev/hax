@@ -215,7 +215,7 @@ dependencies = [
 
 [[package]]
 name = "cargo-hax"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "annotate-snippets",
  "cargo_metadata",
@@ -780,7 +780,7 @@ checksum = "9229cfe53dfd69f0609a49f65461bd93001ea1ef889cd5529dd176593f5338a1"
 
 [[package]]
 name = "hax-adt-into"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "itertools 0.11.0",
  "proc-macro2",
@@ -791,7 +791,7 @@ dependencies = [
 
 [[package]]
 name = "hax-bounded-integers"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "duplicate",
  "hax-lib",
@@ -800,7 +800,7 @@ dependencies = [
 
 [[package]]
 name = "hax-driver"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "clap",
  "colored",
@@ -818,7 +818,7 @@ dependencies = [
 
 [[package]]
 name = "hax-engine-names"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "hax-lib",
  "hax-lib-protocol",
@@ -826,7 +826,7 @@ dependencies = [
 
 [[package]]
 name = "hax-engine-names-extract"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "hax-adt-into",
  "hax-engine-names",
@@ -837,7 +837,7 @@ dependencies = [
 
 [[package]]
 name = "hax-frontend-exporter"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "extension-traits 1.0.1",
  "hax-adt-into",
@@ -853,7 +853,7 @@ dependencies = [
 
 [[package]]
 name = "hax-frontend-exporter-options"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "hax-adt-into",
  "schemars",
@@ -863,7 +863,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -872,7 +872,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "hax-lib",
  "hax-lib-macros-types",
@@ -883,7 +883,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -895,14 +895,14 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-protocol"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "libcrux",
 ]
 
 [[package]]
 name = "hax-lib-protocol-macros"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -911,7 +911,7 @@ dependencies = [
 
 [[package]]
 name = "hax-rust-engine"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "axum",
  "camino",
@@ -933,7 +933,7 @@ dependencies = [
 
 [[package]]
 name = "hax-rust-engine-macros"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -943,7 +943,7 @@ dependencies = [
 
 [[package]]
 name = "hax-types"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "annotate-snippets",
  "clap",
@@ -2247,7 +2247,7 @@ dependencies = [
 
 [[package]]
 name = "test-driver"
-version = "0.4.3-rc.1"
+version = "0.5.0"
 dependencies = [
  "anyhow",
  "cargo_metadata",
