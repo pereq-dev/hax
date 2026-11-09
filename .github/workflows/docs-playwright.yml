@@ -26,6 +26,7 @@ jobs:
       working-directory: docs/.test
       run: npm ci
     - name: Install Playwright Browsers
+      timeout-minutes: 10
       working-directory: docs/.test
       run: npx playwright install --with-deps
     - name: Replace version with commit hash

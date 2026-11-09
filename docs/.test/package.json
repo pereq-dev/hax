@@ -6,7 +6,7 @@
         "test": "playwright test --reporter=list"
     },
     "devDependencies": {
-        "@playwright/test": "^1.56.1",
+        "@playwright/test": "^1.65.0",
         "http-server": "^14.1.1"
     }
 }
