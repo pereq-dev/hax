@@ -25,6 +25,19 @@ module Assert = struct
         DisambiguatedString.{ data; disambiguator }
     | _ -> broken_invariant "last path chunk to exist and be of type TypeNs" did
 
+  (* Associated types synthesized for return-position `impl Trait` in traits
+     carry an `AnonAssocTy` chunk rather than a `TypeNs` one, and are named after
+     their method; suffix them to avoid clashing with it. *)
+  let assoc_type_ns (did : Explicit_def_id.t) =
+    match List.last (Explicit_def_id.to_def_id did).path with
+    | Some { data = TypeNs data; disambiguator } ->
+        DisambiguatedString.{ data; disambiguator }
+    | Some { data = AnonAssocTy data; disambiguator } ->
+        DisambiguatedString.{ data = data ^ "_impl_trait"; disambiguator }
+    | _ ->
+        broken_invariant
+          "last path chunk to exist and be of type TypeNs or AnonAssocTy" did
+
   let macro_ns (did : Explicit_def_id.t) =
     match List.last (Explicit_def_id.to_def_id did).path with
     | Some { data = MacroNs data; disambiguator } ->
@@ -56,6 +69,7 @@ let rec poly :
         | _ -> broken_invariant "Impl or Trait" (Assert.parent did) )
   in
   let assert_type_ns did = Assert.type_ns did |> into_n did in
+  let assert_assoc_type_ns did = Assert.assoc_type_ns did |> into_n did in
   let assert_value_ns did = Assert.value_ns did |> into_n did in
   let assert_macro_ns did = Assert.macro_ns did |> into_n did in
   let result =
@@ -75,7 +89,7 @@ let rec poly :
     | Const -> `Const (assert_value_ns did)
     | AssocFn -> `Fn (assert_value_ns did) |> mk_associated_item
     | AssocConst -> `Const (assert_value_ns did) |> mk_associated_item
-    | AssocTy -> `Type (assert_type_ns did) |> mk_associated_item
+    | AssocTy -> `Type (assert_assoc_type_ns did) |> mk_associated_item
     | TyAlias -> `TyAlias (assert_type_ns did)
     | Field ->
         let constructor =

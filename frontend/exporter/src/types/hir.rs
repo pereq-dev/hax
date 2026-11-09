@@ -428,6 +428,12 @@ pub struct Impl<Body: IsBody> {
     })]
     pub of_trait: Option<TraitRef>,
     pub self_ty: Ty,
+    #[map({
+        let mut items = rpitit_impl_items(s);
+        let hir_items: Vec<ImplItem<Body>> = x.sinto(s);
+        items.extend(hir_items);
+        items
+    })]
     pub items: Vec<ImplItem<Body>>,
     #[value({
         let (tcx, owner_id) = (s.base().tcx, s.owner_id());
@@ -621,6 +627,119 @@ pub struct PathSegment {
 }
 
 /// Reflects [`hir::ItemKind`]
+/// Return-position `impl Trait` in a trait method is lowered by rustc to an
+/// anonymous associated type that lives in `associated_items` but not in the
+/// HIR item list. These helpers surface it as a regular associated type so the
+/// method's projection resolves. The GAT case (the anon type has generics of
+/// its own) is left out and handled by rejection.
+#[cfg(feature = "rustc")]
+fn rpitit_assoc_defs<'tcx, S: UnderOwnerState<'tcx>>(
+    s: &S,
+) -> Vec<rustc_span::def_id::DefId> {
+    use rustc_middle::ty;
+    let tcx = s.base().tcx;
+    tcx.associated_items(s.owner_id())
+        .in_definition_order()
+        .filter(|assoc| {
+            matches!(
+                assoc.kind,
+                ty::AssocKind::Type {
+                    data: ty::AssocTypeData::Rpitit(_)
+                }
+            )
+            // Only the non-GAT case: lifetimes of its own are fine (erased), but
+            // type or const generics make it a GAT, left to rejection.
+            && tcx
+                .generics_of(assoc.def_id)
+                .own_params
+                .iter()
+                .all(|p| matches!(p.kind, ty::GenericParamDefKind::Lifetime))
+        })
+        .map(|assoc| assoc.def_id)
+        .collect()
+}
+
+#[cfg(feature = "rustc")]
+fn anon_assoc_name(
+    tcx: rustc_middle::ty::TyCtxt<'_>,
+    did: rustc_span::def_id::DefId,
+) -> rustc_span::Symbol {
+    match tcx.def_key(did).disambiguated_data.data {
+        rustc_hir::definitions::DefPathData::AnonAssocTy(name) => name,
+        _ => rustc_span::Symbol::intern("assoc"),
+    }
+}
+
+#[cfg(feature = "rustc")]
+fn empty_generics<Body: IsBody>(span: Span) -> Generics<Body> {
+    Generics {
+        params: vec![],
+        bounds: vec![],
+        has_where_clause_predicates: false,
+        where_clause_span: span.clone(),
+        span,
+    }
+}
+
+#[cfg(feature = "rustc")]
+fn rpitit_trait_items<'tcx, S: UnderOwnerState<'tcx>, Body: IsBody>(
+    s: &S,
+) -> Vec<TraitItem<Body>> {
+    let tcx = s.base().tcx;
+    rpitit_assoc_defs(s)
+        .into_iter()
+        .map(|assoc_did| {
+            let s = &s.with_owner_id(assoc_did);
+            let span: Span = tcx.def_span(assoc_did).sinto(s);
+            TraitItem {
+                ident: (anon_assoc_name(tcx, assoc_did).sinto(s), span.clone()),
+                owner_id: assoc_did.sinto(s),
+                generics: empty_generics(span.clone()),
+                kind: TraitItemKind::Type(vec![], None),
+                span,
+                defaultness: tcx.defaultness(assoc_did).sinto(s),
+                attributes: ItemAttributes::from_owner_id(
+                    s,
+                    rustc_hir::OwnerId {
+                        def_id: assoc_did.expect_local(),
+                    },
+                ),
+            }
+        })
+        .collect()
+}
+
+#[cfg(feature = "rustc")]
+fn rpitit_impl_items<'tcx, S: UnderOwnerState<'tcx>, Body: IsBody>(
+    s: &S,
+) -> Vec<ImplItem<Body>> {
+    let tcx = s.base().tcx;
+    rpitit_assoc_defs(s)
+        .into_iter()
+        .map(|assoc_did| {
+            let s = &s.with_owner_id(assoc_did);
+            let span: Span = tcx.def_span(assoc_did).sinto(s);
+            let ty: Ty = tcx.type_of(assoc_did).instantiate_identity().sinto(s);
+            ImplItem {
+                ident: (anon_assoc_name(tcx, assoc_did).sinto(s), span.clone()),
+                owner_id: assoc_did.sinto(s),
+                generics: empty_generics(span.clone()),
+                kind: ImplItemKind::Type {
+                    ty,
+                    parent_bounds: vec![],
+                },
+                span,
+                attributes: ItemAttributes::from_owner_id(
+                    s,
+                    rustc_hir::OwnerId {
+                        def_id: assoc_did.expect_local(),
+                    },
+                ),
+            }
+        })
+        .collect()
+}
+
 #[derive(AdtInto)]
 #[args(<'tcx, S: UnderOwnerState<'tcx> >, from: hir::ItemKind<'tcx>, state: S as s)]
 #[derive_group(Serializers)]
@@ -703,6 +822,12 @@ pub enum ItemKind<Body: IsBody> {
         Ident,
         Generics<Body>,
         GenericBounds,
+        #[map({
+            let mut items = rpitit_trait_items(s);
+            let hir_items: Vec<TraitItem<Body>> = x.sinto(s);
+            items.extend(hir_items);
+            items
+        })]
         Vec<TraitItem<Body>>,
     ),
     TraitAlias(Constness, Ident, Generics<Body>, GenericBounds),

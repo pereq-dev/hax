@@ -380,6 +380,10 @@ impl PathSegmentPayload {
                 | DefPathItem::ValueNs(s)
                 | DefPathItem::MacroNs(s)
                 | DefPathItem::LifetimeNs(s) => Symbol::new(s),
+                // Associated types synthesized for return-position `impl Trait`
+                // in traits are named after their method; suffix them to avoid
+                // clashing with it.
+                DefPathItem::AnonAssocTy(s) => Symbol::new(format!("{s}_impl_trait")),
                 _ => return error_dummy_value("PathSegmentPayload::from_named", def_id),
             },
             None => Symbol::new(&def_id.def_id.krate),
