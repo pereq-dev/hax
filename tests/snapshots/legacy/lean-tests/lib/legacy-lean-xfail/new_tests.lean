@@ -2248,6 +2248,19 @@ class Chain1 (Self : Type)
 end new_tests.legacy__lean_tests__lib.traits.associated_types
 
 
+namespace new_tests.legacy__lean_tests__lib.traits.trait_constant_in_default_body
+
+class Foo.AssociatedTypes (Self : Type) where
+
+class Foo (Self : Type)
+  [associatedTypes : outParam (Foo.AssociatedTypes (Self : Type))]
+  where
+  F (Self) : Self
+  f (Self) (_ : rust_primitives.hax.Tuple0) :RustM Self := do (pure (F))
+
+end new_tests.legacy__lean_tests__lib.traits.trait_constant_in_default_body
+
+
 namespace new_tests.legacy__lean_tests__lib.traits.methods_hoisting
 
 class T1.AssociatedTypes (Self : Type) (U : Type) where
