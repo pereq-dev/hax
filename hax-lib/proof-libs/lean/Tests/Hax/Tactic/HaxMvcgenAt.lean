@@ -31,6 +31,31 @@ example (h : ⦃ ⌜ True ⌝ ⦄ (do let x ← wrapped 1#u32; ok x) ⦃ ⇓ r =
   hax_mvcgen at h
   simp
 
+/-! ## Programs without a successful execution path -/
+
+private def alwaysFails (_ : U32) : RustM U32 := fail .panic
+
+-- A total-correctness triple about a program that never succeeds is contradictory, so
+-- `hax_mvcgen at` closes the goal.
+#guard_msgs in
+example (h : ⦃ ⌜ True ⌝ ⦄ alwaysFails 1#u32 ⦃ ⇓ r => ⌜ r.val = 0 ⌝ ⦄) : 1 = 2 := by
+  hax_mvcgen [alwaysFails] at h
+
+#guard_msgs in
+example (h : ⦃ ⌜ True ⌝ ⦄ alwaysFails 1#u32 ⦃ ⇓ r => ⌜ r.val = 0 ⌝ ⦄) : 1 = 2 := by
+  hax_mvcgen [alwaysFails]
+
+-- Under binders, the hypothesis is replaced by one stating `∀ (p : Prop), p`.
+/--
+trace: h : ∀ (x : U32) (p : Prop), p
+⊢ 1 = 2
+-/
+#guard_msgs in
+example (h : ∀ x, ⦃ ⌜ True ⌝ ⦄ alwaysFails x ⦃ ⇓ r => ⌜ r.val = 0 ⌝ ⦄) : 1 = 2 := by
+  hax_mvcgen [alwaysFails] at h
+  trace_state
+  exact h 0#u32 _
+
 end Hax.Tests
 
 
