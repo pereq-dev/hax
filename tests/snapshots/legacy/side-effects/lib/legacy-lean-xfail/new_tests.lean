@@ -494,7 +494,7 @@ def other_fun (rng : i8) :
   (pure (rust_primitives.hax.Tuple2.mk rng hax_temp_output))
 
 @[spec]
-def fun (rng : i8) :
+def _fun (rng : i8) :
     RustM
     (rust_primitives.hax.Tuple2
       i8
@@ -521,7 +521,7 @@ namespace new_tests.legacy__side_effects__lib.issue_1300
 
 --  @fail(extraction): proverif(HAX0001)
 @[spec]
-def fun (_ : rust_primitives.hax.Tuple0) :
+def _fun (_ : rust_primitives.hax.Tuple0) :
     RustM (core_models.result.Result rust_primitives.hax.Tuple0 u8) := do
   match
     (← (core_models.iter.traits.iterator.Iterator.collect

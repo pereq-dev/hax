@@ -1,0 +1,53 @@
+(*****************************************)
+(* Preamble *)
+(*****************************************)
+
+channel c.
+
+fun construct_fail() : bitstring
+reduc construct_fail() = fail.
+
+type Option.
+fun Some(bitstring): Option [data].
+fun None(): Option [data].
+letfun Option_err() = let x = construct_fail() in None().
+
+const empty: bitstring.
+letfun bitstring_default() = empty.
+letfun bitstring_err() = let x = construct_fail() in bitstring_default().
+
+letfun nat_default() = 0.
+fun nat_to_bitstring(nat): bitstring.
+letfun nat_err() = let x = construct_fail() in nat_default().
+
+letfun bool_default() = false.
+
+
+(*****************************************)
+(* Types and Constructors *)
+(*****************************************)
+
+
+
+(*****************************************)
+(* Functions *)
+(*****************************************)
+
+letfun new_tests__legacy__lean_ident_sanitize__lib__structure(
+         wildcard1 : bitstring
+       ) =
+       0.
+
+letfun new_tests__legacy__lean_ident_sanitize__lib__theorem(
+         wildcard2 : bitstring
+       ) =
+       1.
+
+letfun new_tests__legacy__lean_ident_sanitize__lib__deriving(
+         wildcard3 : bitstring
+       ) =
+       2.
+
+letfun new_tests__legacy__lean_ident_sanitize__lib__v_def(wildcard4 : bitstring) =
+       3.
+

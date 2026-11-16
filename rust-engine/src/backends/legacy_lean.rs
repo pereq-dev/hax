@@ -67,16 +67,96 @@ impl RenderView for LeanPrinter {
         static SET: OnceLock<HashSet<String>> = OnceLock::new();
         SET.get_or_init(|| {
             [
-                // reserved for Lean:
-                "end",
+                // Lean keywords a Rust identifier can collide with. Each is
+                // reserved in identifier position; escaping it (prepending `_`)
+                // is sound because definitions and uses share this `escape`.
+                // Declarations and commands:
                 "def",
                 "abbrev",
                 "theorem",
                 "example",
                 "inductive",
                 "structure",
+                "class",
+                "instance",
+                "axiom",
+                "opaque",
+                "deriving",
+                "extends",
+                "mutual",
+                "namespace",
+                "section",
+                "end",
+                "open",
+                "import",
+                "universe",
+                "variable",
+                "attribute",
+                "macro",
+                "macro_rules",
+                "elab",
+                "syntax",
+                "notation",
+                "infix",
+                "infixl",
+                "infixr",
+                "prefix",
+                "postfix",
+                "set_option",
+                "initialize",
+                "builtin_initialize",
+                "run_cmd",
+                "declare_syntax_cat",
+                // Modifiers:
+                "private",
+                "protected",
+                "public",
+                "partial",
+                "unsafe",
+                "noncomputable",
+                "scoped",
+                "local",
+                "meta",
+                // Terms and tactics:
+                "fun",
+                "do",
+                "let",
+                "have",
+                "show",
+                "suffices",
+                "match",
+                "if",
+                "then",
+                "else",
+                "by",
+                "calc",
                 "from",
-                // reserved for hax encoding:
+                "with",
+                "at",
+                "in",
+                "for",
+                "nomatch",
+                "return",
+                "unless",
+                "try",
+                "catch",
+                "finally",
+                "using",
+                "where",
+                "hiding",
+                "renaming",
+                "generalizing",
+                "termination_by",
+                "decreasing_by",
+                // Sorts and the `sorry` placeholder:
+                "Type",
+                "Sort",
+                "sorry",
+                // `Prop` is intentionally absent: the prelude defines the
+                // propositions type as the dotted name `prop.Prop`, which is
+                // legal since a keyword is only reserved in leading position,
+                // so a reference must render `Prop` unescaped to resolve.
+                // Reserved by the hax Lean encoding:
                 "associatedTypes",
                 "AssociatedTypes",
             ]
@@ -89,7 +169,31 @@ impl RenderView for LeanPrinter {
     fn should_escape(id: &str) -> bool {
         Self::is_reserved_keyword(id)
             || id.starts_with(|c: char| c.is_ascii_digit())
+            // A leading `'` is parsed by Lean as a character literal.
+            || id.starts_with('\'')
             || id.starts_with("trait_constr_")
+    }
+
+    /// Turns a Rust identifier into a valid Lean identifier at a *name*
+    /// position: a definition, reference, binder, field, or type parameter.
+    ///
+    /// It sanitizes characters (see [`LeanPrinter::sanitize`]) and then guards
+    /// a leading Lean keyword, digit, or `'` — each illegal in leading
+    /// position — with a `_` prefix. Escaping is consistent: a definition and
+    /// its uses flow through here identically. Module components are sanitized
+    /// but not keyword-guarded, since a keyword is legal there (see
+    /// `render_path_segment`). See <https://github.com/cryspen/hax/issues/1630>.
+    fn escape(id: &str) -> String {
+        let id = Self::sanitize(id);
+        if id.starts_with('_') {
+            // A leading underscore already makes this a valid identifier, so
+            // it can be neither a leading keyword nor a leading digit.
+            id
+        } else if Self::should_escape(&id) {
+            format!("_{id}")
+        } else {
+            id
+        }
     }
 
     fn separator(&self) -> &str {
@@ -109,6 +213,28 @@ impl RenderView for LeanPrinter {
     fn render_path_segment(&self, chunk: &PathSegment) -> Vec<String> {
         // Returning None indicates that the default rendering should be used
         (match chunk.kind() {
+            // Module/namespace components are always non-leading in a qualified
+            // name, where a Lean keyword is legal, so sanitize their characters
+            // but do not keyword-escape them. This keeps a Rust module named
+            // after a keyword (e.g. `opaque`) valid, while an item sharing that
+            // name is still escaped by the default (name) rendering.
+            AnyKind::Mod => {
+                let mut atoms: Vec<String> = chunk
+                    .parents()
+                    .map(|seg| {
+                        let id = self.render_path_segment_payload(seg.payload());
+                        let d = seg.disambiguator();
+                        if d > 0 {
+                            format!("{id}_{d}")
+                        } else {
+                            format!("{id}")
+                        }
+                    })
+                    .map(|atom| Self::sanitize(&atom))
+                    .collect();
+                atoms.reverse();
+                Some(atoms)
+            }
             AnyKind::Constructor(ConstructorKind::Constructor { ty })
                 if matches!(ty.kind(), TypeDefKind::Struct) =>
             {
@@ -249,6 +375,33 @@ impl LeanPrinter {
         std::env::var("HAX_CORE_MODELS_EXTRACTION_MODE")
             .map(|v| v == "on")
             .unwrap_or(false)
+    }
+
+    /// Character-level identifier sanitization shared by names and module
+    /// components: strips the raw-identifier prefix `r#`, maps every character
+    /// illegal in a Lean identifier to `_` (keeping Unicode letters,
+    /// subscripts, and mid-identifier `'`), and renames the all-underscore
+    /// discard `_` (wildcards are printed elsewhere as a literal `_` and never
+    /// reach here). It performs no keyword escaping; see `escape`.
+    fn sanitize(id: &str) -> String {
+        let id = id.strip_prefix("r#").unwrap_or(id);
+        let id: String = id
+            .chars()
+            .map(|c| {
+                if c.is_alphanumeric() || c == '_' || c == '\'' {
+                    c
+                } else {
+                    '_'
+                }
+            })
+            .collect();
+        if id.is_empty() {
+            "_ERROR_EMPTY_ID_".to_string()
+        } else if id.chars().all(|c| c == '_') {
+            format!("{id}hax_anon")
+        } else {
+            id
+        }
     }
 
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
@@ -2197,3 +2350,101 @@ const _: () = {
         }
     }
 };
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn escape(id: &str) -> String {
+        <LeanPrinter as RenderView>::escape(id)
+    }
+
+    fn sanitize(id: &str) -> String {
+        LeanPrinter::sanitize(id)
+    }
+
+    #[test]
+    fn ordinary_identifiers_pass_through() {
+        assert_eq!(escape("normal_name"), "normal_name");
+        assert_eq!(escape("Foo2"), "Foo2");
+        assert_eq!(escape("foo'"), "foo'");
+        // Unicode letters and subscripts are legal in Lean and preserved.
+        assert_eq!(escape("ẕversion"), "ẕversion");
+    }
+
+    #[test]
+    fn lean_keywords_are_escaped() {
+        for kw in [
+            "public", "private", "prefix", "sorry", "meta", "end", "with", "Type", "opaque",
+        ] {
+            assert_eq!(escape(kw), format!("_{kw}"));
+        }
+        // Words that merely look keyword-ish are left alone.
+        assert_eq!(escape("mod"), "mod");
+        assert_eq!(escape("rec"), "rec");
+        // `Prop` is not escaped: the prelude defines it as the dotted name
+        // `prop.Prop`, so a reference must render it unescaped.
+        assert_eq!(escape("Prop"), "Prop");
+    }
+
+    #[test]
+    fn module_components_are_not_keyword_escaped() {
+        // Module/namespace atoms use `sanitize`: characters are fixed but
+        // keywords are kept, since they are legal in non-leading position. A
+        // keyword-named *item* still goes through `escape` and is guarded.
+        assert_eq!(sanitize("opaque"), "opaque");
+        assert_eq!(sanitize("Type"), "Type");
+        assert_eq!(sanitize("r#match"), "match");
+        assert_eq!(sanitize("l·"), "l_");
+    }
+
+    #[test]
+    fn leading_underscore_is_already_valid() {
+        // `_if` is a valid identifier; the leading `_` guards the keyword.
+        assert_eq!(escape("_if"), "_if");
+        assert_eq!(escape("_match"), "_match");
+        assert_eq!(escape("_0"), "_0");
+    }
+
+    #[test]
+    fn raw_identifiers_are_unwrapped() {
+        assert_eq!(escape("r#mod"), "mod");
+        // Unwrapped word may itself be a Lean keyword, so it is re-checked.
+        assert_eq!(escape("r#match"), "_match");
+    }
+
+    #[test]
+    fn discard_is_renamed() {
+        assert_eq!(escape("_"), "_hax_anon");
+        assert_eq!(escape("__"), "__hax_anon");
+        // A leading underscore on a real name is preserved.
+        assert_eq!(escape("_foo"), "_foo");
+    }
+
+    #[test]
+    fn cdot_is_mangled() {
+        assert_eq!(escape("l·"), "l_");
+        assert_eq!(escape("b4·"), "b4_");
+    }
+
+    #[test]
+    fn generic_and_path_punctuation_is_mangled() {
+        assert_eq!(
+            escape("impl ::prost::bytes::BufMut"),
+            "impl___prost__bytes__BufMut"
+        );
+        assert_eq!(escape("impl CryptoRng + Rng"), "impl_CryptoRng___Rng");
+        assert_eq!(escape("[T; 4]"), "_T__4_");
+    }
+
+    #[test]
+    fn leading_digit_and_prime_are_escaped() {
+        assert_eq!(escape("123abc"), "_123abc");
+        assert_eq!(escape("'static"), "_'static");
+    }
+
+    #[test]
+    fn empty_identifier_is_flagged() {
+        assert_eq!(escape(""), "_ERROR_EMPTY_ID_");
+    }
+}

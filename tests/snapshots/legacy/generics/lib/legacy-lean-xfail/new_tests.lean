@@ -137,7 +137,7 @@ structure Test where
 @[spec]
 def Impl.set_ciphersuites
     (S : Type)
-    (impl_IntoIterator_Item_=_S_ : Type)
+    (impl_IntoIterator_Item___S_ : Type)
     [trait_constr_set_ciphersuites_associated_type_i0 :
       core_models.convert.AsRef.AssociatedTypes
       S
@@ -145,18 +145,18 @@ def Impl.set_ciphersuites
     [trait_constr_set_ciphersuites_i0 : core_models.convert.AsRef S String ]
     [trait_constr_set_ciphersuites_associated_type_i1 :
       core_models.iter.traits.collect.IntoIterator.AssociatedTypes
-      impl_IntoIterator_Item_=_S_]
+      impl_IntoIterator_Item___S_]
     [trait_constr_set_ciphersuites_i1 :
       core_models.iter.traits.collect.IntoIterator
-      impl_IntoIterator_Item_=_S_
+      impl_IntoIterator_Item___S_
       (associatedTypes := {
         show
           core_models.iter.traits.collect.IntoIterator.AssociatedTypes
-          impl_IntoIterator_Item_=_S_
+          impl_IntoIterator_Item___S_
         by infer_instance
         with Item := S})]
     (self : Test)
-    (ciphers : impl_IntoIterator_Item_=_S_) :
+    (ciphers : impl_IntoIterator_Item___S_) :
     RustM
     (core_models.result.Result
       rust_primitives.hax.Tuple0
@@ -167,7 +167,7 @@ def Impl.set_ciphersuites
 @[spec]
 def Impl.set_alpn_protocols
     (S : Type)
-    (impl_IntoIterator_Item_=_S_ : Type)
+    (impl_IntoIterator_Item___S_ : Type)
     [trait_constr_set_alpn_protocols_associated_type_i0 :
       core_models.convert.AsRef.AssociatedTypes
       S
@@ -175,18 +175,18 @@ def Impl.set_alpn_protocols
     [trait_constr_set_alpn_protocols_i0 : core_models.convert.AsRef S String ]
     [trait_constr_set_alpn_protocols_associated_type_i1 :
       core_models.iter.traits.collect.IntoIterator.AssociatedTypes
-      impl_IntoIterator_Item_=_S_]
+      impl_IntoIterator_Item___S_]
     [trait_constr_set_alpn_protocols_i1 :
       core_models.iter.traits.collect.IntoIterator
-      impl_IntoIterator_Item_=_S_
+      impl_IntoIterator_Item___S_
       (associatedTypes := {
         show
           core_models.iter.traits.collect.IntoIterator.AssociatedTypes
-          impl_IntoIterator_Item_=_S_
+          impl_IntoIterator_Item___S_
         by infer_instance
         with Item := S})]
     (self : Test)
-    (_protocols : impl_IntoIterator_Item_=_S_) :
+    (_protocols : impl_IntoIterator_Item___S_) :
     RustM
     (core_models.result.Result
       rust_primitives.hax.Tuple0
