@@ -10,7 +10,7 @@ use super::abstraction::*;
 #[cfg(feature = "macros")]
 pub use hax_lib_macros::int;
 
-/// Mathematical integers for writting specifications. Mathematical
+/// Mathematical integers for writing specifications. Mathematical
 /// integers are unbounded and arithmetic operation on them never over
 /// or underflow.
 ///

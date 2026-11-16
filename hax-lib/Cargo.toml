@@ -10,12 +10,12 @@ readme = "README.md"
 description = "Hax-specific helpers for Rust programs"
 
 
-[target.'cfg(hax)'.dependencies]
-num-bigint = { version = "0.4", default-features = false }
-num-traits = { version = "0.2", default-features = false }
 
 [dependencies]
 hax-lib-macros = { workspace = true, optional = true }
+num-bigint = { version = "0.4", default-features = false }
+num-traits = { version = "0.2", default-features = false }
+
 
 [features]
 default = ["macros"]
