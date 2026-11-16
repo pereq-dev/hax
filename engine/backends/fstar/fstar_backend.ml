@@ -268,13 +268,36 @@ struct
           ("pglobal_ident: expected to be handled somewhere else: "
          ^ show_global_ident id)
 
+  (* Map every character illegal in an F* identifier to [_], collapsing runs,
+     so a name like [l·] renders as [l_]. Unicode letters and digits stay, as
+     F* accepts them. *)
+  let sanitize_local_ident_str s =
+    let lexbuf = Sedlexing.Utf8.from_string s in
+    let buf = Buffer.create (String.length s) in
+    let prev_bad = ref false in
+    let rec go () =
+      match%sedlex lexbuf with
+      | alphabetic | '0' .. '9' | '_' | '\'' ->
+          Buffer.add_string buf (Sedlexing.Utf8.lexeme lexbuf);
+          prev_bad := false;
+          go ()
+      | any ->
+          if not !prev_bad then Buffer.add_char buf '_';
+          prev_bad := true;
+          go ()
+      | _ -> ()
+    in
+    go ();
+    Buffer.contents buf
+
   let plocal_ident_str (e : Local_ident.t) =
-    RenderId.local_ident
-      (match String.chop_prefix ~prefix:"impl " e.name with
-      | Some name ->
-          let name = "impl_" ^ Int.to_string ([%hash: string] name) in
-          { e with name }
-      | _ -> e)
+    sanitize_local_ident_str
+    @@ RenderId.local_ident
+         (match String.chop_prefix ~prefix:"impl " e.name with
+         | Some name ->
+             let name = "impl_" ^ Int.to_string ([%hash: string] name) in
+             { e with name }
+         | _ -> e)
 
   let plocal_ident = plocal_ident_str >> F.id
 
