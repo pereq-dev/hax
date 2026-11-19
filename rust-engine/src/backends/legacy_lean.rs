@@ -42,6 +42,13 @@ const CAST_OP: GlobalId = cast_op;
 #[derive(Default, Clone)]
 pub struct LeanPrinter {
     current_namespace: Option<GlobalId>,
+    /// The trait whose body is currently being emitted, if any. Set by
+    /// [`PrettyAst::item`] when entering an [`ItemKind::Trait`] and threaded
+    /// through trait-item rendering. Used by the [`ExprKind::App`] fallback to
+    /// detect intra-trait calls (i.e. `Self::F` where `F` is a sibling field of
+    /// the trait being declared) and drop the qualification, since Lean class
+    /// elaboration resolves sibling field names within the same `where` block.
+    current_trait: Option<GlobalId>,
 }
 
 const INDENT: isize = 2;
@@ -249,6 +256,28 @@ impl LeanPrinter {
         std::env::var("HAX_CORE_MODELS_EXTRACTION_MODE")
             .map(|v| v == "on")
             .unwrap_or(false)
+    }
+
+    /// Returns whether `id` is an associated item of the trait whose
+    /// declaration is currently being emitted, i.e. whether `id` is a
+    /// sibling field of the surrounding `class ... where` block. Used to
+    /// detect intra-trait calls (`Self::F` from inside `trait Foo { ... }`)
+    /// so that the App printer can drop the trait qualification and the
+    /// explicit `Self` argument; Lean class elaboration resolves sibling
+    /// field names within the same `where` block via the implicit instance
+    /// being built. Note that hax view encoding combines a trait and its
+    /// associated item into a single path segment (e.g. `Foo::F`), so the
+    /// comparison is between the parent of `id`'s last segment and the last
+    /// segment of `current_trait`.
+    pub fn is_member_of_current_trait(&self, id: &GlobalId) -> bool {
+        self.current_trait.is_some_and(|trait_id| {
+            let id_view = id.view();
+            let trait_view = trait_id.view();
+            id_view
+                .last()
+                .parent()
+                .is_some_and(|parent| trait_view.last() == &parent)
+        })
     }
 
     /// Render a global id using the Rendering strategy of the Lean printer. Works for both concrete
@@ -1006,18 +1035,44 @@ const _: () = {
                                 .parens()
                         }
                         _ => {
-                            // Fallback for any application
-                            docs![
-                                head,
-                                trait_
-                                    .as_ref()
-                                    .map(|(impl_expr, _)| zip_left!(line!(), &impl_expr.goal.args)),
-                                zip_left!(line!(), generic_args).group(),
-                                zip_left!(line!(), args).group(),
-                            ]
-                            .parens()
-                            .nest(INDENT)
-                            .group()
+                            // Detect intra-trait calls: when the call target is a sibling
+                            // field of the trait we are currently emitting (i.e. `Self::F`
+                            // from inside `trait Foo { ... }`), drop both the trait
+                            // qualification and the explicit `Self` type argument. The
+                            // fully qualified `Trait.F Self` form refers to a projection
+                            // that does not yet exist in the environment when the class
+                            // body is being elaborated, while `F` resolves to the sibling
+                            // field of the class being built and Lean infers its type
+                            // arguments from the surrounding context. See
+                            // https://github.com/cryspen/hax/issues/1889.
+                            if let ExprKind::GlobalId(head_id) = head.kind()
+                                && let Some((impl_expr, _)) = trait_.as_ref()
+                                && matches!(&*impl_expr.kind, ImplExprKind::Self_)
+                                && self.is_member_of_current_trait(head_id)
+                            {
+                                docs![
+                                    self.render_last(head_id),
+                                    zip_left!(line!(), generic_args).group(),
+                                    zip_left!(line!(), args).group(),
+                                ]
+                                .parens()
+                                .nest(INDENT)
+                                .group()
+                            } else {
+                                // Fallback for any application
+                                docs![
+                                    head,
+                                    trait_.as_ref().map(|(impl_expr, _)| zip_left!(
+                                        line!(),
+                                        &impl_expr.goal.args
+                                    )),
+                                    zip_left!(line!(), generic_args).group(),
+                                    zip_left!(line!(), args).group(),
+                                ]
+                                .parens()
+                                .nest(INDENT)
+                                .group()
+                            }
                         }
                     }
                 }
@@ -1637,6 +1692,14 @@ const _: () = {
                     if generic_types.len() < generics.constraints.len() {
                         emit_error!(issue 1921, "Unsupported equality constraints on associated types")
                     }
+                    // Inner printer used to render trait items: it carries
+                    // `current_trait` so the App printer can detect intra-trait
+                    // calls (`Self::F`) and drop the trait qualification.
+                    // See https://github.com/cryspen/hax/issues/1889.
+                    let trait_inner_printer = LeanPrinter {
+                        current_trait: Some(*name),
+                        ..self.clone()
+                    };
                     docs![
                         // A trait is encoded as two Lean type classes: one holding the associated types,
                         // and one holding all other fields.
@@ -1796,7 +1859,7 @@ const _: () = {
                                     item.ident.is_precondition() || item.ident.is_postcondition() ||
                                     // Associated types are encoded in a separate type class.
                                     matches!(item.kind, TraitItemKind::Type(_))
-                                )}).map(|item| docs![(generics.params.clone(), item)] )
+                                )}).map(|item| (generics.params.clone(), item).to_document(&trait_inner_printer))
                             ),
                         ]
                         .nest(INDENT),

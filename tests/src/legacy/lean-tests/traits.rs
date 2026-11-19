@@ -352,6 +352,16 @@ mod associated_constant {
     }
 }
 
+// https://github.com/cryspen/hax/issues/1889
+mod trait_constant_in_default_body {
+    pub trait Foo: std::marker::Sized {
+        const F: Self;
+        fn f() -> Self {
+            Self::F
+        }
+    }
+}
+
 mod methods_hoisting {
     trait T1<U>: Sized {
         type A;
