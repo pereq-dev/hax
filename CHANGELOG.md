@@ -7,10 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+Lean backend and library:
+ - Add `mvcgen` specs for more core models: integer ranges, arrays, slices,
+   conversions, byte encodings and `rem_euclid`
+ - Add a spec for `array::from_fn` with a closure whose state changes
+
 ### Changed
 
 Lean backend and library:
  - `hax_mvcgen at` yields better results on programs that always panic
+ - Breaking: `Hax.IteratorRange_next_spec` and
+   `Hax.IteratorRange_next_spec_usize` are replaced by
+   `core.<T>.Insts.CoreIterRangeStep.next_spec` for every integer type `<T>`,
+   which takes the range as a single argument
 
 ### Fixed
 

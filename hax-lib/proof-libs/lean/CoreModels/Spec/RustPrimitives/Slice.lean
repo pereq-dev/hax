@@ -55,11 +55,11 @@ theorem rust_primitives.slice.array_from_fn_go_spec
         grind
     all_goals grind
 
-/-- This spec assumes that the closure is not mutated. If the closure was mutated,
-we would need a more complex spec that would require the user to provide an invariant. -/
+/-- This spec assumes that the closure is not mutated. For a closure whose state changes, use
+`array_from_fn_inv_spec`. -/
 @[spec]
 theorem rust_primitives.slice.array_from_fn_spec
-    {T F : Type} [Inhabited T] (N : Std.Usize)
+    {T F : Type} (N : Std.Usize)
     (inst : core.ops.function.FnMut F Std.Usize T) (c : F)
     (hpure : ∀ k : Nat, k < N.val →
       ⦃ ⌜ True ⌝ ⦄ inst.call_mut c ⟨BitVec.ofNat _ k⟩ ⦃ ⇓ r => ⌜ r.2 = c ⌝ ⦄) :
@@ -83,6 +83,65 @@ theorem rust_primitives.slice.array_from_fn_spec
     grind
   · -- else-branch is impossible: the worker's length equals `N`.
     grind
+
+/-- `array_from_fn_go` for a closure whose state changes: `I k c` holds of the state before the
+call at index `k`, and `P k` of the element produced there. -/
+theorem rust_primitives.slice.array_from_fn_go_inv_spec
+    {T F : Type}
+    (inst : core.ops.function.FnMut F Std.Usize T) (I : Nat → F → Prop) (P : Nat → T → Prop)
+    (c : F) (n : Nat) (hc : I 0 c)
+    (hstep : ∀ k, k < n → ∀ c', I k c' →
+      ⦃ ⌜ True ⌝ ⦄ inst.call_mut c' ⟨BitVec.ofNat _ k⟩ ⦃ ⇓ r => ⌜ P k r.1 ∧ I (k + 1) r.2 ⌝ ⦄) :
+    ⦃ ⌜ True ⌝ ⦄
+    rust_primitives.slice.array_from_fn_go inst c n
+    ⦃ ⇓ (rl, rc) => ⌜ I n rc ∧ ∃ h : rl.length = n, ∀ i, (hi : i < n) → P i rl[i] ⌝ ⦄ := by
+  induction n with
+  | zero =>
+    mvcgen [rust_primitives.slice.array_from_fn_go, -rust_primitives.slice.array_from_fn_go_spec]
+    exact ⟨hc, rfl, fun i hi => absurd hi (Nat.not_lt_zero i)⟩
+  | succ n ih =>
+    have ih' := ih (fun k hk => hstep k (by omega))
+    mvcgen [rust_primitives.slice.array_from_fn_go, -rust_primitives.slice.array_from_fn_go_spec,
+      ih', hstep]
+    -- The last call is at index `n`, from the state the recursion left behind.
+    case vc1.a => omega
+    case vc2.a =>
+      rename_i _ hrec
+      exact hrec.1
+    case vc3 =>
+      rename_i rec hrec call hcall
+      obtain ⟨-, hlen, hP⟩ := hrec
+      refine ⟨hcall.2, by simp [hlen], fun i hi => ?_⟩
+      rcases Nat.lt_succ_iff_lt_or_eq.mp hi with hlt | rfl
+      · rw [List.getElem_append_left (by omega)]
+        exact hP i hlt
+      · rw [List.getElem_append_right (by omega)]
+        simpa [hlen] using hcall.1
+
+/-- `array::from_fn` for a closure whose state changes. The caller provides an invariant `I` on
+the closure's state, indexed by the next index to fill, and a property `P` of the element at each
+index; every element of the result then satisfies `P`. -/
+theorem rust_primitives.slice.array_from_fn_inv_spec
+    {T F : Type} (N : Std.Usize)
+    (inst : core.ops.function.FnMut F Std.Usize T) (I : Nat → F → Prop) (P : Nat → T → Prop)
+    (c : F) (hc : I 0 c)
+    (hstep : ∀ k, k < N.val → ∀ c', I k c' →
+      ⦃ ⌜ True ⌝ ⦄ inst.call_mut c' ⟨BitVec.ofNat _ k⟩ ⦃ ⇓ r => ⌜ P k r.1 ∧ I (k + 1) r.2 ⌝ ⦄) :
+    ⦃ ⌜ True ⌝ ⦄
+    rust_primitives.slice.array_from_fn N inst c
+    ⦃ ⇓ a => ⌜ ∀ i : Nat, (hi : i < N.val) →
+                P i (a.val[i]'(by have := a.property; omega)) ⌝ ⦄ := by
+  have hgo := rust_primitives.slice.array_from_fn_go_inv_spec inst I P c N.val hc hstep
+  mvcgen [rust_primitives.slice.array_from_fn, -rust_primitives.slice.array_from_fn_spec,
+    -rust_primitives.slice.array_from_fn_go_spec, hgo]
+  · -- The worker returned `N` elements.
+    rename_i _ _ hgo
+    obtain ⟨_, _, hP⟩ := hgo
+    intro i hi
+    simpa [Array.from_val] using hP i hi
+  · -- The worker cannot return a different number of elements.
+    rename_i _ hlen hgo
+    exact absurd hgo.2.1 hlen
 
 /-! ## `slice_contains` -/
 
