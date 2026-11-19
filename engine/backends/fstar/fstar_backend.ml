@@ -172,7 +172,19 @@ struct
   let rec pliteral_as_const span (e : literal) =
     match e with
     | String s -> F.Const.Const_string (s, F.dummyRange)
-    | Char c -> F.Const.Const_char (Uchar.to_scalar (Uchar.Utf8.of_string c))
+    | Char c -> (
+        match FStar_String.list_of_string c with
+        (* `FStar.Char.char_code` excludes U+D7FF, so such a literal is unsound. *)
+        | [ 0xD7FF ] ->
+            Error.unimplemented
+              ~details:
+                "The character U+D7FF cannot be soundly represented in F*, \
+                 whose `FStar.Char.char_code` excludes it."
+              span
+        | [ code_point ] -> F.Const.Const_char code_point
+        | _ ->
+            Error.assertion_failure span
+              "A char literal should be exactly one Unicode scalar value")
     | Int { value; kind = { size; signedness }; negative } ->
         Error.unimplemented
           ~details:
