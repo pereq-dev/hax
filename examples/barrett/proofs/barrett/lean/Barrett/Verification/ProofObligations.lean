@@ -1,5 +1,4 @@
 import Barrett.Extraction
-import Barrett.Verification.MissingSpecs
 import Hax
 open CoreModels Aeneas
 open Aeneas.Std hiding namespace core alloc
@@ -11,7 +10,7 @@ set_option hax_mvcgen.warnings false
 
 namespace barrett
 
-attribute [local spec] barrett_reduce core.I64.Insts.CoreConvertFromI32.from
+attribute [local spec] barrett_reduce
 
 attribute [local grind =]
   Int32.toInt_toInt64 Int64.ofBitVec_int32ToBitVec
