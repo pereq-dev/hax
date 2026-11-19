@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Lean backend and library:
  - `hax_mvcgen at` yields better results on programs that always panic
 
+### Fixed
+
+F* backend and library:
+ - Non-ASCII `char` literals are no longer extracted as their first UTF-8 byte (#2396)
+
 ## [0.5.0] - 2026-11-09
 
 ### Added
