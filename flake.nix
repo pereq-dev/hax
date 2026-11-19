@@ -68,12 +68,12 @@
           hax-engine = pkgs.callPackage ./engine {
             hax-rust-frontend = packages.hax-rust-frontend.unwrapped;
             # `hax-engine-names-extract` extracts Rust names but also
-            # some informations about `impl`s when names are `impl`
+            # some information about `impl`s when names are `impl`
             # blocks. That includes some span information, which
             # includes full paths to Rust sources. Sometimes those
             # Rust sources happens to be in the Nix store. That
             # creates useless dependencies, this wrapper below takes
-            # care of removing those extra depenedencies.
+            # care of removing those extra dependencies.
             hax-engine-names-extract =
               pkgs.writeScriptBin "hax-engine-names-extract" ''
                 #!${pkgs.stdenv.shell}

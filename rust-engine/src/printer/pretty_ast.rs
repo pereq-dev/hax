@@ -362,7 +362,7 @@ macro_rules! mk {
             /// ensure annotations and spans are applied correctly.
             ///
             /// Note that using `install_pretty_helpers!` will produce macro
-            /// that implicitely use `self` as allocator. Take a look at a
+            /// that implicitly use `self` as allocator. Take a look at a
             /// printer in the [`backends`] module for an example.
             pub trait PrettyAst<A: 'static + Clone>: Sized + HasContextualSpan {
                 /// A name for this instance of `PrettyAst`.

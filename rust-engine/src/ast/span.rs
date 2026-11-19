@@ -59,7 +59,7 @@ pub struct Span {
     data: Interned<SpanData>,
     /// A unique identifier. Since we store spans almost for every node of the
     /// AST, having a unique identifier for spans gives us a fine-grained way of
-    /// refering to sub-nodes in debugging context. This id is indeed mostly
+    /// referring to sub-nodes in debugging context. This id is indeed mostly
     /// used by the web debugger.
     id: u32,
 }

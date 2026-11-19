@@ -440,7 +440,7 @@ pub enum GenericArg {
 #[derive_group(Serializers)]
 #[derive(Clone, Debug, JsonSchema, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ItemRefContents {
-    /// The item being refered to.
+    /// The item being referred to.
     pub def_id: DefId,
     /// The generics passed to the item. If `in_trait` is `Some`, these are only the generics of
     /// the method/type/const itself; generics for the traits are available in

@@ -142,7 +142,7 @@ pub enum Response {
     TypedDumpedAst(Vec<Item>),
     /// One of the possible response for `Request::DumpAst`. A AST was dumped as an untyped JSON.
     DumpedAst(serde_json::Value),
-    /// An error occured.
+    /// An error occurred.
     Error(String),
 }
 

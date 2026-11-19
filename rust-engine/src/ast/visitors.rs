@@ -24,7 +24,7 @@ pub mod wrappers {
     //! Such wrappers transform the behavior of a visitor.
     //!
     //! For example, [`SpanWrapper`] takes care of keeping track of [`Span`]s
-    //! while travesing an AST.
+    //! while traversing an AST.
 
     use std::ops::Deref;
 

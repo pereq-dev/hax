@@ -94,7 +94,7 @@ install_ocaml_engine() {
     {
         # Limit the number of thread spawned by opam
         export OPAMJOBS=$opam_jobs
-        # Make the garbadge collector of OCaml more agressive (see
+        # Make the garbage collector of OCaml more aggressive (see
         # https://discuss.ocaml.org/t/how-to-limit-the-amount-of-memory-the-ocaml-compiler-is-allowed-to-use/797)
         export OCAMLRUNPARAM="o=20"
     }

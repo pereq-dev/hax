@@ -54,7 +54,7 @@ mod module {
         }
 
         /// Extension trait that provides non-stealing variants of `thir_body` and `mir_built`.
-        /// Those methods requires rustc queries to be overriden with the helper function `register` above.
+        /// Those methods requires rustc queries to be overridden with the helper function `register` above.
         #[extension_traits::extension(pub trait SafeTyCtxtBodies)]
         impl<'tcx> rustc_middle::ty::TyCtxt<'tcx> {
             fn thir_body_safe(
