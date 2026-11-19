@@ -49,7 +49,7 @@ impl Prop {
     pub const fn from_bool(b: bool) -> Self {
         constructors::from_bool(b)
     }
-    /// Conjuction of two propositions.
+    /// Conjunction of two propositions.
     pub fn and(self, other: impl Into<Self>) -> Self {
         constructors::and(self, other.into())
     }

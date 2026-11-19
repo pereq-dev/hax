@@ -64,7 +64,7 @@ impl Diagnostic {
 pub enum Context {
     /// Error during import from THIR
     Import,
-    /// Error during the projection from idenitfiers to views
+    /// Error during the projection from identifiers to views
     NameView,
     /// Error in a printer
     Printer(String),

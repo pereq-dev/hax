@@ -999,7 +999,7 @@ pub enum ImplAssocItemValue {
         /// The definition of the item in the trait impl. This is an `AssocTy`, `AssocFn` or
         /// `AssocConst`.
         def_id: DefId,
-        /// Whether the trait had a default value for this item (which is therefore overriden).
+        /// Whether the trait had a default value for this item (which is therefore overridden).
         is_override: bool,
     },
     /// This is an associated type that reuses the trait declaration default.

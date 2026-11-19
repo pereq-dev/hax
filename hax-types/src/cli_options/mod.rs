@@ -543,7 +543,7 @@ pub struct BackendOptions<E: Extension> {
     /// Extract type aliases. This is disabled by default, since
     /// extracted terms depends on expanded types rather than on type
     /// aliases. Turning this option on is discouraged: Rust type
-    /// synonyms can ommit generic bounds, which are ususally
+    /// synonyms can omit generic bounds, which are usually
     /// necessary in the hax backends, leading to typechecking
     /// errors. For more details see
     /// https://github.com/pereq-dev/hax/issues/708.

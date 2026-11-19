@@ -6,7 +6,7 @@ Parts of it are being rewritten in Rust in [`../rust-engine`](../rust-engine).
 ## Design
 
 Note that Hax uses [JSON schemas](https://json-schema.org/): an OCaml
-module `types.ml` definining the types we declared on the Rust side
+module `types.ml` defining the types we declared on the Rust side
 with JSON parser and serializer is automatically generated. Thus, when
 we refer here to a Rust type in the context of the engine, we mean its
 OCaml automatically derived counterpart in `Types.ml`.
@@ -34,7 +34,7 @@ The engine is designed to behave like a "pure" function.
     [`Output`](../hax-types/src/engine_api.rs) value, serialize it
     to JSON, and output that on stdout.  
     *Note that the engine doesn't write or read anything on the
-    hard-drive, it is supposed to be entirely side-ffect free (when
+    hard-drive, it is supposed to be entirely side-effect free (when
     not in debug mode): files are created by the [Rust
     driver](../cli/driver/src/exporter.rs)*
 
@@ -43,7 +43,7 @@ The engine is designed to behave like a "pure" function.
 `dune build` produces that file using `utils/ocaml_of_json_schema`,
 and stores it in `build/default/lib/types.ml`.
 
-To show the file nicely formated, use: `dune describe pp lib/types.ml` (or `dune describe pp lib/types.ml | bat -l ml`, if you have [`bat`](https://github.com/sharkdp/bat))
+To show the file nicely formatted, use: `dune describe pp lib/types.ml` (or `dune describe pp lib/types.ml | bat -l ml`, if you have [`bat`](https://github.com/sharkdp/bat))
 
 You can also use `dune utop` and then `#show_type Hax_engine.Types.SOME_TYPE` and `#show_constructor Hax_engine.Types.SOME_CONSTRUCTOR`.
 

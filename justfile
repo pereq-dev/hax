@@ -22,7 +22,7 @@ alias b := build
 expand *FLAGS:
   RUSTFLAGS='-Zcrate-attr=register_tool(_hax) -Zcrate-attr=feature(register_tool) --cfg hax_compilation --cfg _hax --cfg hax --cfg hax_backend_fstar --cfg hax' \
     cargo \
-    $([[ "$(cargo --version)" == *nightly* ]] || echo "+nigthly") \
+    $([[ "$(cargo --version)" == *nightly* ]] || echo "+nightly") \
     expand {{FLAGS}}
 
 # Show debug JSON emitted by the Rust engine
@@ -193,7 +193,7 @@ check-examples:
     {{just_executable()}} check-example "$example"
   done <<< "$examples"
 
-# Check the coherency between issues labeled `marked-unimplemented` on GitHub and issues mentionned in the engine in the `Unimplemented {issue_id: ...}` errors.
+# Check the coherency between issues labeled `marked-unimplemented` on GitHub and issues mentioned in the engine in the `Unimplemented {issue_id: ...}` errors.
 @check-issues:
   just _ensure_command_in_path jq "jq (https://jqlang.github.io/jq/)"
   just _ensure_command_in_path gh "GitHub CLI (https://cli.github.com/)"
@@ -220,7 +220,7 @@ check-licenses:
   opam env >& /dev/null || opam init --no
   # pin package `hax-engine` if needed
   opam list --required-by=hax-engine --column=name,license: -s >& /dev/null || opam pin . --yes
-  # Check that every pacakge matches licenses of `deny.toml`
+  # Check that every package matches licenses of `deny.toml`
   if opam list --required-by=hax-engine --column=name,license: -s \
      | grep -Pvi $(toml2json ../deny.toml| jq '.licenses.allow | join("|")'); then
      echo "Some licenses were non compliant to our policy (see `deny.toml`)"

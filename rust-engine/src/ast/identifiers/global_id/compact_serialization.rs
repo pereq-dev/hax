@@ -10,7 +10,7 @@ use crate::interning::Internable;
 use hax_frontend_exporter::{DefKind, DefPathItem, DisambiguatedDefPathItem};
 
 use super::{DefIdInner, ExplicitDefId};
-/// The compact reperesentation: a tuple (krate name, path, defkind, is_constructor)
+/// The compact representation: a tuple (krate name, path, defkind, is_constructor)
 /// The path is a vector of tuples (DefPathItem, disambiguator).
 type Repr = (String, Vec<(DefPathItem, u32)>, DefKind, bool);
 /// `BorrowedRepr` is the borrowed variant of `Repr`. Useful for serialization.

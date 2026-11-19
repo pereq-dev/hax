@@ -23,7 +23,7 @@
 //! namespaces or suffixed with reserved suffixes.
 //!
 //! An [`ExplicitDefId`] is a [`DefId`] that adds one piece of information: is
-//! the identifier refering to a constructor or not. This information is
+//! the identifier referring to a constructor or not. This information is
 //! ambiguous in Rust's `DefId`s.
 //!
 //! A [`DefId`] is an interned [`DefIdInner`], which in turn is a datatype
@@ -275,8 +275,8 @@ enum GlobalIdInner {
 /// fields. This is necessary in cases where we need to refer to these
 /// components in a structured and identifiable way.
 ///
-/// For ergnomic purposes, `TupleId` can be transformed into `ConcreteId`s.
-/// After such a conversion, we loose structure, but we end up with a standard
+/// For ergonomic purposes, `TupleId` can be transformed into `ConcreteId`s.
+/// After such a conversion, we lose structure, but we end up with a standard
 /// concrete identifier, which can be printed in a generic way.
 /// See [`ConcreteId::from_global_id`].
 pub enum TupleId {

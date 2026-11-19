@@ -79,7 +79,7 @@ fn parse_attrs<'a, T: syn::parse::Parse>(
 ) -> impl Iterator<Item = T> + 'a {
     tokens_of_attrs(attr_name, attrs).map(move |x| {
         syn::parse::<T>(x.clone().into())
-            .expect(format!("expected attribtue {}", attr_name).as_str())
+            .expect(format!("expected attribute {}", attr_name).as_str())
     })
 }
 
@@ -115,7 +115,7 @@ fn fields_to_arm(
     let is_struct = fields.iter().any(|f| f.ident.is_some());
     let is_tuple = fields.iter().any(|f| f.ident.is_none());
     if is_tuple && is_struct {
-        panic!("Impossibe: variant with both named and unamed fields")
+        panic!("Impossible: variant with both named and unnamed fields")
     }
 
     let data = fields.iter().enumerate().map(|(i, field)| {

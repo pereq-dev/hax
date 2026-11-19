@@ -72,9 +72,9 @@ pub(crate) use report;
 macro_rules! supposely_unreachable_message {
     ($label:literal) => {
         concat!(
-            "Supposely unreachable place in the Rust AST. The label is ",
+            "Supposedly unreachable place in the Rust AST. The label is ",
             stringify!($label),
-            ".\nThis error report happend because some assumption about the Rust AST was broken."
+            ".\nThis error report happened because some assumption about the Rust AST was broken."
         )
     };
 }

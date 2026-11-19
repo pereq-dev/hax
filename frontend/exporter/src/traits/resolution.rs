@@ -113,7 +113,7 @@ pub enum DestructData<'tcx> {
 pub struct ImplExpr<'tcx> {
     /// The trait this is an impl for.
     pub r#trait: PolyTraitRef<'tcx>,
-    /// The kind of implemention of the root of the tree.
+    /// The kind of implementation of the root of the tree.
     pub r#impl: ImplExprAtom<'tcx>,
 }
 
@@ -136,7 +136,7 @@ pub struct AnnotatedTraitPred<'tcx> {
 }
 
 /// Returns the predicate to resolve as `Self`, if that makes sense in the current item.
-/// Currently this predicate is only used inside trait declarations and their asosciated types.
+/// Currently this predicate is only used inside trait declarations and their associated types.
 fn initial_self_pred<'tcx>(
     tcx: TyCtxt<'tcx>,
     def_id: rustc_span::def_id::DefId,
@@ -146,7 +146,7 @@ fn initial_self_pred<'tcx>(
         Trait | TraitAlias => def_id,
         // Associated types can refer to the implicit `Self` clause. For methods and associated
         // consts we pass an explicit `Self: Trait` clause to make the corresponding item
-        // reuseable.
+        // reusable.
         AssocTy => tcx.parent(def_id),
         _ => return None,
     };

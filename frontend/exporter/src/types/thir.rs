@@ -26,7 +26,7 @@ pub enum LintLevel {
 #[derive_group(Serializers)]
 #[derive(AdtInto, Clone, Debug, JsonSchema)]
 #[args(<'tcx, S: ExprState<'tcx>>, from: thir::FruInfo<'tcx>, state: S as gstate)]
-/// Field Record Update (FRU) informations, this reflects [`thir::FruInfo`]
+/// Field Record Update (FRU) information, this reflects [`thir::FruInfo`]
 pub struct FruInfo {
     /// The base, e.g. `Foo {x: 1, .. base}`
     pub base: Expr,

@@ -175,7 +175,7 @@ pub enum DestructData {
 pub struct ImplExpr {
     /// The trait this is an impl for.
     pub r#trait: Binder<TraitRef>,
-    /// The kind of implemention of the root of the tree.
+    /// The kind of implementation of the root of the tree.
     pub r#impl: ImplExprAtom,
 }
 
