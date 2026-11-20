@@ -8,10 +8,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     fstar.url = "github:FStarLang/FStar/v2025.10.06";
-    hacl-star = {
-      url = "github:hacl-star/hacl-star";
-      flake = false;
-    };
     rust-by-examples = {
       url = "github:rust-lang/rust-by-example";
       flake = false;
@@ -19,7 +15,7 @@
   };
 
   outputs =
-    { flake-utils, nixpkgs, rust-overlay, crane, hacl-star, ... }@inputs:
+    { flake-utils, nixpkgs, rust-overlay, crane, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -46,7 +42,6 @@
         hax-env-file = pkgs.writeText "hax-env-file" ''
           HAX_PROOF_LIBS_HOME="${./proof-libs/fstar}"
           HAX_LIBS_HOME="${./hax-lib}"/proofs/fstar/extraction
-          HACL_HOME="${hacl-star}"
         '';
         hax-env = pkgs.writeScriptBin "hax-env" ''
           if [[ "$1" == "no-export" ]]; then
@@ -205,7 +200,6 @@
           examples = pkgs.mkShell {
             inherit LIBCLANG_PATH DYLD_LIBRARY_PATH;
             inputsFrom = [ devShells.fstar ];
-            HACL_HOME = "${hacl-star}";
             shellHook = ''
               HAX_ROOT=$(git rev-parse --show-toplevel)
               export HAX_PROOF_LIBS_HOME="$HAX_ROOT/proof-libs/fstar"

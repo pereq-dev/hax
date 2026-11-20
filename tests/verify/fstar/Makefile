@@ -56,7 +56,7 @@ FSTAR_FLAGS = \
   --warn_error -321-331-241-274-239-271 \
   --ext context_pruning --z3version 4.13.3 \
   --cache_checked_modules --cache_dir $(CACHE_DIR) \
-  --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
+  --already_cached "+Prims+FStar+LowStar+C+TestLib" \
   $(addprefix --include ,$(INCLUDE_DIRS))
 
 FSTAR := $(FSTAR_BIN) $(FSTAR_FLAGS)

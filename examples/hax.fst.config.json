@@ -8,14 +8,13 @@
         "--cache_dir",
         "${HAX_HOME}/proof-libs/fstar/.cache",
         "--already_cached",
-        "+Prims+FStar+LowStar+C+Spec.Loops+TestLib",
+        "+Prims+FStar+LowStar+C+TestLib",
         "--query_stats",
         "--split_queries",
         "always"
     ],
     "include_dirs": [
         ".",
-        "${HACL_HOME}/lib",
         "${HAX_HOME}/proof-libs/fstar/rust_primitives",
         "${HAX_HOME}/proof-libs/fstar/core",
         "${HAX_HOME}/proof-libs/fstar/hax_lib"

@@ -70,22 +70,6 @@
         "type": "github"
       }
     },
-    "hacl-star": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1752721968,
-        "narHash": "sha256-CyQvUUT6kFBxG/cQYEt9xPipEsOa5OQg1B9iYILnVz0=",
-        "owner": "hacl-star",
-        "repo": "hacl-star",
-        "rev": "b75b1a44f4663b369209f93fb6b5744b3a6a709b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "hacl-star",
-        "repo": "hacl-star",
-        "type": "github"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1759381078,
@@ -122,7 +106,6 @@
         "crane": "crane",
         "flake-utils": "flake-utils",
         "fstar": "fstar",
-        "hacl-star": "hacl-star",
         "nixpkgs": "nixpkgs_2",
         "rust-by-examples": "rust-by-examples",
         "rust-overlay": "rust-overlay"

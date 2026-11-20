@@ -12,8 +12,7 @@ The dependency chain is:
 The `/rust_primitives` directory contains hand-written models for Rust
 built-in features like machine integers and arrays. In particular, the
 code in this directory reconciles any type or semantic differences
-between Rust and F*. A number of files in this directory use the 
-[HACL Library](https://github.com/hacl-star/hacl-star/tree/main/lib).
+between Rust and F*.
 
 # Core & Alloc
 

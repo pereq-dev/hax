@@ -13,8 +13,6 @@
 #  3. the extracted Cargo crate to have "hax-lib" as a dependency:
 #     `hax-lib = { version = "0.1.0-pre.1", git = "https://github.com/pereq-dev/hax"}`
 #
-# Optionally, you can set `HACL_HOME`.
-#
 # ROOTS contains all the top-level F* files you wish to verify
 # The default target `verify` verified ROOTS and its dependencies
 # To lax-check instead, set `OTHERFLAGS="--lax"` on the command-line
@@ -35,7 +33,6 @@
 # (setq fstar-subp-prover-args #'my-fstar-compute-prover-args-using-make)
 #
 
-HACL_HOME     ?= $(HOME)/.hax/hacl_home
 FSTAR_BIN     ?= $(shell command -v fstar.exe 1>&2 2> /dev/null && echo "fstar.exe" || echo "$(FSTAR_HOME)/bin/fstar.exe")
 
 CACHE_DIR     ?= .cache
@@ -56,11 +53,6 @@ all:
 # The item selection lives in the `process-order` scenario in the crate's
 # `hax.toml`.
 HAX_CLI = "cargo hax extract process-order"
-
-# If $HACL_HOME doesn't exist, clone it
-${HACL_HOME}:
-	mkdir -p "${HACL_HOME}"
-	git clone --depth 1 https://github.com/hacl-star/hacl-star.git "${HACL_HOME}"
 
 # If no any F* file is detected, we run hax
 ifeq "$(wildcard *.fst *fsti)" ""
@@ -110,12 +102,12 @@ define FINDLIBS
 endef
 export FINDLIBS
 
-FSTAR_INCLUDE_DIRS = $(HACL_HOME)/lib $(shell bash -c "$$FINDLIBS")
+FSTAR_INCLUDE_DIRS = $(shell bash -c "$$FINDLIBS")
 
 FSTAR_FLAGS = --cmi \
   --warn_error -331 \
   --cache_checked_modules --cache_dir $(CACHE_DIR) \
-  --already_cached "+Prims+FStar+LowStar+C+Spec.Loops+TestLib" \
+  --already_cached "+Prims+FStar+LowStar+C+TestLib" \
   $(addprefix --include ,$(FSTAR_INCLUDE_DIRS))
 
 FSTAR = $(FSTAR_BIN) $(FSTAR_FLAGS)
