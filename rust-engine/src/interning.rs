@@ -11,12 +11,11 @@
 //! - [`InterningTable<T>`]: Stores interned values and manages uniqueness.
 //! - [`Internable`]: A trait for types that can be interned.
 //!
-//! ## Safety Note
+//! ## Lifetimes
 //!
-//! The `.get()` method on `Interned<T>` returns a `&'static T` using an
-//! internal `transmute`, assuming the backing storage (interning table) never
-//! remove items from its table. This is guaranteed by the implementation of
-//! `InterningTable`.
+//! Interned values are leaked: each lives in its own allocation, which is
+//! never moved or freed. The `.get()` method on `Interned<T>` therefore returns
+//! a `&'static T` that stays valid however much the table grows afterwards.
 
 use std::{
     collections::{HashMap, HashSet},
@@ -35,15 +34,15 @@ use serde::{Deserialize, Serialize};
 /// This type is primarily an implementation detail behind [`Interned<T>`] and
 /// the [`Internable`] trait. You typically won't use it directly unless you're
 /// wiring up a new globally‑interned type.
-pub struct InterningTable<T> {
+pub struct InterningTable<T: 'static> {
     /// The raw items: item at index `n` will be an `Interned { index: n }`.
     /// Fast lookup.
-    items: Vec<T>,
+    items: Vec<&'static T>,
     /// A map from `T`s to indexes, for fast interning of existing values.
-    ids: HashMap<T, Interned<T>>,
+    ids: HashMap<&'static T, Interned<T>>,
 }
 
-impl<T> Default for InterningTable<T> {
+impl<T: 'static> Default for InterningTable<T> {
     fn default() -> Self {
         Self {
             items: Default::default(),
@@ -150,23 +149,23 @@ impl<T, R> FnOnce<()> for ExplicitClosure<T, R> {
     }
 }
 
-impl<T: Hash + Eq + Clone + Send> InterningTable<T> {
+impl<T: Hash + Eq + Clone + Send + 'static> InterningTable<T> {
     fn try_intern(&mut self, value: &T) -> Option<Interned<T>> {
         Some(if let Some(interned) = self.ids.get(value) {
             *interned
         } else {
-            let index = self.items.len();
-            self.items.push(value.clone());
             let handle = Interned {
                 phantom: PhantomData,
-                index: index.try_into().ok()?,
+                index: self.items.len().try_into().ok()?,
             };
-            self.ids.insert(value.clone(), handle);
+            let value: &'static T = Box::leak(Box::new(value.clone()));
+            self.items.push(value);
+            self.ids.insert(value, handle);
             handle
         })
     }
-    fn get(&self, interned: Interned<T>) -> &T {
-        &self.items[interned.index as usize]
+    fn get(&self, interned: Interned<T>) -> &'static T {
+        self.items[interned.index as usize]
     }
 
     /// Creates a global `LazyLock` interning table prepopulated with `values`,
@@ -263,18 +262,8 @@ impl<T: Internable> Interned<T> {
     }
 
     /// Returns a `&'static T` for this handle.
-    ///
-    /// # Safety & Lifetimes
-    ///
-    /// This method relies on the fact that the backing storage lives for the
-    /// entire program (it is kept in a `static` global table). The `'static`
-    /// reference is sound as long as values are never removed from that table.
-    /// This implementation uses `transmute` internally for that reason.
     pub fn get(self) -> &'static T {
-        let table = T::interning_table().lock().unwrap();
-        let local_reference = table.get(self);
-        let static_reference: &'static T = unsafe { std::mem::transmute(local_reference) };
-        static_reference
+        T::interning_table().lock().unwrap().get(self)
     }
 }
 
@@ -286,5 +275,32 @@ impl<T: Internable> Deref for Interned<T> {
     /// Equivalent to calling [`Interned::get`].
     fn deref(&self) -> &Self::Target {
         self.get()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[derive(Hash, PartialEq, Eq, Clone, Debug)]
+    struct Value(u64);
+
+    impl Internable for Value {
+        fn interning_table() -> &'static Mutex<InterningTable<Self>> {
+            static TABLE: LazyLock<Mutex<InterningTable<Value>>> =
+                LazyLock::new(|| Mutex::new(InterningTable::default()));
+            &TABLE
+        }
+    }
+
+    #[test]
+    fn references_survive_table_growth() {
+        let first = Value(0).intern().get();
+        let address = std::ptr::from_ref(first);
+        for n in 1..100_000 {
+            Value(n).intern();
+        }
+        assert_eq!(address, std::ptr::from_ref(Value(0).intern().get()));
+        assert_eq!(first, &Value(0));
     }
 }
