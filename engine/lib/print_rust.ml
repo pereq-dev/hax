@@ -492,7 +492,7 @@ module Raw = struct
     pattrs ti.ti_attrs
     &
     match ti.ti_v with
-    | TIType _ -> !"type " & ident & !": TodoPrintRustBoundsTyp;"
+    | TIType _ -> !"type " & ident & !";"
     | TIFn ty ->
         let inputs, output =
           match ty with
@@ -525,7 +525,7 @@ module Raw = struct
     pattrs ii.ii_attrs
     &
     match ii.ii_v with
-    | IIType _ -> !"type " & ident & !": TodoPrintRustBoundsTyp;"
+    | IIType { typ; _ } -> !"type " & ident & !" = " & pty span typ & !";"
     | IIFn { body; params } ->
         let return_type = pty span body.typ in
         !"fn " & ident & generics & pparams span params & !" -> " & return_type
@@ -613,19 +613,9 @@ let rustfmt (s : string) : string =
       | _ -> None)
   with
   | Ok formatted -> formatted
-  | Err error ->
-      let err =
-        [%string
-          "\n\n\
-           #######################################################\n\
-           ########### WARNING: Failed formatting ###########\n\
-           %{error}\n\
-           STRING:\n\
-           %{s}\n\
-           #######################################################\n"]
-      in
-      Stdio.prerr_endline err;
-      s
+  (* The Rust printer is best-effort: unformattable output falls back to the
+     unformatted string. *)
+  | Err _ -> s
 
 exception RetokenizationFailure
 
