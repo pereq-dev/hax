@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+Lean backend and library:
+ - `@[spec]` for `core::array::repeat` (`[x; N]`) on primitive integer and `bool` types
+
 ### Changed
 
 Lean backend and library:
