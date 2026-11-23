@@ -843,7 +843,7 @@ fn owner_bounds<'tcx>(
     clauses
 }
 
-/// Compute the bounds for the owner registed in the state `s`
+/// Compute the bounds for the owner registered in the state `s`
 #[cfg(feature = "rustc")]
 fn region_bounds_at_current_owner<'tcx, S: UnderOwnerState<'tcx>>(s: &S) -> GenericBounds {
     owner_bounds(s.base().tcx, s.owner_id())

@@ -900,7 +900,7 @@ impl Import<ast::Expr> for frontend::Expr {
                 |e: ast::Expr| e
             };
             let (bounds_impls, trait_, generic_args) = {
-                // TODO: we pretend the call is a standalone funtion call.
+                // TODO: we pretend the call is a standalone function call.
                 // This is not true, here we're calling methods.
                 // This should be fixed.
                 (vec![], None, vec![])

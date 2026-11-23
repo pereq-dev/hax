@@ -181,7 +181,7 @@ pub struct DefIdContents {
     /// which doesn't have a real `rustc::DefId`.
     ///
     /// **Warning: this `index` field might not be safe to use**. They are valid only for one Rustc
-    /// sesssion. Please do not rely on those indices unless you cannot do otherwise.
+    /// session. Please do not rely on those indices unless you cannot do otherwise.
     pub index: (u32, u32, Option<PromotedId>),
     pub is_local: bool,
 

@@ -663,9 +663,9 @@ macro_rules! item_quoting_proc_macros {
         /// code. Just as backend expression macros, this literal can
         /// contains dollar-prefixed Rust names.
         ///
-        /// Note: when targetting F*, you can prepend a first
+        /// Note: when targeting F*, you can prepend a first
         /// comma-separated argument: `interface`, `impl` or
-        /// `both`. This controls where the code will apprear: in the
+        /// `both`. This controls where the code will appear: in the
         /// `fst` or `fsti` files or both.
         #[proc_macro_attribute]
         pub fn $name(payload: TokenStream, item: TokenStream) -> TokenStream {
@@ -709,7 +709,7 @@ macro_rules! quoting_proc_macros {
         /// `${EXPR}` also allows any Rust expressions
         /// `EXPR` to be embedded.
         ///
-        /// Types can be refered to with the syntax `$:{TYPE}`.
+        /// Types can be referred to with the syntax `$:{TYPE}`.
         #[proc_macro]
         pub fn $expr(payload: TokenStream) -> TokenStream {
             #[cfg(hax)]

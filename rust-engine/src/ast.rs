@@ -266,7 +266,7 @@ pub struct Metadata {
     pub span: Span,
     /// Rust attributes.
     pub attributes: Attributes,
-    // TODO: add phase/desugar informations
+    // TODO: add phase/desugar information
 }
 
 /// A typed expression with metadata.
@@ -689,7 +689,7 @@ pub struct TraitItem {
     /// }
     /// ```
     pub generics: Generics,
-    /// The identifier of the associateed item.
+    /// The identifier of the associated item.
     pub ident: GlobalId,
 }
 

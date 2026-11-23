@@ -135,12 +135,12 @@ pub enum Kind {
     /// Unallowed mutable reference
     UnallowedMutRef = 3,
 
-    /// Unsupported macro invokation
+    /// Unsupported macro invocation
     UnsupportedMacro {
         id: String,
     } = 4,
 
-    /// Error parsing a macro invocation to a macro treated specifcially by a backend
+    /// Error parsing a macro invocation to a macro treated specifically by a backend
     ErrorParsingMacroInvocation {
         macro_id: String,
         details: String,
@@ -154,7 +154,7 @@ pub enum Kind {
     /// Assignation of an arbitrary left-hand side is not supported. `lhs = e` is fine only when `lhs` is a combination of local identifiers, field accessors and index accessors.
     ArbitraryLHS = 7,
 
-    /// A phase explicitely rejected this chunk of code
+    /// A phase explicitly rejected this chunk of code
     ExplicitRejection {
         reason: String,
         issue_id: Option<u32>,

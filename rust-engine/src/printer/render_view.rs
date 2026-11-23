@@ -127,7 +127,7 @@ pub trait RenderView: Sized {
     }
 
     /// Allows backends to adjust a module path before rendering, e.g., to shorten it according
-    /// to currenly open namespaces.
+    /// to currently open namespaces.
     fn relativize_module_path<'a>(&self, module_path: &'a [PathSegment]) -> &'a [PathSegment] {
         module_path
     }
