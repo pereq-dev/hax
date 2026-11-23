@@ -13,7 +13,7 @@ let main (_: Prims.unit) : Prims.unit =
     Core_models.Iter.Traits.Iterator.f_fold (Core_models.Iter.Traits.Collect.f_into_iter #(Core_models.Ops.Range.t_RangeInclusive
             FStar.Char.char)
           #FStar.Tactics.Typeclasses.solve
-          (Core_models.Ops.Range.impl_7__new #FStar.Char.char 'Ð' 'Ð'
+          (Core_models.Ops.Range.impl_7__new #FStar.Char.char 'А' 'Я'
             <:
             Core_models.Ops.Range.t_RangeInclusive FStar.Char.char)
         <:
