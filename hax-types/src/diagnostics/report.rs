@@ -12,9 +12,11 @@ pub struct ReportCtx {
     seen: HashSet<Diagnostics>,
 }
 
-/// Translates a line and column position into an absolute offset
+/// Translates a 1-based line and 0-based column into an absolute byte offset.
+/// `from_location` expects both coordinates 1-based and always lands on a char
+/// boundary, so multi-byte source characters cannot desync the offset.
 fn compute_offset(src: &str, line: usize, col: usize) -> usize {
-    SourceOffset::from_location(src, line, col).offset() + 1
+    SourceOffset::from_location(src, line, col + 1).offset()
 }
 
 impl ReportCtx {
