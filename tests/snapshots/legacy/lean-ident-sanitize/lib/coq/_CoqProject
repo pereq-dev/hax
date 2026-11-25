@@ -1,0 +1,5 @@
+-R ./ TODO
+-arg -w
+-arg all
+
+New_tests_Legacy__lean_ident_sanitize__lib.v

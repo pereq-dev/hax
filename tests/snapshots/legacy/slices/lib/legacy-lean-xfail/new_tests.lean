@@ -24,14 +24,14 @@ def do_something (_ : (RustSlice u8)) : RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 @[spec]
-def r#unsized (_ : (RustArray (RustSlice u8) 1)) :
+def unsized (_ : (RustArray (RustSlice u8) 1)) :
     RustM rust_primitives.hax.Tuple0 := do
   (pure rust_primitives.hax.Tuple0.mk)
 
 @[spec]
 def sized (x : (RustArray (RustArray u8 4) 1)) :
     RustM rust_primitives.hax.Tuple0 := do
-  (r#unsized
+  (unsized
     (RustArray.ofVec #v[(← (rust_primitives.unsize (← x[(0 : usize)]_?)))]))
 
 end new_tests.legacy__slices__lib
