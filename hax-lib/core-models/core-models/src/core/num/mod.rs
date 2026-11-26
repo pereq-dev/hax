@@ -257,12 +257,37 @@ macro_rules! uint_impl {
                     x % y == 0
                 }
             }
+            /// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+            pub fn trailing_zeros(x: $Self) -> core::primitive::u32 {
+                // Scans from the top, so the last set bit seen is the lowest.
+                let mut n = $Bits;
+                for i in 0u32..$Bits {
+                    let j = $Bits - 1 - i;
+                    if (x >> j) & 1 == 1 {
+                        n = j;
+                    }
+                }
+                n
+            }
+            /// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+            pub fn reverse_bits(x: $Self) -> $Self {
+                let mut r: $Self = 0;
+                for i in 0u32..$Bits {
+                    if (x >> i) & 1 == 1 {
+                        r = r | (1 << ($Bits - 1 - i));
+                    }
+                }
+                r
+            }
+            /// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+            pub fn checked_shl(x: $Self, n: core::primitive::u32) -> Option<$Self> {
+                if n < $Bits {
+                    Option::Some(x << n)
+                } else {
+                    Option::None
+                }
+            }
             // The following methods require additions to rust_primitives:
-            // /// See [`std::primitive::u8::trailing_zeros`] (and similar for other integer types)
-            // #[hax_lib::opaque]
-            // fn trailing_zeros(x: $Self) -> core::primitive::u32 {
-            //     paste! { [<trailing_zeros_ $Name>](x) }
-            // }
             // /// See [`std::primitive::u8::swap_bytes`] (and similar for other integer types)
             // #[hax_lib::opaque]
             // fn swap_bytes(x: $Self) -> $Self {
@@ -1000,6 +1025,25 @@ mod tests {
                             if x > 0 {
                                 prop_assert_eq!(super::$t::ilog2(x.inject()), x.ilog2());
                             }
+                        }
+
+                        #[test]
+                        fn [<test_ $t _trailing_zeros>](x in prop_oneof![Just(0 as $t), any::<$t>()]) {
+                            prop_assert_eq!(super::$t::trailing_zeros(x.inject()), x.trailing_zeros());
+                        }
+
+                        #[test]
+                        fn [<test_ $t _reverse_bits>](x in any::<$t>()) {
+                            prop_assert_eq!(super::$t::reverse_bits(x.inject()), x.reverse_bits());
+                        }
+
+                        // `n` past `BITS` too: that is the `None` case.
+                        #[test]
+                        fn [<test_ $t _checked_shl>](
+                            x in any::<$t>(),
+                            n in prop_oneof![Just($t::BITS), 0u32..$t::BITS, any::<u32>()],
+                        ) {
+                            prop_assert_eq!(super::$t::checked_shl(x.inject(), n), x.checked_shl(n).inject());
                         }
 
                         #[test]

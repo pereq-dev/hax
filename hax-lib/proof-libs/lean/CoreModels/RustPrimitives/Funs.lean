@@ -46,6 +46,69 @@ def rust_primitives.slice.slice_split_at_mut
   RustM (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T)) :=
   Aeneas.Std.core.slice.Slice.split_at_mut
 
+/-- The first `k` full `n`-element chunks of `l`, and what follows them. -/
+def rust_primitives.slice.slice_as_chunks_go {T : Type _} (n : Std.Usize) :
+    Nat → List T → List (Array T n) × List T
+  | 0, l => ([], l)
+  | k + 1, l =>
+    if h : n.val ≤ l.length then
+      let r := slice_as_chunks_go n k (l.drop n.val)
+      (Array.make n (l.take n.val) (by simp; omega) :: r.1, r.2)
+    else ([], l)
+
+theorem rust_primitives.slice.slice_as_chunks_go_length {T : Type _} (n : Std.Usize) (k : Nat)
+    (l : List T) :
+    (slice_as_chunks_go n k l).1.length * n.val + (slice_as_chunks_go n k l).2.length
+      = l.length := by
+  induction k generalizing l with
+  | zero => simp [slice_as_chunks_go]
+  | succ k ih =>
+    unfold slice_as_chunks_go
+    split
+    · have := ih (l.drop n.val)
+      simp only [List.length_cons, Nat.succ_mul, List.length_drop] at *
+      omega
+    · simp
+
+/-- [rust_primitives::slice::slice_as_chunks]: the slice's full `N`-element
+    chunks, and the remainder. -/
+def rust_primitives.slice.slice_as_chunks
+  {T : Type _} (N : Std.Usize) (s : Slice T) : RustM ((Slice (Array T N)) × (Slice T)) :=
+  if hn : 0 < N.val then
+    have hl := slice_as_chunks_go_length N s.val.length s.val
+    have hs := s.property
+    have : (slice_as_chunks_go N s.val.length s.val).1.length
+        ≤ (slice_as_chunks_go N s.val.length s.val).1.length * N.val :=
+      Nat.le_mul_of_pos_right _ hn
+    ok (Slice.from (slice_as_chunks_go N s.val.length s.val).1 (by omega),
+        Slice.from (slice_as_chunks_go N s.val.length s.val).2 (by omega))
+  else fail .panic
+
+/-- [rust_primitives::slice::slice_as_flattened]: the arrays' elements in order,
+    a panic when there are more than `usize::MAX` of them (as std's, which only
+    zero-sized elements can reach). -/
+def rust_primitives.slice.slice_as_flattened
+  {T : Type _} {N : Std.Usize} (s : Slice (Array T N)) : RustM (Slice T) :=
+  let l := (s.val.map Array.val).flatten
+  if h : l.length ≤ Usize.max then ok (Slice.from l h) else fail .panic
+
+/-- [rust_primitives::slice::slice_as_chunks_mut]: `slice_as_chunks`, with the
+    write-back concatenating the chunks and the remainder. -/
+def rust_primitives.slice.slice_as_chunks_mut
+  {T : Type _} (N : Std.Usize) (s : Slice T) :
+  RustM (((Slice (Array T N)) × (Slice T)) × (((Slice (Array T N)) × (Slice T)) → Slice T)) := do
+  let r ← slice_as_chunks N s
+  let back := fun (r : (Slice (Array T N)) × (Slice T)) =>
+    let l := (r.1.val.map Array.val).flatten ++ r.2.val
+    if h : l.length ≤ Usize.max then Slice.from l h else s
+  ok (r, back)
+
+/-- [rust_primitives::slice::slice_as_array]: the slice as an array of its
+    length. -/
+def rust_primitives.slice.slice_as_array
+  {T : Type _} (N : Std.Usize) (s : Slice T) : RustM (Array T N) :=
+  if h : s.val.length = N.val then ok (Array.make N s.val h) else fail .panic
+
 /-- Recursive helper function for `slice_contains` -/
 def rust_primitives.slice.slice_contains_go {T : Type _}
     (inst : core.cmp.PartialEq T T) (x : T) : List T → RustM Bool

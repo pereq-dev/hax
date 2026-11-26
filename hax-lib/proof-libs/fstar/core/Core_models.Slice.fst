@@ -3,6 +3,10 @@ module Core_models.Slice
 open FStar.Mul
 open Rust_primitives
 
+let chunk_size_nonzero (n: usize)
+    : Prims.Pure Prims.unit (requires n >. mk_usize 0) (fun _ -> Prims.l_True) =
+  if n =. mk_usize 0 then Core_models.Panicking.Internal.panic #Prims.unit ()
+
 /// See [`std::slice::len`]
 let impl__len (#v_T: Type0) (s: t_Slice v_T) : usize = Rust_primitives.Slice.slice_length #v_T s
 
@@ -11,6 +15,16 @@ let impl__iter (#v_T: Type0) (s: t_Slice v_T) : Core_models.Slice.Iter.t_Iter v_
   Core_models.Slice.Iter.Iter (Rust_primitives.Sequence.seq_from_slice #v_T s)
   <:
   Core_models.Slice.Iter.t_Iter v_T
+
+/// See [`std::slice::as_array`]
+let impl__as_array (#v_T: Type0) (v_N: usize) (s: t_Slice v_T)
+    : Core_models.Option.t_Option (t_Array v_T v_N) =
+  if (impl__len #v_T s <: usize) =. v_N
+  then
+    Core_models.Option.Option_Some (Rust_primitives.Slice.slice_as_array #v_T v_N s)
+    <:
+    Core_models.Option.t_Option (t_Array v_T v_N)
+  else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Array v_T v_N)
 
 /// See [`std::slice::is_empty`]
 let impl__is_empty (#v_T: Type0) (s: t_Slice v_T) : bool = (impl__len #v_T s <: usize) =. mk_usize 0
@@ -171,6 +185,18 @@ let impl__split_at (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
       (requires mid <=. (impl__len #v_T s <: usize))
       (fun _ -> Prims.l_True) = Rust_primitives.Slice.slice_split_at #v_T s mid
 
+/// See [`std::slice::split_first_chunk`]
+let impl__split_first_chunk (#v_T: Type0) (v_N: usize) (s: t_Slice v_T)
+    : Core_models.Option.t_Option (t_Array v_T v_N & t_Slice v_T) =
+  if (impl__len #v_T s <: usize) <. v_N
+  then Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Array v_T v_N & t_Slice v_T)
+  else
+    let (first: t_Slice v_T), (tail: t_Slice v_T) = impl__split_at #v_T s v_N in
+    Core_models.Option.Option_Some
+    (Rust_primitives.Slice.slice_as_array #v_T v_N first, tail <: (t_Array v_T v_N & t_Slice v_T))
+    <:
+    Core_models.Option.t_Option (t_Array v_T v_N & t_Slice v_T)
+
 /// See [`std::slice::split_at_checked`]
 let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     : Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T) =
@@ -180,6 +206,14 @@ let impl__split_at_checked (#v_T: Type0) (s: t_Slice v_T) (mid: usize)
     <:
     Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
   else Core_models.Option.Option_None <: Core_models.Option.t_Option (t_Slice v_T & t_Slice v_T)
+
+/// See [`std::slice::as_chunks`]
+let impl__as_chunks (#v_T: Type0) (v_N: usize) (s: t_Slice v_T)
+    : Prims.Pure (t_Slice (t_Array v_T v_N) & t_Slice v_T)
+      (requires v_N >. mk_usize 0)
+      (fun _ -> Prims.l_True) =
+  let _:Prims.unit = chunk_size_nonzero v_N in
+  Rust_primitives.Slice.slice_as_chunks #v_T v_N s
 
 /// See [`std::slice::copy_within`]
 let impl__copy_within

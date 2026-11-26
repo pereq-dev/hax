@@ -1158,3 +1158,34 @@ pub fn test_u8_is_multiple_of_zero_rhs_nonzero() -> bool {
 pub fn test_u32_is_multiple_of_true() -> bool {
     1000u32.is_multiple_of(8u32) == true
 }
+
+// =============================================================================
+// trailing_zeros / reverse_bits / checked_shl
+// =============================================================================
+
+#[rust_lean_test]
+pub fn test_u64_trailing_zeros() -> bool {
+    0b1000u64.trailing_zeros() == 3 && 0u64.trailing_zeros() == 64 && 1u64.trailing_zeros() == 0
+}
+
+#[rust_lean_test]
+pub fn test_usize_trailing_zeros() -> bool {
+    96usize.trailing_zeros() == 5
+}
+
+#[rust_lean_test]
+pub fn test_u64_reverse_bits() -> bool {
+    1u64.reverse_bits() == 0x8000_0000_0000_0000 && 0x0Fu64.reverse_bits() == 0xF000_0000_0000_0000
+}
+
+#[rust_lean_test]
+pub fn test_u8_reverse_bits() -> bool {
+    0b1100_0001u8.reverse_bits() == 0b1000_0011u8
+}
+
+#[rust_lean_test]
+pub fn test_u64_checked_shl() -> bool {
+    3u64.checked_shl(4) == Some(48)
+        && 3u64.checked_shl(63) == Some(0x8000_0000_0000_0000)
+        && 3u64.checked_shl(64).is_none()
+}

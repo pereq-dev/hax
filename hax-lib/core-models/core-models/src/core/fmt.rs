@@ -247,10 +247,12 @@ impl<'a> Arguments<'a> {
     /// messages to `Arguments::from_str(msg)` and discards the result, so this
     /// exists to make those call sites resolve.
     ///
-    /// Opaque: real `core` builds an `Arguments` that carries the formatted
-    /// message, while the model's is a payload-free phantom, so the body is not
-    /// a model of what `core` does — only enough to have a value.
-    #[hax_lib::opaque]
+    /// Opaque in F*: real `core` builds an `Arguments` that carries the
+    /// formatted message, while the model's is a payload-free phantom, so the
+    /// body is not a model of what `core` does — only enough to have a value.
+    /// The Lean library's `Arguments` is that same phantom, so Lean takes the
+    /// body.
+    #[cfg_attr(hax_backend_fstar, hax_lib::opaque)]
     pub fn from_str(_s: &str) -> Arguments<'a> {
         Arguments(&())
     }

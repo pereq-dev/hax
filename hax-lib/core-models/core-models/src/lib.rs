@@ -55,6 +55,8 @@ pub mod sync;
 
 #[path = "core/array.rs"]
 pub mod array;
+#[path = "core/bool.rs"]
+pub mod bool;
 #[path = "core/borrow.rs"]
 pub mod borrow;
 #[path = "core/clone.rs"]

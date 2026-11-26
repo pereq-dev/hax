@@ -339,6 +339,16 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
                     Some(seq_remove(&mut self.0, 0))
                 }
             }
+            fn iter(&self) -> iter::Iter<'_, T> {
+                iter::Iter(seq_from_slice(seq_to_slice(&self.0)))
+            }
+            fn remove(&mut self, index: usize) -> Option<T> {
+                if index < self.len() {
+                    Some(seq_remove(&mut self.0, index))
+                } else {
+                    None
+                }
+            }
         }
 
         #[hax_lib::attributes]
@@ -347,6 +357,22 @@ assume val lemma_peek_pop: #t:Type -> (#a: Type) -> (#i: Core_models.Cmp.t_Ord t
             #[hax_lib::requires(i < self.len())]
             fn index(&self, i: usize) -> &T {
                 seq_index(&self.0, i)
+            }
+        }
+
+        pub mod iter {
+            use rust_primitives::sequence::*;
+            /// See [`std::collections::vec_deque::Iter`]
+            pub struct Iter<'a, T>(pub Seq<&'a T>);
+            impl<'a, T> Iterator for Iter<'a, T> {
+                type Item = &'a T;
+                fn next(&mut self) -> Option<Self::Item> {
+                    if seq_len(&self.0) == 0 {
+                        None
+                    } else {
+                        Some(seq_remove(&mut self.0, 0))
+                    }
+                }
             }
         }
 
@@ -425,6 +451,34 @@ let update_at_usize (#v_T #v_A: Type0)
                         model.push_back(e);
                         std_deque.push_back(e);
                     }
+                    prop_assert_eq!(model.len(), std_deque.len());
+                    for i in 0..std_deque.len() {
+                        prop_assert_eq!(model[i], std_deque[i]);
+                    }
+                }
+
+                #[test]
+                fn test_iter(elements in prop::collection::vec(any::<u8>(), 0..20)) {
+                    let mut model = Model::new();
+                    let mut std_deque = std::collections::VecDeque::new();
+                    for &e in &elements {
+                        model.push_back(e);
+                        std_deque.push_back(e);
+                    }
+                    let collected: std::vec::Vec<u8> = model.iter().copied().collect();
+                    let expected: std::vec::Vec<u8> = std_deque.iter().copied().collect();
+                    prop_assert_eq!(collected, expected);
+                }
+
+                #[test]
+                fn test_remove(elements in prop::collection::vec(any::<u8>(), 0..20), index in 0usize..25) {
+                    let mut model = Model::new();
+                    let mut std_deque = std::collections::VecDeque::new();
+                    for &e in &elements {
+                        model.push_back(e);
+                        std_deque.push_back(e);
+                    }
+                    prop_assert_eq!(model.remove(index), std_deque.remove(index));
                     prop_assert_eq!(model.len(), std_deque.len());
                     for i in 0..std_deque.len() {
                         prop_assert_eq!(model[i], std_deque[i]);
@@ -539,6 +593,16 @@ mod slice {
         where
             T: core::borrow::Borrow<[Item]>,
         {
+            // std's capacity pass: its `Borrow` calls and overflow check are observable.
+            let mut size: usize = 0;
+            let mut i = 0;
+            while i < rust_primitives::slice::slice_length(s) {
+                size += rust_primitives::slice::slice_length(
+                    rust_primitives::slice::slice_index(s, i).borrow(),
+                );
+                i += 1;
+            }
+            let _ = size;
             let mut out = seq_empty();
             let mut i = 0;
             while i < rust_primitives::slice::slice_length(s) {
@@ -575,6 +639,44 @@ mod slice {
                 }
                 i += 1;
             }
+        }
+    }
+
+    /// See [`std::slice::Concat`]
+    // Lean-only, like the `concat` above it serves: the Lean library's
+    // `alloc.slice.Slice.concat` takes this dictionary, as clients pass it.
+    #[cfg(not(hax_backend_fstar))]
+    pub trait Concat<Item: ?Sized> {
+        type Output;
+        /// See [`std::slice::Concat::concat`]
+        fn concat(slice: &Self) -> Self::Output;
+    }
+
+    /// See [`std::slice::Concat`] for `[V]`
+    #[cfg(not(hax_backend_fstar))]
+    impl<T: Clone, V: core::borrow::Borrow<[T]>> Concat<T> for [V] {
+        type Output = Vec<T>;
+        fn concat(slice: &Self) -> Vec<T> {
+            // As in `Dummy::concat`: std's capacity pass first.
+            let mut size: usize = 0;
+            let mut i = 0;
+            while i < rust_primitives::slice::slice_length(slice) {
+                size += rust_primitives::slice::slice_length(
+                    rust_primitives::slice::slice_index(slice, i).borrow(),
+                );
+                i += 1;
+            }
+            let _ = size;
+            let mut out = seq_empty();
+            let mut i = 0;
+            while i < rust_primitives::slice::slice_length(slice) {
+                seq_extend(
+                    &mut out,
+                    rust_primitives::slice::slice_index(slice, i).borrow(),
+                );
+                i += 1;
+            }
+            from_seq(out)
         }
     }
 
@@ -638,7 +740,40 @@ mod slice {
                 let model = super::Dummy::<&[u8]>::concat(&slices);
                 let expected = slices.concat();
                 prop_assert_eq!(model.as_slice(), expected.as_slice());
+                let model = <[&[u8]] as super::Concat<u8>>::concat(&slices);
+                prop_assert_eq!(model.as_slice(), expected.as_slice());
             }
+        }
+
+        /// Records each `borrow` call, so the call sequence can be compared with std's.
+        #[cfg(not(hax_backend_fstar))]
+        struct Logged<'a>(
+            usize,
+            &'a [u8],
+            &'a std::cell::RefCell<std::vec::Vec<usize>>,
+        );
+        #[cfg(not(hax_backend_fstar))]
+        impl core::borrow::Borrow<[u8]> for Logged<'_> {
+            fn borrow(&self) -> &[u8] {
+                self.2.borrow_mut().push(self.0);
+                self.1
+            }
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_concat_borrow_calls() {
+            let log = std::cell::RefCell::new(std::vec::Vec::new());
+            let parts: [&[u8]; 3] = [&[1], &[], &[2, 3]];
+            let logged = |log| [0, 1, 2].map(|i| Logged(i, parts[i], log));
+            let expected = logged(&log).concat();
+            let std_log = log.take();
+            let model = super::Dummy::<Logged>::concat(&logged(&log));
+            assert_eq!(model.as_slice(), expected.as_slice());
+            assert_eq!(log.take(), std_log);
+            let model = <[Logged] as super::Concat<u8>>::concat(&logged(&log));
+            assert_eq!(model.as_slice(), expected.as_slice());
+            assert_eq!(log.take(), std_log);
         }
     }
 }
@@ -1031,6 +1166,31 @@ pub mod vec {
                 res.push(el)
             }
             res
+        }
+    }
+
+    /// See [`std::iter::Extend`] for `Vec<T>`
+    impl<T> std::iter::Extend<T> for Vec<T> {
+        fn extend<I: IntoIterator<Item = T>>(&mut self, iter: I) {
+            for el in iter {
+                self.push(el)
+            }
+        }
+    }
+
+    /// See [`std::borrow::Borrow`] `<[T]>` for `Vec<T>`
+    impl<T> core::borrow::Borrow<[T]> for Vec<T> {
+        fn borrow(&self) -> &[T] {
+            seq_to_slice(&self.0)
+        }
+    }
+
+    /// See [`std::iter::Extend`] for `Vec<T>`, over references
+    impl<'a, T: Copy + 'a> std::iter::Extend<&'a T> for Vec<T> {
+        fn extend<I: IntoIterator<Item = &'a T>>(&mut self, iter: I) {
+            for el in iter {
+                self.push(*el)
+            }
         }
     }
 

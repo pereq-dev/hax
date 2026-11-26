@@ -141,3 +141,77 @@ mod iterator_methods {
         assert_eq!(it.fold(0u32, |a, b| a + b), 6);
     }
 }
+
+// ----- sum, RangeInclusive, RangeFrom ----------------------------------------
+
+#[rust_lean_test]
+pub fn test_sum_refs() -> bool {
+    let a: [usize; 3] = [1, 2, 3];
+    a.iter().sum::<usize>() == 6
+}
+
+#[rust_lean_test]
+pub fn test_range_inclusive_iter() -> bool {
+    let mut total = 0u32;
+    for i in 1..=4u32 {
+        total += i;
+    }
+    total == 10
+}
+
+#[rust_lean_test]
+pub fn test_range_inclusive_collect() -> bool {
+    let v: Vec<u8> = (1..=3u8).collect();
+    v.len() == 3 && v[2] == 3
+}
+
+#[rust_lean_test]
+pub fn test_range_from_next() -> bool {
+    let mut r = 5u8..;
+    r.next() == Some(5) && r.next() == Some(6)
+}
+
+#[rust_lean_test]
+pub fn test_array_ref_into_iter() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    let mut total = 0u8;
+    for x in &a {
+        total += *x;
+    }
+    total == 6
+}
+
+#[rust_lean_test]
+pub fn test_range_inclusive_at_max() -> bool {
+    let mut total = 0u32;
+    for i in 253..=255u8 {
+        total += i as u32;
+    }
+    let mut r = 255u8..=255;
+    total == 762 && r.next() == Some(255) && r.next().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_range_inclusive_empty() -> bool {
+    let mut r = 5u8..=4;
+    r.next().is_none() && r.next().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_range_from_near_max() -> bool {
+    let mut r = 253u8..;
+    r.next() == Some(253) && r.next() == Some(254)
+}
+
+// Stepping past `u8::MAX` overflows, which panics (debug semantics).
+#[rust_lean_test(panics)]
+pub fn test_range_from_at_max_panics() -> bool {
+    let mut r = 255u8..;
+    r.next() == Some(255)
+}
+
+#[rust_lean_test(panics)]
+pub fn test_sum_overflow_panics() -> bool {
+    let a: [u8; 2] = [200, 100];
+    a.iter().sum::<u8>() == 44
+}

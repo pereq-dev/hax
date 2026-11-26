@@ -162,7 +162,7 @@ FSTAR_CRATES = core-models std alloc rand_core
 
 CORE_MODELS_FSTAR_INTERFACES = \
     '+!core_models::str::* +!**::num::error +!**::panicking::internal \
-     +!core_models::borrow +!core_models::default +!core_models::error \
+     +!core_models::default +!core_models::error \
      +!core_models::hash +!core_models::hint +!core_models::ops::bit \
      +!core_models::ops::arith +!core_models::fmt +!core_models::fmt::rt \
      +!core_models::mem +!core_models::mem::*'

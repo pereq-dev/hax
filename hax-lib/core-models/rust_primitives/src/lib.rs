@@ -53,6 +53,26 @@ pub mod slice {
     pub fn slice_swap<T>(s: &mut [T], a: usize, b: usize) {
         s.swap(a, b)
     }
+    // Viewing a slice as a slice of arrays (or back) is a reinterpretation
+    // safe Rust can only do through std.
+    #[hax_lib::requires(N > 0)]
+    pub fn slice_as_chunks<T, const N: usize>(s: &[T]) -> (&[[T; N]], &[T]) {
+        s.as_chunks()
+    }
+    /// `&mut` counterpart of `slice_as_chunks`, not built under
+    /// `hax_backend_fstar` for the same reason as `slice_split_at_mut`.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(N > 0)]
+    pub fn slice_as_chunks_mut<T, const N: usize>(s: &mut [T]) -> (&mut [[T; N]], &mut [T]) {
+        s.as_chunks_mut()
+    }
+    pub fn slice_as_flattened<T, const N: usize>(s: &[[T; N]]) -> &[T] {
+        s.as_flattened()
+    }
+    #[hax_lib::requires(slice_length(s) == N)]
+    pub fn slice_as_array<T, const N: usize>(s: &[T]) -> &[T; N] {
+        s.try_into().unwrap()
+    }
     // In the following two functions, F is actually a function type.
     // Not constraining that here allows to call it with closures,
     // or to pass parameters that implement the `Fn` trait for core_models.

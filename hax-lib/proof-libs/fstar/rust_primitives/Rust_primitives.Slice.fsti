@@ -26,3 +26,15 @@ let array_slice (#t: Type) (l: usize) (s: t_Array t l) = slice_slice s
 val array_from_fn (#t: Type) (len: usize) (#ft: Type) (f: (x: usize {x <. len}) -> t): 
   Pure (t_Array t len) (requires True) (ensures (fun a -> forall i. Seq.index a i == f (sz i)))
 let array_index (#t: Type) (l: usize) (s: t_Array t l) (i: usize {i <. length s}): t = Seq.index s (v i)
+let slice_as_array (#t: Type0) (n: usize) (s: t_Slice t {Seq.length s == v n}) : t_Array t n = s
+/// The full `n`-element chunks of `s`, and the remainder.
+let slice_as_chunks (#t: Type0) (n: usize {v n > 0}) (s: t_Slice t)
+  : t_Slice (t_Array t n) & t_Slice t =
+  let k = Seq.length s / v n in
+  FStar.Math.Lemmas.lemma_div_mod (Seq.length s) (v n);
+  FStar.Math.Lemmas.lemma_mult_le_left k 1 (v n);
+  let chunk (i: nat {i < k}) : t_Array t n =
+    FStar.Math.Lemmas.lemma_mult_le_right (v n) (i + 1) k;
+    Seq.slice s (i * v n) (i * v n + v n)
+  in
+  Seq.init k chunk, Seq.slice s (k * v n) (Seq.length s)

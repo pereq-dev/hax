@@ -168,7 +168,7 @@ def iter.traits.iterator.Iterator.flatten.trait_default
 These consume the iterator, so a field would self-reference the instance. They
 delegate to the generated `iter_*` loop helpers. `nth` is absent: its helper is
 excluded (a Lean forward reference to `core.Usize.Insts.CoreIterRangeStep`), and
-`sum`/`product` need the `Sum`/`Product` accumulator traits. -/
+`product` needs a `Product` accumulator trait. -/
 open Aeneas.Std (RustM) in
 @[trait_default, rust_fun "core::iter::traits::iterator::Iterator::fold"]
 def iter.traits.iterator.Iterator.fold.default
@@ -177,6 +177,29 @@ def iter.traits.iterator.Iterator.fold.default
     (FnInst : core.ops.function.FnMut F (B × Clause0_Item) B)
     (self : Self) (init : B) (f : F) : RustM B :=
   iter.traits.iterator.iter_fold IteratorInst FnInst self init f
+
+/-- `fold` on a polymorphic receiver, which a downstream extraction writes as a
+    projection out of the `Iterator` dictionary (`IteratorInst.fold`). -/
+abbrev iter.traits.iterator.Iterator.fold
+    {Self Clause0_Item : Type _}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item) {B F : Type _}
+    (FnInst : core.ops.function.FnMut F (B × Clause0_Item) B) :=
+  iter.traits.iterator.Iterator.fold.default (B := B) IteratorInst FnInst
+
+open Aeneas.Std (RustM) in
+@[trait_default, rust_fun "core::iter::traits::iterator::Iterator::sum"]
+def iter.traits.iterator.Iterator.sum.default
+    {Self S Clause0_Item : Type _}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item)
+    (SumInst : iter.traits.accum.Sum S Clause0_Item)
+    (self : Self) : RustM S :=
+  SumInst.sum IteratorInst self
+
+/-- `sum` on a polymorphic receiver (`IteratorInst.sum`), as `fold` above. -/
+abbrev iter.traits.iterator.Iterator.sum
+    {Self Clause0_Item : Type _}
+    (IteratorInst : iter.traits.iterator.Iterator Self Clause0_Item) {S : Type _} :=
+  iter.traits.iterator.Iterator.sum.default (S := S) IteratorInst
 
 open Aeneas.Std (RustM) in
 -- `all`/`any`/`find`/`find_map`/`position` take `&mut self` in std, so aeneas's
@@ -457,6 +480,14 @@ abbrev slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.any
   iter.traits.iterator.Iterator.any.default
     (slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T) FnInst
 
+-- Rev<I>
+abbrev iter.adapters.rev.Rev.Insts.CoreIterTraitsIteratorIterator.fold
+    {I Item B G : Type _}
+    (DEInst : iter.traits.double_ended.DoubleEndedIterator I Item)
+    (FoldFnInst : core.ops.function.FnMut G (B × Item) B) :=
+  iter.traits.iterator.Iterator.fold.default
+    (iter.adapters.rev.Rev.Insts.CoreIterTraitsIteratorIterator DEInst) FoldFnInst
+
 -- Map<I, F>
 abbrev iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator.fold
     {I O F Clause0_Item B G : Type _}
@@ -715,6 +746,13 @@ def slice.Slice.to_vec
 def slice.Slice.into_vec
   {T : Type _} (s : Aeneas.Std.Slice T) : Aeneas.Std.RustM (vec.Vec T) :=
   slice.Dummy.into_vec s
+
+/-- `<[T]>::concat`, through the `Concat` dictionary the client passes. -/
+@[rust_fun "alloc::slice::{[@T]}::concat"]
+def slice.Slice.concat
+  {T Item Output : Type _} (ConcatInst : slice.Concat (Aeneas.Std.Slice T) Item Output)
+  (s : Aeneas.Std.Slice T) : Aeneas.Std.RustM Output :=
+  ConcatInst.concat s
 
 end
 

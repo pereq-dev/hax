@@ -1,6 +1,7 @@
 //! Equivalence tests for items mirroring `core::*` modules.
 
 pub mod array;
+pub mod bool;
 pub mod clone;
 pub mod cmp;
 pub mod convert;

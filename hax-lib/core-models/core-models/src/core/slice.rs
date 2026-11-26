@@ -147,6 +147,14 @@ pub mod iter {
     }
 }
 
+// Non-generic, so that coverage sees both branches in one function.
+#[hax_lib::requires(n > 0)]
+fn chunk_size_nonzero(n: usize) {
+    if n == 0 {
+        crate::panicking::internal::panic()
+    }
+}
+
 #[hax_lib::attributes]
 impl<T> Slice<T> {
     /// See [`std::slice::len`]
@@ -206,6 +214,37 @@ impl<T> Slice<T> {
     #[cfg(not(hax_backend_fstar))]
     fn iter_mut(s: &mut [T]) -> iter::IterMut<'_, T> {
         iter::IterMut(rust_primitives::sequence::seq_from_slice_mut(s))
+    }
+    /// See [`std::slice::as_chunks`]
+    #[hax_lib::requires(N > 0)]
+    fn as_chunks<const N: usize>(s: &[T]) -> (&[[T; N]], &[T]) {
+        chunk_size_nonzero(N);
+        rust_primitives::slice::slice_as_chunks(s)
+    }
+    /// See [`std::slice::as_chunks_mut`]
+    // `&mut` returns are unsupported in the F* backend.
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(N > 0)]
+    fn as_chunks_mut<const N: usize>(s: &mut [T]) -> (&mut [[T; N]], &mut [T]) {
+        chunk_size_nonzero(N);
+        rust_primitives::slice::slice_as_chunks_mut(s)
+    }
+    /// See [`std::slice::split_first_chunk`]
+    fn split_first_chunk<const N: usize>(s: &[T]) -> Option<(&[T; N], &[T])> {
+        if Self::len(s) < N {
+            Option::None
+        } else {
+            let (first, tail) = Self::split_at(s, N);
+            Option::Some((rust_primitives::slice::slice_as_array(first), tail))
+        }
+    }
+    /// See [`std::slice::as_array`]
+    fn as_array<const N: usize>(s: &[T]) -> Option<&[T; N]> {
+        if Self::len(s) == N {
+            Option::Some(rust_primitives::slice::slice_as_array(s))
+        } else {
+            Option::None
+        }
     }
     /// See [`std::slice::split_at_checked`]
     fn split_at_checked(s: &[T], mid: usize) -> Option<(&[T], &[T])> {
@@ -465,6 +504,20 @@ impl<T: crate::cmp::Ord> crate::cmp::Ord for [T] {
         } else {
             crate::cmp::Ordering::Equal
         }
+    }
+}
+
+// Dummy type for real core's `impl<T, const N: usize> [[T; N]]`. Lean-only:
+// a second inherent impl would take an `impl_N` name in F* that must match
+// real core's.
+#[cfg(not(hax_backend_fstar))]
+struct SliceArray<T, const N: usize>([[T; N]]);
+
+#[cfg(not(hax_backend_fstar))]
+impl<T, const N: usize> SliceArray<T, N> {
+    /// See [`std::slice::as_flattened`]
+    fn as_flattened(s: &[[T; N]]) -> &[T] {
+        rust_primitives::slice::slice_as_flattened(s)
     }
 }
 
@@ -1125,6 +1178,69 @@ mod tests {
                 *r = v;
             }
             prop_assert_eq!(model, std_slice);
+        }
+
+        #[test]
+        fn test_as_chunks(slice in prop::collection::vec(any::<u8>(), 0..=10)) {
+            prop_assert_eq!(Slice::as_chunks::<3>(&slice[..]), slice.as_chunks::<3>());
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_as_chunks_mut(slice in prop::collection::vec(any::<u8>(), 0..=10), v in any::<u8>()) {
+            let mut model = slice.clone();
+            let mut std_slice = slice.clone();
+            {
+                let (chunks, tail) = Slice::as_chunks_mut::<3>(&mut model[..]);
+                prop_assert_eq!(chunks.len(), slice.len() / 3);
+                for chunk in chunks {
+                    chunk[0] = v;
+                }
+                for x in tail {
+                    *x = v;
+                }
+            }
+            {
+                let (chunks, tail) = std_slice.as_chunks_mut::<3>();
+                for chunk in chunks {
+                    chunk[0] = v;
+                }
+                for x in tail {
+                    *x = v;
+                }
+            }
+            prop_assert_eq!(model, std_slice);
+        }
+
+        #[test]
+        fn test_split_first_chunk(slice in prop::collection::vec(any::<u8>(), 0..=5)) {
+            let model = Slice::split_first_chunk::<3>(&slice[..]);
+            let expected = slice.split_first_chunk::<3>();
+            match (model, expected) {
+                (ModelOption::Some((a, b)), Some((c, d))) => {
+                    prop_assert_eq!(a, c);
+                    prop_assert_eq!(b, d);
+                }
+                (ModelOption::None, None) => (),
+                _ => prop_assert!(false),
+            }
+        }
+
+        #[test]
+        fn test_as_array(slice in prop::collection::vec(any::<u8>(), 2..=4)) {
+            let model = Slice::as_array::<3>(&slice[..]);
+            let expected: Option<&[u8; 3]> = slice[..].try_into().ok();
+            match (model, expected) {
+                (ModelOption::Some(a), Some(b)) => prop_assert_eq!(a, b),
+                (ModelOption::None, None) => (),
+                _ => prop_assert!(false),
+            }
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_as_flattened(arrays in prop::collection::vec(any::<[u8; 3]>(), 0..=4)) {
+            prop_assert_eq!(super::SliceArray::as_flattened(&arrays[..]), arrays.as_flattened());
         }
 
         #[test]
@@ -1844,6 +1960,23 @@ mod tests {
         crate::testing::panics_like_core(
             || Slice::chunks(&[1u8, 2, 3][..], 0),
             || [1u8, 2, 3].chunks(0),
+        );
+    }
+
+    #[test]
+    fn test_as_chunks_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::as_chunks::<0>(&[1u8][..]).1.len(),
+            || [1u8].as_chunks::<0>().1.len(),
+        );
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    fn test_as_chunks_mut_zero_panics() {
+        crate::testing::panics_like_core(
+            || Slice::as_chunks_mut::<0>(&mut [1u8][..]).1.len(),
+            || [1u8].as_chunks_mut::<0>().1.len(),
         );
     }
 

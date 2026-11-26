@@ -79,6 +79,12 @@ include Core_models.Bundle {impl_6__div_ceil as impl_u8__div_ceil}
 
 include Core_models.Bundle {impl_6__is_multiple_of as impl_u8__is_multiple_of}
 
+include Core_models.Bundle {impl_6__trailing_zeros as impl_u8__trailing_zeros}
+
+include Core_models.Bundle {impl_6__reverse_bits as impl_u8__reverse_bits}
+
+include Core_models.Bundle {impl_6__checked_shl as impl_u8__checked_shl}
+
 include Core_models.Bundle {impl_6__wrapping_neg as impl_u8__wrapping_neg}
 
 include Core_models.Bundle {impl_7__MIN as impl_u16__MIN}
@@ -156,6 +162,12 @@ include Core_models.Bundle {impl_7__is_power_of_two as impl_u16__is_power_of_two
 include Core_models.Bundle {impl_7__div_ceil as impl_u16__div_ceil}
 
 include Core_models.Bundle {impl_7__is_multiple_of as impl_u16__is_multiple_of}
+
+include Core_models.Bundle {impl_7__trailing_zeros as impl_u16__trailing_zeros}
+
+include Core_models.Bundle {impl_7__reverse_bits as impl_u16__reverse_bits}
+
+include Core_models.Bundle {impl_7__checked_shl as impl_u16__checked_shl}
 
 include Core_models.Bundle {impl_7__wrapping_neg as impl_u16__wrapping_neg}
 
@@ -235,6 +247,12 @@ include Core_models.Bundle {impl_8__div_ceil as impl_u32__div_ceil}
 
 include Core_models.Bundle {impl_8__is_multiple_of as impl_u32__is_multiple_of}
 
+include Core_models.Bundle {impl_8__trailing_zeros as impl_u32__trailing_zeros}
+
+include Core_models.Bundle {impl_8__reverse_bits as impl_u32__reverse_bits}
+
+include Core_models.Bundle {impl_8__checked_shl as impl_u32__checked_shl}
+
 include Core_models.Bundle {impl_8__wrapping_neg as impl_u32__wrapping_neg}
 
 include Core_models.Bundle {impl_9__MIN as impl_u64__MIN}
@@ -312,6 +330,12 @@ include Core_models.Bundle {impl_9__is_power_of_two as impl_u64__is_power_of_two
 include Core_models.Bundle {impl_9__div_ceil as impl_u64__div_ceil}
 
 include Core_models.Bundle {impl_9__is_multiple_of as impl_u64__is_multiple_of}
+
+include Core_models.Bundle {impl_9__trailing_zeros as impl_u64__trailing_zeros}
+
+include Core_models.Bundle {impl_9__reverse_bits as impl_u64__reverse_bits}
+
+include Core_models.Bundle {impl_9__checked_shl as impl_u64__checked_shl}
 
 include Core_models.Bundle {impl_9__wrapping_neg as impl_u64__wrapping_neg}
 
@@ -391,6 +415,12 @@ include Core_models.Bundle {impl_10__div_ceil as impl_u128__div_ceil}
 
 include Core_models.Bundle {impl_10__is_multiple_of as impl_u128__is_multiple_of}
 
+include Core_models.Bundle {impl_10__trailing_zeros as impl_u128__trailing_zeros}
+
+include Core_models.Bundle {impl_10__reverse_bits as impl_u128__reverse_bits}
+
+include Core_models.Bundle {impl_10__checked_shl as impl_u128__checked_shl}
+
 include Core_models.Bundle {impl_10__wrapping_neg as impl_u128__wrapping_neg}
 
 include Core_models.Bundle {impl_11__MIN as impl_usize__MIN}
@@ -468,6 +498,12 @@ include Core_models.Bundle {impl_11__is_power_of_two as impl_usize__is_power_of_
 include Core_models.Bundle {impl_11__div_ceil as impl_usize__div_ceil}
 
 include Core_models.Bundle {impl_11__is_multiple_of as impl_usize__is_multiple_of}
+
+include Core_models.Bundle {impl_11__trailing_zeros as impl_usize__trailing_zeros}
+
+include Core_models.Bundle {impl_11__reverse_bits as impl_usize__reverse_bits}
+
+include Core_models.Bundle {impl_11__checked_shl as impl_usize__checked_shl}
 
 include Core_models.Bundle {impl_11__wrapping_neg as impl_usize__wrapping_neg}
 

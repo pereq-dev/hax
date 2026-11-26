@@ -101,7 +101,11 @@ macro_rules
       ok (match compare a b with
           | .lt => cmp.Ordering.Less
           | .eq => cmp.Ordering.Equal
-          | .gt => cmp.Ordering.Greater) }
+          | .gt => cmp.Ordering.Greater)
+    max := fun a b => ok (if b < a then a else b)
+    min := fun a b => ok (if b < a then b else a)
+    clamp := fun x lo hi =>
+      if lo ≤ hi then ok (if x < lo then lo else if hi < x then hi else x) else fail .panic }
 
 /-! ## `ToInt::to_int`: machine int to mathematical int -/
 

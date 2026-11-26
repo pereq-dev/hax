@@ -261,6 +261,58 @@ mod iter {
     }
 }
 
+/// See [`std::iter::IntoIterator`] for `&[T; N]`
+// Lean-only: in F* it would put `slice::iter` in a module cycle with `array`.
+#[cfg(not(hax_backend_fstar))]
+#[cfg_attr(hax_backend_legacy_lean, hax_lib::exclude)]
+impl<'a, T, const N: usize> crate::iter::traits::collect::IntoIterator for &'a [T; N] {
+    type Item = &'a T;
+    type IntoIter = crate::slice::iter::Iter<'a, T>;
+    fn into_iter(self) -> crate::slice::iter::Iter<'a, T> {
+        crate::iter::traits::collect::IntoIterator::into_iter(array_as_slice(self))
+    }
+}
+
+// Lexicographic, as for slices. Lean-only: F* finds no `PartialEq` instance
+// for the `Eq` impl's supertrait here.
+#[cfg(not(hax_backend_fstar))]
+mod ordering {
+    use rust_primitives::slice::array_index;
+
+    /// See [`std::cmp::Eq`] for `[T; N]`
+    impl<T: crate::cmp::Eq, const N: usize> crate::cmp::Eq for [T; N] {}
+
+    /// See [`std::cmp::PartialOrd`] for `[T; N]`
+    impl<T: crate::cmp::PartialOrd<T>, const N: usize> crate::cmp::PartialOrd<[T; N]> for [T; N] {
+        fn partial_cmp(&self, other: &[T; N]) -> crate::option::Option<crate::cmp::Ordering> {
+            let mut i = 0;
+            while i < N {
+                match array_index(self, i).partial_cmp(array_index(other, i)) {
+                    crate::option::Option::Some(crate::cmp::Ordering::Equal) => (),
+                    non_eq => return non_eq,
+                }
+                i += 1;
+            }
+            crate::option::Option::Some(crate::cmp::Ordering::Equal)
+        }
+    }
+
+    /// See [`std::cmp::Ord`] for `[T; N]`
+    impl<T: crate::cmp::Ord, const N: usize> crate::cmp::Ord for [T; N] {
+        fn cmp(&self, other: &[T; N]) -> crate::cmp::Ordering {
+            let mut i = 0;
+            while i < N {
+                match array_index(self, i).cmp(array_index(other, i)) {
+                    crate::cmp::Ordering::Equal => (),
+                    non_eq => return non_eq,
+                }
+                i += 1;
+            }
+            crate::cmp::Ordering::Equal
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     #[cfg(not(hax_backend_fstar))]
@@ -296,6 +348,30 @@ mod tests {
         let mut f = crate::fmt::Formatter;
         assert!(crate::fmt::Debug::fmt(&[1u8, 2, 3], &mut f).is_ok());
         assert!(crate::fmt::Debug::fmt(&super::TryFromSliceError, &mut f).is_ok());
+    }
+
+    #[cfg(not(hax_backend_fstar))]
+    proptest! {
+        #[test]
+        fn test_array_cmp(a in any::<[u8; 3]>(), b in any::<[u8; 3]>(), same in any::<bool>()) {
+            let b = if same { a } else { b };
+            prop_assert_eq!(crate::cmp::Ord::cmp(&a, &b), std::cmp::Ord::cmp(&a, &b).inject());
+            prop_assert_eq!(
+                crate::cmp::PartialOrd::partial_cmp(&a, &b),
+                std::cmp::PartialOrd::partial_cmp(&a, &b).inject()
+            );
+        }
+
+        #[test]
+        fn test_array_ref_into_iter(a in any::<[u8; 3]>()) {
+            use crate::iter::traits::iterator::Iterator;
+            let mut it = crate::iter::traits::collect::IntoIterator::into_iter(&a);
+            let mut seen = std::vec::Vec::new();
+            while let crate::option::Option::Some(x) = it.next() {
+                seen.push(*x);
+            }
+            prop_assert_eq!(seen, a.to_vec());
+        }
     }
 
     #[cfg(not(hax_backend_fstar))]

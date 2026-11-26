@@ -390,6 +390,51 @@ let impl_6__is_power_of_two (x: u8) : bool =
 let impl_6__is_multiple_of (x y: u8) : bool =
   if y =. mk_u8 0 then x =. mk_u8 0 else (x %! y <: u8) =. mk_u8 0
 
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+let impl_6__trailing_zeros (x: u8) : u32 =
+  let n:u32 = mk_u32 8 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 8)
+      (fun n temp_1_ ->
+          let n:u32 = n in
+          let _:u32 = temp_1_ in
+          true)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          let j:u32 = (mk_u32 8 -! mk_u32 1 <: u32) -! i in
+          if ((x >>! j <: u8) &. mk_u8 1 <: u8) =. mk_u8 1
+          then
+            let n:u32 = j in
+            n
+          else n)
+  in
+  n
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_6__reverse_bits (x: u8) : u8 =
+  let (r: u8):u8 = mk_u8 0 in
+  let r:u8 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 8)
+      (fun r temp_1_ ->
+          let r:u8 = r in
+          let _:u32 = temp_1_ in
+          true)
+      r
+      (fun r i ->
+          let r:u8 = r in
+          let i:u32 = i in
+          if ((x >>! i <: u8) &. mk_u8 1 <: u8) =. mk_u8 1 <: bool
+          then
+            let r:u8 = r |. (mk_u8 1 <<! ((mk_u32 8 -! mk_u32 1 <: u32) -! i <: u32) <: u8) in
+            r
+          else r)
+  in
+  r
+
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_6__wrapping_neg (x: u8) : u8 = Rust_primitives.Arithmetic.wrapping_sub_u8 (mk_u8 0) x
 
@@ -576,6 +621,51 @@ let impl_7__is_power_of_two (x: u16) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_7__is_multiple_of (x y: u16) : bool =
   if y =. mk_u16 0 then x =. mk_u16 0 else (x %! y <: u16) =. mk_u16 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+let impl_7__trailing_zeros (x: u16) : u32 =
+  let n:u32 = mk_u32 16 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 16)
+      (fun n temp_1_ ->
+          let n:u32 = n in
+          let _:u32 = temp_1_ in
+          true)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          let j:u32 = (mk_u32 16 -! mk_u32 1 <: u32) -! i in
+          if ((x >>! j <: u16) &. mk_u16 1 <: u16) =. mk_u16 1
+          then
+            let n:u32 = j in
+            n
+          else n)
+  in
+  n
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_7__reverse_bits (x: u16) : u16 =
+  let (r: u16):u16 = mk_u16 0 in
+  let r:u16 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 16)
+      (fun r temp_1_ ->
+          let r:u16 = r in
+          let _:u32 = temp_1_ in
+          true)
+      r
+      (fun r i ->
+          let r:u16 = r in
+          let i:u32 = i in
+          if ((x >>! i <: u16) &. mk_u16 1 <: u16) =. mk_u16 1 <: bool
+          then
+            let r:u16 = r |. (mk_u16 1 <<! ((mk_u32 16 -! mk_u32 1 <: u32) -! i <: u32) <: u16) in
+            r
+          else r)
+  in
+  r
 
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_7__wrapping_neg (x: u16) : u16 = Rust_primitives.Arithmetic.wrapping_sub_u16 (mk_u16 0) x
@@ -764,6 +854,51 @@ let impl_8__is_power_of_two (x: u32) : bool =
 let impl_8__is_multiple_of (x y: u32) : bool =
   if y =. mk_u32 0 then x =. mk_u32 0 else (x %! y <: u32) =. mk_u32 0
 
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+let impl_8__trailing_zeros (x: u32) : u32 =
+  let n:u32 = mk_u32 32 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 32)
+      (fun n temp_1_ ->
+          let n:u32 = n in
+          let _:u32 = temp_1_ in
+          true)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          let j:u32 = (mk_u32 32 -! mk_u32 1 <: u32) -! i in
+          if ((x >>! j <: u32) &. mk_u32 1 <: u32) =. mk_u32 1
+          then
+            let n:u32 = j in
+            n
+          else n)
+  in
+  n
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_8__reverse_bits (x: u32) : u32 =
+  let (r: u32):u32 = mk_u32 0 in
+  let r:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 32)
+      (fun r temp_1_ ->
+          let r:u32 = r in
+          let _:u32 = temp_1_ in
+          true)
+      r
+      (fun r i ->
+          let r:u32 = r in
+          let i:u32 = i in
+          if ((x >>! i <: u32) &. mk_u32 1 <: u32) =. mk_u32 1 <: bool
+          then
+            let r:u32 = r |. (mk_u32 1 <<! ((mk_u32 32 -! mk_u32 1 <: u32) -! i <: u32) <: u32) in
+            r
+          else r)
+  in
+  r
+
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_8__wrapping_neg (x: u32) : u32 = Rust_primitives.Arithmetic.wrapping_sub_u32 (mk_u32 0) x
 
@@ -950,6 +1085,51 @@ let impl_9__is_power_of_two (x: u64) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_9__is_multiple_of (x y: u64) : bool =
   if y =. mk_u64 0 then x =. mk_u64 0 else (x %! y <: u64) =. mk_u64 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+let impl_9__trailing_zeros (x: u64) : u32 =
+  let n:u32 = mk_u32 64 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 64)
+      (fun n temp_1_ ->
+          let n:u32 = n in
+          let _:u32 = temp_1_ in
+          true)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          let j:u32 = (mk_u32 64 -! mk_u32 1 <: u32) -! i in
+          if ((x >>! j <: u64) &. mk_u64 1 <: u64) =. mk_u64 1
+          then
+            let n:u32 = j in
+            n
+          else n)
+  in
+  n
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_9__reverse_bits (x: u64) : u64 =
+  let (r: u64):u64 = mk_u64 0 in
+  let r:u64 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 64)
+      (fun r temp_1_ ->
+          let r:u64 = r in
+          let _:u32 = temp_1_ in
+          true)
+      r
+      (fun r i ->
+          let r:u64 = r in
+          let i:u32 = i in
+          if ((x >>! i <: u64) &. mk_u64 1 <: u64) =. mk_u64 1 <: bool
+          then
+            let r:u64 = r |. (mk_u64 1 <<! ((mk_u32 64 -! mk_u32 1 <: u32) -! i <: u32) <: u64) in
+            r
+          else r)
+  in
+  r
 
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_9__wrapping_neg (x: u64) : u64 = Rust_primitives.Arithmetic.wrapping_sub_u64 (mk_u64 0) x
@@ -1138,6 +1318,53 @@ let impl_10__is_power_of_two (x: u128) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_10__is_multiple_of (x y: u128) : bool =
   if y =. mk_u128 0 then x =. mk_u128 0 else (x %! y <: u128) =. mk_u128 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+let impl_10__trailing_zeros (x: u128) : u32 =
+  let n:u32 = mk_u32 128 in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 128)
+      (fun n temp_1_ ->
+          let n:u32 = n in
+          let _:u32 = temp_1_ in
+          true)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          let j:u32 = (mk_u32 128 -! mk_u32 1 <: u32) -! i in
+          if ((x >>! j <: u128) &. mk_u128 1 <: u128) =. mk_u128 1
+          then
+            let n:u32 = j in
+            n
+          else n)
+  in
+  n
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_10__reverse_bits (x: u128) : u128 =
+  let (r: u128):u128 = mk_u128 0 in
+  let r:u128 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      (mk_u32 128)
+      (fun r temp_1_ ->
+          let r:u128 = r in
+          let _:u32 = temp_1_ in
+          true)
+      r
+      (fun r i ->
+          let r:u128 = r in
+          let i:u32 = i in
+          if ((x >>! i <: u128) &. mk_u128 1 <: u128) =. mk_u128 1 <: bool
+          then
+            let r:u128 =
+              r |. (mk_u128 1 <<! ((mk_u32 128 -! mk_u32 1 <: u32) -! i <: u32) <: u128)
+            in
+            r
+          else r)
+  in
+  r
 
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_10__wrapping_neg (x: u128) : u128 =
@@ -1336,6 +1563,57 @@ let impl_11__is_power_of_two (x: usize) : bool =
 /// See [`std::primitive::u8::is_multiple_of`] (and similar for other unsigned integer types)
 let impl_11__is_multiple_of (x y: usize) : bool =
   if y =. mk_usize 0 then x =. mk_usize 0 else (x %! y <: usize) =. mk_usize 0
+
+/// See [`std::primitive::u8::trailing_zeros`] (and similar for other unsigned integer types)
+let impl_11__trailing_zeros (x: usize) : u32 =
+  let n:u32 = Rust_primitives.Arithmetic.v_SIZE_BITS in
+  let n:u32 =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      Rust_primitives.Arithmetic.v_SIZE_BITS
+      (fun n temp_1_ ->
+          let n:u32 = n in
+          let _:u32 = temp_1_ in
+          true)
+      n
+      (fun n i ->
+          let n:u32 = n in
+          let i:u32 = i in
+          let j:u32 = (Rust_primitives.Arithmetic.v_SIZE_BITS -! mk_u32 1 <: u32) -! i in
+          if ((x >>! j <: usize) &. mk_usize 1 <: usize) =. mk_usize 1
+          then
+            let n:u32 = j in
+            n
+          else n)
+  in
+  n
+
+/// See [`std::primitive::u8::reverse_bits`] (and similar for other unsigned integer types)
+let impl_11__reverse_bits (x: usize) : usize =
+  let (r: usize):usize = mk_usize 0 in
+  let r:usize =
+    Rust_primitives.Hax.Folds.fold_range (mk_u32 0)
+      Rust_primitives.Arithmetic.v_SIZE_BITS
+      (fun r temp_1_ ->
+          let r:usize = r in
+          let _:u32 = temp_1_ in
+          true)
+      r
+      (fun r i ->
+          let r:usize = r in
+          let i:u32 = i in
+          if ((x >>! i <: usize) &. mk_usize 1 <: usize) =. mk_usize 1 <: bool
+          then
+            let r:usize =
+              r |.
+              (mk_usize 1 <<!
+                ((Rust_primitives.Arithmetic.v_SIZE_BITS -! mk_u32 1 <: u32) -! i <: u32)
+                <:
+                usize)
+            in
+            r
+          else r)
+  in
+  r
 
 /// See [`std::primitive::u8::wrapping_neg`] (and similar for other integer types)
 let impl_11__wrapping_neg (x: usize) : usize =
@@ -3019,6 +3297,10 @@ let impl_6__checked_div (x y: u8) : t_Option u8 =
 let impl_6__checked_rem (x y: u8) : t_Option u8 =
   if y =. mk_u8 0 then Option_None <: t_Option u8 else Option_Some (x %! y) <: t_Option u8
 
+/// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+let impl_6__checked_shl (x: u8) (n: u32) : t_Option u8 =
+  if n <. mk_u32 8 then Option_Some (x <<! n) <: t_Option u8 else Option_None <: t_Option u8
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_7__checked_add (x y: u16) : t_Option u16 =
   let (result: u16), (overflowed: bool) = impl_7__overflowing_add x y in
@@ -3041,6 +3323,10 @@ let impl_7__checked_div (x y: u16) : t_Option u16 =
 /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
 let impl_7__checked_rem (x y: u16) : t_Option u16 =
   if y =. mk_u16 0 then Option_None <: t_Option u16 else Option_Some (x %! y) <: t_Option u16
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+let impl_7__checked_shl (x: u16) (n: u32) : t_Option u16 =
+  if n <. mk_u32 16 then Option_Some (x <<! n) <: t_Option u16 else Option_None <: t_Option u16
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_8__checked_add (x y: u32) : t_Option u32 =
@@ -3065,6 +3351,10 @@ let impl_8__checked_div (x y: u32) : t_Option u32 =
 let impl_8__checked_rem (x y: u32) : t_Option u32 =
   if y =. mk_u32 0 then Option_None <: t_Option u32 else Option_Some (x %! y) <: t_Option u32
 
+/// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+let impl_8__checked_shl (x n: u32) : t_Option u32 =
+  if n <. mk_u32 32 then Option_Some (x <<! n) <: t_Option u32 else Option_None <: t_Option u32
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_9__checked_add (x y: u64) : t_Option u64 =
   let (result: u64), (overflowed: bool) = impl_9__overflowing_add x y in
@@ -3087,6 +3377,10 @@ let impl_9__checked_div (x y: u64) : t_Option u64 =
 /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
 let impl_9__checked_rem (x y: u64) : t_Option u64 =
   if y =. mk_u64 0 then Option_None <: t_Option u64 else Option_Some (x %! y) <: t_Option u64
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+let impl_9__checked_shl (x: u64) (n: u32) : t_Option u64 =
+  if n <. mk_u32 64 then Option_Some (x <<! n) <: t_Option u64 else Option_None <: t_Option u64
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_10__checked_add (x y: u128) : t_Option u128 =
@@ -3111,6 +3405,10 @@ let impl_10__checked_div (x y: u128) : t_Option u128 =
 let impl_10__checked_rem (x y: u128) : t_Option u128 =
   if y =. mk_u128 0 then Option_None <: t_Option u128 else Option_Some (x %! y) <: t_Option u128
 
+/// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+let impl_10__checked_shl (x: u128) (n: u32) : t_Option u128 =
+  if n <. mk_u32 128 then Option_Some (x <<! n) <: t_Option u128 else Option_None <: t_Option u128
+
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_11__checked_add (x y: usize) : t_Option usize =
   let (result: usize), (overflowed: bool) = impl_11__overflowing_add x y in
@@ -3133,6 +3431,12 @@ let impl_11__checked_div (x y: usize) : t_Option usize =
 /// See [`std::primitive::u8::checked_rem`] (and similar for other integer types)
 let impl_11__checked_rem (x y: usize) : t_Option usize =
   if y =. mk_usize 0 then Option_None <: t_Option usize else Option_Some (x %! y) <: t_Option usize
+
+/// See [`std::primitive::u8::checked_shl`] (and similar for other unsigned integer types)
+let impl_11__checked_shl (x: usize) (n: u32) : t_Option usize =
+  if n <. Rust_primitives.Arithmetic.v_SIZE_BITS
+  then Option_Some (x <<! n) <: t_Option usize
+  else Option_None <: t_Option usize
 
 /// See [`std::primitive::u8::checked_add`] (and similar for other integer types)
 let impl_12__checked_add (x y: i8) : t_Option i8 =
