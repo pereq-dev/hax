@@ -1964,6 +1964,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(unconditional_panic)] // some rustc versions reject `N == 0` statically
     fn test_as_chunks_zero_panics() {
         crate::testing::panics_like_core(
             || Slice::as_chunks::<0>(&[1u8][..]).1.len(),
@@ -1973,6 +1974,7 @@ mod tests {
 
     #[cfg(not(hax_backend_fstar))]
     #[test]
+    #[allow(unconditional_panic)] // some rustc versions reject `N == 0` statically
     fn test_as_chunks_mut_zero_panics() {
         crate::testing::panics_like_core(
             || Slice::as_chunks_mut::<0>(&mut [1u8][..]).1.len(),
