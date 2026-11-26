@@ -877,3 +877,43 @@ pub fn test_binary_search_absent_goes_through_the_dictionary() -> bool {
     let a = [keyed(1, 9), keyed(3, 9), keyed(5, 9)];
     a.as_slice().binary_search(&keyed(4, 0)) == Err(2)
 }
+
+// ----- as_chunks / as_chunks_mut / split_first_chunk / as_array --------------
+
+#[rust_lean_test]
+pub fn test_as_chunks() -> bool {
+    let a: [u8; 5] = [1, 2, 3, 4, 5];
+    let (chunks, tail) = a.as_slice().as_chunks::<2>();
+    chunks.len() == 2 && chunks[1] == [3, 4] && tail.len() == 1 && tail[0] == 5
+}
+
+#[rust_lean_test]
+pub fn test_as_chunks_mut() -> bool {
+    let mut a: [u8; 5] = [1, 2, 3, 4, 5];
+    let (chunks, tail) = a.as_mut_slice().as_chunks_mut::<2>();
+    chunks[1][0] = 9;
+    tail[0] = 8;
+    a == [1, 2, 9, 4, 8]
+}
+
+#[rust_lean_test]
+pub fn test_split_first_chunk() -> bool {
+    let a: [u8; 3] = [1, 2, 3];
+    match a.as_slice().split_first_chunk::<2>() {
+        Some((first, rest)) => *first == [1, 2] && rest.len() == 1,
+        None => false,
+    }
+}
+
+#[rust_lean_test]
+pub fn test_split_first_chunk_short() -> bool {
+    let a: [u8; 1] = [1];
+    a.as_slice().split_first_chunk::<2>().is_none()
+}
+
+#[rust_lean_test]
+pub fn test_as_flattened() -> bool {
+    let a: [[u8; 2]; 2] = [[1, 2], [3, 4]];
+    let flat = a.as_slice().as_flattened();
+    flat.len() == 4 && flat[2] == 3
+}

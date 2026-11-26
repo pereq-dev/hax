@@ -3,3 +3,4 @@
 pub mod boxed;
 pub mod slice;
 pub mod vec;
+pub mod vec_deque;

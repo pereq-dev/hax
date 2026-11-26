@@ -630,6 +630,32 @@ pub mod range {
             after_start(self.start_bound(), item) && before_end(self.end_bound(), item)
         }
     }
+
+    // std derives these. Lean-only: F* clients compare ranges with `=.`.
+    #[cfg(not(hax_backend_fstar))]
+    mod derived {
+        use super::Range;
+
+        /// See [`std::clone::Clone`] for [`Range`]
+        impl<Idx: crate::clone::Clone> crate::clone::Clone for Range<Idx> {
+            fn clone(self) -> Range<Idx> {
+                Range {
+                    start: crate::clone::Clone::clone(self.start),
+                    end: crate::clone::Clone::clone(self.end),
+                }
+            }
+        }
+
+        /// See [`std::cmp::PartialEq`] for [`Range`]
+        impl<Idx: crate::cmp::PartialEq<Idx>> crate::cmp::PartialEq<Range<Idx>> for Range<Idx> {
+            fn ne(&self, other: &Range<Idx>) -> bool {
+                self.eq(other) == false
+            }
+            fn eq(&self, other: &Range<Idx>) -> bool {
+                self.start.eq(&other.start) && self.end.eq(&other.end)
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -639,6 +665,25 @@ mod tests {
     use proptest::prelude::*;
 
     proptest! {
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_range_eq(a in any::<u8>(), b in any::<u8>(), c in any::<u8>(), d in any::<u8>(), same in any::<bool>()) {
+            // Independent draws are almost never equal: that edge is `same`.
+            let (c, d) = if same { (a, b) } else { (c, d) };
+            let r = super::range::Range { start: a, end: b };
+            let o = super::range::Range { start: c, end: d };
+            prop_assert_eq!(crate::cmp::PartialEq::eq(&r, &o), (a..b) == (c..d));
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_range_clone_ne(a in any::<u8>(), b in any::<u8>(), c in any::<u8>(), d in any::<u8>()) {
+            let r2 = crate::clone::Clone::clone(super::range::Range { start: a, end: b });
+            prop_assert_eq!((r2.start, r2.end), (a, b));
+            let o = super::range::Range { start: c, end: d };
+            prop_assert_eq!(crate::cmp::PartialEq::ne(&r2, &o), (a..b) != (c..d));
+        }
+
         #[test]
         fn test_range_inclusive_new(start in any::<u8>(), end in any::<u8>()) {
             let model = super::range::RangeInclusive::new(start, end);

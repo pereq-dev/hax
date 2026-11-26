@@ -66,31 +66,45 @@ def collections.btree.set.BTreeSet (T : Type _) (U : Type _) :=
 def collections.vec_deque.VecDeque (T : Type _) (A : Type _) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
+/-- [alloc::collections::vec_deque::iter::Iter]
+    Source: 'src/lib.rs', lines 366:12-366:51
+    Visibility: public -/
+@[reducible]
+def collections.vec_deque.iter.Iter (T : Type _) :=
+  rust_primitives.sequence.Seq T
+
 /-- [alloc::collections::vec_deque::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 355:12-355:83
+    Source: 'src/lib.rs', lines 381:12-381:83
     Visibility: public -/
 def collections.vec_deque.into_iter.IntoIter (T : Type _) (A : Type _) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A
 
 /-- [alloc::slice::Dummy]
-    Source: 'src/lib.rs', lines 514:4-514:23 -/
+    Source: 'src/lib.rs', lines 568:4-568:23 -/
 @[reducible]
 def slice.Dummy (T : Type _) := T
 
 /-- [alloc::vec::Vec]
-    Source: 'src/lib.rs', lines 729:4-729:34
+    Source: 'src/lib.rs', lines 864:4-864:34
     Visibility: public -/
 @[reducible]
 def vec.Vec (T : Type _) := rust_primitives.sequence.Seq T
 
+/-- Trait declaration: [alloc::slice::Concat]
+    Source: 'src/lib.rs', lines 649:4-653:5
+    Visibility: public -/
+structure slice.Concat (Self : Type _) (Item : Type _) (Self_Output : Type _)
+  where
+  concat : Self → RustM Self_Output
+
 /-- [alloc::vec::into_iter::IntoIter]
-    Source: 'src/lib.rs', lines 779:8-779:43
+    Source: 'src/lib.rs', lines 914:8-914:43
     Visibility: public -/
 @[reducible]
 def vec.into_iter.IntoIter (T : Type _) := rust_primitives.sequence.Seq T
 
 /-- [alloc::vec::drain::Drain]
-    Source: 'src/lib.rs', lines 917:8-917:76
+    Source: 'src/lib.rs', lines 1052:8-1052:76
     Visibility: public -/
 def vec.drain.Drain (T : Type _) (A : Type _) :=
   rust_primitives.sequence.Seq T × core.marker.PhantomData A

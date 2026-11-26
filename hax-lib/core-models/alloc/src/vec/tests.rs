@@ -427,3 +427,26 @@ fn test_from_array() {
     let real: Vec<u8> = From::from(a);
     assert_eq!(model, real.inject());
 }
+
+#[cfg(not(hax_backend_fstar))]
+proptest! {
+    #[test]
+    fn test_extend(a in prop::collection::vec(any::<u8>(), 0..8), b in prop::collection::vec(any::<u8>(), 0..8)) {
+        let mut model: super::Vec<u8> = a.inject();
+        std::iter::Extend::extend(&mut model, b.clone());
+        std::iter::Extend::extend(&mut model, b.iter());
+        let mut expected = a.clone();
+        expected.extend(b.clone());
+        expected.extend(b.iter());
+        prop_assert_eq!(model, expected.inject());
+    }
+}
+
+#[cfg(not(hax_backend_fstar))]
+proptest! {
+    #[test]
+    fn test_borrow_slice(a in prop::collection::vec(any::<u8>(), 0..8)) {
+        let model: super::Vec<u8> = a.inject();
+        prop_assert_eq!(core::borrow::Borrow::<[u8]>::borrow(&model), &a[..]);
+    }
+}

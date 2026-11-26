@@ -137,6 +137,16 @@ pub fn derived_eq(x: &DerivedPartialEq, y: &DerivedPartialEq) -> bool {
     x == y
 }
 
+/// A crate that calls `Ord::min` (or `max`, `clamp`) on any type has those
+/// methods in every `Ord` impl it extracts, `DerivedOrd`'s included.
+pub fn ord_min_max_clamp(x: usize, y: usize) -> usize {
+    x.min(y) + x.max(y) + x.clamp(0, y.max(x))
+}
+
+pub fn derived_ord_min(x: DerivedOrd, y: DerivedOrd) -> DerivedOrd {
+    x.min(y)
+}
+
 // ----- Bitwise --------------------------------------------------------------
 
 pub fn xor_u64(x: u64, y: u64) -> u64 {
@@ -637,6 +647,15 @@ pub fn slice_iter_any(x: &[u8]) -> bool {
 //   pub fn poly_collect_vec<I: Iterator<Item = usize>>(it: I) -> Vec<usize> {
 //       it.collect()
 //   }
+
+// Exceptions: `fold` and `sum` are exposed as `Iterator` dictionary projections.
+pub fn poly_sum<I: Iterator<Item = u32>>(it: I) -> u32 {
+    it.sum()
+}
+
+pub fn poly_fold_u32<I: Iterator<Item = u32>>(it: I) -> u32 {
+    it.fold(0u32, |a, x| a.wrapping_add(x))
+}
 
 // A COLLECTION, not an iterator, as the argument: only resolves because the
 // shims take the faithful `U: IntoIterator` bound.

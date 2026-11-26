@@ -38,6 +38,33 @@ let impl_5__pop_front (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A)
   in
   self, hax_temp_output <: (t_VecDeque v_T v_A & Core_models.Option.t_Option v_T)
 
+let impl_5__iter (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A)
+    : Alloc.Collections.Vec_deque.Iter.t_Iter v_T =
+  Alloc.Collections.Vec_deque.Iter.Iter
+  (Rust_primitives.Sequence.seq_from_slice #v_T
+      (Rust_primitives.Sequence.seq_to_slice #v_T self._0 <: t_Slice v_T))
+  <:
+  Alloc.Collections.Vec_deque.Iter.t_Iter v_T
+
+let impl_5__remove (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A) (index: usize)
+    : (t_VecDeque v_T v_A & Core_models.Option.t_Option v_T) =
+  let (self: t_VecDeque v_T v_A), (hax_temp_output: Core_models.Option.t_Option v_T) =
+    if index <. (impl_5__len #v_T #v_A self <: usize)
+    then
+      let (tmp0: Rust_primitives.Sequence.t_Seq v_T), (out: v_T) =
+        Rust_primitives.Sequence.seq_remove #v_T self._0 index
+      in
+      let self:t_VecDeque v_T v_A = { self with _0 = tmp0 } <: t_VecDeque v_T v_A in
+      self, (Core_models.Option.Option_Some out <: Core_models.Option.t_Option v_T)
+      <:
+      (t_VecDeque v_T v_A & Core_models.Option.t_Option v_T)
+    else
+      self, (Core_models.Option.Option_None <: Core_models.Option.t_Option v_T)
+      <:
+      (t_VecDeque v_T v_A & Core_models.Option.t_Option v_T)
+  in
+  self, hax_temp_output <: (t_VecDeque v_T v_A & Core_models.Option.t_Option v_T)
+
 let impl_5__push_back (#v_T #v_A: Type0) (self: t_VecDeque v_T v_A) (x: v_T)
     : Prims.Pure (t_VecDeque v_T v_A)
       (requires

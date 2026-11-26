@@ -160,9 +160,69 @@ pub trait Ord: Eq + PartialOrd<Self> {
     /// See [`std::cmp::Ord::cmp`]
     #[hax_lib::requires(true)]
     fn cmp(&self, other: &Self) -> Ordering;
+
+    // `max`, `min` and `clamp` compare through `PartialOrd`, as std's do; an
+    // impl may make it disagree with `cmp`.
+    /// See [`std::cmp::Ord::max`]
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn max(self, other: Self) -> Self
+    where
+        Self: Sized,
+    {
+        if PartialOrd::lt(&other, &self) {
+            self
+        } else {
+            other
+        }
+    }
+    /// See [`std::cmp::Ord::min`]
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn min(self, other: Self) -> Self
+    where
+        Self: Sized,
+    {
+        if PartialOrd::lt(&other, &self) {
+            other
+        } else {
+            self
+        }
+    }
+    /// See [`std::cmp::Ord::clamp`]
+    #[cfg(not(hax_backend_fstar))]
+    #[hax_lib::requires(true)]
+    fn clamp(self, lo: Self, hi: Self) -> Self
+    where
+        Self: Sized,
+    {
+        if !PartialOrd::le(&lo, &hi) {
+            crate::panicking::internal::panic()
+        }
+        if PartialOrd::lt(&self, &lo) {
+            lo
+        } else if PartialOrd::gt(&self, &hi) {
+            hi
+        } else {
+            self
+        }
+    }
 }
 
 /// See [`std::cmp::max`]
+#[cfg(not(hax_backend_fstar))]
+pub fn max<T: Ord>(v1: T, v2: T) -> T {
+    Ord::max(v1, v2)
+}
+
+/// See [`std::cmp::min`]
+#[cfg(not(hax_backend_fstar))]
+pub fn min<T: Ord>(v1: T, v2: T) -> T {
+    Ord::min(v1, v2)
+}
+
+/// See [`std::cmp::max`]
+#[cfg(hax_backend_fstar)]
 pub fn max<T: Ord>(v1: T, v2: T) -> T {
     match v1.cmp(&v2) {
         Ordering::Greater => v1,
@@ -171,6 +231,7 @@ pub fn max<T: Ord>(v1: T, v2: T) -> T {
 }
 
 /// See [`std::cmp::min`]
+#[cfg(hax_backend_fstar)]
 pub fn min<T: Ord>(v1: T, v2: T) -> T {
     match v1.cmp(&v2) {
         Ordering::Greater => v2,
@@ -388,7 +449,81 @@ mod tests {
         }
     }
 
+    #[cfg(not(hax_backend_fstar))]
+    mod skew {
+        use super::super::Ordering;
+
+        /// `PartialOrd` reversed against `Ord`: `max`, `min` and `clamp` must
+        /// follow the former.
+        #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+        pub(super) struct Skew(pub(super) u8);
+        impl std::cmp::PartialOrd for Skew {
+            fn partial_cmp(&self, other: &Skew) -> Option<std::cmp::Ordering> {
+                Some(std::cmp::Ord::cmp(&other.0, &self.0))
+            }
+        }
+        impl std::cmp::Ord for Skew {
+            fn cmp(&self, other: &Skew) -> std::cmp::Ordering {
+                std::cmp::Ord::cmp(&self.0, &other.0)
+            }
+        }
+        impl super::super::PartialEq<Skew> for Skew {
+            fn eq(&self, other: &Skew) -> bool {
+                self.0 == other.0
+            }
+        }
+        impl super::super::Eq for Skew {}
+        impl super::super::PartialOrd<Skew> for Skew {
+            fn partial_cmp(&self, other: &Skew) -> crate::option::Option<Ordering> {
+                crate::option::Option::Some(super::super::Ord::cmp(&other.0, &self.0))
+            }
+        }
+        impl super::super::Ord for Skew {
+            fn cmp(&self, other: &Skew) -> Ordering {
+                super::super::Ord::cmp(&self.0, &other.0)
+            }
+        }
+    }
+    #[cfg(not(hax_backend_fstar))]
+    use skew::Skew;
+
+    #[cfg(not(hax_backend_fstar))]
+    #[test]
+    #[should_panic]
+    fn test_ord_clamp_default_panics() {
+        super::Ord::clamp(1u8, 3, 2);
+    }
+
     proptest! {
+        // Ints don't override `max`/`min`/`clamp`, so these exercise the
+        // trait's defaults.
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ord_defaults(x in any::<u8>(), y in any::<u8>(), z in any::<u8>()) {
+            let (lo, hi) = (std::cmp::min(y, z), std::cmp::max(y, z));
+            prop_assert_eq!(super::Ord::max(x, y), std::cmp::Ord::max(x, y));
+            prop_assert_eq!(super::Ord::min(x, y), std::cmp::Ord::min(x, y));
+            prop_assert_eq!(super::Ord::clamp(x, lo, hi), std::cmp::Ord::clamp(x, lo, hi));
+        }
+
+        #[cfg(not(hax_backend_fstar))]
+        #[test]
+        fn test_ord_defaults_skewed(x in any::<u8>(), y in any::<u8>(), z in any::<u8>()) {
+            let (lo, hi) = (std::cmp::max(y, z), std::cmp::min(y, z));
+            prop_assert_eq!(
+                super::Ord::clamp(Skew(x), Skew(lo), Skew(hi)),
+                std::cmp::Ord::clamp(Skew(x), Skew(lo), Skew(hi))
+            );
+            prop_assert_eq!(super::Ord::max(Skew(x), Skew(y)), std::cmp::Ord::max(Skew(x), Skew(y)));
+            prop_assert_eq!(super::Ord::min(Skew(x), Skew(y)), std::cmp::Ord::min(Skew(x), Skew(y)));
+            prop_assert_eq!(super::max(Skew(x), Skew(y)), std::cmp::max(Skew(x), Skew(y)));
+            prop_assert_eq!(super::min(Skew(x), Skew(y)), std::cmp::min(Skew(x), Skew(y)));
+            // The two sides' `Ord` and model `PartialEq` agree with `u8`'s.
+            prop_assert_eq!(std::cmp::Ord::cmp(&Skew(x), &Skew(y)), std::cmp::Ord::cmp(&x, &y));
+            prop_assert_eq!(super::Ord::cmp(&Skew(x), &Skew(y)), std::cmp::Ord::cmp(&x, &y).inject());
+            prop_assert_eq!(super::PartialEq::eq(&Skew(x), &Skew(y)), x == y);
+        }
+
         // Ints don't override `ne`, so this exercises the trait's default.
         #[cfg(not(hax_backend_fstar))]
         #[test]
@@ -519,7 +654,7 @@ mod tests {
         #[test]
         fn test_clamp_at_min(x in any::<u8>(), hi in any::<u8>()) {
             let hi = std::cmp::max(x, hi);
-            prop_assert_eq!(super::clamp(x.inject(), x.inject(), hi.inject()), x.clamp(x, hi));
+            prop_assert_eq!(super::clamp(x.inject(), x.inject(), hi.inject()), std::cmp::Ord::clamp(x, x, hi));
         }
 
         #[test]
@@ -528,7 +663,7 @@ mod tests {
             let hi = std::cmp::max(a, b);
             prop_assert_eq!(
                 super::clamp(x.inject(), lo.inject(), hi.inject()),
-                x.clamp(lo, hi)
+                std::cmp::Ord::clamp(x, lo, hi)
             );
         }
 

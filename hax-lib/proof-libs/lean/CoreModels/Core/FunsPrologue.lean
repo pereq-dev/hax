@@ -134,6 +134,12 @@ def mkUOrd {ty} : cmp.Ord (UScalar ty) := {
         | .lt => cmp.Ordering.Less
         | .eq => cmp.Ordering.Equal
         | .gt => cmp.Ordering.Greater)
+  max := fun x y => ok (if y.val < x.val then x else y)
+  min := fun x y => ok (if y.val < x.val then y else x)
+  clamp := fun x lo hi =>
+    if lo.val ≤ hi.val then
+      ok (if x.val < lo.val then lo else if hi.val < x.val then hi else x)
+    else fail .panic
 }
 
 def mkIOrd {ty} : cmp.Ord (IScalar ty) := {
@@ -144,6 +150,12 @@ def mkIOrd {ty} : cmp.Ord (IScalar ty) := {
         | .lt => cmp.Ordering.Less
         | .eq => cmp.Ordering.Equal
         | .gt => cmp.Ordering.Greater)
+  max := fun x y => ok (if y.val < x.val then x else y)
+  min := fun x y => ok (if y.val < x.val then y else x)
+  clamp := fun x lo hi =>
+    if lo.val ≤ hi.val then
+      ok (if x.val < lo.val then lo else if hi.val < x.val then hi else x)
+    else fail .panic
 }
 
 def U8.Insts.CoreCmpOrd    : cmp.Ord U8    := mkUOrd
@@ -221,6 +233,55 @@ def ops.range.Range.Insts.CoreIterTraitsIteratorIterator {A : Type _}
     (StepInst : iter.range.Step A) :
     iter.traits.iterator.Iterator (ops.range.Range A) A := {
   next := IteratorRange.next StepInst
+}
+
+/-- The `Iterator::next` implementation for `core::ops::range::RangeInclusive<A>`,
+    parameterised over the `Step` dictionary, with std's sequence of `Step`,
+    `Clone` and `PartialOrd` calls. As in std, `end` is yielded by setting
+    `exhausted` rather than by stepping past it, which may overflow. -/
+def IteratorRangeInclusive.next {A : Type _} (StepInst : iter.range.Step A) :
+    ops.range.RangeInclusive A → RustM ((Option A) × ops.range.RangeInclusive A) :=
+  fun range => do
+  if range.exhausted then .ok (Option.none, range) else
+  let le ← StepInst.corecmpPartialOrdInst.le range.start_ range.end_
+  if !le then .ok (Option.none, range) else
+  let lt ← StepInst.corecmpPartialOrdInst.lt range.start_ range.end_
+  if lt then
+    let cur ← StepInst.cloneCloneInst.clone range.start_
+    let next? ← StepInst.forward_checked cur 1#usize
+    match next? with
+    | Option.none      => .fail .panic
+    | Option.some next => .ok (Option.some range.start_, { range with start_ := next })
+  else
+    let cur ← StepInst.cloneCloneInst.clone range.start_
+    .ok (Option.some cur, { range with exhausted := true })
+
+abbrev ops.range.RangeInclusive.Insts.CoreIterTraitsIteratorIterator.next :=
+  @IteratorRangeInclusive.next
+
+def ops.range.RangeInclusive.Insts.CoreIterTraitsIteratorIterator {A : Type _}
+    (StepInst : iter.range.Step A) :
+    iter.traits.iterator.Iterator (ops.range.RangeInclusive A) A := {
+  next := IteratorRangeInclusive.next StepInst
+}
+
+/-- The `Iterator::next` implementation for `core::ops::range::RangeFrom<A>`:
+    `start`, then `start` stepped forward once by `Step::forward` (which panics on
+    overflow unless the `Step` impl overrides it). -/
+def IteratorRangeFrom.next {A : Type _} (StepInst : iter.range.Step A) :
+    ops.range.RangeFrom A → RustM ((Option A) × ops.range.RangeFrom A) :=
+  fun range => do
+  let cur ← StepInst.cloneCloneInst.clone range.start
+  let next ← StepInst.forward cur 1#usize
+  .ok (Option.some range.start, { range with start := next })
+
+abbrev ops.range.RangeFrom.Insts.CoreIterTraitsIteratorIterator.next :=
+  @IteratorRangeFrom.next
+
+def ops.range.RangeFrom.Insts.CoreIterTraitsIteratorIterator {A : Type _}
+    (StepInst : iter.range.Step A) :
+    iter.traits.iterator.Iterator (ops.range.RangeFrom A) A := {
+  next := IteratorRangeFrom.next StepInst
 }
 
 def ops.range.Range.Insts.CoreIterTraitsDouble_endedDoubleEndedIterator {A : Type _}

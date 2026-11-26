@@ -13,6 +13,10 @@ Lean backend and library:
  - Add `mvcgen` specs for more core models: integer ranges, arrays, slices,
    conversions, byte encodings and `rem_euclid`
  - Add a spec for `array::from_fn` with a closure whose state changes
+ - Add models for more core and alloc items
+
+F* backend and library:
+ - Add models for more core and alloc items
 
 ### Changed
 
@@ -22,6 +26,9 @@ Lean backend and library:
    `Hax.IteratorRange_next_spec_usize` are replaced by
    `core.<T>.Insts.CoreIterRangeStep.next_spec` for every integer type `<T>`,
    which takes the range as a single argument
+ - Breaking: `core.cmp.Ord` has `max`, `min` and `clamp` fields, which every
+   extracted `Ord` impl now provides
+ - Breaking: `Vec`'s `IntoIterator` instance takes the allocator type
 
 ### Fixed
 

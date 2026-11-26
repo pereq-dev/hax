@@ -478,6 +478,76 @@ pub mod traits {
             #[hax_lib::requires(true)]
             fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self;
         }
+        /// See [`std::iter::Extend`]
+        // Lean-only: F* has no model of `Vec::extend` to give it.
+        #[cfg(not(hax_backend_fstar))]
+        pub trait Extend<A> {
+            /// See [`std::iter::Extend::extend`]
+            fn extend<T: IntoIterator<Item = A>>(&mut self, iter: T);
+        }
+    }
+    /// See [`std::iter::Sum`]. Lean-only, as `Iterator::sum` (in the Lean
+    /// library's `FunsEpilogue.lean`) is.
+    #[cfg(not(hax_backend_fstar))]
+    pub mod accum {
+        use super::iterator::Iterator;
+        use crate::option::Option;
+
+        /// See [`std::iter::Sum`]
+        pub trait Sum<A>: Sized {
+            /// See [`std::iter::Sum::sum`]
+            fn sum<I: Iterator<Item = A>>(iter: I) -> Self;
+        }
+
+        // Overflow panics, as in std's debug builds.
+        macro_rules! impl_sum_int {
+            ($($t: ident)*) => {
+                $(
+                    impl Sum<$t> for $t {
+                        fn sum<I: Iterator<Item = $t>>(mut iter: I) -> $t {
+                            let mut acc: $t = 0;
+                            while let Option::Some(x) = iter.next() {
+                                acc += x;
+                            }
+                            acc
+                        }
+                    }
+                    impl<'a> Sum<&'a $t> for $t {
+                        fn sum<I: Iterator<Item = &'a $t>>(mut iter: I) -> $t {
+                            let mut acc: $t = 0;
+                            while let Option::Some(x) = iter.next() {
+                                acc += *x;
+                            }
+                            acc
+                        }
+                    }
+                )*
+            };
+        }
+
+        impl_sum_int!(u8 u16 u32 u64 u128 usize i8 i16 i32 i64 i128 isize);
+
+        #[cfg(test)]
+        mod tests {
+            use super::Sum;
+            use proptest::prelude::*;
+
+            proptest! {
+                #[test]
+                fn test_sum(v in prop::collection::vec(any::<u8>(), 0..8)) {
+                    let it = crate::slice::iter::Iter(rust_primitives::sequence::seq_from_slice(&v[..]));
+                    let expected = v.iter().map(|&x| x as u32).sum::<u32>();
+                    if expected <= u8::MAX as u32 {
+                        prop_assert_eq!(<u8 as Sum<&u8>>::sum(it) as u32, expected);
+                        let owned = crate::iter::adapters::map::Map::new(
+                            crate::slice::iter::Iter(rust_primitives::sequence::seq_from_slice(&v[..])),
+                            |x: &u8| *x,
+                        );
+                        prop_assert_eq!(<u8 as Sum<u8>>::sum(owned) as u32, expected);
+                    }
+                }
+            }
+        }
     }
 }
 

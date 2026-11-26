@@ -166,3 +166,12 @@ pub fn test_range_bounds_contains() -> bool {
         && contains_via_bounds(.., 0)
         && !contains_via_bounds((Bound::Excluded(2u8), Bound::Unbounded), 2)
 }
+
+// ----- Range: Clone, PartialEq ------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_range_clone_eq() -> bool {
+    let r = 1u8..4;
+    let c = r.clone();
+    c == r && c != (1u8..5)
+}

@@ -562,6 +562,373 @@ def Array.Insts.CoreConvertAsRefSlice (T : Type _) (N : Std.Usize) :
   as_ref := Array.Insts.CoreConvertAsRefSlice.as_ref
 }
 
+/-- [core_models::slice::iter::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::slice::iter::Iter<'a, T>}::next]:
+    Source: 'core-models/src/core/slice.rs', lines 47:8-54:9
+    Visibility: public -/
+def slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+  {T : Type _} (self : slice.iter.Iter T) :
+  RustM ((option.Option T) × (slice.iter.Iter T))
+  := do
+  let i ← rust_primitives.sequence.seq_len self
+  if i = 0#usize
+  then ok (option.Option.None, self)
+  else
+    let (res, s) ← rust_primitives.sequence.seq_remove self 0#usize
+    ok (option.Option.Some res, s)
+
+/-- Trait implementation: [core_models::slice::iter::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::slice::iter::Iter<'a, T>}]
+    Source: 'core-models/src/core/slice.rs', lines 45:4-55:5 -/
+@[reducible]
+def slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T :
+  Type _) : iter.traits.iterator.Iterator (slice.iter.Iter T) T := {
+  next :=
+    slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
+}
+
+/-- [core_models::slice::{core_models::slice::Slice<T>}::iter]:
+    Source: 'core-models/src/core/slice.rs', lines 173:4-175:5 -/
+def slice.Slice.iter
+  {T : Type _} (s : Slice T) : RustM (slice.iter.Iter T) := do
+  let s1 ← rust_primitives.sequence.seq_from_slice s
+  ok s1
+
+/-- [core_models::slice::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T]}::into_iter]:
+    Source: 'core-models/src/core/slice.rs', lines 558:4-560:5
+    Visibility: public -/
+def
+  SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
+  {T : Type _} (self : Slice T) : RustM (slice.iter.Iter T) := do
+  let i ← slice.Slice.iter self
+  ok i
+
+/-- [core_models::array::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T; N]}::into_iter]:
+    Source: 'core-models/src/core/array.rs', lines 271:4-273:5
+    Visibility: public -/
+def
+  SharedAArray.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
+  {T : Type _} {N : Std.Usize} (self : Array T N) :
+  RustM (slice.iter.Iter T)
+  := do
+  let s ← rust_primitives.slice.array_as_slice self
+  let i ←
+    SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
+      s
+  ok i
+
+/-- Trait implementation: [core_models::array::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T; N]}]
+    Source: 'core-models/src/core/array.rs', lines 268:0-274:1 -/
+@[reducible]
+def SharedAArray.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter (T
+  : Type _) (N : Std.Usize) : iter.traits.collect.IntoIterator (Array T N) T
+  (slice.iter.Iter T) := {
+  iteratorIteratorInst :=
+    slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT T
+  into_iter :=
+    SharedAArray.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
+}
+
+/-- Trait implementation: [core_models::array::ordering::{impl core_models::cmp::Eq for [T; N]}]
+    Source: 'core-models/src/core/array.rs', lines 283:4-283:72 -/
+@[reducible]
+def Array.Insts.CoreCmpEq {T : Type _} (N : Std.Usize) (cmpEqInst :
+  cmp.Eq T) : cmp.Eq (Array T N) := {
+  PartialEqInst := Array.Insts.CoreCmpPartialEqArray N
+    cmpEqInst.PartialEqInst
+}
+
+/-- [core_models::cmp::PartialOrd::ge]:
+    Source: 'core-models/src/core/cmp.rs', lines 79:4-84:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.ge.default
+  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  RustM Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok false
+    | cmp.Ordering.Equal => ok true
+    | cmp.Ordering.Greater => ok true
+  | option.Option.None => ok false
+
+/-- [core_models::cmp::PartialOrd::gt]:
+    Source: 'core-models/src/core/cmp.rs', lines 74:4-76:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.gt.default
+  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  RustM Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok false
+    | cmp.Ordering.Equal => ok false
+    | cmp.Ordering.Greater => ok true
+  | option.Option.None => ok false
+
+/-- [core_models::cmp::PartialOrd::le]:
+    Source: 'core-models/src/core/cmp.rs', lines 66:4-71:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.le.default
+  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  RustM Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok true
+    | cmp.Ordering.Equal => ok true
+    | cmp.Ordering.Greater => ok false
+  | option.Option.None => ok false
+
+/-- [core_models::cmp::PartialOrd::lt]:
+    Source: 'core-models/src/core/cmp.rs', lines 61:4-63:5
+    Visibility: public -/
+@[trait_default]
+def cmp.PartialOrd.lt.default
+  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
+  (self : Self) (other : Rhs) :
+  RustM Bool
+  := do
+  let o ← PartialOrdInst.partial_cmp self other
+  match o with
+  | option.Option.Some o1 =>
+    match o1 with
+    | cmp.Ordering.Less => ok true
+    | cmp.Ordering.Equal => ok false
+    | cmp.Ordering.Greater => ok false
+  | option.Option.None => ok false
+
+/-- [core_models::array::ordering::{impl core_models::cmp::PartialOrd<[T; N]> for [T; N]}::partial_cmp]: loop body 0:
+    Source: 'core-models/src/core/array.rs', lines 289:12-297:9
+    Visibility: public -/
+@[rust_loop_body]
+def Array.Insts.CoreCmpPartialOrdArray.partial_cmp_loop.body
+  {T : Type _} {N : Std.Usize} (cmpPartialOrdInst : cmp.PartialOrd T T)
+  (self : Array T N) (other : Array T N) (i : Std.Usize) :
+  RustM (ControlFlow Std.Usize (option.Option cmp.Ordering))
+  := do
+  if i < N
+  then
+    let t ← rust_primitives.slice.array_index self i
+    let t1 ← rust_primitives.slice.array_index other i
+    let o ← cmpPartialOrdInst.partial_cmp t t1
+    match o with
+    | option.Option.Some o1 =>
+      match o1 with
+      | cmp.Ordering.Less => ok (done o)
+      | cmp.Ordering.Equal => let i1 ← i + 1#usize
+                              ok (cont i1)
+      | cmp.Ordering.Greater => ok (done o)
+    | option.Option.None => ok (done option.Option.None)
+  else ok (done (option.Option.Some cmp.Ordering.Equal))
+
+/-- [core_models::array::ordering::{impl core_models::cmp::PartialOrd<[T; N]> for [T; N]}::partial_cmp]: loop 0:
+    Source: 'core-models/src/core/array.rs', lines 289:12-297:9
+    Visibility: public -/
+@[rust_loop]
+def Array.Insts.CoreCmpPartialOrdArray.partial_cmp_loop
+  {T : Type _} {N : Std.Usize} (cmpPartialOrdInst : cmp.PartialOrd T T)
+  (self : Array T N) (other : Array T N) (i : Std.Usize) :
+  RustM (option.Option cmp.Ordering)
+  := do
+  loop
+    (fun i1 => Array.Insts.CoreCmpPartialOrdArray.partial_cmp_loop.body
+      cmpPartialOrdInst self other i1)
+    i
+
+/-- [core_models::array::ordering::{impl core_models::cmp::PartialOrd<[T; N]> for [T; N]}::partial_cmp]:
+    Source: 'core-models/src/core/array.rs', lines 287:8-297:9
+    Visibility: public -/
+@[reducible]
+def Array.Insts.CoreCmpPartialOrdArray.partial_cmp
+  {T : Type _} {N : Std.Usize} (cmpPartialOrdInst : cmp.PartialOrd T T)
+  (self : Array T N) (other : Array T N) :
+  RustM (option.Option cmp.Ordering)
+  := do
+  Array.Insts.CoreCmpPartialOrdArray.partial_cmp_loop cmpPartialOrdInst
+    self other 0#usize
+
+/-- Trait implementation: [core_models::array::ordering::{impl core_models::cmp::PartialOrd<[T; N]> for [T; N]}]
+    Source: 'core-models/src/core/array.rs', lines 286:4-298:5 -/
+@[reducible]
+impl_def Array.Insts.CoreCmpPartialOrdArray {T : Type _} (N : Std.Usize)
+  (cmpPartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (Array T N) (Array
+  T N) := {
+  PartialEqInst := Array.Insts.CoreCmpPartialEqArray N
+    cmpPartialOrdInst.PartialEqInst
+  partial_cmp := Array.Insts.CoreCmpPartialOrdArray.partial_cmp
+    cmpPartialOrdInst
+  lt := cmp.PartialOrd.lt.default (Array.Insts.CoreCmpPartialOrdArray N
+    cmpPartialOrdInst)
+  le := cmp.PartialOrd.le.default (Array.Insts.CoreCmpPartialOrdArray N
+    cmpPartialOrdInst)
+  gt := cmp.PartialOrd.gt.default (Array.Insts.CoreCmpPartialOrdArray N
+    cmpPartialOrdInst)
+  ge := cmp.PartialOrd.ge.default (Array.Insts.CoreCmpPartialOrdArray N
+    cmpPartialOrdInst)
+}
+
+/-- [core_models::panicking::internal::panic]:
+    Source: 'core-models/src/core/panicking.rs', lines 38:4-40:5
+    Visibility: public -/
+def panicking.internal.panic (T : Type _) : RustM T := do
+  fail Error.panic
+
+/-- [core_models::cmp::Ord::clamp]:
+    Source: 'core-models/src/core/cmp.rs', lines 195:4-209:5
+    Visibility: public -/
+@[trait_default]
+def cmp.Ord.clamp.default
+  {Self : Type _} (OrdInst : cmp.Ord Self) (self : Self) (lo : Self)
+  (hi : Self) :
+  RustM Self
+  := do
+  let b ← OrdInst.PartialOrdInst.le lo hi
+  if b
+  then ok ()
+  else panicking.internal.panic Unit
+  let b1 ← OrdInst.PartialOrdInst.lt self lo
+  if b1
+  then ok lo
+  else
+    let b2 ← OrdInst.PartialOrdInst.gt self hi
+    if b2
+    then ok hi
+    else ok self
+
+/-- [core_models::cmp::Ord::min]:
+    Source: 'core-models/src/core/cmp.rs', lines 182:4-191:5
+    Visibility: public -/
+@[trait_default]
+def cmp.Ord.min.default
+  {Self : Type _} (OrdInst : cmp.Ord Self) (self : Self) (other : Self) :
+  RustM Self
+  := do
+  let b ← OrdInst.PartialOrdInst.lt other self
+  if b
+  then ok other
+  else ok self
+
+/-- [core_models::cmp::Ord::max]:
+    Source: 'core-models/src/core/cmp.rs', lines 169:4-178:5
+    Visibility: public -/
+@[trait_default]
+def cmp.Ord.max.default
+  {Self : Type _} (OrdInst : cmp.Ord Self) (self : Self) (other : Self) :
+  RustM Self
+  := do
+  let b ← OrdInst.PartialOrdInst.lt other self
+  if b
+  then ok self
+  else ok other
+
+/-- [core_models::array::ordering::{impl core_models::cmp::Ord for [T; N]}::cmp]: loop body 0:
+    Source: 'core-models/src/core/array.rs', lines 304:12-312:9
+    Visibility: public -/
+@[rust_loop_body]
+def Array.Insts.CoreCmpOrd.cmp_loop.body
+  {T : Type _} {N : Std.Usize} (cmpOrdInst : cmp.Ord T) (self : Array T N)
+  (other : Array T N) (i : Std.Usize) :
+  RustM (ControlFlow Std.Usize cmp.Ordering)
+  := do
+  if i < N
+  then
+    let t ← rust_primitives.slice.array_index self i
+    let t1 ← rust_primitives.slice.array_index other i
+    let o ← cmpOrdInst.cmp t t1
+    match o with
+    | cmp.Ordering.Less => ok (done cmp.Ordering.Less)
+    | cmp.Ordering.Equal => let i1 ← i + 1#usize
+                            ok (cont i1)
+    | cmp.Ordering.Greater => ok (done cmp.Ordering.Greater)
+  else ok (done cmp.Ordering.Equal)
+
+/-- [core_models::array::ordering::{impl core_models::cmp::Ord for [T; N]}::cmp]: loop 0:
+    Source: 'core-models/src/core/array.rs', lines 304:12-312:9
+    Visibility: public -/
+@[rust_loop]
+def Array.Insts.CoreCmpOrd.cmp_loop
+  {T : Type _} {N : Std.Usize} (cmpOrdInst : cmp.Ord T) (self : Array T N)
+  (other : Array T N) (i : Std.Usize) :
+  RustM cmp.Ordering
+  := do
+  loop
+    (fun i1 => Array.Insts.CoreCmpOrd.cmp_loop.body cmpOrdInst self
+      other i1)
+    i
+
+/-- [core_models::array::ordering::{impl core_models::cmp::Ord for [T; N]}::cmp]:
+    Source: 'core-models/src/core/array.rs', lines 302:8-312:9
+    Visibility: public -/
+@[reducible]
+def Array.Insts.CoreCmpOrd.cmp
+  {T : Type _} {N : Std.Usize} (cmpOrdInst : cmp.Ord T) (self : Array T N)
+  (other : Array T N) :
+  RustM cmp.Ordering
+  := do
+  Array.Insts.CoreCmpOrd.cmp_loop cmpOrdInst self other 0#usize
+
+/-- Trait implementation: [core_models::array::ordering::{impl core_models::cmp::Ord for [T; N]}]
+    Source: 'core-models/src/core/array.rs', lines 301:4-313:5 -/
+@[reducible]
+impl_def Array.Insts.CoreCmpOrd {T : Type _} (N : Std.Usize) (cmpOrdInst
+  : cmp.Ord T) : cmp.Ord (Array T N) := {
+  EqInst := Array.Insts.CoreCmpEq N cmpOrdInst.EqInst
+  PartialOrdInst := Array.Insts.CoreCmpPartialOrdArray N
+    cmpOrdInst.PartialOrdInst
+  cmp := Array.Insts.CoreCmpOrd.cmp cmpOrdInst
+  max := cmp.Ord.max.default (Array.Insts.CoreCmpOrd N cmpOrdInst)
+  min := cmp.Ord.min.default (Array.Insts.CoreCmpOrd N cmpOrdInst)
+  clamp := cmp.Ord.clamp.default (Array.Insts.CoreCmpOrd N cmpOrdInst)
+}
+
+/-- [core_models::bool::{core_models::bool::bool}::then_some]:
+    Source: 'core-models/src/core/bool.rs', lines 11:4-13:5
+    Visibility: public -/
+def bool.Bool.then_some
+  {T : Type _} (b : Bool) (t : T) : RustM (option.Option T) := do
+  if b
+  then ok (option.Option.Some t)
+  else ok option.Option.None
+
+/-- [core_models::bool::{core_models::bool::bool}::then]:
+    Source: 'core-models/src/core/bool.rs', lines 17:4-19:5
+    Visibility: public -/
+def bool.Bool.then
+  {T : Type _} {F : Type _} (coreopsfunctionFnOnceFTupleTInst :
+  core.ops.function.FnOnce F Unit T) (b : Bool) (f : F) :
+  RustM (option.Option T)
+  := do
+  if b
+  then
+    let t ← coreopsfunctionFnOnceFTupleTInst.call_once f ()
+    ok (option.Option.Some t)
+  else ok option.Option.None
+
+/-- [core_models::borrow::{impl core_models::borrow::Borrow<T> for &'_0 T}::borrow]:
+    Source: 'core-models/src/core/borrow.rs', lines 9:4-11:5 -/
+def Shared0T.Insts.CoreBorrowBorrow.borrow
+  {T : Type _} (self : T) : RustM T := do
+  ok self
+
+/-- Trait implementation: [core_models::borrow::{impl core_models::borrow::Borrow<T> for &'_0 T}]
+    Source: 'core-models/src/core/borrow.rs', lines 8:0-12:1 -/
+@[reducible]
+def Shared0T.Insts.CoreBorrowBorrow (T : Type _) : borrow.Borrow T T
+  := {
+  borrow := Shared0T.Insts.CoreBorrowBorrow.borrow
+}
+
 /-- [core_models::clone::Clone::clone_from]:
     Source: 'core-models/src/core/clone.rs', lines 19:4-24:5
     Visibility: public -/
@@ -795,78 +1162,6 @@ def cmp.Ordering.Insts.CoreFmtDebug : fmt.Debug cmp.Ordering := {
   fmt := cmp.Ordering.Insts.CoreFmtDebug.fmt
 }
 
-/-- [core_models::cmp::PartialOrd::lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 61:4-63:5
-    Visibility: public -/
-@[trait_default]
-def cmp.PartialOrd.lt.default
-  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
-  (self : Self) (other : Rhs) :
-  RustM Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self other
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok true
-    | cmp.Ordering.Equal => ok false
-    | cmp.Ordering.Greater => ok false
-  | option.Option.None => ok false
-
-/-- [core_models::cmp::PartialOrd::le]:
-    Source: 'core-models/src/core/cmp.rs', lines 66:4-71:5
-    Visibility: public -/
-@[trait_default]
-def cmp.PartialOrd.le.default
-  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
-  (self : Self) (other : Rhs) :
-  RustM Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self other
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok true
-    | cmp.Ordering.Equal => ok true
-    | cmp.Ordering.Greater => ok false
-  | option.Option.None => ok false
-
-/-- [core_models::cmp::PartialOrd::gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 74:4-76:5
-    Visibility: public -/
-@[trait_default]
-def cmp.PartialOrd.gt.default
-  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
-  (self : Self) (other : Rhs) :
-  RustM Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self other
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok false
-    | cmp.Ordering.Equal => ok false
-    | cmp.Ordering.Greater => ok true
-  | option.Option.None => ok false
-
-/-- [core_models::cmp::PartialOrd::ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 79:4-84:5
-    Visibility: public -/
-@[trait_default]
-def cmp.PartialOrd.ge.default
-  {Self : Type _} {Rhs : Type _} (PartialOrdInst : cmp.PartialOrd Self Rhs)
-  (self : Self) (other : Rhs) :
-  RustM Bool
-  := do
-  let o ← PartialOrdInst.partial_cmp self other
-  match o with
-  | option.Option.Some o1 =>
-    match o1 with
-    | cmp.Ordering.Less => ok false
-    | cmp.Ordering.Equal => ok true
-    | cmp.Ordering.Greater => ok true
-  | option.Option.None => ok false
-
 /-- [core_models::cmp::{impl core_models::cmp::Neq<T> for T}::neq]:
     Source: 'core-models/src/core/cmp.rs', lines 94:4-97:5 -/
 def cmp.Neq.Blanket.neq
@@ -885,29 +1180,21 @@ def cmp.Neq.Blanket {T : Type _} (PartialEqInst : cmp.PartialEq T T) : cmp.Neq
 }
 
 /-- [core_models::cmp::max]:
-    Source: 'core-models/src/core/cmp.rs', lines 166:0-171:1
+    Source: 'core-models/src/core/cmp.rs', lines 214:0-216:1
     Visibility: public -/
 def cmp.max
   {T : Type _} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
-  let o ← OrdInst.cmp v1 v2
-  match o with
-  | cmp.Ordering.Less => ok v2
-  | cmp.Ordering.Equal => ok v2
-  | cmp.Ordering.Greater => ok v1
+  OrdInst.max v1 v2
 
 /-- [core_models::cmp::min]:
-    Source: 'core-models/src/core/cmp.rs', lines 174:0-179:1
+    Source: 'core-models/src/core/cmp.rs', lines 220:0-222:1
     Visibility: public -/
 def cmp.min
   {T : Type _} (OrdInst : cmp.Ord T) (v1 : T) (v2 : T) : RustM T := do
-  let o ← OrdInst.cmp v1 v2
-  match o with
-  | cmp.Ordering.Less => ok v1
-  | cmp.Ordering.Equal => ok v1
-  | cmp.Ordering.Greater => ok v2
+  OrdInst.min v1 v2
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 195:4-197:5
+    Source: 'core-models/src/core/cmp.rs', lines 256:4-258:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   {T : Type _} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -917,7 +1204,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.eq
   PartialEqInst.eq other self
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 192:4-194:5
+    Source: 'core-models/src/core/cmp.rs', lines 253:4-255:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse.ne
   {T : Type _} (PartialEqInst : cmp.PartialEq T T) (self : cmp.Reverse T)
@@ -930,7 +1217,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 190:0-198:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 251:0-259:1 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type _}
   (PartialEqInst : cmp.PartialEq T T) : cmp.PartialEq (cmp.Reverse T)
@@ -940,7 +1227,7 @@ def cmp.Reverse.Insts.CoreCmpPartialEqReverse {T : Type _}
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 185:4-187:5
+    Source: 'core-models/src/core/cmp.rs', lines 246:4-248:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   {T : Type _} (PartialOrdInst : cmp.PartialOrd T T) (self : cmp.Reverse T)
@@ -950,7 +1237,7 @@ def cmp.Reverse.Insts.CoreCmpPartialOrdReverse.partial_cmp
   PartialOrdInst.partial_cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<core_models::cmp::Reverse<T>> for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 184:0-188:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 245:0-249:1 -/
 @[reducible]
 impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type _}
   (PartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (cmp.Reverse T)
@@ -970,7 +1257,7 @@ impl_def cmp.Reverse.Insts.CoreCmpPartialOrdReverse {T : Type _}
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 200:0-200:32 -/
+    Source: 'core-models/src/core/cmp.rs', lines 261:0-261:32 -/
 @[reducible]
 def cmp.Reverse.Insts.CoreCmpEq {T : Type _} (EqInst : cmp.Eq T) :
   cmp.Eq (cmp.Reverse T) := {
@@ -979,7 +1266,7 @@ def cmp.Reverse.Insts.CoreCmpEq {T : Type _} (EqInst : cmp.Eq T) :
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 203:4-205:5
+    Source: 'core-models/src/core/cmp.rs', lines 264:4-266:5
     Visibility: public -/
 def cmp.Reverse.Insts.CoreCmpOrd.cmp
   {T : Type _} (OrdInst : cmp.Ord T) (self : cmp.Reverse T)
@@ -989,18 +1276,21 @@ def cmp.Reverse.Insts.CoreCmpOrd.cmp
   OrdInst.cmp other self
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for core_models::cmp::Reverse<T>}]
-    Source: 'core-models/src/core/cmp.rs', lines 202:0-206:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 263:0-267:1 -/
 @[reducible]
-def cmp.Reverse.Insts.CoreCmpOrd {T : Type _} (OrdInst : cmp.Ord T) :
-  cmp.Ord (cmp.Reverse T) := {
+impl_def cmp.Reverse.Insts.CoreCmpOrd {T : Type _} (OrdInst : cmp.Ord T)
+  : cmp.Ord (cmp.Reverse T) := {
   EqInst := cmp.Reverse.Insts.CoreCmpEq OrdInst.EqInst
   PartialOrdInst := cmp.Reverse.Insts.CoreCmpPartialOrdReverse
     OrdInst.PartialOrdInst
   cmp := cmp.Reverse.Insts.CoreCmpOrd.cmp OrdInst
+  max := cmp.Ord.max.default (cmp.Reverse.Insts.CoreCmpOrd OrdInst)
+  min := cmp.Ord.min.default (cmp.Reverse.Insts.CoreCmpOrd OrdInst)
+  clamp := cmp.Ord.clamp.default (cmp.Reverse.Insts.CoreCmpOrd OrdInst)
 }
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 263:4-265:5
+    Source: 'core-models/src/core/cmp.rs', lines 324:4-326:5
     Visibility: public -/
 def cmp.Ordering.is_eq (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1009,7 +1299,7 @@ def cmp.Ordering.is_eq (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 267:4-269:5
+    Source: 'core-models/src/core/cmp.rs', lines 328:4-330:5
     Visibility: public -/
 def cmp.Ordering.is_ne (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1018,7 +1308,7 @@ def cmp.Ordering.is_ne (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_lt]:
-    Source: 'core-models/src/core/cmp.rs', lines 271:4-273:5
+    Source: 'core-models/src/core/cmp.rs', lines 332:4-334:5
     Visibility: public -/
 def cmp.Ordering.is_lt (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1027,7 +1317,7 @@ def cmp.Ordering.is_lt (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_gt]:
-    Source: 'core-models/src/core/cmp.rs', lines 275:4-277:5
+    Source: 'core-models/src/core/cmp.rs', lines 336:4-338:5
     Visibility: public -/
 def cmp.Ordering.is_gt (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1036,7 +1326,7 @@ def cmp.Ordering.is_gt (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_le]:
-    Source: 'core-models/src/core/cmp.rs', lines 279:4-281:5
+    Source: 'core-models/src/core/cmp.rs', lines 340:4-342:5
     Visibility: public -/
 def cmp.Ordering.is_le (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1045,7 +1335,7 @@ def cmp.Ordering.is_le (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok false
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::is_ge]:
-    Source: 'core-models/src/core/cmp.rs', lines 283:4-285:5
+    Source: 'core-models/src/core/cmp.rs', lines 344:4-346:5
     Visibility: public -/
 def cmp.Ordering.is_ge (self : cmp.Ordering) : RustM Bool := do
   match self with
@@ -1054,7 +1344,7 @@ def cmp.Ordering.is_ge (self : cmp.Ordering) : RustM Bool := do
   | cmp.Ordering.Greater => ok true
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::reverse]:
-    Source: 'core-models/src/core/cmp.rs', lines 287:4-293:5
+    Source: 'core-models/src/core/cmp.rs', lines 348:4-354:5
     Visibility: public -/
 def cmp.Ordering.reverse (self : cmp.Ordering) : RustM cmp.Ordering := do
   match self with
@@ -1063,7 +1353,7 @@ def cmp.Ordering.reverse (self : cmp.Ordering) : RustM cmp.Ordering := do
   | cmp.Ordering.Greater => ok cmp.Ordering.Less
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then]:
-    Source: 'core-models/src/core/cmp.rs', lines 295:4-300:5
+    Source: 'core-models/src/core/cmp.rs', lines 356:4-361:5
     Visibility: public -/
 def cmp.Ordering.then
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM cmp.Ordering := do
@@ -1073,7 +1363,7 @@ def cmp.Ordering.then
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
 /-- [core_models::cmp::{core_models::cmp::Ordering}::then_with]:
-    Source: 'core-models/src/core/cmp.rs', lines 302:4-307:5
+    Source: 'core-models/src/core/cmp.rs', lines 363:4-368:5
     Visibility: public -/
 def cmp.Ordering.then_with
   {F : Type _} (coreopsfunctionFnOnceFTupleOrderingInst :
@@ -1087,14 +1377,8 @@ def cmp.Ordering.then_with
     coreopsfunctionFnOnceFTupleOrderingInst.call_once f ()
   | cmp.Ordering.Greater => ok cmp.Ordering.Greater
 
-/-- [core_models::panicking::internal::panic]:
-    Source: 'core-models/src/core/panicking.rs', lines 38:4-40:5
-    Visibility: public -/
-def panicking.internal.panic (T : Type _) : RustM T := do
-  fail Error.panic
-
 /-- [core_models::cmp::clamp]:
-    Source: 'core-models/src/core/cmp.rs', lines 312:0-324:1
+    Source: 'core-models/src/core/cmp.rs', lines 373:0-385:1
     Visibility: public -/
 def cmp.clamp
   {T : Type _} (OrdInst : cmp.Ord T) (value : T) (min : T) (max : T) :
@@ -1117,21 +1401,21 @@ def cmp.clamp
     | cmp.Ordering.Greater => ok max
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}::ne]:
-    Source: 'core-models/src/core/cmp.rs', lines 335:4-337:5
+    Source: 'core-models/src/core/cmp.rs', lines 396:4-398:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialEqTuple.ne
   (_ : Unit) (_ : Unit) : RustM Bool := do
   ok false
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 331:4-333:5
+    Source: 'core-models/src/core/cmp.rs', lines 392:4-394:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialEqTuple.eq
   (_ : Unit) (_ : Unit) : RustM Bool := do
   ok true
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<()> for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 330:0-338:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 391:0-399:1 -/
 @[reducible]
 def Tuple.Insts.CoreCmpPartialEqTuple : cmp.PartialEq Unit Unit := {
   eq := Tuple.Insts.CoreCmpPartialEqTuple.eq
@@ -1139,21 +1423,21 @@ def Tuple.Insts.CoreCmpPartialEqTuple : cmp.PartialEq Unit Unit := {
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 341:0-341:17 -/
+    Source: 'core-models/src/core/cmp.rs', lines 402:0-402:17 -/
 @[reducible]
 def Tuple.Insts.CoreCmpEq : cmp.Eq Unit := {
   PartialEqInst := Tuple.Insts.CoreCmpPartialEqTuple
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialOrd<()> for ()}::partial_cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 345:4-347:5
+    Source: 'core-models/src/core/cmp.rs', lines 406:4-408:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpPartialOrdTuple.partial_cmp
   (_ : Unit) (_ : Unit) : RustM (option.Option cmp.Ordering) := do
   ok (option.Option.Some cmp.Ordering.Equal)
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialOrd<()> for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 344:0-348:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 405:0-409:1 -/
 @[reducible]
 impl_def Tuple.Insts.CoreCmpPartialOrdTuple : cmp.PartialOrd Unit Unit
   := {
@@ -1166,23 +1450,26 @@ impl_def Tuple.Insts.CoreCmpPartialOrdTuple : cmp.PartialOrd Unit Unit
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::Ord for ()}::cmp]:
-    Source: 'core-models/src/core/cmp.rs', lines 352:4-354:5
+    Source: 'core-models/src/core/cmp.rs', lines 413:4-415:5
     Visibility: public -/
 def Tuple.Insts.CoreCmpOrd.cmp
   (_ : Unit) (_ : Unit) : RustM cmp.Ordering := do
   ok cmp.Ordering.Equal
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Ord for ()}]
-    Source: 'core-models/src/core/cmp.rs', lines 351:0-355:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 412:0-416:1 -/
 @[reducible]
-def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
+impl_def Tuple.Insts.CoreCmpOrd : cmp.Ord Unit := {
   EqInst := Tuple.Insts.CoreCmpEq
   PartialOrdInst := Tuple.Insts.CoreCmpPartialOrdTuple
   cmp := Tuple.Insts.CoreCmpOrd.cmp
+  max := cmp.Ord.max.default Tuple.Insts.CoreCmpOrd
+  min := cmp.Ord.min.default Tuple.Insts.CoreCmpOrd
+  clamp := cmp.Ord.clamp.default Tuple.Insts.CoreCmpOrd
 }
 
 /-- [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}::eq]:
-    Source: 'core-models/src/core/cmp.rs', lines 360:4-367:5
+    Source: 'core-models/src/core/cmp.rs', lines 421:4-428:5
     Visibility: public -/
 def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
   (self : cmp.Ordering) (other : cmp.Ordering) : RustM Bool := do
@@ -1204,7 +1491,7 @@ def cmp.Ordering.Insts.CoreCmpPartialEqOrdering.eq
     | cmp.Ordering.Greater => ok true
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::PartialEq<core_models::cmp::Ordering> for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 359:0-368:1 -/
+    Source: 'core-models/src/core/cmp.rs', lines 420:0-429:1 -/
 @[reducible]
 impl_def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
   cmp.Ordering cmp.Ordering := {
@@ -1214,7 +1501,7 @@ impl_def cmp.Ordering.Insts.CoreCmpPartialEqOrdering : cmp.PartialEq
 }
 
 /-- Trait implementation: [core_models::cmp::{impl core_models::cmp::Eq for core_models::cmp::Ordering}]
-    Source: 'core-models/src/core/cmp.rs', lines 372:0-372:23 -/
+    Source: 'core-models/src/core/cmp.rs', lines 433:0-433:23 -/
 @[reducible]
 def cmp.Ordering.Insts.CoreCmpEq : cmp.Eq cmp.Ordering := {
   PartialEqInst := cmp.Ordering.Insts.CoreCmpPartialEqOrdering
@@ -1887,14 +2174,14 @@ def I128.Insts.CoreConvertFromU64 : convert.From Std.I128 Std.U64 := {
 
 /-
 /-- [core_models::num::{core_models::num::u8}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U8.MAX : Std.U8 := 255#u8
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::u8}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U8.MIN : Std.U8 := 0#u8
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -1947,14 +2234,14 @@ def U8.Insts.CoreConvertTryFromU32TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::u16}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U16.MAX : Std.U16 := 65535#u16
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::u16}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U16.MIN : Std.U16 := 0#u16
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2030,14 +2317,14 @@ def U16.Insts.CoreConvertTryFromU64TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::u32}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U32.MAX : Std.U32 := 4294967295#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::u32}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U32.MIN : Std.U32 := 0#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2067,7 +2354,7 @@ def U32.Insts.CoreConvertTryFromU64TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::usize}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Usize.MAX : RustM Std.Usize := rust_primitives.arithmetic.USIZE_MAX
@@ -2075,7 +2362,7 @@ def num.Usize.MAX : RustM Std.Usize := rust_primitives.arithmetic.USIZE_MAX
 
 /-
 /-- [core_models::num::{core_models::num::usize}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 @[global_simps, irreducible] def num.Usize.MIN : Std.Usize := 0#usize
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2181,7 +2468,7 @@ def U32.Insts.CoreConvertTryFromU128TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::u64}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.U64.MAX : Std.U64 := 18446744073709551615#u64
@@ -2189,7 +2476,7 @@ def num.U64.MAX : Std.U64 := 18446744073709551615#u64
 
 /-
 /-- [core_models::num::{core_models::num::u64}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U64.MIN : Std.U64 := 0#u64
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2347,14 +2634,14 @@ def U64.Insts.CoreConvertTryFromUsizeTryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::i8}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 298:12-298:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 323:12-323:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I8.MAX : Std.I8 := 127#i8
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::i8}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 296:12-296:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 321:12-321:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I8.MIN : Std.I8 := (-128)#i8
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2407,14 +2694,14 @@ def I8.Insts.CoreConvertTryFromI32TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::i16}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 298:12-298:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 323:12-323:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I16.MAX : Std.I16 := 32767#i16
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::i16}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 296:12-296:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 321:12-321:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I16.MIN : Std.I16 := (-32768)#i16
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2490,14 +2777,14 @@ def I16.Insts.CoreConvertTryFromI64TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::i32}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 298:12-298:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 323:12-323:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I32.MAX : Std.I32 := 2147483647#i32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::i32}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 296:12-296:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 321:12-321:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I32.MIN : Std.I32 := (-2147483648)#i32
 -/  -- provided by CoreModels.Core.FunsPrologue
@@ -2527,7 +2814,7 @@ def I32.Insts.CoreConvertTryFromI64TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::isize}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 298:12-298:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 323:12-323:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Isize.MAX : RustM Std.Isize := rust_primitives.arithmetic.ISIZE_MAX
@@ -2535,7 +2822,7 @@ def num.Isize.MAX : RustM Std.Isize := rust_primitives.arithmetic.ISIZE_MAX
 
 /-
 /-- [core_models::num::{core_models::num::isize}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 296:12-296:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 321:12-321:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Isize.MIN : RustM Std.Isize := rust_primitives.arithmetic.ISIZE_MIN
@@ -2643,7 +2930,7 @@ def I32.Insts.CoreConvertTryFromI128TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::i64}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 298:12-298:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 323:12-323:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.I64.MAX : Std.I64 := 9223372036854775807#i64
@@ -2651,7 +2938,7 @@ def num.I64.MAX : Std.I64 := 9223372036854775807#i64
 
 /-
 /-- [core_models::num::{core_models::num::i64}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 296:12-296:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 321:12-321:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.I64.MIN : Std.I64 := (-9223372036854775808)#i64
@@ -3155,7 +3442,7 @@ def I64.Insts.CoreConvertTryFromU128TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::i128}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 298:12-298:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 323:12-323:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.I128.MAX : Std.I128 := 170141183460469231731687303715884105727#i128
@@ -3383,7 +3670,7 @@ def U64.Insts.CoreConvertTryFromI8TryFromIntError : convert.TryFrom
 
 /-
 /-- [core_models::num::{core_models::num::u128}::MAX]
-    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 27:12-27:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.U128.MAX : Std.U128 := 340282366920938463463374607431768211455#u128
@@ -4971,8 +5258,14 @@ def fmt.Arguments.write_fmt
   := do
   ok (result.Result.Ok (), f)
 
+/-- [core_models::fmt::{core_models::fmt::Arguments<'a>}::from_str]:
+    Source: 'core-models/src/core/fmt.rs', lines 256:4-258:5
+    Visibility: public -/
+def fmt.Arguments.from_str (_s : Str) : RustM fmt.Arguments := do
+  ok ()
+
 /-- [core_models::fmt::rt::{core_models::fmt::rt::Argument<'a>}::none]:
-    Source: 'core-models/src/core/fmt.rs', lines 332:8-334:9 -/
+    Source: 'core-models/src/core/fmt.rs', lines 334:8-336:9 -/
 def fmt.rt.Argument.none : RustM (Array fmt.rt.Argument 0#usize) := do
   ok (Std.Array.empty fmt.rt.Argument)
 
@@ -5800,15 +6093,1277 @@ def iter.traits.collect.IntoIterator.Blanket {I : Type _} {Clause0_Item :
   into_iter := iter.traits.collect.IntoIterator.Blanket.into_iter IteratorInst
 }
 
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u8> for u8}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U8.Insts.CoreIterTraitsAccumSumU8.sum_loop.body
+  {I : Type _} (iteratorIteratorIU8Inst : iter.traits.iterator.Iterator I
+  Std.U8) (iter1 : I) (acc : Std.U8) :
+  RustM (ControlFlow (I × Std.U8) Std.U8)
+  := do
+  let (o, iter2) ← iteratorIteratorIU8Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u8> for u8}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U8.Insts.CoreIterTraitsAccumSumU8.sum_loop
+  {I : Type _} (iteratorIteratorIU8Inst : iter.traits.iterator.Iterator I
+  Std.U8) (iter1 : I) (acc : Std.U8) :
+  RustM Std.U8
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U8.Insts.CoreIterTraitsAccumSumU8.sum_loop.body
+      iteratorIteratorIU8Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u8> for u8}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U8.Insts.CoreIterTraitsAccumSumU8.sum
+  {I : Type _} (iteratorIteratorIU8Inst : iter.traits.iterator.Iterator I
+  Std.U8) (iter1 : I) :
+  RustM Std.U8
+  := do
+  U8.Insts.CoreIterTraitsAccumSumU8.sum_loop iteratorIteratorIU8Inst
+    iter1 0#u8
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u8> for u8}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U8.Insts.CoreIterTraitsAccumSumU8 : iter.traits.accum.Sum Std.U8
+  Std.U8 := {
+  sum := fun {I : Type} (iteratorIteratorPU8Inst :
+    iter.traits.iterator.Iterator I Std.U8) =>
+    U8.Insts.CoreIterTraitsAccumSumU8.sum iteratorIteratorPU8Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u8> for u8}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U8.Insts.CoreIterTraitsAccumSumSharedAU8.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedU8Inst : iter.traits.iterator.Iterator I
+  Std.U8) (iter1 : I) (acc : Std.U8) :
+  RustM (ControlFlow (I × Std.U8) Std.U8)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedU8Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u8> for u8}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U8.Insts.CoreIterTraitsAccumSumSharedAU8.sum_loop
+  {I : Type _} (iteratorIteratorISharedU8Inst : iter.traits.iterator.Iterator I
+  Std.U8) (iter1 : I) (acc : Std.U8) :
+  RustM Std.U8
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U8.Insts.CoreIterTraitsAccumSumSharedAU8.sum_loop.body
+      iteratorIteratorISharedU8Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u8> for u8}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U8.Insts.CoreIterTraitsAccumSumSharedAU8.sum
+  {I : Type _} (iteratorIteratorISharedAU8Inst : iter.traits.iterator.Iterator
+  I Std.U8) (iter1 : I) :
+  RustM Std.U8
+  := do
+  U8.Insts.CoreIterTraitsAccumSumSharedAU8.sum_loop
+    iteratorIteratorISharedAU8Inst iter1 0#u8
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u8> for u8}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U8.Insts.CoreIterTraitsAccumSumSharedAU8 : iter.traits.accum.Sum
+  Std.U8 Std.U8 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedU8Inst :
+    iter.traits.iterator.Iterator I Std.U8) =>
+    U8.Insts.CoreIterTraitsAccumSumSharedAU8.sum
+    iteratorIteratorPSharedU8Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u16> for u16}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U16.Insts.CoreIterTraitsAccumSumU16.sum_loop.body
+  {I : Type _} (iteratorIteratorIU16Inst : iter.traits.iterator.Iterator I
+  Std.U16) (iter1 : I) (acc : Std.U16) :
+  RustM (ControlFlow (I × Std.U16) Std.U16)
+  := do
+  let (o, iter2) ← iteratorIteratorIU16Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u16> for u16}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U16.Insts.CoreIterTraitsAccumSumU16.sum_loop
+  {I : Type _} (iteratorIteratorIU16Inst : iter.traits.iterator.Iterator I
+  Std.U16) (iter1 : I) (acc : Std.U16) :
+  RustM Std.U16
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U16.Insts.CoreIterTraitsAccumSumU16.sum_loop.body
+      iteratorIteratorIU16Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u16> for u16}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U16.Insts.CoreIterTraitsAccumSumU16.sum
+  {I : Type _} (iteratorIteratorIU16Inst : iter.traits.iterator.Iterator I
+  Std.U16) (iter1 : I) :
+  RustM Std.U16
+  := do
+  U16.Insts.CoreIterTraitsAccumSumU16.sum_loop iteratorIteratorIU16Inst
+    iter1 0#u16
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u16> for u16}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U16.Insts.CoreIterTraitsAccumSumU16 : iter.traits.accum.Sum Std.U16
+  Std.U16 := {
+  sum := fun {I : Type} (iteratorIteratorPU16Inst :
+    iter.traits.iterator.Iterator I Std.U16) =>
+    U16.Insts.CoreIterTraitsAccumSumU16.sum iteratorIteratorPU16Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u16> for u16}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U16.Insts.CoreIterTraitsAccumSumSharedAU16.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedU16Inst : iter.traits.iterator.Iterator
+  I Std.U16) (iter1 : I) (acc : Std.U16) :
+  RustM (ControlFlow (I × Std.U16) Std.U16)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedU16Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u16> for u16}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U16.Insts.CoreIterTraitsAccumSumSharedAU16.sum_loop
+  {I : Type _} (iteratorIteratorISharedU16Inst : iter.traits.iterator.Iterator
+  I Std.U16) (iter1 : I) (acc : Std.U16) :
+  RustM Std.U16
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U16.Insts.CoreIterTraitsAccumSumSharedAU16.sum_loop.body
+      iteratorIteratorISharedU16Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u16> for u16}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U16.Insts.CoreIterTraitsAccumSumSharedAU16.sum
+  {I : Type _} (iteratorIteratorISharedAU16Inst : iter.traits.iterator.Iterator
+  I Std.U16) (iter1 : I) :
+  RustM Std.U16
+  := do
+  U16.Insts.CoreIterTraitsAccumSumSharedAU16.sum_loop
+    iteratorIteratorISharedAU16Inst iter1 0#u16
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u16> for u16}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U16.Insts.CoreIterTraitsAccumSumSharedAU16 : iter.traits.accum.Sum
+  Std.U16 Std.U16 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedU16Inst :
+    iter.traits.iterator.Iterator I Std.U16) =>
+    U16.Insts.CoreIterTraitsAccumSumSharedAU16.sum
+    iteratorIteratorPSharedU16Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u32> for u32}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U32.Insts.CoreIterTraitsAccumSumU32.sum_loop.body
+  {I : Type _} (iteratorIteratorIU32Inst : iter.traits.iterator.Iterator I
+  Std.U32) (iter1 : I) (acc : Std.U32) :
+  RustM (ControlFlow (I × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ← iteratorIteratorIU32Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u32> for u32}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U32.Insts.CoreIterTraitsAccumSumU32.sum_loop
+  {I : Type _} (iteratorIteratorIU32Inst : iter.traits.iterator.Iterator I
+  Std.U32) (iter1 : I) (acc : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U32.Insts.CoreIterTraitsAccumSumU32.sum_loop.body
+      iteratorIteratorIU32Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u32> for u32}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U32.Insts.CoreIterTraitsAccumSumU32.sum
+  {I : Type _} (iteratorIteratorIU32Inst : iter.traits.iterator.Iterator I
+  Std.U32) (iter1 : I) :
+  RustM Std.U32
+  := do
+  U32.Insts.CoreIterTraitsAccumSumU32.sum_loop iteratorIteratorIU32Inst
+    iter1 0#u32
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u32> for u32}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U32.Insts.CoreIterTraitsAccumSumU32 : iter.traits.accum.Sum Std.U32
+  Std.U32 := {
+  sum := fun {I : Type} (iteratorIteratorPU32Inst :
+    iter.traits.iterator.Iterator I Std.U32) =>
+    U32.Insts.CoreIterTraitsAccumSumU32.sum iteratorIteratorPU32Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u32> for u32}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U32.Insts.CoreIterTraitsAccumSumSharedAU32.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedU32Inst : iter.traits.iterator.Iterator
+  I Std.U32) (iter1 : I) (acc : Std.U32) :
+  RustM (ControlFlow (I × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedU32Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u32> for u32}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U32.Insts.CoreIterTraitsAccumSumSharedAU32.sum_loop
+  {I : Type _} (iteratorIteratorISharedU32Inst : iter.traits.iterator.Iterator
+  I Std.U32) (iter1 : I) (acc : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U32.Insts.CoreIterTraitsAccumSumSharedAU32.sum_loop.body
+      iteratorIteratorISharedU32Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u32> for u32}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U32.Insts.CoreIterTraitsAccumSumSharedAU32.sum
+  {I : Type _} (iteratorIteratorISharedAU32Inst : iter.traits.iterator.Iterator
+  I Std.U32) (iter1 : I) :
+  RustM Std.U32
+  := do
+  U32.Insts.CoreIterTraitsAccumSumSharedAU32.sum_loop
+    iteratorIteratorISharedAU32Inst iter1 0#u32
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u32> for u32}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U32.Insts.CoreIterTraitsAccumSumSharedAU32 : iter.traits.accum.Sum
+  Std.U32 Std.U32 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedU32Inst :
+    iter.traits.iterator.Iterator I Std.U32) =>
+    U32.Insts.CoreIterTraitsAccumSumSharedAU32.sum
+    iteratorIteratorPSharedU32Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u64> for u64}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U64.Insts.CoreIterTraitsAccumSumU64.sum_loop.body
+  {I : Type _} (iteratorIteratorIU64Inst : iter.traits.iterator.Iterator I
+  Std.U64) (iter1 : I) (acc : Std.U64) :
+  RustM (ControlFlow (I × Std.U64) Std.U64)
+  := do
+  let (o, iter2) ← iteratorIteratorIU64Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u64> for u64}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U64.Insts.CoreIterTraitsAccumSumU64.sum_loop
+  {I : Type _} (iteratorIteratorIU64Inst : iter.traits.iterator.Iterator I
+  Std.U64) (iter1 : I) (acc : Std.U64) :
+  RustM Std.U64
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U64.Insts.CoreIterTraitsAccumSumU64.sum_loop.body
+      iteratorIteratorIU64Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u64> for u64}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U64.Insts.CoreIterTraitsAccumSumU64.sum
+  {I : Type _} (iteratorIteratorIU64Inst : iter.traits.iterator.Iterator I
+  Std.U64) (iter1 : I) :
+  RustM Std.U64
+  := do
+  U64.Insts.CoreIterTraitsAccumSumU64.sum_loop iteratorIteratorIU64Inst
+    iter1 0#u64
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u64> for u64}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U64.Insts.CoreIterTraitsAccumSumU64 : iter.traits.accum.Sum Std.U64
+  Std.U64 := {
+  sum := fun {I : Type} (iteratorIteratorPU64Inst :
+    iter.traits.iterator.Iterator I Std.U64) =>
+    U64.Insts.CoreIterTraitsAccumSumU64.sum iteratorIteratorPU64Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u64> for u64}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U64.Insts.CoreIterTraitsAccumSumSharedAU64.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedU64Inst : iter.traits.iterator.Iterator
+  I Std.U64) (iter1 : I) (acc : Std.U64) :
+  RustM (ControlFlow (I × Std.U64) Std.U64)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedU64Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u64> for u64}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U64.Insts.CoreIterTraitsAccumSumSharedAU64.sum_loop
+  {I : Type _} (iteratorIteratorISharedU64Inst : iter.traits.iterator.Iterator
+  I Std.U64) (iter1 : I) (acc : Std.U64) :
+  RustM Std.U64
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U64.Insts.CoreIterTraitsAccumSumSharedAU64.sum_loop.body
+      iteratorIteratorISharedU64Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u64> for u64}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U64.Insts.CoreIterTraitsAccumSumSharedAU64.sum
+  {I : Type _} (iteratorIteratorISharedAU64Inst : iter.traits.iterator.Iterator
+  I Std.U64) (iter1 : I) :
+  RustM Std.U64
+  := do
+  U64.Insts.CoreIterTraitsAccumSumSharedAU64.sum_loop
+    iteratorIteratorISharedAU64Inst iter1 0#u64
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u64> for u64}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U64.Insts.CoreIterTraitsAccumSumSharedAU64 : iter.traits.accum.Sum
+  Std.U64 Std.U64 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedU64Inst :
+    iter.traits.iterator.Iterator I Std.U64) =>
+    U64.Insts.CoreIterTraitsAccumSumSharedAU64.sum
+    iteratorIteratorPSharedU64Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u128> for u128}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U128.Insts.CoreIterTraitsAccumSumU128.sum_loop.body
+  {I : Type _} (iteratorIteratorIU128Inst : iter.traits.iterator.Iterator I
+  Std.U128) (iter1 : I) (acc : Std.U128) :
+  RustM (ControlFlow (I × Std.U128) Std.U128)
+  := do
+  let (o, iter2) ← iteratorIteratorIU128Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u128> for u128}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U128.Insts.CoreIterTraitsAccumSumU128.sum_loop
+  {I : Type _} (iteratorIteratorIU128Inst : iter.traits.iterator.Iterator I
+  Std.U128) (iter1 : I) (acc : Std.U128) :
+  RustM Std.U128
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U128.Insts.CoreIterTraitsAccumSumU128.sum_loop.body
+      iteratorIteratorIU128Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u128> for u128}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U128.Insts.CoreIterTraitsAccumSumU128.sum
+  {I : Type _} (iteratorIteratorIU128Inst : iter.traits.iterator.Iterator I
+  Std.U128) (iter1 : I) :
+  RustM Std.U128
+  := do
+  U128.Insts.CoreIterTraitsAccumSumU128.sum_loop
+    iteratorIteratorIU128Inst iter1 0#u128
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<u128> for u128}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U128.Insts.CoreIterTraitsAccumSumU128 : iter.traits.accum.Sum
+  Std.U128 Std.U128 := {
+  sum := fun {I : Type} (iteratorIteratorPU128Inst :
+    iter.traits.iterator.Iterator I Std.U128) =>
+    U128.Insts.CoreIterTraitsAccumSumU128.sum iteratorIteratorPU128Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u128> for u128}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def U128.Insts.CoreIterTraitsAccumSumSharedAU128.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedU128Inst : iter.traits.iterator.Iterator
+  I Std.U128) (iter1 : I) (acc : Std.U128) :
+  RustM (ControlFlow (I × Std.U128) Std.U128)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedU128Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u128> for u128}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def U128.Insts.CoreIterTraitsAccumSumSharedAU128.sum_loop
+  {I : Type _} (iteratorIteratorISharedU128Inst : iter.traits.iterator.Iterator
+  I Std.U128) (iter1 : I) (acc : Std.U128) :
+  RustM Std.U128
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      U128.Insts.CoreIterTraitsAccumSumSharedAU128.sum_loop.body
+      iteratorIteratorISharedU128Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u128> for u128}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def U128.Insts.CoreIterTraitsAccumSumSharedAU128.sum
+  {I : Type _} (iteratorIteratorISharedAU128Inst :
+  iter.traits.iterator.Iterator I Std.U128) (iter1 : I) :
+  RustM Std.U128
+  := do
+  U128.Insts.CoreIterTraitsAccumSumSharedAU128.sum_loop
+    iteratorIteratorISharedAU128Inst iter1 0#u128
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a u128> for u128}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def U128.Insts.CoreIterTraitsAccumSumSharedAU128 : iter.traits.accum.Sum
+  Std.U128 Std.U128 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedU128Inst :
+    iter.traits.iterator.Iterator I Std.U128) =>
+    U128.Insts.CoreIterTraitsAccumSumSharedAU128.sum
+    iteratorIteratorPSharedU128Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<usize> for usize}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def Usize.Insts.CoreIterTraitsAccumSumUsize.sum_loop.body
+  {I : Type _} (iteratorIteratorIUsizeInst : iter.traits.iterator.Iterator I
+  Std.Usize) (iter1 : I) (acc : Std.Usize) :
+  RustM (ControlFlow (I × Std.Usize) Std.Usize)
+  := do
+  let (o, iter2) ← iteratorIteratorIUsizeInst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<usize> for usize}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def Usize.Insts.CoreIterTraitsAccumSumUsize.sum_loop
+  {I : Type _} (iteratorIteratorIUsizeInst : iter.traits.iterator.Iterator I
+  Std.Usize) (iter1 : I) (acc : Std.Usize) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      Usize.Insts.CoreIterTraitsAccumSumUsize.sum_loop.body
+      iteratorIteratorIUsizeInst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<usize> for usize}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def Usize.Insts.CoreIterTraitsAccumSumUsize.sum
+  {I : Type _} (iteratorIteratorIUsizeInst : iter.traits.iterator.Iterator I
+  Std.Usize) (iter1 : I) :
+  RustM Std.Usize
+  := do
+  Usize.Insts.CoreIterTraitsAccumSumUsize.sum_loop
+    iteratorIteratorIUsizeInst iter1 0#usize
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<usize> for usize}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def Usize.Insts.CoreIterTraitsAccumSumUsize : iter.traits.accum.Sum
+  Std.Usize Std.Usize := {
+  sum := fun {I : Type} (iteratorIteratorPUsizeInst :
+    iter.traits.iterator.Iterator I Std.Usize) =>
+    Usize.Insts.CoreIterTraitsAccumSumUsize.sum
+    iteratorIteratorPUsizeInst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a usize> for usize}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def Usize.Insts.CoreIterTraitsAccumSumSharedAUsize.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedUsizeInst :
+  iter.traits.iterator.Iterator I Std.Usize) (iter1 : I) (acc : Std.Usize) :
+  RustM (ControlFlow (I × Std.Usize) Std.Usize)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedUsizeInst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a usize> for usize}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def Usize.Insts.CoreIterTraitsAccumSumSharedAUsize.sum_loop
+  {I : Type _} (iteratorIteratorISharedUsizeInst :
+  iter.traits.iterator.Iterator I Std.Usize) (iter1 : I) (acc : Std.Usize) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      Usize.Insts.CoreIterTraitsAccumSumSharedAUsize.sum_loop.body
+      iteratorIteratorISharedUsizeInst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a usize> for usize}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def Usize.Insts.CoreIterTraitsAccumSumSharedAUsize.sum
+  {I : Type _} (iteratorIteratorISharedAUsizeInst :
+  iter.traits.iterator.Iterator I Std.Usize) (iter1 : I) :
+  RustM Std.Usize
+  := do
+  Usize.Insts.CoreIterTraitsAccumSumSharedAUsize.sum_loop
+    iteratorIteratorISharedAUsizeInst iter1 0#usize
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a usize> for usize}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def Usize.Insts.CoreIterTraitsAccumSumSharedAUsize :
+  iter.traits.accum.Sum Std.Usize Std.Usize := {
+  sum := fun {I : Type} (iteratorIteratorPSharedUsizeInst :
+    iter.traits.iterator.Iterator I Std.Usize) =>
+    Usize.Insts.CoreIterTraitsAccumSumSharedAUsize.sum
+    iteratorIteratorPSharedUsizeInst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i8> for i8}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I8.Insts.CoreIterTraitsAccumSumI8.sum_loop.body
+  {I : Type _} (iteratorIteratorII8Inst : iter.traits.iterator.Iterator I
+  Std.I8) (iter1 : I) (acc : Std.I8) :
+  RustM (ControlFlow (I × Std.I8) Std.I8)
+  := do
+  let (o, iter2) ← iteratorIteratorII8Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i8> for i8}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I8.Insts.CoreIterTraitsAccumSumI8.sum_loop
+  {I : Type _} (iteratorIteratorII8Inst : iter.traits.iterator.Iterator I
+  Std.I8) (iter1 : I) (acc : Std.I8) :
+  RustM Std.I8
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I8.Insts.CoreIterTraitsAccumSumI8.sum_loop.body
+      iteratorIteratorII8Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i8> for i8}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I8.Insts.CoreIterTraitsAccumSumI8.sum
+  {I : Type _} (iteratorIteratorII8Inst : iter.traits.iterator.Iterator I
+  Std.I8) (iter1 : I) :
+  RustM Std.I8
+  := do
+  I8.Insts.CoreIterTraitsAccumSumI8.sum_loop iteratorIteratorII8Inst
+    iter1 0#i8
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i8> for i8}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I8.Insts.CoreIterTraitsAccumSumI8 : iter.traits.accum.Sum Std.I8
+  Std.I8 := {
+  sum := fun {I : Type} (iteratorIteratorPI8Inst :
+    iter.traits.iterator.Iterator I Std.I8) =>
+    I8.Insts.CoreIterTraitsAccumSumI8.sum iteratorIteratorPI8Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i8> for i8}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I8.Insts.CoreIterTraitsAccumSumSharedAI8.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedI8Inst : iter.traits.iterator.Iterator I
+  Std.I8) (iter1 : I) (acc : Std.I8) :
+  RustM (ControlFlow (I × Std.I8) Std.I8)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedI8Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i8> for i8}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I8.Insts.CoreIterTraitsAccumSumSharedAI8.sum_loop
+  {I : Type _} (iteratorIteratorISharedI8Inst : iter.traits.iterator.Iterator I
+  Std.I8) (iter1 : I) (acc : Std.I8) :
+  RustM Std.I8
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I8.Insts.CoreIterTraitsAccumSumSharedAI8.sum_loop.body
+      iteratorIteratorISharedI8Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i8> for i8}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I8.Insts.CoreIterTraitsAccumSumSharedAI8.sum
+  {I : Type _} (iteratorIteratorISharedAI8Inst : iter.traits.iterator.Iterator
+  I Std.I8) (iter1 : I) :
+  RustM Std.I8
+  := do
+  I8.Insts.CoreIterTraitsAccumSumSharedAI8.sum_loop
+    iteratorIteratorISharedAI8Inst iter1 0#i8
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i8> for i8}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I8.Insts.CoreIterTraitsAccumSumSharedAI8 : iter.traits.accum.Sum
+  Std.I8 Std.I8 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedI8Inst :
+    iter.traits.iterator.Iterator I Std.I8) =>
+    I8.Insts.CoreIterTraitsAccumSumSharedAI8.sum
+    iteratorIteratorPSharedI8Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i16> for i16}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I16.Insts.CoreIterTraitsAccumSumI16.sum_loop.body
+  {I : Type _} (iteratorIteratorII16Inst : iter.traits.iterator.Iterator I
+  Std.I16) (iter1 : I) (acc : Std.I16) :
+  RustM (ControlFlow (I × Std.I16) Std.I16)
+  := do
+  let (o, iter2) ← iteratorIteratorII16Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i16> for i16}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I16.Insts.CoreIterTraitsAccumSumI16.sum_loop
+  {I : Type _} (iteratorIteratorII16Inst : iter.traits.iterator.Iterator I
+  Std.I16) (iter1 : I) (acc : Std.I16) :
+  RustM Std.I16
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I16.Insts.CoreIterTraitsAccumSumI16.sum_loop.body
+      iteratorIteratorII16Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i16> for i16}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I16.Insts.CoreIterTraitsAccumSumI16.sum
+  {I : Type _} (iteratorIteratorII16Inst : iter.traits.iterator.Iterator I
+  Std.I16) (iter1 : I) :
+  RustM Std.I16
+  := do
+  I16.Insts.CoreIterTraitsAccumSumI16.sum_loop iteratorIteratorII16Inst
+    iter1 0#i16
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i16> for i16}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I16.Insts.CoreIterTraitsAccumSumI16 : iter.traits.accum.Sum Std.I16
+  Std.I16 := {
+  sum := fun {I : Type} (iteratorIteratorPI16Inst :
+    iter.traits.iterator.Iterator I Std.I16) =>
+    I16.Insts.CoreIterTraitsAccumSumI16.sum iteratorIteratorPI16Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i16> for i16}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I16.Insts.CoreIterTraitsAccumSumSharedAI16.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedI16Inst : iter.traits.iterator.Iterator
+  I Std.I16) (iter1 : I) (acc : Std.I16) :
+  RustM (ControlFlow (I × Std.I16) Std.I16)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedI16Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i16> for i16}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I16.Insts.CoreIterTraitsAccumSumSharedAI16.sum_loop
+  {I : Type _} (iteratorIteratorISharedI16Inst : iter.traits.iterator.Iterator
+  I Std.I16) (iter1 : I) (acc : Std.I16) :
+  RustM Std.I16
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I16.Insts.CoreIterTraitsAccumSumSharedAI16.sum_loop.body
+      iteratorIteratorISharedI16Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i16> for i16}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I16.Insts.CoreIterTraitsAccumSumSharedAI16.sum
+  {I : Type _} (iteratorIteratorISharedAI16Inst : iter.traits.iterator.Iterator
+  I Std.I16) (iter1 : I) :
+  RustM Std.I16
+  := do
+  I16.Insts.CoreIterTraitsAccumSumSharedAI16.sum_loop
+    iteratorIteratorISharedAI16Inst iter1 0#i16
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i16> for i16}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I16.Insts.CoreIterTraitsAccumSumSharedAI16 : iter.traits.accum.Sum
+  Std.I16 Std.I16 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedI16Inst :
+    iter.traits.iterator.Iterator I Std.I16) =>
+    I16.Insts.CoreIterTraitsAccumSumSharedAI16.sum
+    iteratorIteratorPSharedI16Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i32> for i32}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I32.Insts.CoreIterTraitsAccumSumI32.sum_loop.body
+  {I : Type _} (iteratorIteratorII32Inst : iter.traits.iterator.Iterator I
+  Std.I32) (iter1 : I) (acc : Std.I32) :
+  RustM (ControlFlow (I × Std.I32) Std.I32)
+  := do
+  let (o, iter2) ← iteratorIteratorII32Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i32> for i32}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I32.Insts.CoreIterTraitsAccumSumI32.sum_loop
+  {I : Type _} (iteratorIteratorII32Inst : iter.traits.iterator.Iterator I
+  Std.I32) (iter1 : I) (acc : Std.I32) :
+  RustM Std.I32
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I32.Insts.CoreIterTraitsAccumSumI32.sum_loop.body
+      iteratorIteratorII32Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i32> for i32}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I32.Insts.CoreIterTraitsAccumSumI32.sum
+  {I : Type _} (iteratorIteratorII32Inst : iter.traits.iterator.Iterator I
+  Std.I32) (iter1 : I) :
+  RustM Std.I32
+  := do
+  I32.Insts.CoreIterTraitsAccumSumI32.sum_loop iteratorIteratorII32Inst
+    iter1 0#i32
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i32> for i32}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I32.Insts.CoreIterTraitsAccumSumI32 : iter.traits.accum.Sum Std.I32
+  Std.I32 := {
+  sum := fun {I : Type} (iteratorIteratorPI32Inst :
+    iter.traits.iterator.Iterator I Std.I32) =>
+    I32.Insts.CoreIterTraitsAccumSumI32.sum iteratorIteratorPI32Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i32> for i32}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I32.Insts.CoreIterTraitsAccumSumSharedAI32.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedI32Inst : iter.traits.iterator.Iterator
+  I Std.I32) (iter1 : I) (acc : Std.I32) :
+  RustM (ControlFlow (I × Std.I32) Std.I32)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedI32Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i32> for i32}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I32.Insts.CoreIterTraitsAccumSumSharedAI32.sum_loop
+  {I : Type _} (iteratorIteratorISharedI32Inst : iter.traits.iterator.Iterator
+  I Std.I32) (iter1 : I) (acc : Std.I32) :
+  RustM Std.I32
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I32.Insts.CoreIterTraitsAccumSumSharedAI32.sum_loop.body
+      iteratorIteratorISharedI32Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i32> for i32}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I32.Insts.CoreIterTraitsAccumSumSharedAI32.sum
+  {I : Type _} (iteratorIteratorISharedAI32Inst : iter.traits.iterator.Iterator
+  I Std.I32) (iter1 : I) :
+  RustM Std.I32
+  := do
+  I32.Insts.CoreIterTraitsAccumSumSharedAI32.sum_loop
+    iteratorIteratorISharedAI32Inst iter1 0#i32
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i32> for i32}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I32.Insts.CoreIterTraitsAccumSumSharedAI32 : iter.traits.accum.Sum
+  Std.I32 Std.I32 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedI32Inst :
+    iter.traits.iterator.Iterator I Std.I32) =>
+    I32.Insts.CoreIterTraitsAccumSumSharedAI32.sum
+    iteratorIteratorPSharedI32Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i64> for i64}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I64.Insts.CoreIterTraitsAccumSumI64.sum_loop.body
+  {I : Type _} (iteratorIteratorII64Inst : iter.traits.iterator.Iterator I
+  Std.I64) (iter1 : I) (acc : Std.I64) :
+  RustM (ControlFlow (I × Std.I64) Std.I64)
+  := do
+  let (o, iter2) ← iteratorIteratorII64Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i64> for i64}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I64.Insts.CoreIterTraitsAccumSumI64.sum_loop
+  {I : Type _} (iteratorIteratorII64Inst : iter.traits.iterator.Iterator I
+  Std.I64) (iter1 : I) (acc : Std.I64) :
+  RustM Std.I64
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I64.Insts.CoreIterTraitsAccumSumI64.sum_loop.body
+      iteratorIteratorII64Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i64> for i64}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I64.Insts.CoreIterTraitsAccumSumI64.sum
+  {I : Type _} (iteratorIteratorII64Inst : iter.traits.iterator.Iterator I
+  Std.I64) (iter1 : I) :
+  RustM Std.I64
+  := do
+  I64.Insts.CoreIterTraitsAccumSumI64.sum_loop iteratorIteratorII64Inst
+    iter1 0#i64
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i64> for i64}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I64.Insts.CoreIterTraitsAccumSumI64 : iter.traits.accum.Sum Std.I64
+  Std.I64 := {
+  sum := fun {I : Type} (iteratorIteratorPI64Inst :
+    iter.traits.iterator.Iterator I Std.I64) =>
+    I64.Insts.CoreIterTraitsAccumSumI64.sum iteratorIteratorPI64Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i64> for i64}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I64.Insts.CoreIterTraitsAccumSumSharedAI64.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedI64Inst : iter.traits.iterator.Iterator
+  I Std.I64) (iter1 : I) (acc : Std.I64) :
+  RustM (ControlFlow (I × Std.I64) Std.I64)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedI64Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i64> for i64}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I64.Insts.CoreIterTraitsAccumSumSharedAI64.sum_loop
+  {I : Type _} (iteratorIteratorISharedI64Inst : iter.traits.iterator.Iterator
+  I Std.I64) (iter1 : I) (acc : Std.I64) :
+  RustM Std.I64
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I64.Insts.CoreIterTraitsAccumSumSharedAI64.sum_loop.body
+      iteratorIteratorISharedI64Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i64> for i64}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I64.Insts.CoreIterTraitsAccumSumSharedAI64.sum
+  {I : Type _} (iteratorIteratorISharedAI64Inst : iter.traits.iterator.Iterator
+  I Std.I64) (iter1 : I) :
+  RustM Std.I64
+  := do
+  I64.Insts.CoreIterTraitsAccumSumSharedAI64.sum_loop
+    iteratorIteratorISharedAI64Inst iter1 0#i64
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i64> for i64}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I64.Insts.CoreIterTraitsAccumSumSharedAI64 : iter.traits.accum.Sum
+  Std.I64 Std.I64 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedI64Inst :
+    iter.traits.iterator.Iterator I Std.I64) =>
+    I64.Insts.CoreIterTraitsAccumSumSharedAI64.sum
+    iteratorIteratorPSharedI64Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i128> for i128}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I128.Insts.CoreIterTraitsAccumSumI128.sum_loop.body
+  {I : Type _} (iteratorIteratorII128Inst : iter.traits.iterator.Iterator I
+  Std.I128) (iter1 : I) (acc : Std.I128) :
+  RustM (ControlFlow (I × Std.I128) Std.I128)
+  := do
+  let (o, iter2) ← iteratorIteratorII128Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i128> for i128}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I128.Insts.CoreIterTraitsAccumSumI128.sum_loop
+  {I : Type _} (iteratorIteratorII128Inst : iter.traits.iterator.Iterator I
+  Std.I128) (iter1 : I) (acc : Std.I128) :
+  RustM Std.I128
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I128.Insts.CoreIterTraitsAccumSumI128.sum_loop.body
+      iteratorIteratorII128Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i128> for i128}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I128.Insts.CoreIterTraitsAccumSumI128.sum
+  {I : Type _} (iteratorIteratorII128Inst : iter.traits.iterator.Iterator I
+  Std.I128) (iter1 : I) :
+  RustM Std.I128
+  := do
+  I128.Insts.CoreIterTraitsAccumSumI128.sum_loop
+    iteratorIteratorII128Inst iter1 0#i128
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<i128> for i128}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I128.Insts.CoreIterTraitsAccumSumI128 : iter.traits.accum.Sum
+  Std.I128 Std.I128 := {
+  sum := fun {I : Type} (iteratorIteratorPI128Inst :
+    iter.traits.iterator.Iterator I Std.I128) =>
+    I128.Insts.CoreIterTraitsAccumSumI128.sum iteratorIteratorPI128Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i128> for i128}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def I128.Insts.CoreIterTraitsAccumSumSharedAI128.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedI128Inst : iter.traits.iterator.Iterator
+  I Std.I128) (iter1 : I) (acc : Std.I128) :
+  RustM (ControlFlow (I × Std.I128) Std.I128)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedI128Inst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i128> for i128}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def I128.Insts.CoreIterTraitsAccumSumSharedAI128.sum_loop
+  {I : Type _} (iteratorIteratorISharedI128Inst : iter.traits.iterator.Iterator
+  I Std.I128) (iter1 : I) (acc : Std.I128) :
+  RustM Std.I128
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      I128.Insts.CoreIterTraitsAccumSumSharedAI128.sum_loop.body
+      iteratorIteratorISharedI128Inst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i128> for i128}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def I128.Insts.CoreIterTraitsAccumSumSharedAI128.sum
+  {I : Type _} (iteratorIteratorISharedAI128Inst :
+  iter.traits.iterator.Iterator I Std.I128) (iter1 : I) :
+  RustM Std.I128
+  := do
+  I128.Insts.CoreIterTraitsAccumSumSharedAI128.sum_loop
+    iteratorIteratorISharedAI128Inst iter1 0#i128
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a i128> for i128}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def I128.Insts.CoreIterTraitsAccumSumSharedAI128 : iter.traits.accum.Sum
+  Std.I128 Std.I128 := {
+  sum := fun {I : Type} (iteratorIteratorPSharedI128Inst :
+    iter.traits.iterator.Iterator I Std.I128) =>
+    I128.Insts.CoreIterTraitsAccumSumSharedAI128.sum
+    iteratorIteratorPSharedI128Inst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<isize> for isize}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def Isize.Insts.CoreIterTraitsAccumSumIsize.sum_loop.body
+  {I : Type _} (iteratorIteratorIIsizeInst : iter.traits.iterator.Iterator I
+  Std.Isize) (iter1 : I) (acc : Std.Isize) :
+  RustM (ControlFlow (I × Std.Isize) Std.Isize)
+  := do
+  let (o, iter2) ← iteratorIteratorIIsizeInst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<isize> for isize}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def Isize.Insts.CoreIterTraitsAccumSumIsize.sum_loop
+  {I : Type _} (iteratorIteratorIIsizeInst : iter.traits.iterator.Iterator I
+  Std.Isize) (iter1 : I) (acc : Std.Isize) :
+  RustM Std.Isize
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      Isize.Insts.CoreIterTraitsAccumSumIsize.sum_loop.body
+      iteratorIteratorIIsizeInst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<isize> for isize}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 507:24-513:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def Isize.Insts.CoreIterTraitsAccumSumIsize.sum
+  {I : Type _} (iteratorIteratorIIsizeInst : iter.traits.iterator.Iterator I
+  Std.Isize) (iter1 : I) :
+  RustM Std.Isize
+  := do
+  Isize.Insts.CoreIterTraitsAccumSumIsize.sum_loop
+    iteratorIteratorIIsizeInst iter1 0#isize
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<isize> for isize}]
+    Source: 'core-models/src/core/iter.rs', lines 506:20-514:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def Isize.Insts.CoreIterTraitsAccumSumIsize : iter.traits.accum.Sum
+  Std.Isize Std.Isize := {
+  sum := fun {I : Type} (iteratorIteratorPIsizeInst :
+    iter.traits.iterator.Iterator I Std.Isize) =>
+    Isize.Insts.CoreIterTraitsAccumSumIsize.sum
+    iteratorIteratorPIsizeInst
+}
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a isize> for isize}::sum]: loop body 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop_body]
+def Isize.Insts.CoreIterTraitsAccumSumSharedAIsize.sum_loop.body
+  {I : Type _} (iteratorIteratorISharedIsizeInst :
+  iter.traits.iterator.Iterator I Std.Isize) (iter1 : I) (acc : Std.Isize) :
+  RustM (ControlFlow (I × Std.Isize) Std.Isize)
+  := do
+  let (o, iter2) ← iteratorIteratorISharedIsizeInst.next iter1
+  match o with
+  | option.Option.Some x => let acc1 ← acc + x
+                            ok (cont (iter2, acc1))
+  | option.Option.None => ok (done acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a isize> for isize}::sum]: loop 0:
+    Source: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[rust_loop]
+def Isize.Insts.CoreIterTraitsAccumSumSharedAIsize.sum_loop
+  {I : Type _} (iteratorIteratorISharedIsizeInst :
+  iter.traits.iterator.Iterator I Std.Isize) (iter1 : I) (acc : Std.Isize) :
+  RustM Std.Isize
+  := do
+  loop
+    (fun (iter2, acc1) =>
+      Isize.Insts.CoreIterTraitsAccumSumSharedAIsize.sum_loop.body
+      iteratorIteratorISharedIsizeInst iter2 acc1)
+    (iter1, acc)
+
+/-- [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a isize> for isize}::sum]:
+    Source: 'core-models/src/core/iter.rs', lines 516:24-522:25; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74
+    Visibility: public -/
+@[reducible]
+def Isize.Insts.CoreIterTraitsAccumSumSharedAIsize.sum
+  {I : Type _} (iteratorIteratorISharedAIsizeInst :
+  iter.traits.iterator.Iterator I Std.Isize) (iter1 : I) :
+  RustM Std.Isize
+  := do
+  Isize.Insts.CoreIterTraitsAccumSumSharedAIsize.sum_loop
+    iteratorIteratorISharedAIsizeInst iter1 0#isize
+
+/-- Trait implementation: [core_models::iter::traits::accum::{impl core_models::iter::traits::accum::Sum<&'a isize> for isize}]
+    Source: 'core-models/src/core/iter.rs', lines 515:20-523:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 528:8-528:74 -/
+@[reducible]
+def Isize.Insts.CoreIterTraitsAccumSumSharedAIsize :
+  iter.traits.accum.Sum Std.Isize Std.Isize := {
+  sum := fun {I : Type} (iteratorIteratorPSharedIsizeInst :
+    iter.traits.iterator.Iterator I Std.Isize) =>
+    Isize.Insts.CoreIterTraitsAccumSumSharedAIsize.sum
+    iteratorIteratorPSharedIsizeInst
+}
+
 /-- [core_models::iter::adapters::enumerate::{core_models::iter::adapters::enumerate::Enumerate<I>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 495:12-497:13
+    Source: 'core-models/src/core/iter.rs', lines 565:12-567:13
     Visibility: public -/
 def iter.adapters.enumerate.Enumerate.new
   {I : Type _} (iter1 : I) : RustM (iter.adapters.enumerate.Enumerate I) := do
   ok { iter := iter1, count := 0#usize }
 
 /-- [core_models::iter::adapters::enumerate::{impl core_models::iter::traits::iterator::Iterator<(usize, Clause0_Item)> for core_models::iter::adapters::enumerate::Enumerate<I>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 503:12-517:13
+    Source: 'core-models/src/core/iter.rs', lines 573:12-587:13
     Visibility: public -/
 def
   iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPairUsizeClause0_Item.next
@@ -5826,7 +7381,7 @@ def
   | option.Option.None => ok (option.Option.None, { self with iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::enumerate::{impl core_models::iter::traits::iterator::Iterator<(usize, Clause0_Item)> for core_models::iter::adapters::enumerate::Enumerate<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 500:8-518:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 570:8-588:9 -/
 @[reducible]
 def
   iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsIteratorIteratorPairUsizeClause0_Item
@@ -5839,7 +7394,7 @@ def
 }
 
 /-- [core_models::iter::adapters::enumerate::{impl core_models::iter::traits::double_ended::DoubleEndedIterator<(usize, Clause0_Clause0_Item)> for core_models::iter::adapters::enumerate::Enumerate<I>}::next_back]:
-    Source: 'core-models/src/core/iter.rs', lines 534:12-545:13
+    Source: 'core-models/src/core/iter.rs', lines 604:12-615:13
     Visibility: public -/
 def
   iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsDouble_endedDoubleEndedIteratorPairUsizeClause0_Clause0_Item.next_back
@@ -5861,7 +7416,7 @@ def
   | option.Option.None => ok (option.Option.None, { self with iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::enumerate::{impl core_models::iter::traits::double_ended::DoubleEndedIterator<(usize, Clause0_Clause0_Item)> for core_models::iter::adapters::enumerate::Enumerate<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 529:8-546:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 599:8-616:9 -/
 @[reducible]
 def
   iter.adapters.enumerate.Enumerate.Insts.CoreIterTraitsDouble_endedDoubleEndedIteratorPairUsizeClause0_Clause0_Item
@@ -5883,14 +7438,14 @@ def
 }
 
 /-- [core_models::iter::adapters::rev::{core_models::iter::adapters::rev::Rev<I>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 563:12-565:13
+    Source: 'core-models/src/core/iter.rs', lines 633:12-635:13
     Visibility: public -/
 def iter.adapters.rev.Rev.new
   {I : Type _} (iter1 : I) : RustM (iter.adapters.rev.Rev I) := do
   ok { iter := iter1 }
 
 /-- [core_models::iter::adapters::rev::{impl core_models::iter::traits::iterator::Iterator<Clause0_Clause0_Item> for core_models::iter::adapters::rev::Rev<I>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 571:12-573:13
+    Source: 'core-models/src/core/iter.rs', lines 641:12-643:13
     Visibility: public -/
 def iter.adapters.rev.Rev.Insts.CoreIterTraitsIteratorIterator.next
   {I : Type _} {Clause0_Clause0_Item : Type _}
@@ -5903,7 +7458,7 @@ def iter.adapters.rev.Rev.Insts.CoreIterTraitsIteratorIterator.next
   ok (o, { iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::rev::{impl core_models::iter::traits::iterator::Iterator<Clause0_Clause0_Item> for core_models::iter::adapters::rev::Rev<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 569:8-574:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 639:8-644:9 -/
 @[reducible]
 def iter.adapters.rev.Rev.Insts.CoreIterTraitsIteratorIterator {I :
   Type _} {Clause0_Clause0_Item : Type _}
@@ -5917,7 +7472,7 @@ def iter.adapters.rev.Rev.Insts.CoreIterTraitsIteratorIterator {I :
 }
 
 /-- [core_models::iter::adapters::step_by::{core_models::iter::adapters::step_by::StepBy<I>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 589:12-594:13
+    Source: 'core-models/src/core/iter.rs', lines 659:12-664:13
     Visibility: public -/
 def iter.adapters.step_by.StepBy.new
   {I : Type _} (iter1 : I) (step : Std.Usize) :
@@ -5937,7 +7492,7 @@ def iter.adapters.step_by.StepBy.new
 
 
 /-- [core_models::iter::adapters::map::{core_models::iter::adapters::map::Map<I, F>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 623:12-625:13
+    Source: 'core-models/src/core/iter.rs', lines 693:12-695:13
     Visibility: public -/
 def iter.adapters.map.Map.new
   {I : Type _} {F : Type _} (iter1 : I) (f : F) :
@@ -5946,7 +7501,7 @@ def iter.adapters.map.Map.new
   ok { iter := iter1, f }
 
 /-- [core_models::iter::adapters::map::{impl core_models::iter::traits::iterator::Iterator<O> for core_models::iter::adapters::map::Map<I, F>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 637:12-642:13
+    Source: 'core-models/src/core/iter.rs', lines 707:12-712:13
     Visibility: public -/
 def iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator.next
   {I : Type _} {O : Type _} {F : Type _} {Clause0_Item : Type _}
@@ -5964,7 +7519,7 @@ def iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator.next
   | option.Option.None => ok (option.Option.None, { self with iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::map::{impl core_models::iter::traits::iterator::Iterator<O> for core_models::iter::adapters::map::Map<I, F>}]
-    Source: 'core-models/src/core/iter.rs', lines 634:8-643:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 704:8-713:9 -/
 @[reducible]
 def iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator {I :
   Type _} {O : Type _} {F : Type _} {Clause0_Item : Type _}
@@ -5978,7 +7533,7 @@ def iter.adapters.map.Map.Insts.CoreIterTraitsIteratorIterator {I :
 }
 
 /-- [core_models::iter::adapters::take::{core_models::iter::adapters::take::Take<I>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 655:12-657:13
+    Source: 'core-models/src/core/iter.rs', lines 725:12-727:13
     Visibility: public -/
 def iter.adapters.take.Take.new
   {I : Type _} (iter1 : I) (n : Std.Usize) :
@@ -5987,7 +7542,7 @@ def iter.adapters.take.Take.new
   ok { iter := iter1, n }
 
 /-- [core_models::iter::adapters::take::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::take::Take<I>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 663:12-670:13
+    Source: 'core-models/src/core/iter.rs', lines 733:12-740:13
     Visibility: public -/
 def iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator.next
   {I : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6003,7 +7558,7 @@ def iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator.next
   else ok (option.Option.None, self)
 
 /-- Trait implementation: [core_models::iter::adapters::take::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::take::Take<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 660:8-671:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 730:8-741:9 -/
 @[reducible]
 def iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator {I :
   Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6015,7 +7570,7 @@ def iter.adapters.take.Take.Insts.CoreIterTraitsIteratorIterator {I :
 }
 
 /-- [core_models::iter::adapters::flat_map::{core_models::iter::adapters::flat_map::FlatMap<I, U, F>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 684:12-690:13
+    Source: 'core-models/src/core/iter.rs', lines 754:12-760:13
     Visibility: public -/
 def iter.adapters.flat_map.FlatMap.new
   {I : Type _} {U : Type _} {F : Type _} {Clause0_Item : Type _} {Clause1_Item
@@ -6028,7 +7583,7 @@ def iter.adapters.flat_map.FlatMap.new
   ok { it, f, current := option.Option.None }
 
 /-- [core_models::iter::adapters::flat_map::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flat_map::FlatMap<I, U, F>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 698:20-709:13
+    Source: 'core-models/src/core/iter.rs', lines 768:20-779:13
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -6069,7 +7624,7 @@ def
       ok (done (option.Option.None, t, self.f, option.Option.None))
 
 /-- [core_models::iter::adapters::flat_map::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flat_map::FlatMap<I, U, F>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 698:20-709:13
+    Source: 'core-models/src/core/iter.rs', lines 768:20-779:13
     Visibility: public -/
 @[rust_loop]
 def
@@ -6090,7 +7645,7 @@ def
     self
 
 /-- [core_models::iter::adapters::flat_map::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flat_map::FlatMap<I, U, F>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 696:12-709:13
+    Source: 'core-models/src/core/iter.rs', lines 766:12-779:13
     Visibility: public -/
 def
   iter.adapters.flat_map.FlatMap.Insts.CoreIterTraitsIteratorIterator.next
@@ -6110,7 +7665,7 @@ def
   ok (o, { it := t, f := t1, current := o1 })
 
 /-- Trait implementation: [core_models::iter::adapters::flat_map::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flat_map::FlatMap<I, U, F>}]
-    Source: 'core-models/src/core/iter.rs', lines 694:8-710:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 764:8-780:9 -/
 @[reducible]
 def iter.adapters.flat_map.FlatMap.Insts.CoreIterTraitsIteratorIterator
   {I : Type _} {U : Type _} {F : Type _} {Clause0_Item : Type _} {Clause1_Item
@@ -6126,7 +7681,7 @@ def iter.adapters.flat_map.FlatMap.Insts.CoreIterTraitsIteratorIterator
 }
 
 /-- [core_models::iter::adapters::flatten::{core_models::iter::adapters::flatten::Flatten<I, Clause0_Item, Clause1_Item>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 729:12-734:13
+    Source: 'core-models/src/core/iter.rs', lines 799:12-804:13
     Visibility: public -/
 def iter.adapters.flatten.Flatten.new
   {I : Type _} {Clause0_Item : Type _} {Clause1_Item : Type _}
@@ -6138,7 +7693,7 @@ def iter.adapters.flatten.Flatten.new
   ok { it, current := option.Option.None }
 
 /-- [core_models::iter::adapters::flatten::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flatten::Flatten<I, Clause0_Item, Clause1_Item>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 745:20-756:13
+    Source: 'core-models/src/core/iter.rs', lines 815:20-826:13
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -6172,7 +7727,7 @@ def
       ok (done (option.Option.None, t, option.Option.None))
 
 /-- [core_models::iter::adapters::flatten::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flatten::Flatten<I, Clause0_Item, Clause1_Item>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 745:20-756:13
+    Source: 'core-models/src/core/iter.rs', lines 815:20-826:13
     Visibility: public -/
 @[rust_loop]
 def
@@ -6191,7 +7746,7 @@ def
     self
 
 /-- [core_models::iter::adapters::flatten::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flatten::Flatten<I, Clause0_Item, Clause1_Item>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 743:12-756:13
+    Source: 'core-models/src/core/iter.rs', lines 813:12-826:13
     Visibility: public -/
 def
   iter.adapters.flatten.Flatten.Insts.CoreIterTraitsIteratorIterator.next
@@ -6209,7 +7764,7 @@ def
   ok (o, { it := t, current := o1 })
 
 /-- Trait implementation: [core_models::iter::adapters::flatten::{impl core_models::iter::traits::iterator::Iterator<Clause1_Item> for core_models::iter::adapters::flatten::Flatten<I, Clause0_Item, Clause1_Item>}]
-    Source: 'core-models/src/core/iter.rs', lines 738:8-757:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 808:8-827:9 -/
 @[reducible]
 def iter.adapters.flatten.Flatten.Insts.CoreIterTraitsIteratorIterator
   {I : Type _} {Clause0_Item : Type _} {Clause1_Item : Type _}
@@ -6223,7 +7778,7 @@ def iter.adapters.flatten.Flatten.Insts.CoreIterTraitsIteratorIterator
 }
 
 /-- [core_models::iter::adapters::zip::{core_models::iter::adapters::zip::Zip<I1, I2>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 769:12-771:13
+    Source: 'core-models/src/core/iter.rs', lines 839:12-841:13
     Visibility: public -/
 def iter.adapters.zip.Zip.new
   {I1 : Type _} {I2 : Type _} {Clause0_Item : Type _} {Clause1_Item : Type _}
@@ -6235,7 +7790,7 @@ def iter.adapters.zip.Zip.new
   ok { it1, it2 }
 
 /-- [core_models::iter::adapters::zip::{impl core_models::iter::traits::iterator::Iterator<(Clause0_Item, Clause1_Item)> for core_models::iter::adapters::zip::Zip<I1, I2>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 777:12-785:13
+    Source: 'core-models/src/core/iter.rs', lines 847:12-855:13
     Visibility: public -/
 def iter.adapters.zip.Zip.Insts.CoreIterTraitsIteratorIteratorPair.next
   {I1 : Type _} {I2 : Type _} {Clause0_Item : Type _} {Clause1_Item : Type _}
@@ -6256,7 +7811,7 @@ def iter.adapters.zip.Zip.Insts.CoreIterTraitsIteratorIteratorPair.next
   | option.Option.None => ok (option.Option.None, { self with it1 := t })
 
 /-- Trait implementation: [core_models::iter::adapters::zip::{impl core_models::iter::traits::iterator::Iterator<(Clause0_Item, Clause1_Item)> for core_models::iter::adapters::zip::Zip<I1, I2>}]
-    Source: 'core-models/src/core/iter.rs', lines 775:8-786:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 845:8-856:9 -/
 @[reducible]
 def iter.adapters.zip.Zip.Insts.CoreIterTraitsIteratorIteratorPair {I1 :
   Type _} {I2 : Type _} {Clause0_Item : Type _} {Clause1_Item : Type _}
@@ -6270,7 +7825,7 @@ def iter.adapters.zip.Zip.Insts.CoreIterTraitsIteratorIteratorPair {I1 :
 }
 
 /-- [core_models::iter::adapters::filter::{core_models::iter::adapters::filter::Filter<I, P>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 798:12-800:13
+    Source: 'core-models/src/core/iter.rs', lines 868:12-870:13
     Visibility: public -/
 def iter.adapters.filter.Filter.new
   {I : Type _} {P : Type _} (iter1 : I) (predicate : P) :
@@ -6279,7 +7834,7 @@ def iter.adapters.filter.Filter.new
   ok { iter := iter1, predicate }
 
 /-- [core_models::iter::adapters::filter::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::filter::Filter<I, P>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 809:16-818:17
+    Source: 'core-models/src/core/iter.rs', lines 879:16-888:17
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -6304,7 +7859,7 @@ def
   | option.Option.None => ok (done (option.Option.None, t, self.predicate))
 
 /-- [core_models::iter::adapters::filter::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::filter::Filter<I, P>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 809:16-818:17
+    Source: 'core-models/src/core/iter.rs', lines 879:16-888:17
     Visibility: public -/
 @[rust_loop]
 def
@@ -6324,7 +7879,7 @@ def
     self
 
 /-- [core_models::iter::adapters::filter::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::filter::Filter<I, P>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 808:12-819:13
+    Source: 'core-models/src/core/iter.rs', lines 878:12-889:13
     Visibility: public -/
 def
   iter.adapters.filter.Filter.Insts.CoreIterTraitsIteratorIterator.next
@@ -6342,7 +7897,7 @@ def
   ok (o, { iter := t, predicate := t1 })
 
 /-- Trait implementation: [core_models::iter::adapters::filter::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::filter::Filter<I, P>}]
-    Source: 'core-models/src/core/iter.rs', lines 806:8-820:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 876:8-890:9 -/
 @[reducible]
 def iter.adapters.filter.Filter.Insts.CoreIterTraitsIteratorIterator {I
   : Type _} {P : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6357,7 +7912,7 @@ def iter.adapters.filter.Filter.Insts.CoreIterTraitsIteratorIterator {I
 }
 
 /-- [core_models::iter::adapters::chain::{core_models::iter::adapters::chain::Chain<A, B>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 832:12-837:13
+    Source: 'core-models/src/core/iter.rs', lines 902:12-907:13
     Visibility: public -/
 def iter.adapters.chain.Chain.new
   {A : Type _} {B : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst
@@ -6368,7 +7923,7 @@ def iter.adapters.chain.Chain.new
   ok { a := (option.Option.Some a), b }
 
 /-- [core_models::iter::adapters::chain::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::chain::Chain<A, B>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 844:12-852:13
+    Source: 'core-models/src/core/iter.rs', lines 914:12-922:13
     Visibility: public -/
 def iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator.next
   {A : Type _} {B : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst
@@ -6391,7 +7946,7 @@ def iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator.next
     ok (o, { a := option.Option.None, b := t })
 
 /-- Trait implementation: [core_models::iter::adapters::chain::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::chain::Chain<A, B>}]
-    Source: 'core-models/src/core/iter.rs', lines 842:8-853:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 912:8-923:9 -/
 @[reducible]
 def iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator {A :
   Type _} {B : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6404,7 +7959,7 @@ def iter.adapters.chain.Chain.Insts.CoreIterTraitsIteratorIterator {A :
 }
 
 /-- [core_models::iter::adapters::skip::{core_models::iter::adapters::skip::Skip<I>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 865:12-867:13
+    Source: 'core-models/src/core/iter.rs', lines 935:12-937:13
     Visibility: public -/
 def iter.adapters.skip.Skip.new
   {I : Type _} (iter1 : I) (n : Std.Usize) :
@@ -6413,7 +7968,7 @@ def iter.adapters.skip.Skip.new
   ok { iter := iter1, n }
 
 /-- [core_models::iter::adapters::skip::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip::Skip<I>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 875:16-882:13
+    Source: 'core-models/src/core/iter.rs', lines 945:16-952:13
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -6436,7 +7991,7 @@ def
     ok (done (o, t, self.n))
 
 /-- [core_models::iter::adapters::skip::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip::Skip<I>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 875:16-882:13
+    Source: 'core-models/src/core/iter.rs', lines 945:16-952:13
     Visibility: public -/
 @[rust_loop]
 def
@@ -6453,7 +8008,7 @@ def
     self
 
 /-- [core_models::iter::adapters::skip::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip::Skip<I>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 874:12-882:13
+    Source: 'core-models/src/core/iter.rs', lines 944:12-952:13
     Visibility: public -/
 def iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator.next
   {I : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6467,7 +8022,7 @@ def iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator.next
   ok (o, { iter := t, n := i })
 
 /-- Trait implementation: [core_models::iter::adapters::skip::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip::Skip<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 872:8-883:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 942:8-953:9 -/
 @[reducible]
 def iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator {I :
   Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6479,7 +8034,7 @@ def iter.adapters.skip.Skip.Insts.CoreIterTraitsIteratorIterator {I :
 }
 
 /-- [core_models::iter::adapters::filter_map::{core_models::iter::adapters::filter_map::FilterMap<I, F>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 894:12-896:13
+    Source: 'core-models/src/core/iter.rs', lines 964:12-966:13
     Visibility: public -/
 def iter.adapters.filter_map.FilterMap.new
   {I : Type _} {F : Type _} (iter1 : I) (f : F) :
@@ -6488,7 +8043,7 @@ def iter.adapters.filter_map.FilterMap.new
   ok { iter := iter1, f }
 
 /-- [core_models::iter::adapters::filter_map::{impl core_models::iter::traits::iterator::Iterator<B> for core_models::iter::adapters::filter_map::FilterMap<I, F>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 903:16-912:17
+    Source: 'core-models/src/core/iter.rs', lines 973:16-982:17
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -6512,7 +8067,7 @@ def
   | option.Option.None => ok (done (option.Option.None, t, self.f))
 
 /-- [core_models::iter::adapters::filter_map::{impl core_models::iter::traits::iterator::Iterator<B> for core_models::iter::adapters::filter_map::FilterMap<I, F>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 903:16-912:17
+    Source: 'core-models/src/core/iter.rs', lines 973:16-982:17
     Visibility: public -/
 @[rust_loop]
 def
@@ -6532,7 +8087,7 @@ def
     self
 
 /-- [core_models::iter::adapters::filter_map::{impl core_models::iter::traits::iterator::Iterator<B> for core_models::iter::adapters::filter_map::FilterMap<I, F>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 902:12-913:13
+    Source: 'core-models/src/core/iter.rs', lines 972:12-983:13
     Visibility: public -/
 def
   iter.adapters.filter_map.FilterMap.Insts.CoreIterTraitsIteratorIterator.next
@@ -6550,7 +8105,7 @@ def
   ok (o, { iter := t, f := t1 })
 
 /-- Trait implementation: [core_models::iter::adapters::filter_map::{impl core_models::iter::traits::iterator::Iterator<B> for core_models::iter::adapters::filter_map::FilterMap<I, F>}]
-    Source: 'core-models/src/core/iter.rs', lines 900:8-914:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 970:8-984:9 -/
 @[reducible]
 def
   iter.adapters.filter_map.FilterMap.Insts.CoreIterTraitsIteratorIterator
@@ -6565,7 +8120,7 @@ def
 }
 
 /-- [core_models::iter::adapters::take_while::{core_models::iter::adapters::take_while::TakeWhile<I, P>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 926:12-932:13
+    Source: 'core-models/src/core/iter.rs', lines 996:12-1002:13
     Visibility: public -/
 def iter.adapters.take_while.TakeWhile.new
   {I : Type _} {P : Type _} (iter1 : I) (predicate : P) :
@@ -6574,7 +8129,7 @@ def iter.adapters.take_while.TakeWhile.new
   ok { iter := iter1, flag := false, predicate }
 
 /-- [core_models::iter::adapters::take_while::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::take_while::TakeWhile<I, P>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 937:12-953:13
+    Source: 'core-models/src/core/iter.rs', lines 1007:12-1023:13
     Visibility: public -/
 def
   iter.adapters.take_while.TakeWhile.Insts.CoreIterTraitsIteratorIterator.next
@@ -6602,7 +8157,7 @@ def
     | option.Option.None => ok (option.Option.None, { self with iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::take_while::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::take_while::TakeWhile<I, P>}]
-    Source: 'core-models/src/core/iter.rs', lines 935:8-954:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 1005:8-1024:9 -/
 @[reducible]
 def
   iter.adapters.take_while.TakeWhile.Insts.CoreIterTraitsIteratorIterator
@@ -6618,7 +8173,7 @@ def
 }
 
 /-- [core_models::iter::adapters::skip_while::{core_models::iter::adapters::skip_while::SkipWhile<I, P>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 966:12-972:13
+    Source: 'core-models/src/core/iter.rs', lines 1036:12-1042:13
     Visibility: public -/
 def iter.adapters.skip_while.SkipWhile.new
   {I : Type _} {P : Type _} (iter1 : I) (predicate : P) :
@@ -6627,7 +8182,7 @@ def iter.adapters.skip_while.SkipWhile.new
   ok { iter := iter1, flag := false, predicate }
 
 /-- [core_models::iter::adapters::skip_while::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip_while::SkipWhile<I, P>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 979:16-989:17
+    Source: 'core-models/src/core/iter.rs', lines 1049:16-1059:17
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -6656,7 +8211,7 @@ def
     ok (done (option.Option.None, t, self.flag, self.predicate))
 
 /-- [core_models::iter::adapters::skip_while::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip_while::SkipWhile<I, P>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 979:16-989:17
+    Source: 'core-models/src/core/iter.rs', lines 1049:16-1059:17
     Visibility: public -/
 @[rust_loop]
 def
@@ -6676,7 +8231,7 @@ def
     self
 
 /-- [core_models::iter::adapters::skip_while::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip_while::SkipWhile<I, P>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 978:12-990:13
+    Source: 'core-models/src/core/iter.rs', lines 1048:12-1060:13
     Visibility: public -/
 def
   iter.adapters.skip_while.SkipWhile.Insts.CoreIterTraitsIteratorIterator.next
@@ -6695,7 +8250,7 @@ def
   ok (o, { iter := t, flag := b, predicate := t1 })
 
 /-- Trait implementation: [core_models::iter::adapters::skip_while::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::skip_while::SkipWhile<I, P>}]
-    Source: 'core-models/src/core/iter.rs', lines 976:8-991:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 1046:8-1061:9 -/
 @[reducible]
 def
   iter.adapters.skip_while.SkipWhile.Insts.CoreIterTraitsIteratorIterator
@@ -6711,7 +8266,7 @@ def
 }
 
 /-- [core_models::iter::adapters::map_while::{core_models::iter::adapters::map_while::MapWhile<I, F>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 1002:12-1004:13
+    Source: 'core-models/src/core/iter.rs', lines 1072:12-1074:13
     Visibility: public -/
 def iter.adapters.map_while.MapWhile.new
   {I : Type _} {F : Type _} (iter1 : I) (f : F) :
@@ -6720,7 +8275,7 @@ def iter.adapters.map_while.MapWhile.new
   ok { iter := iter1, f }
 
 /-- [core_models::iter::adapters::map_while::{impl core_models::iter::traits::iterator::Iterator<B> for core_models::iter::adapters::map_while::MapWhile<I, F>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 1009:12-1014:13
+    Source: 'core-models/src/core/iter.rs', lines 1079:12-1084:13
     Visibility: public -/
 def
   iter.adapters.map_while.MapWhile.Insts.CoreIterTraitsIteratorIterator.next
@@ -6740,7 +8295,7 @@ def
   | option.Option.None => ok (option.Option.None, { self with iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::map_while::{impl core_models::iter::traits::iterator::Iterator<B> for core_models::iter::adapters::map_while::MapWhile<I, F>}]
-    Source: 'core-models/src/core/iter.rs', lines 1007:8-1015:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 1077:8-1085:9 -/
 @[reducible]
 def
   iter.adapters.map_while.MapWhile.Insts.CoreIterTraitsIteratorIterator
@@ -6755,7 +8310,7 @@ def
 }
 
 /-- [core_models::iter::adapters::inspect::{core_models::iter::adapters::inspect::Inspect<I, F>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 1026:12-1028:13
+    Source: 'core-models/src/core/iter.rs', lines 1096:12-1098:13
     Visibility: public -/
 def iter.adapters.inspect.Inspect.new
   {I : Type _} {F : Type _} (iter1 : I) (f : F) :
@@ -6764,7 +8319,7 @@ def iter.adapters.inspect.Inspect.new
   ok { iter := iter1, f }
 
 /-- [core_models::iter::adapters::inspect::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::inspect::Inspect<I, F>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 1033:12-1041:13
+    Source: 'core-models/src/core/iter.rs', lines 1103:12-1111:13
     Visibility: public -/
 def
   iter.adapters.inspect.Inspect.Insts.CoreIterTraitsIteratorIterator.next
@@ -6784,7 +8339,7 @@ def
   | option.Option.None => ok (option.Option.None, { self with iter := t })
 
 /-- Trait implementation: [core_models::iter::adapters::inspect::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::inspect::Inspect<I, F>}]
-    Source: 'core-models/src/core/iter.rs', lines 1031:8-1042:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 1101:8-1112:9 -/
 @[reducible]
 def iter.adapters.inspect.Inspect.Insts.CoreIterTraitsIteratorIterator
   {I : Type _} {F : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst
@@ -6799,14 +8354,14 @@ def iter.adapters.inspect.Inspect.Insts.CoreIterTraitsIteratorIterator
 }
 
 /-- [core_models::iter::adapters::fuse::{core_models::iter::adapters::fuse::Fuse<I>}::new]:
-    Source: 'core-models/src/core/iter.rs', lines 1053:12-1055:13
+    Source: 'core-models/src/core/iter.rs', lines 1123:12-1125:13
     Visibility: public -/
 def iter.adapters.fuse.Fuse.new
   {I : Type _} (iter1 : I) : RustM (iter.adapters.fuse.Fuse I) := do
   ok { iter := iter1, done := false }
 
 /-- [core_models::iter::adapters::fuse::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::fuse::Fuse<I>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 1060:12-1072:13
+    Source: 'core-models/src/core/iter.rs', lines 1130:12-1142:13
     Visibility: public -/
 def iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator.next
   {I : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6824,7 +8379,7 @@ def iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator.next
       ok (option.Option.None, { iter := t, done := true })
 
 /-- Trait implementation: [core_models::iter::adapters::fuse::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::fuse::Fuse<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 1058:8-1073:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 1128:8-1143:9 -/
 @[reducible]
 def iter.adapters.fuse.Fuse.Insts.CoreIterTraitsIteratorIterator {I :
   Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :
@@ -6845,7 +8400,7 @@ def option.Option.expect
   | option.Option.None => panicking.internal.panic T
 
 /-- [core_models::iter::range::Step::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1090:8-1092:9
+    Source: 'core-models/src/core/iter.rs', lines 1160:8-1162:9
     Visibility: public -/
 @[trait_default]
 def iter.range.Step.forward.default
@@ -6857,7 +8412,7 @@ def iter.range.Step.forward.default
   option.Option.expect o (toStr "overflow in `Step::forward`")
 
 /-- [core_models::iter::range::Step::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1094:8-1096:9
+    Source: 'core-models/src/core/iter.rs', lines 1164:8-1166:9
     Visibility: public -/
 @[trait_default]
 def iter.range.Step.forward_unchecked.default
@@ -6868,7 +8423,7 @@ def iter.range.Step.forward_unchecked.default
   StepInst.forward start count
 
 /-- [core_models::iter::range::Step::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1098:8-1100:9
+    Source: 'core-models/src/core/iter.rs', lines 1168:8-1170:9
     Visibility: public -/
 @[trait_default]
 def iter.range.Step.backward.default
@@ -6880,7 +8435,7 @@ def iter.range.Step.backward.default
   option.Option.expect o (toStr "overflow in `Step::backward`")
 
 /-- [core_models::iter::range::Step::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1102:8-1104:9
+    Source: 'core-models/src/core/iter.rs', lines 1172:8-1174:9
     Visibility: public -/
 @[trait_default]
 def iter.range.Step.backward_unchecked.default
@@ -6891,13 +8446,13 @@ def iter.range.Step.backward_unchecked.default
   StepInst.backward start count
 
 /-- [core_models::num::{core_models::num::u8}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.unchecked_sub (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   x - y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1125:12-1127:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1195:12-1197:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.U8) (n : Std.Usize) : RustM Std.U8 := do
@@ -6913,14 +8468,14 @@ def option.Option.unwrap {T : Type _} (self : option.Option T) : RustM T := do
   | option.Option.None => panicking.internal.panic T
 
 /-- [core_models::num::{core_models::num::u8}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.overflowing_sub
   (x : Std.U8) (y : Std.U8) : RustM (Std.U8 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.checked_sub
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
@@ -6930,7 +8485,7 @@ def num.U8.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1173:20-1178:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1243:20-1248:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.backward_checked
   (start : Std.U8) (n : Std.Usize) : RustM (option.Option Std.U8) := do
@@ -6940,7 +8495,7 @@ def U8.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.backward
   (start : Std.U8) (n : Std.Usize) : RustM Std.U8 := do
@@ -6948,13 +8503,13 @@ def U8.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::u8}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.unchecked_add (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   x + y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1121:12-1123:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1191:12-1193:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.U8) (n : Std.Usize) : RustM Std.U8 := do
@@ -6962,14 +8517,14 @@ def U8.Insts.CoreIterRangeStep.forward_unchecked
   num.U8.unchecked_add start i
 
 /-- [core_models::num::{core_models::num::u8}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.overflowing_add
   (x : Std.U8) (y : Std.U8) : RustM (Std.U8 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.checked_add
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
@@ -6979,7 +8534,7 @@ def num.U8.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1166:20-1171:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1236:20-1241:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.forward_checked
   (start : Std.U8) (n : Std.Usize) : RustM (option.Option Std.U8) := do
@@ -6989,7 +8544,7 @@ def U8.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.forward
   (start : Std.U8) (n : Std.Usize) : RustM Std.U8 := do
@@ -6997,7 +8552,7 @@ def U8.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u8}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1156:20-1164:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1226:20-1234:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U8.Insts.CoreIterRangeStep.steps_between
   (start : Std.U8) («end» : Std.U8) :
@@ -7011,7 +8566,7 @@ def U8.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for u8}]
-    Source: 'core-models/src/core/iter.rs', lines 1152:16-1179:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1222:16-1249:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def U8.Insts.CoreIterRangeStep : iter.range.Step Std.U8 := {
   cloneCloneInst := U8.Insts.CoreCloneClone
@@ -7026,14 +8581,14 @@ def U8.Insts.CoreIterRangeStep : iter.range.Step Std.U8 := {
 }
 
 /-- [core_models::num::{core_models::num::i8}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 335:12-337:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 360:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.overflowing_sub
   (x : Std.I8) (y : Std.I8) : RustM (Std.I8 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::checked_sub_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 389:12-396:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_sub_unsigned
   (x : Std.I8) (y : Std.U8) : RustM (option.Option Std.I8) := do
@@ -7045,7 +8600,7 @@ def num.I8.checked_sub_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1113:12-1115:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1183:12-1185:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.I8) (n : Std.Usize) : RustM Std.I8 := do
@@ -7054,13 +8609,13 @@ def I8.Insts.CoreIterRangeStep.backward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i8}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 327:12-329:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 352:12-354:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.wrapping_sub (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.wrapping_sub_i8 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1219:20-1237:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1289:20-1307:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.backward_checked
   (start : Std.I8) (n : Std.Usize) : RustM (option.Option Std.I8) := do
@@ -7075,7 +8630,7 @@ def I8.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.backward
   (start : Std.I8) (n : Std.Usize) : RustM Std.I8 := do
@@ -7083,14 +8638,14 @@ def I8.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i8}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 309:12-311:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 334:12-336:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.overflowing_add
   (x : Std.I8) (y : Std.I8) : RustM (Std.I8 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::checked_add_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 353:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 378:12-387:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_add_unsigned
   (x : Std.I8) (y : Std.U8) : RustM (option.Option Std.I8) := do
@@ -7102,7 +8657,7 @@ def num.I8.checked_add_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1109:12-1111:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1179:12-1181:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.I8) (n : Std.Usize) : RustM Std.I8 := do
@@ -7111,13 +8666,13 @@ def I8.Insts.CoreIterRangeStep.forward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i8}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 301:12-303:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 326:12-328:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.wrapping_add (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.wrapping_add_i8 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1199:20-1217:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1269:20-1287:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.forward_checked
   (start : Std.I8) (n : Std.Usize) : RustM (option.Option Std.I8) := do
@@ -7132,7 +8687,7 @@ def I8.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.forward
   (start : Std.I8) (n : Std.Usize) : RustM Std.I8 := do
@@ -7140,14 +8695,14 @@ def I8.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::isize}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 327:12-329:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 352:12-354:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.wrapping_sub
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.wrapping_sub_isize x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i8}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1186:20-1197:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1256:20-1267:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I8.Insts.CoreIterRangeStep.steps_between
   (start : Std.I8) («end» : Std.I8) :
@@ -7163,7 +8718,7 @@ def I8.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for i8}]
-    Source: 'core-models/src/core/iter.rs', lines 1182:16-1238:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1252:16-1308:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def I8.Insts.CoreIterRangeStep : iter.range.Step Std.I8 := {
   cloneCloneInst := I8.Insts.CoreCloneClone
@@ -7178,13 +8733,13 @@ def I8.Insts.CoreIterRangeStep : iter.range.Step Std.I8 := {
 }
 
 /-- [core_models::num::{core_models::num::u16}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.unchecked_sub (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   x - y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1125:12-1127:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1195:12-1197:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.U16) (n : Std.Usize) : RustM Std.U16 := do
@@ -7192,14 +8747,14 @@ def U16.Insts.CoreIterRangeStep.backward_unchecked
   num.U16.unchecked_sub start i
 
 /-- [core_models::num::{core_models::num::u16}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.overflowing_sub
   (x : Std.U16) (y : Std.U16) : RustM (Std.U16 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.checked_sub
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
@@ -7209,7 +8764,7 @@ def num.U16.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1173:20-1178:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1243:20-1248:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.backward_checked
   (start : Std.U16) (n : Std.Usize) : RustM (option.Option Std.U16) := do
@@ -7219,7 +8774,7 @@ def U16.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.backward
   (start : Std.U16) (n : Std.Usize) : RustM Std.U16 := do
@@ -7227,13 +8782,13 @@ def U16.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::u16}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.unchecked_add (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   x + y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1121:12-1123:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1191:12-1193:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.U16) (n : Std.Usize) : RustM Std.U16 := do
@@ -7241,14 +8796,14 @@ def U16.Insts.CoreIterRangeStep.forward_unchecked
   num.U16.unchecked_add start i
 
 /-- [core_models::num::{core_models::num::u16}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.overflowing_add
   (x : Std.U16) (y : Std.U16) : RustM (Std.U16 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.checked_add
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
@@ -7258,7 +8813,7 @@ def num.U16.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1166:20-1171:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1236:20-1241:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.forward_checked
   (start : Std.U16) (n : Std.Usize) : RustM (option.Option Std.U16) := do
@@ -7268,7 +8823,7 @@ def U16.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.forward
   (start : Std.U16) (n : Std.Usize) : RustM Std.U16 := do
@@ -7276,7 +8831,7 @@ def U16.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u16}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1156:20-1164:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1226:20-1234:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U16.Insts.CoreIterRangeStep.steps_between
   (start : Std.U16) («end» : Std.U16) :
@@ -7290,7 +8845,7 @@ def U16.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for u16}]
-    Source: 'core-models/src/core/iter.rs', lines 1152:16-1179:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1222:16-1249:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def U16.Insts.CoreIterRangeStep : iter.range.Step Std.U16 := {
   cloneCloneInst := U16.Insts.CoreCloneClone
@@ -7305,14 +8860,14 @@ def U16.Insts.CoreIterRangeStep : iter.range.Step Std.U16 := {
 }
 
 /-- [core_models::num::{core_models::num::i16}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 335:12-337:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 360:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.overflowing_sub
   (x : Std.I16) (y : Std.I16) : RustM (Std.I16 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::checked_sub_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 389:12-396:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_sub_unsigned
   (x : Std.I16) (y : Std.U16) : RustM (option.Option Std.I16) := do
@@ -7324,7 +8879,7 @@ def num.I16.checked_sub_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1113:12-1115:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1183:12-1185:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.I16) (n : Std.Usize) : RustM Std.I16 := do
@@ -7333,13 +8888,13 @@ def I16.Insts.CoreIterRangeStep.backward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i16}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 327:12-329:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 352:12-354:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.wrapping_sub (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.wrapping_sub_i16 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1219:20-1237:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1289:20-1307:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.backward_checked
   (start : Std.I16) (n : Std.Usize) : RustM (option.Option Std.I16) := do
@@ -7354,7 +8909,7 @@ def I16.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.backward
   (start : Std.I16) (n : Std.Usize) : RustM Std.I16 := do
@@ -7362,14 +8917,14 @@ def I16.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i16}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 309:12-311:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 334:12-336:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.overflowing_add
   (x : Std.I16) (y : Std.I16) : RustM (Std.I16 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::checked_add_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 353:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 378:12-387:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_add_unsigned
   (x : Std.I16) (y : Std.U16) : RustM (option.Option Std.I16) := do
@@ -7381,7 +8936,7 @@ def num.I16.checked_add_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1109:12-1111:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1179:12-1181:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.I16) (n : Std.Usize) : RustM Std.I16 := do
@@ -7390,13 +8945,13 @@ def I16.Insts.CoreIterRangeStep.forward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i16}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 301:12-303:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 326:12-328:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.wrapping_add (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.wrapping_add_i16 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1199:20-1217:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1269:20-1287:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.forward_checked
   (start : Std.I16) (n : Std.Usize) : RustM (option.Option Std.I16) := do
@@ -7411,7 +8966,7 @@ def I16.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.forward
   (start : Std.I16) (n : Std.Usize) : RustM Std.I16 := do
@@ -7419,7 +8974,7 @@ def I16.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i16}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1186:20-1197:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1256:20-1267:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I16.Insts.CoreIterRangeStep.steps_between
   (start : Std.I16) («end» : Std.I16) :
@@ -7435,7 +8990,7 @@ def I16.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for i16}]
-    Source: 'core-models/src/core/iter.rs', lines 1182:16-1238:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1252:16-1308:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def I16.Insts.CoreIterRangeStep : iter.range.Step Std.I16 := {
   cloneCloneInst := I16.Insts.CoreCloneClone
@@ -7450,13 +9005,13 @@ def I16.Insts.CoreIterRangeStep : iter.range.Step Std.I16 := {
 }
 
 /-- [core_models::num::{core_models::num::u32}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.unchecked_sub (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   x - y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1125:12-1127:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1195:12-1197:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.U32) (n : Std.Usize) : RustM Std.U32 := do
@@ -7464,14 +9019,14 @@ def U32.Insts.CoreIterRangeStep.backward_unchecked
   num.U32.unchecked_sub start i
 
 /-- [core_models::num::{core_models::num::u32}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.overflowing_sub
   (x : Std.U32) (y : Std.U32) : RustM (Std.U32 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.checked_sub
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
@@ -7481,7 +9036,7 @@ def num.U32.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1173:20-1178:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1243:20-1248:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.backward_checked
   (start : Std.U32) (n : Std.Usize) : RustM (option.Option Std.U32) := do
@@ -7491,7 +9046,7 @@ def U32.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.backward
   (start : Std.U32) (n : Std.Usize) : RustM Std.U32 := do
@@ -7499,13 +9054,13 @@ def U32.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::u32}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.unchecked_add (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   x + y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1121:12-1123:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1191:12-1193:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.U32) (n : Std.Usize) : RustM Std.U32 := do
@@ -7513,14 +9068,14 @@ def U32.Insts.CoreIterRangeStep.forward_unchecked
   num.U32.unchecked_add start i
 
 /-- [core_models::num::{core_models::num::u32}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.overflowing_add
   (x : Std.U32) (y : Std.U32) : RustM (Std.U32 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.checked_add
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
@@ -7530,7 +9085,7 @@ def num.U32.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1166:20-1171:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1236:20-1241:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.forward_checked
   (start : Std.U32) (n : Std.Usize) : RustM (option.Option Std.U32) := do
@@ -7540,7 +9095,7 @@ def U32.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.forward
   (start : Std.U32) (n : Std.Usize) : RustM Std.U32 := do
@@ -7548,7 +9103,7 @@ def U32.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u32}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1156:20-1164:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1226:20-1234:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U32.Insts.CoreIterRangeStep.steps_between
   (start : Std.U32) («end» : Std.U32) :
@@ -7562,7 +9117,7 @@ def U32.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for u32}]
-    Source: 'core-models/src/core/iter.rs', lines 1152:16-1179:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1222:16-1249:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def U32.Insts.CoreIterRangeStep : iter.range.Step Std.U32 := {
   cloneCloneInst := U32.Insts.CoreCloneClone
@@ -7577,14 +9132,14 @@ def U32.Insts.CoreIterRangeStep : iter.range.Step Std.U32 := {
 }
 
 /-- [core_models::num::{core_models::num::i32}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 335:12-337:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 360:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.overflowing_sub
   (x : Std.I32) (y : Std.I32) : RustM (Std.I32 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::checked_sub_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 389:12-396:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_sub_unsigned
   (x : Std.I32) (y : Std.U32) : RustM (option.Option Std.I32) := do
@@ -7596,7 +9151,7 @@ def num.I32.checked_sub_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1113:12-1115:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1183:12-1185:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.I32) (n : Std.Usize) : RustM Std.I32 := do
@@ -7605,13 +9160,13 @@ def I32.Insts.CoreIterRangeStep.backward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i32}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 327:12-329:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 352:12-354:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.wrapping_sub (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.wrapping_sub_i32 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1219:20-1237:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1289:20-1307:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.backward_checked
   (start : Std.I32) (n : Std.Usize) : RustM (option.Option Std.I32) := do
@@ -7626,7 +9181,7 @@ def I32.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.backward
   (start : Std.I32) (n : Std.Usize) : RustM Std.I32 := do
@@ -7634,14 +9189,14 @@ def I32.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i32}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 309:12-311:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 334:12-336:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.overflowing_add
   (x : Std.I32) (y : Std.I32) : RustM (Std.I32 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::checked_add_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 353:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 378:12-387:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_add_unsigned
   (x : Std.I32) (y : Std.U32) : RustM (option.Option Std.I32) := do
@@ -7653,7 +9208,7 @@ def num.I32.checked_add_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1109:12-1111:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1179:12-1181:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.I32) (n : Std.Usize) : RustM Std.I32 := do
@@ -7662,13 +9217,13 @@ def I32.Insts.CoreIterRangeStep.forward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i32}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 301:12-303:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 326:12-328:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.wrapping_add (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.wrapping_add_i32 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1199:20-1217:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1269:20-1287:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.forward_checked
   (start : Std.I32) (n : Std.Usize) : RustM (option.Option Std.I32) := do
@@ -7683,7 +9238,7 @@ def I32.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.forward
   (start : Std.I32) (n : Std.Usize) : RustM Std.I32 := do
@@ -7691,7 +9246,7 @@ def I32.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i32}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1186:20-1197:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1256:20-1267:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I32.Insts.CoreIterRangeStep.steps_between
   (start : Std.I32) («end» : Std.I32) :
@@ -7707,7 +9262,7 @@ def I32.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for i32}]
-    Source: 'core-models/src/core/iter.rs', lines 1182:16-1238:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1252:16-1308:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def I32.Insts.CoreIterRangeStep : iter.range.Step Std.I32 := {
   cloneCloneInst := I32.Insts.CoreCloneClone
@@ -7722,13 +9277,13 @@ def I32.Insts.CoreIterRangeStep : iter.range.Step Std.I32 := {
 }
 
 /-- [core_models::num::{core_models::num::u64}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.unchecked_sub (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   x - y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1125:12-1127:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1195:12-1197:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.U64) (n : Std.Usize) : RustM Std.U64 := do
@@ -7736,14 +9291,14 @@ def U64.Insts.CoreIterRangeStep.backward_unchecked
   num.U64.unchecked_sub start i
 
 /-- [core_models::num::{core_models::num::u64}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.overflowing_sub
   (x : Std.U64) (y : Std.U64) : RustM (Std.U64 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.checked_sub
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
@@ -7753,7 +9308,7 @@ def num.U64.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1173:20-1178:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1243:20-1248:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.backward_checked
   (start : Std.U64) (n : Std.Usize) : RustM (option.Option Std.U64) := do
@@ -7763,7 +9318,7 @@ def U64.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.backward
   (start : Std.U64) (n : Std.Usize) : RustM Std.U64 := do
@@ -7771,13 +9326,13 @@ def U64.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::u64}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.unchecked_add (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   x + y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1121:12-1123:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1191:12-1193:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.U64) (n : Std.Usize) : RustM Std.U64 := do
@@ -7785,14 +9340,14 @@ def U64.Insts.CoreIterRangeStep.forward_unchecked
   num.U64.unchecked_add start i
 
 /-- [core_models::num::{core_models::num::u64}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.overflowing_add
   (x : Std.U64) (y : Std.U64) : RustM (Std.U64 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.checked_add
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
@@ -7802,7 +9357,7 @@ def num.U64.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1166:20-1171:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1236:20-1241:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.forward_checked
   (start : Std.U64) (n : Std.Usize) : RustM (option.Option Std.U64) := do
@@ -7812,7 +9367,7 @@ def U64.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.forward
   (start : Std.U64) (n : Std.Usize) : RustM Std.U64 := do
@@ -7820,7 +9375,7 @@ def U64.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u64}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1156:20-1164:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1226:20-1234:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U64.Insts.CoreIterRangeStep.steps_between
   (start : Std.U64) («end» : Std.U64) :
@@ -7834,7 +9389,7 @@ def U64.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for u64}]
-    Source: 'core-models/src/core/iter.rs', lines 1152:16-1179:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1222:16-1249:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def U64.Insts.CoreIterRangeStep : iter.range.Step Std.U64 := {
   cloneCloneInst := U64.Insts.CoreCloneClone
@@ -7849,14 +9404,14 @@ def U64.Insts.CoreIterRangeStep : iter.range.Step Std.U64 := {
 }
 
 /-- [core_models::num::{core_models::num::i64}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 335:12-337:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 360:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.overflowing_sub
   (x : Std.I64) (y : Std.I64) : RustM (Std.I64 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::checked_sub_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 389:12-396:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_sub_unsigned
   (x : Std.I64) (y : Std.U64) : RustM (option.Option Std.I64) := do
@@ -7868,7 +9423,7 @@ def num.I64.checked_sub_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1113:12-1115:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1183:12-1185:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.I64) (n : Std.Usize) : RustM Std.I64 := do
@@ -7877,13 +9432,13 @@ def I64.Insts.CoreIterRangeStep.backward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i64}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 327:12-329:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 352:12-354:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.wrapping_sub (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.wrapping_sub_i64 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1219:20-1237:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1289:20-1307:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.backward_checked
   (start : Std.I64) (n : Std.Usize) : RustM (option.Option Std.I64) := do
@@ -7898,7 +9453,7 @@ def I64.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.backward
   (start : Std.I64) (n : Std.Usize) : RustM Std.I64 := do
@@ -7906,14 +9461,14 @@ def I64.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i64}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 309:12-311:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 334:12-336:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.overflowing_add
   (x : Std.I64) (y : Std.I64) : RustM (Std.I64 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::checked_add_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 353:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 378:12-387:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_add_unsigned
   (x : Std.I64) (y : Std.U64) : RustM (option.Option Std.I64) := do
@@ -7925,7 +9480,7 @@ def num.I64.checked_add_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1109:12-1111:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1179:12-1181:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.I64) (n : Std.Usize) : RustM Std.I64 := do
@@ -7934,13 +9489,13 @@ def I64.Insts.CoreIterRangeStep.forward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i64}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 301:12-303:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 326:12-328:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.wrapping_add (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.wrapping_add_i64 x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1199:20-1217:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1269:20-1287:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.forward_checked
   (start : Std.I64) (n : Std.Usize) : RustM (option.Option Std.I64) := do
@@ -7955,7 +9510,7 @@ def I64.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.forward
   (start : Std.I64) (n : Std.Usize) : RustM Std.I64 := do
@@ -7963,7 +9518,7 @@ def I64.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i64}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1186:20-1197:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1256:20-1267:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I64.Insts.CoreIterRangeStep.steps_between
   (start : Std.I64) («end» : Std.I64) :
@@ -7979,7 +9534,7 @@ def I64.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for i64}]
-    Source: 'core-models/src/core/iter.rs', lines 1182:16-1238:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1252:16-1308:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def I64.Insts.CoreIterRangeStep : iter.range.Step Std.I64 := {
   cloneCloneInst := I64.Insts.CoreCloneClone
@@ -7994,28 +9549,28 @@ def I64.Insts.CoreIterRangeStep : iter.range.Step Std.I64 := {
 }
 
 /-- [core_models::num::{core_models::num::usize}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.unchecked_sub
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   x - y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1125:12-1127:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1195:12-1197:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.Usize) (n : Std.Usize) : RustM Std.Usize := do
   num.Usize.unchecked_sub start n
 
 /-- [core_models::num::{core_models::num::usize}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.overflowing_sub
   (x : Std.Usize) (y : Std.Usize) : RustM (Std.Usize × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.checked_sub
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -8025,7 +9580,7 @@ def num.Usize.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1173:20-1178:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1243:20-1248:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.backward_checked
   (start : Std.Usize) (n : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -8037,7 +9592,7 @@ def Usize.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.backward
   (start : Std.Usize) (n : Std.Usize) : RustM Std.Usize := do
@@ -8045,28 +9600,28 @@ def Usize.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::usize}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.unchecked_add
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   x + y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1121:12-1123:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1191:12-1193:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.Usize) (n : Std.Usize) : RustM Std.Usize := do
   num.Usize.unchecked_add start n
 
 /-- [core_models::num::{core_models::num::usize}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.overflowing_add
   (x : Std.Usize) (y : Std.Usize) : RustM (Std.Usize × Bool) := do
   rust_primitives.arithmetic.overflowing_add_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.checked_add
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -8076,7 +9631,7 @@ def num.Usize.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1166:20-1171:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1236:20-1241:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.forward_checked
   (start : Std.Usize) (n : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -8088,7 +9643,7 @@ def Usize.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.forward
   (start : Std.Usize) (n : Std.Usize) : RustM Std.Usize := do
@@ -8096,7 +9651,7 @@ def Usize.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for usize}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1156:20-1164:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1226:20-1234:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Usize.Insts.CoreIterRangeStep.steps_between
   (start : Std.Usize) («end» : Std.Usize) :
@@ -8108,7 +9663,7 @@ def Usize.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for usize}]
-    Source: 'core-models/src/core/iter.rs', lines 1152:16-1179:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1222:16-1249:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def Usize.Insts.CoreIterRangeStep : iter.range.Step Std.Usize := {
   cloneCloneInst := Usize.Insts.CoreCloneClone
@@ -8123,14 +9678,14 @@ def Usize.Insts.CoreIterRangeStep : iter.range.Step Std.Usize := {
 }
 
 /-- [core_models::num::{core_models::num::isize}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 335:12-337:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 360:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.overflowing_sub
   (x : Std.Isize) (y : Std.Isize) : RustM (Std.Isize × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::checked_sub_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 389:12-396:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_sub_unsigned
   (x : Std.Isize) (y : Std.Usize) : RustM (option.Option Std.Isize) := do
@@ -8143,7 +9698,7 @@ def num.Isize.checked_sub_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1113:12-1115:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1183:12-1185:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.Isize) (n : Std.Usize) : RustM Std.Isize := do
@@ -8151,7 +9706,7 @@ def Isize.Insts.CoreIterRangeStep.backward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1219:20-1237:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1289:20-1307:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.backward_checked
   (start : Std.Isize) (n : Std.Usize) : RustM (option.Option Std.Isize) := do
@@ -8168,7 +9723,7 @@ def Isize.Insts.CoreIterRangeStep.backward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.backward
   (start : Std.Isize) (n : Std.Usize) : RustM Std.Isize := do
@@ -8176,14 +9731,14 @@ def Isize.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::isize}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 309:12-311:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 334:12-336:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.overflowing_add
   (x : Std.Isize) (y : Std.Isize) : RustM (Std.Isize × Bool) := do
   rust_primitives.arithmetic.overflowing_add_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::checked_add_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 353:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 378:12-387:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_add_unsigned
   (x : Std.Isize) (y : Std.Usize) : RustM (option.Option Std.Isize) := do
@@ -8196,7 +9751,7 @@ def num.Isize.checked_add_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1109:12-1111:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1179:12-1181:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.Isize) (n : Std.Usize) : RustM Std.Isize := do
@@ -8204,14 +9759,14 @@ def Isize.Insts.CoreIterRangeStep.forward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::isize}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 301:12-303:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 326:12-328:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.wrapping_add
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.wrapping_add_isize x y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1199:20-1217:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1269:20-1287:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.forward_checked
   (start : Std.Isize) (n : Std.Usize) : RustM (option.Option Std.Isize) := do
@@ -8228,7 +9783,7 @@ def Isize.Insts.CoreIterRangeStep.forward_checked
   | core.result.Result.Err _ => ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.forward
   (start : Std.Isize) (n : Std.Usize) : RustM Std.Isize := do
@@ -8236,7 +9791,7 @@ def Isize.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for isize}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1186:20-1197:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1256:20-1267:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def Isize.Insts.CoreIterRangeStep.steps_between
   (start : Std.Isize) («end» : Std.Isize) :
@@ -8250,7 +9805,7 @@ def Isize.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for isize}]
-    Source: 'core-models/src/core/iter.rs', lines 1182:16-1238:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1252:16-1308:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def Isize.Insts.CoreIterRangeStep : iter.range.Step Std.Isize := {
   cloneCloneInst := Isize.Insts.CoreCloneClone
@@ -8265,13 +9820,13 @@ def Isize.Insts.CoreIterRangeStep : iter.range.Step Std.Isize := {
 }
 
 /-- [core_models::num::{core_models::num::u128}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 79:12-81:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.unchecked_sub (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   x - y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1125:12-1127:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1195:12-1197:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.U128) (n : Std.Usize) : RustM Std.U128 := do
@@ -8279,14 +9834,14 @@ def U128.Insts.CoreIterRangeStep.backward_unchecked
   num.U128.unchecked_sub start i
 
 /-- [core_models::num::{core_models::num::u128}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 65:12-67:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.overflowing_sub
   (x : Std.U128) (y : Std.U128) : RustM (Std.U128 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 69:12-76:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.checked_sub
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
@@ -8296,7 +9851,7 @@ def num.U128.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1262:20-1264:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1332:20-1334:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.backward_checked
   (start : Std.U128) (n : Std.Usize) : RustM (option.Option Std.U128) := do
@@ -8304,7 +9859,7 @@ def U128.Insts.CoreIterRangeStep.backward_checked
   num.U128.checked_sub start i
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.backward
   (start : Std.U128) (n : Std.Usize) : RustM Std.U128 := do
@@ -8312,13 +9867,13 @@ def U128.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::u128}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 53:12-55:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.unchecked_add (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   x + y
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1121:12-1123:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1191:12-1193:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.U128) (n : Std.Usize) : RustM Std.U128 := do
@@ -8326,14 +9881,14 @@ def U128.Insts.CoreIterRangeStep.forward_unchecked
   num.U128.unchecked_add start i
 
 /-- [core_models::num::{core_models::num::u128}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 39:12-41:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.overflowing_add
   (x : Std.U128) (y : Std.U128) : RustM (Std.U128 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 43:12-50:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.checked_add
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
@@ -8343,7 +9898,7 @@ def num.U128.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1258:20-1260:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1328:20-1330:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.forward_checked
   (start : Std.U128) (n : Std.Usize) : RustM (option.Option Std.U128) := do
@@ -8351,7 +9906,7 @@ def U128.Insts.CoreIterRangeStep.forward_checked
   num.U128.checked_add start i
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.forward
   (start : Std.U128) (n : Std.Usize) : RustM Std.U128 := do
@@ -8359,7 +9914,7 @@ def U128.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for u128}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1247:20-1256:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1317:20-1326:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def U128.Insts.CoreIterRangeStep.steps_between
   (start : Std.U128) («end» : Std.U128) :
@@ -8376,7 +9931,7 @@ def U128.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for u128}]
-    Source: 'core-models/src/core/iter.rs', lines 1243:16-1265:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1313:16-1335:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def U128.Insts.CoreIterRangeStep : iter.range.Step Std.U128 := {
   cloneCloneInst := U128.Insts.CoreCloneClone
@@ -8391,14 +9946,14 @@ def U128.Insts.CoreIterRangeStep : iter.range.Step Std.U128 := {
 }
 
 /-- [core_models::num::{core_models::num::i128}::overflowing_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 335:12-337:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 360:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.overflowing_sub
   (x : Std.I128) (y : Std.I128) : RustM (Std.I128 × Bool) := do
   rust_primitives.arithmetic.overflowing_sub_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::checked_sub_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 389:12-396:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_sub_unsigned
   (x : Std.I128) (y : Std.U128) : RustM (option.Option Std.I128) := do
@@ -8410,7 +9965,7 @@ def num.I128.checked_sub_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::backward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1113:12-1115:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1183:12-1185:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.backward_unchecked
   (start : Std.I128) (n : Std.Usize) : RustM Std.I128 := do
@@ -8419,7 +9974,7 @@ def I128.Insts.CoreIterRangeStep.backward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i128}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 339:12-346:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_sub
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
@@ -8429,7 +9984,7 @@ def num.I128.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::backward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1294:20-1296:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1364:20-1366:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.backward_checked
   (start : Std.I128) (n : Std.Usize) : RustM (option.Option Std.I128) := do
@@ -8437,7 +9992,7 @@ def I128.Insts.CoreIterRangeStep.backward_checked
   num.I128.checked_sub start i
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::backward]:
-    Source: 'core-models/src/core/iter.rs', lines 1137:12-1139:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1207:12-1209:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.backward
   (start : Std.I128) (n : Std.Usize) : RustM Std.I128 := do
@@ -8445,14 +10000,14 @@ def I128.Insts.CoreIterRangeStep.backward
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i128}::overflowing_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 309:12-311:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 334:12-336:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.overflowing_add
   (x : Std.I128) (y : Std.I128) : RustM (Std.I128 × Bool) := do
   rust_primitives.arithmetic.overflowing_add_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::checked_add_unsigned]:
-    Source: 'core-models/src/core/num/mod.rs', lines 353:12-362:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 378:12-387:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_add_unsigned
   (x : Std.I128) (y : Std.U128) : RustM (option.Option Std.I128) := do
@@ -8464,7 +10019,7 @@ def num.I128.checked_add_unsigned
   else ok option.Option.None
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::forward_unchecked]:
-    Source: 'core-models/src/core/iter.rs', lines 1109:12-1111:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1179:12-1181:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.forward_unchecked
   (start : Std.I128) (n : Std.Usize) : RustM Std.I128 := do
@@ -8473,7 +10028,7 @@ def I128.Insts.CoreIterRangeStep.forward_unchecked
   option.Option.unwrap o
 
 /-- [core_models::num::{core_models::num::i128}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 313:12-320:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 338:12-345:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_add
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
@@ -8483,7 +10038,7 @@ def num.I128.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::forward_checked]:
-    Source: 'core-models/src/core/iter.rs', lines 1290:20-1292:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1360:20-1362:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.forward_checked
   (start : Std.I128) (n : Std.Usize) : RustM (option.Option Std.I128) := do
@@ -8491,7 +10046,7 @@ def I128.Insts.CoreIterRangeStep.forward_checked
   num.I128.checked_add start i
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::forward]:
-    Source: 'core-models/src/core/iter.rs', lines 1133:12-1135:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1203:12-1205:13; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.forward
   (start : Std.I128) (n : Std.Usize) : RustM Std.I128 := do
@@ -8499,7 +10054,7 @@ def I128.Insts.CoreIterRangeStep.forward
   option.Option.unwrap o
 
 /-- [core_models::iter::range::{impl core_models::iter::range::Step for i128}::steps_between]:
-    Source: 'core-models/src/core/iter.rs', lines 1272:20-1288:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5
+    Source: 'core-models/src/core/iter.rs', lines 1342:20-1358:21; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5
     Visibility: public -/
 def I128.Insts.CoreIterRangeStep.steps_between
   (start : Std.I128) («end» : Std.I128) :
@@ -8520,7 +10075,7 @@ def I128.Insts.CoreIterRangeStep.steps_between
   else ok (0#usize, option.Option.None)
 
 /-- Trait implementation: [core_models::iter::range::{impl core_models::iter::range::Step for i128}]
-    Source: 'core-models/src/core/iter.rs', lines 1268:16-1297:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1303:4-1312:5 -/
+    Source: 'core-models/src/core/iter.rs', lines 1338:16-1367:17; this code is generated from a macro invocation at: 'core-models/src/core/iter.rs', lines 1373:4-1382:5 -/
 @[reducible]
 def I128.Insts.CoreIterRangeStep : iter.range.Step Std.I128 := {
   cloneCloneInst := I128.Insts.CoreCloneClone
@@ -8714,7 +10269,7 @@ def num.error.IntErrorKind.Insts.CoreFmtDebug : fmt.Debug
 }
 
 /-- [core_models::num::{core_models::num::u8}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u8}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1 -/
 def num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.U8.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.U8.to_le_bytes.closure)
@@ -8726,7 +10281,7 @@ def num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i3, c)
 
 /-- [core_models::num::{core_models::num::u8}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u8}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1 -/
 def
   num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.U8.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -8736,7 +10291,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::u8}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u8}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1 -/
 @[reducible]
 def num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.U8.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -8745,7 +10300,7 @@ def num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::u8}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u8}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1 -/
 @[reducible]
 def num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.U8.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -8756,50 +10311,50 @@ def num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::u8}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.wrapping_add (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.wrapping_add_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.saturating_add (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.saturating_add_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.wrapping_sub (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.wrapping_sub_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.saturating_sub (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.saturating_sub_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.wrapping_mul (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.wrapping_mul_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.saturating_mul (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.saturating_mul_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.overflowing_mul
   (x : Std.U8) (y : Std.U8) : RustM (Std.U8 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.checked_mul
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
@@ -8809,32 +10364,32 @@ def num.U8.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u8}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.unchecked_mul (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   x * y
 
 /-- [core_models::num::{core_models::num::u8}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.rem_euclid (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.rem_euclid_u8 x y
 
 /-- [core_models::num::{core_models::num::u8}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.pow (x : Std.U8) (exp : Std.U32) : RustM Std.U8 := do
   rust_primitives.arithmetic.pow_u8 x exp
 
 /-- [core_models::num::{core_models::num::u8}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.overflowing_pow
   (x : Std.U8) (exp : Std.U32) : RustM (Std.U8 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_u8 x exp
 
 /-- [core_models::num::{core_models::num::u8}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.checked_pow
   (x : Std.U8) (exp : Std.U32) : RustM (option.Option Std.U8) := do
@@ -8844,7 +10399,7 @@ def num.U8.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u8}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 @[rust_loop_body]
 def num.U8.count_ones_loop.body
@@ -8865,7 +10420,7 @@ def num.U8.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::u8}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 @[rust_loop]
 def num.U8.count_ones_loop
@@ -8877,14 +10432,14 @@ def num.U8.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::u8}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 @[reducible]
 def num.U8.count_ones (x : Std.U8) : RustM Std.U32 := do
   num.U8.count_ones_loop { start := 0#u32, «end» := 8#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::u8}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.rotate_right (x : Std.U8) (n : Std.U32) : RustM Std.U8 := do
   let m ← n % 8#u32
@@ -8896,7 +10451,7 @@ def num.U8.rotate_right (x : Std.U8) (n : Std.U32) : RustM Std.U8 := do
        ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u8}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.rotate_left (x : Std.U8) (n : Std.U32) : RustM Std.U8 := do
   let m ← n % 8#u32
@@ -8908,44 +10463,44 @@ def num.U8.rotate_left (x : Std.U8) (n : Std.U32) : RustM Std.U8 := do
        ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u8}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.leading_zeros (x : Std.U8) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_u8 x
 
 /-- [core_models::num::{core_models::num::u8}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.ilog2 (x : Std.U8) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_u8 x
 
 /-- [core_models::num::{core_models::num::u8}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.from_be_bytes (bytes : Array Std.U8 1#usize) : RustM Std.U8 := do
   rust_primitives.arithmetic.from_be_bytes_u8 bytes
 
 /-- [core_models::num::{core_models::num::u8}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.from_le_bytes (bytes : Array Std.U8 1#usize) : RustM Std.U8 := do
   rust_primitives.arithmetic.from_le_bytes_u8 bytes
 
 /-- [core_models::num::{core_models::num::u8}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.to_be_bytes (bytes : Std.U8) : RustM (Array Std.U8 1#usize) := do
   rust_primitives.arithmetic.to_be_bytes_u8 bytes
 
 /-- [core_models::num::{core_models::num::u8}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.to_le_bytes (bytes : Std.U8) : RustM (Array Std.U8 1#usize) := do
   rust_primitives.slice.array_from_fn 1#usize
     num.U8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::u8}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.checked_div
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
@@ -8955,13 +10510,13 @@ def num.U8.checked_div
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u8}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.unchecked_div (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   x / y
 
 /-- [core_models::num::{core_models::num::u8}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.checked_rem
   (x : Std.U8) (y : Std.U8) : RustM (option.Option Std.U8) := do
@@ -8971,13 +10526,13 @@ def num.U8.checked_rem
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u8}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.unchecked_rem (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   x % y
 
 /-- [core_models::num::{core_models::num::u8}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.is_power_of_two (x : Std.U8) : RustM Bool := do
   if x != 0#u8
@@ -8987,7 +10542,7 @@ def num.U8.is_power_of_two (x : Std.U8) : RustM Bool := do
   else ok false
 
 /-- [core_models::num::{core_models::num::u8}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.div_ceil (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   let d ← x / y
@@ -8997,7 +10552,7 @@ def num.U8.div_ceil (x : Std.U8) (y : Std.U8) : RustM Std.U8 := do
   else ok d
 
 /-- [core_models::num::{core_models::num::u8}::is_multiple_of]:
-    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.is_multiple_of (x : Std.U8) (y : Std.U8) : RustM Bool := do
   if y = 0#u8
@@ -9005,21 +10560,116 @@ def num.U8.is_multiple_of (x : Std.U8) (y : Std.U8) : RustM Bool := do
   else let i ← x % y
        ok (i = 0#u8)
 
+/-- [core_models::num::{core_models::num::u8}::trailing_zeros]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U8.trailing_zeros_loop.body
+  (x : Std.U8) (iter1 : core.ops.range.Range Std.U32) (n : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done n)
+  | core.option.Option.Some i =>
+    let i1 ← 8#u32 - 1#u32
+    let j ← i1 - i
+    let i2 ← x >>> j
+    let i3 ← lift (i2 &&& 1#u8)
+    if i3 = 1#u8
+    then ok (cont (iter2, j))
+    else ok (cont (iter2, n))
+
+/-- [core_models::num::{core_models::num::u8}::trailing_zeros]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+@[rust_loop]
+def num.U8.trailing_zeros_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U8) (n : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, n1) => num.U8.trailing_zeros_loop.body x iter2 n1)
+    (iter1, n)
+
+/-- [core_models::num::{core_models::num::u8}::trailing_zeros]:
+    Source: 'core-models/src/core/num/mod.rs', lines 261:12-271:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+@[reducible]
+def num.U8.trailing_zeros (x : Std.U8) : RustM Std.U32 := do
+  num.U8.trailing_zeros_loop { start := 0#u32, «end» := 8#u32 } x 8#u32
+
+/-- [core_models::num::{core_models::num::u8}::reverse_bits]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U8.reverse_bits_loop.body
+  (x : Std.U8) (iter1 : core.ops.range.Range Std.U32) (r : Std.U8) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U8) Std.U8)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done r)
+  | core.option.Option.Some i =>
+    let i1 ← x >>> i
+    let i2 ← lift (i1 &&& 1#u8)
+    if i2 = 1#u8
+    then
+      let i3 ← 8#u32 - 1#u32
+      let i4 ← i3 - i
+      let i5 ← 1#u8 <<< i4
+      let r1 ← lift (r ||| i5)
+      ok (cont (iter2, r1))
+    else ok (cont (iter2, r))
+
+/-- [core_models::num::{core_models::num::u8}::reverse_bits]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+@[rust_loop]
+def num.U8.reverse_bits_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U8) (r : Std.U8) :
+  RustM Std.U8
+  := do
+  loop
+    (fun (iter2, r1) => num.U8.reverse_bits_loop.body x iter2 r1)
+    (iter1, r)
+
+/-- [core_models::num::{core_models::num::u8}::reverse_bits]:
+    Source: 'core-models/src/core/num/mod.rs', lines 273:12-281:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+@[reducible]
+def num.U8.reverse_bits (x : Std.U8) : RustM Std.U8 := do
+  num.U8.reverse_bits_loop { start := 0#u32, «end» := 8#u32 } x 0#u8
+
+/-- [core_models::num::{core_models::num::u8}::checked_shl]:
+    Source: 'core-models/src/core/num/mod.rs', lines 283:12-289:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
+    Visibility: public -/
+def num.U8.checked_shl
+  (x : Std.U8) (n : Std.U32) : RustM (option.Option Std.U8) := do
+  if n < 8#u32
+  then let i ← x <<< n
+       ok (option.Option.Some i)
+  else ok option.Option.None
+
 /-- [core_models::num::{core_models::num::u8}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 274:12-276:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 def num.U8.wrapping_neg (x : Std.U8) : RustM Std.U8 := do
   rust_primitives.arithmetic.wrapping_sub_u8 0#u8 x
 
 /-
 /-- [core_models::num::{core_models::num::u8}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 631:0-637:1
+    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 656:0-662:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U8.BITS : Std.U32 := 8#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::u16}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u16}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1 -/
 def num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.U16.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.U16.to_le_bytes.closure)
@@ -9032,7 +10682,7 @@ def num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::u16}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u16}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1 -/
 def
   num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.U16.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -9042,7 +10692,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::u16}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u16}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1 -/
 @[reducible]
 def num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.U16.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9051,7 +10701,7 @@ def num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::u16}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u16}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1 -/
 @[reducible]
 def num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.U16.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9062,50 +10712,50 @@ def num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::u16}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.wrapping_add (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.wrapping_add_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.saturating_add (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.saturating_add_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.wrapping_sub (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.wrapping_sub_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.saturating_sub (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.saturating_sub_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.wrapping_mul (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.wrapping_mul_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.saturating_mul (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.saturating_mul_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.overflowing_mul
   (x : Std.U16) (y : Std.U16) : RustM (Std.U16 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.checked_mul
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
@@ -9115,32 +10765,32 @@ def num.U16.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u16}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.unchecked_mul (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   x * y
 
 /-- [core_models::num::{core_models::num::u16}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.rem_euclid (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.rem_euclid_u16 x y
 
 /-- [core_models::num::{core_models::num::u16}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.pow (x : Std.U16) (exp : Std.U32) : RustM Std.U16 := do
   rust_primitives.arithmetic.pow_u16 x exp
 
 /-- [core_models::num::{core_models::num::u16}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.overflowing_pow
   (x : Std.U16) (exp : Std.U32) : RustM (Std.U16 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_u16 x exp
 
 /-- [core_models::num::{core_models::num::u16}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.checked_pow
   (x : Std.U16) (exp : Std.U32) : RustM (option.Option Std.U16) := do
@@ -9150,7 +10800,7 @@ def num.U16.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u16}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 @[rust_loop_body]
 def num.U16.count_ones_loop.body
@@ -9171,7 +10821,7 @@ def num.U16.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::u16}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 @[rust_loop]
 def num.U16.count_ones_loop
@@ -9183,14 +10833,14 @@ def num.U16.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::u16}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 @[reducible]
 def num.U16.count_ones (x : Std.U16) : RustM Std.U32 := do
   num.U16.count_ones_loop { start := 0#u32, «end» := 16#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::u16}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.rotate_right (x : Std.U16) (n : Std.U32) : RustM Std.U16 := do
   let m ← n % 16#u32
@@ -9203,7 +10853,7 @@ def num.U16.rotate_right (x : Std.U16) (n : Std.U32) : RustM Std.U16 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u16}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.rotate_left (x : Std.U16) (n : Std.U32) : RustM Std.U16 := do
   let m ← n % 16#u32
@@ -9216,44 +10866,44 @@ def num.U16.rotate_left (x : Std.U16) (n : Std.U32) : RustM Std.U16 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u16}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.leading_zeros (x : Std.U16) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_u16 x
 
 /-- [core_models::num::{core_models::num::u16}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.ilog2 (x : Std.U16) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_u16 x
 
 /-- [core_models::num::{core_models::num::u16}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.from_be_bytes (bytes : Array Std.U8 2#usize) : RustM Std.U16 := do
   rust_primitives.arithmetic.from_be_bytes_u16 bytes
 
 /-- [core_models::num::{core_models::num::u16}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.from_le_bytes (bytes : Array Std.U8 2#usize) : RustM Std.U16 := do
   rust_primitives.arithmetic.from_le_bytes_u16 bytes
 
 /-- [core_models::num::{core_models::num::u16}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.to_be_bytes (bytes : Std.U16) : RustM (Array Std.U8 2#usize) := do
   rust_primitives.arithmetic.to_be_bytes_u16 bytes
 
 /-- [core_models::num::{core_models::num::u16}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.to_le_bytes (bytes : Std.U16) : RustM (Array Std.U8 2#usize) := do
   rust_primitives.slice.array_from_fn 2#usize
     num.U16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::u16}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.checked_div
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
@@ -9263,13 +10913,13 @@ def num.U16.checked_div
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u16}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.unchecked_div (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   x / y
 
 /-- [core_models::num::{core_models::num::u16}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.checked_rem
   (x : Std.U16) (y : Std.U16) : RustM (option.Option Std.U16) := do
@@ -9279,13 +10929,13 @@ def num.U16.checked_rem
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u16}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.unchecked_rem (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   x % y
 
 /-- [core_models::num::{core_models::num::u16}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.is_power_of_two (x : Std.U16) : RustM Bool := do
   if x != 0#u16
@@ -9295,7 +10945,7 @@ def num.U16.is_power_of_two (x : Std.U16) : RustM Bool := do
   else ok false
 
 /-- [core_models::num::{core_models::num::u16}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.div_ceil (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   let d ← x / y
@@ -9305,7 +10955,7 @@ def num.U16.div_ceil (x : Std.U16) (y : Std.U16) : RustM Std.U16 := do
   else ok d
 
 /-- [core_models::num::{core_models::num::u16}::is_multiple_of]:
-    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.is_multiple_of (x : Std.U16) (y : Std.U16) : RustM Bool := do
   if y = 0#u16
@@ -9313,21 +10963,116 @@ def num.U16.is_multiple_of (x : Std.U16) (y : Std.U16) : RustM Bool := do
   else let i ← x % y
        ok (i = 0#u16)
 
+/-- [core_models::num::{core_models::num::u16}::trailing_zeros]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U16.trailing_zeros_loop.body
+  (x : Std.U16) (iter1 : core.ops.range.Range Std.U32) (n : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done n)
+  | core.option.Option.Some i =>
+    let i1 ← 16#u32 - 1#u32
+    let j ← i1 - i
+    let i2 ← x >>> j
+    let i3 ← lift (i2 &&& 1#u16)
+    if i3 = 1#u16
+    then ok (cont (iter2, j))
+    else ok (cont (iter2, n))
+
+/-- [core_models::num::{core_models::num::u16}::trailing_zeros]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+@[rust_loop]
+def num.U16.trailing_zeros_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U16) (n : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, n1) => num.U16.trailing_zeros_loop.body x iter2 n1)
+    (iter1, n)
+
+/-- [core_models::num::{core_models::num::u16}::trailing_zeros]:
+    Source: 'core-models/src/core/num/mod.rs', lines 261:12-271:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+@[reducible]
+def num.U16.trailing_zeros (x : Std.U16) : RustM Std.U32 := do
+  num.U16.trailing_zeros_loop { start := 0#u32, «end» := 16#u32 } x 16#u32
+
+/-- [core_models::num::{core_models::num::u16}::reverse_bits]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U16.reverse_bits_loop.body
+  (x : Std.U16) (iter1 : core.ops.range.Range Std.U32) (r : Std.U16) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U16) Std.U16)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done r)
+  | core.option.Option.Some i =>
+    let i1 ← x >>> i
+    let i2 ← lift (i1 &&& 1#u16)
+    if i2 = 1#u16
+    then
+      let i3 ← 16#u32 - 1#u32
+      let i4 ← i3 - i
+      let i5 ← 1#u16 <<< i4
+      let r1 ← lift (r ||| i5)
+      ok (cont (iter2, r1))
+    else ok (cont (iter2, r))
+
+/-- [core_models::num::{core_models::num::u16}::reverse_bits]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+@[rust_loop]
+def num.U16.reverse_bits_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U16) (r : Std.U16) :
+  RustM Std.U16
+  := do
+  loop
+    (fun (iter2, r1) => num.U16.reverse_bits_loop.body x iter2 r1)
+    (iter1, r)
+
+/-- [core_models::num::{core_models::num::u16}::reverse_bits]:
+    Source: 'core-models/src/core/num/mod.rs', lines 273:12-281:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+@[reducible]
+def num.U16.reverse_bits (x : Std.U16) : RustM Std.U16 := do
+  num.U16.reverse_bits_loop { start := 0#u32, «end» := 16#u32 } x 0#u16
+
+/-- [core_models::num::{core_models::num::u16}::checked_shl]:
+    Source: 'core-models/src/core/num/mod.rs', lines 283:12-289:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
+    Visibility: public -/
+def num.U16.checked_shl
+  (x : Std.U16) (n : Std.U32) : RustM (option.Option Std.U16) := do
+  if n < 16#u32
+  then let i ← x <<< n
+       ok (option.Option.Some i)
+  else ok option.Option.None
+
 /-- [core_models::num::{core_models::num::u16}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 274:12-276:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 def num.U16.wrapping_neg (x : Std.U16) : RustM Std.U16 := do
   rust_primitives.arithmetic.wrapping_sub_u16 0#u16 x
 
 /-
 /-- [core_models::num::{core_models::num::u16}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 639:0-645:1
+    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 664:0-670:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U16.BITS : Std.U32 := 16#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::u32}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u32}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1 -/
 def num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.U32.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.U32.to_le_bytes.closure)
@@ -9340,7 +11085,7 @@ def num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::u32}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u32}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1 -/
 def
   num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.U32.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -9350,7 +11095,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::u32}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u32}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1 -/
 @[reducible]
 def num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.U32.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9359,7 +11104,7 @@ def num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::u32}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u32}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1 -/
 @[reducible]
 def num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.U32.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9370,50 +11115,50 @@ def num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::u32}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.wrapping_add (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.wrapping_add_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.saturating_add (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.saturating_add_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.wrapping_sub (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.wrapping_sub_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.saturating_sub (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.saturating_sub_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.wrapping_mul (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.wrapping_mul_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.saturating_mul (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.saturating_mul_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.overflowing_mul
   (x : Std.U32) (y : Std.U32) : RustM (Std.U32 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.checked_mul
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
@@ -9423,32 +11168,32 @@ def num.U32.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u32}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.unchecked_mul (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   x * y
 
 /-- [core_models::num::{core_models::num::u32}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.rem_euclid (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.rem_euclid_u32 x y
 
 /-- [core_models::num::{core_models::num::u32}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.pow (x : Std.U32) (exp : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.pow_u32 x exp
 
 /-- [core_models::num::{core_models::num::u32}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.overflowing_pow
   (x : Std.U32) (exp : Std.U32) : RustM (Std.U32 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_u32 x exp
 
 /-- [core_models::num::{core_models::num::u32}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.checked_pow
   (x : Std.U32) (exp : Std.U32) : RustM (option.Option Std.U32) := do
@@ -9458,7 +11203,7 @@ def num.U32.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u32}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 @[rust_loop_body]
 def num.U32.count_ones_loop.body
@@ -9479,7 +11224,7 @@ def num.U32.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::u32}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 @[rust_loop]
 def num.U32.count_ones_loop
@@ -9491,14 +11236,14 @@ def num.U32.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::u32}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 @[reducible]
 def num.U32.count_ones (x : Std.U32) : RustM Std.U32 := do
   num.U32.count_ones_loop { start := 0#u32, «end» := 32#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::u32}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.rotate_right (x : Std.U32) (n : Std.U32) : RustM Std.U32 := do
   let m ← n % 32#u32
@@ -9511,7 +11256,7 @@ def num.U32.rotate_right (x : Std.U32) (n : Std.U32) : RustM Std.U32 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u32}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.rotate_left (x : Std.U32) (n : Std.U32) : RustM Std.U32 := do
   let m ← n % 32#u32
@@ -9524,44 +11269,44 @@ def num.U32.rotate_left (x : Std.U32) (n : Std.U32) : RustM Std.U32 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u32}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.leading_zeros (x : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_u32 x
 
 /-- [core_models::num::{core_models::num::u32}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.ilog2 (x : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_u32 x
 
 /-- [core_models::num::{core_models::num::u32}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.from_be_bytes (bytes : Array Std.U8 4#usize) : RustM Std.U32 := do
   rust_primitives.arithmetic.from_be_bytes_u32 bytes
 
 /-- [core_models::num::{core_models::num::u32}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.from_le_bytes (bytes : Array Std.U8 4#usize) : RustM Std.U32 := do
   rust_primitives.arithmetic.from_le_bytes_u32 bytes
 
 /-- [core_models::num::{core_models::num::u32}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.to_be_bytes (bytes : Std.U32) : RustM (Array Std.U8 4#usize) := do
   rust_primitives.arithmetic.to_be_bytes_u32 bytes
 
 /-- [core_models::num::{core_models::num::u32}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.to_le_bytes (bytes : Std.U32) : RustM (Array Std.U8 4#usize) := do
   rust_primitives.slice.array_from_fn 4#usize
     num.U32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::u32}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.checked_div
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
@@ -9571,13 +11316,13 @@ def num.U32.checked_div
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u32}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.unchecked_div (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   x / y
 
 /-- [core_models::num::{core_models::num::u32}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.checked_rem
   (x : Std.U32) (y : Std.U32) : RustM (option.Option Std.U32) := do
@@ -9587,13 +11332,13 @@ def num.U32.checked_rem
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u32}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.unchecked_rem (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   x % y
 
 /-- [core_models::num::{core_models::num::u32}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.is_power_of_two (x : Std.U32) : RustM Bool := do
   if x != 0#u32
@@ -9603,7 +11348,7 @@ def num.U32.is_power_of_two (x : Std.U32) : RustM Bool := do
   else ok false
 
 /-- [core_models::num::{core_models::num::u32}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.div_ceil (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   let d ← x / y
@@ -9613,7 +11358,7 @@ def num.U32.div_ceil (x : Std.U32) (y : Std.U32) : RustM Std.U32 := do
   else ok d
 
 /-- [core_models::num::{core_models::num::u32}::is_multiple_of]:
-    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.is_multiple_of (x : Std.U32) (y : Std.U32) : RustM Bool := do
   if y = 0#u32
@@ -9621,21 +11366,116 @@ def num.U32.is_multiple_of (x : Std.U32) (y : Std.U32) : RustM Bool := do
   else let i ← x % y
        ok (i = 0#u32)
 
+/-- [core_models::num::{core_models::num::u32}::trailing_zeros]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U32.trailing_zeros_loop.body
+  (x : Std.U32) (iter1 : core.ops.range.Range Std.U32) (n : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done n)
+  | core.option.Option.Some i =>
+    let i1 ← 32#u32 - 1#u32
+    let j ← i1 - i
+    let i2 ← x >>> j
+    let i3 ← lift (i2 &&& 1#u32)
+    if i3 = 1#u32
+    then ok (cont (iter2, j))
+    else ok (cont (iter2, n))
+
+/-- [core_models::num::{core_models::num::u32}::trailing_zeros]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+@[rust_loop]
+def num.U32.trailing_zeros_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U32) (n : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, n1) => num.U32.trailing_zeros_loop.body x iter2 n1)
+    (iter1, n)
+
+/-- [core_models::num::{core_models::num::u32}::trailing_zeros]:
+    Source: 'core-models/src/core/num/mod.rs', lines 261:12-271:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+@[reducible]
+def num.U32.trailing_zeros (x : Std.U32) : RustM Std.U32 := do
+  num.U32.trailing_zeros_loop { start := 0#u32, «end» := 32#u32 } x 32#u32
+
+/-- [core_models::num::{core_models::num::u32}::reverse_bits]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U32.reverse_bits_loop.body
+  (x : Std.U32) (iter1 : core.ops.range.Range Std.U32) (r : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done r)
+  | core.option.Option.Some i =>
+    let i1 ← x >>> i
+    let i2 ← lift (i1 &&& 1#u32)
+    if i2 = 1#u32
+    then
+      let i3 ← 32#u32 - 1#u32
+      let i4 ← i3 - i
+      let i5 ← 1#u32 <<< i4
+      let r1 ← lift (r ||| i5)
+      ok (cont (iter2, r1))
+    else ok (cont (iter2, r))
+
+/-- [core_models::num::{core_models::num::u32}::reverse_bits]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+@[rust_loop]
+def num.U32.reverse_bits_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U32) (r : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, r1) => num.U32.reverse_bits_loop.body x iter2 r1)
+    (iter1, r)
+
+/-- [core_models::num::{core_models::num::u32}::reverse_bits]:
+    Source: 'core-models/src/core/num/mod.rs', lines 273:12-281:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+@[reducible]
+def num.U32.reverse_bits (x : Std.U32) : RustM Std.U32 := do
+  num.U32.reverse_bits_loop { start := 0#u32, «end» := 32#u32 } x 0#u32
+
+/-- [core_models::num::{core_models::num::u32}::checked_shl]:
+    Source: 'core-models/src/core/num/mod.rs', lines 283:12-289:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
+    Visibility: public -/
+def num.U32.checked_shl
+  (x : Std.U32) (n : Std.U32) : RustM (option.Option Std.U32) := do
+  if n < 32#u32
+  then let i ← x <<< n
+       ok (option.Option.Some i)
+  else ok option.Option.None
+
 /-- [core_models::num::{core_models::num::u32}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 274:12-276:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 def num.U32.wrapping_neg (x : Std.U32) : RustM Std.U32 := do
   rust_primitives.arithmetic.wrapping_sub_u32 0#u32 x
 
 /-
 /-- [core_models::num::{core_models::num::u32}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 647:0-653:1
+    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 672:0-678:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U32.BITS : Std.U32 := 32#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::u64}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u64}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1 -/
 def num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.U64.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.U64.to_le_bytes.closure)
@@ -9648,7 +11488,7 @@ def num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::u64}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u64}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1 -/
 def
   num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.U64.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -9658,7 +11498,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::u64}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u64}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1 -/
 @[reducible]
 def num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.U64.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9667,7 +11507,7 @@ def num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::u64}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u64}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1 -/
 @[reducible]
 def num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.U64.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9678,50 +11518,50 @@ def num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::u64}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.wrapping_add (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.wrapping_add_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.saturating_add (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.saturating_add_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.wrapping_sub (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.wrapping_sub_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.saturating_sub (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.saturating_sub_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.wrapping_mul (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.wrapping_mul_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.saturating_mul (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.saturating_mul_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.overflowing_mul
   (x : Std.U64) (y : Std.U64) : RustM (Std.U64 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.checked_mul
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
@@ -9731,32 +11571,32 @@ def num.U64.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u64}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.unchecked_mul (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   x * y
 
 /-- [core_models::num::{core_models::num::u64}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.rem_euclid (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.rem_euclid_u64 x y
 
 /-- [core_models::num::{core_models::num::u64}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.pow (x : Std.U64) (exp : Std.U32) : RustM Std.U64 := do
   rust_primitives.arithmetic.pow_u64 x exp
 
 /-- [core_models::num::{core_models::num::u64}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.overflowing_pow
   (x : Std.U64) (exp : Std.U32) : RustM (Std.U64 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_u64 x exp
 
 /-- [core_models::num::{core_models::num::u64}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.checked_pow
   (x : Std.U64) (exp : Std.U32) : RustM (option.Option Std.U64) := do
@@ -9766,7 +11606,7 @@ def num.U64.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u64}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 @[rust_loop_body]
 def num.U64.count_ones_loop.body
@@ -9787,7 +11627,7 @@ def num.U64.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::u64}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 @[rust_loop]
 def num.U64.count_ones_loop
@@ -9799,14 +11639,14 @@ def num.U64.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::u64}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 @[reducible]
 def num.U64.count_ones (x : Std.U64) : RustM Std.U32 := do
   num.U64.count_ones_loop { start := 0#u32, «end» := 64#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::u64}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.rotate_right (x : Std.U64) (n : Std.U32) : RustM Std.U64 := do
   let m ← n % 64#u32
@@ -9819,7 +11659,7 @@ def num.U64.rotate_right (x : Std.U64) (n : Std.U32) : RustM Std.U64 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u64}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.rotate_left (x : Std.U64) (n : Std.U32) : RustM Std.U64 := do
   let m ← n % 64#u32
@@ -9832,44 +11672,44 @@ def num.U64.rotate_left (x : Std.U64) (n : Std.U32) : RustM Std.U64 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u64}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.leading_zeros (x : Std.U64) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_u64 x
 
 /-- [core_models::num::{core_models::num::u64}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.ilog2 (x : Std.U64) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_u64 x
 
 /-- [core_models::num::{core_models::num::u64}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.from_be_bytes (bytes : Array Std.U8 8#usize) : RustM Std.U64 := do
   rust_primitives.arithmetic.from_be_bytes_u64 bytes
 
 /-- [core_models::num::{core_models::num::u64}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.from_le_bytes (bytes : Array Std.U8 8#usize) : RustM Std.U64 := do
   rust_primitives.arithmetic.from_le_bytes_u64 bytes
 
 /-- [core_models::num::{core_models::num::u64}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.to_be_bytes (bytes : Std.U64) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.arithmetic.to_be_bytes_u64 bytes
 
 /-- [core_models::num::{core_models::num::u64}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.to_le_bytes (bytes : Std.U64) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.slice.array_from_fn 8#usize
     num.U64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::u64}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.checked_div
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
@@ -9879,13 +11719,13 @@ def num.U64.checked_div
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u64}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.unchecked_div (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   x / y
 
 /-- [core_models::num::{core_models::num::u64}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.checked_rem
   (x : Std.U64) (y : Std.U64) : RustM (option.Option Std.U64) := do
@@ -9895,13 +11735,13 @@ def num.U64.checked_rem
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u64}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.unchecked_rem (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   x % y
 
 /-- [core_models::num::{core_models::num::u64}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.is_power_of_two (x : Std.U64) : RustM Bool := do
   if x != 0#u64
@@ -9911,7 +11751,7 @@ def num.U64.is_power_of_two (x : Std.U64) : RustM Bool := do
   else ok false
 
 /-- [core_models::num::{core_models::num::u64}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.div_ceil (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   let d ← x / y
@@ -9921,7 +11761,7 @@ def num.U64.div_ceil (x : Std.U64) (y : Std.U64) : RustM Std.U64 := do
   else ok d
 
 /-- [core_models::num::{core_models::num::u64}::is_multiple_of]:
-    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.is_multiple_of (x : Std.U64) (y : Std.U64) : RustM Bool := do
   if y = 0#u64
@@ -9929,21 +11769,116 @@ def num.U64.is_multiple_of (x : Std.U64) (y : Std.U64) : RustM Bool := do
   else let i ← x % y
        ok (i = 0#u64)
 
+/-- [core_models::num::{core_models::num::u64}::trailing_zeros]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U64.trailing_zeros_loop.body
+  (x : Std.U64) (iter1 : core.ops.range.Range Std.U32) (n : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done n)
+  | core.option.Option.Some i =>
+    let i1 ← 64#u32 - 1#u32
+    let j ← i1 - i
+    let i2 ← x >>> j
+    let i3 ← lift (i2 &&& 1#u64)
+    if i3 = 1#u64
+    then ok (cont (iter2, j))
+    else ok (cont (iter2, n))
+
+/-- [core_models::num::{core_models::num::u64}::trailing_zeros]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+@[rust_loop]
+def num.U64.trailing_zeros_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U64) (n : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, n1) => num.U64.trailing_zeros_loop.body x iter2 n1)
+    (iter1, n)
+
+/-- [core_models::num::{core_models::num::u64}::trailing_zeros]:
+    Source: 'core-models/src/core/num/mod.rs', lines 261:12-271:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+@[reducible]
+def num.U64.trailing_zeros (x : Std.U64) : RustM Std.U32 := do
+  num.U64.trailing_zeros_loop { start := 0#u32, «end» := 64#u32 } x 64#u32
+
+/-- [core_models::num::{core_models::num::u64}::reverse_bits]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U64.reverse_bits_loop.body
+  (x : Std.U64) (iter1 : core.ops.range.Range Std.U32) (r : Std.U64) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U64) Std.U64)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done r)
+  | core.option.Option.Some i =>
+    let i1 ← x >>> i
+    let i2 ← lift (i1 &&& 1#u64)
+    if i2 = 1#u64
+    then
+      let i3 ← 64#u32 - 1#u32
+      let i4 ← i3 - i
+      let i5 ← 1#u64 <<< i4
+      let r1 ← lift (r ||| i5)
+      ok (cont (iter2, r1))
+    else ok (cont (iter2, r))
+
+/-- [core_models::num::{core_models::num::u64}::reverse_bits]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+@[rust_loop]
+def num.U64.reverse_bits_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U64) (r : Std.U64) :
+  RustM Std.U64
+  := do
+  loop
+    (fun (iter2, r1) => num.U64.reverse_bits_loop.body x iter2 r1)
+    (iter1, r)
+
+/-- [core_models::num::{core_models::num::u64}::reverse_bits]:
+    Source: 'core-models/src/core/num/mod.rs', lines 273:12-281:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+@[reducible]
+def num.U64.reverse_bits (x : Std.U64) : RustM Std.U64 := do
+  num.U64.reverse_bits_loop { start := 0#u32, «end» := 64#u32 } x 0#u64
+
+/-- [core_models::num::{core_models::num::u64}::checked_shl]:
+    Source: 'core-models/src/core/num/mod.rs', lines 283:12-289:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
+    Visibility: public -/
+def num.U64.checked_shl
+  (x : Std.U64) (n : Std.U32) : RustM (option.Option Std.U64) := do
+  if n < 64#u32
+  then let i ← x <<< n
+       ok (option.Option.Some i)
+  else ok option.Option.None
+
 /-- [core_models::num::{core_models::num::u64}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 274:12-276:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 def num.U64.wrapping_neg (x : Std.U64) : RustM Std.U64 := do
   rust_primitives.arithmetic.wrapping_sub_u64 0#u64 x
 
 /-
 /-- [core_models::num::{core_models::num::u64}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 655:0-661:1
+    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 680:0-686:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U64.BITS : Std.U32 := 64#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::u128}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u128}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1 -/
 def
   num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.U128.to_le_bytes.closure) (tupled_args : Std.Usize) :
@@ -9957,7 +11892,7 @@ def
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::u128}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u128}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1 -/
 def
   num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.U128.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -9967,7 +11902,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::u128}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::u128}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1 -/
 @[reducible]
 def num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.U128.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9976,7 +11911,7 @@ def num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::u128}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::u128}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1 -/
 @[reducible]
 def num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.U128.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -9987,53 +11922,53 @@ def num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::u128}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.wrapping_add (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.wrapping_add_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.saturating_add
   (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.saturating_add_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.wrapping_sub (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.wrapping_sub_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.saturating_sub
   (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.saturating_sub_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.wrapping_mul (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.wrapping_mul_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.saturating_mul
   (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.saturating_mul_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.overflowing_mul
   (x : Std.U128) (y : Std.U128) : RustM (Std.U128 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.checked_mul
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
@@ -10043,32 +11978,32 @@ def num.U128.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u128}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.unchecked_mul (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   x * y
 
 /-- [core_models::num::{core_models::num::u128}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.rem_euclid (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.rem_euclid_u128 x y
 
 /-- [core_models::num::{core_models::num::u128}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.pow (x : Std.U128) (exp : Std.U32) : RustM Std.U128 := do
   rust_primitives.arithmetic.pow_u128 x exp
 
 /-- [core_models::num::{core_models::num::u128}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.overflowing_pow
   (x : Std.U128) (exp : Std.U32) : RustM (Std.U128 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_u128 x exp
 
 /-- [core_models::num::{core_models::num::u128}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.checked_pow
   (x : Std.U128) (exp : Std.U32) : RustM (option.Option Std.U128) := do
@@ -10078,7 +12013,7 @@ def num.U128.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::u128}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 @[rust_loop_body]
 def num.U128.count_ones_loop.body
@@ -10099,7 +12034,7 @@ def num.U128.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::u128}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 @[rust_loop]
 def num.U128.count_ones_loop
@@ -10111,14 +12046,14 @@ def num.U128.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::u128}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 @[reducible]
 def num.U128.count_ones (x : Std.U128) : RustM Std.U32 := do
   num.U128.count_ones_loop { start := 0#u32, «end» := 128#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::u128}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.rotate_right (x : Std.U128) (n : Std.U32) : RustM Std.U128 := do
   let m ← n % 128#u32
@@ -10131,7 +12066,7 @@ def num.U128.rotate_right (x : Std.U128) (n : Std.U32) : RustM Std.U128 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u128}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.rotate_left (x : Std.U128) (n : Std.U32) : RustM Std.U128 := do
   let m ← n % 128#u32
@@ -10144,40 +12079,40 @@ def num.U128.rotate_left (x : Std.U128) (n : Std.U32) : RustM Std.U128 := do
     ok (i ^^^ i2)
 
 /-- [core_models::num::{core_models::num::u128}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.leading_zeros (x : Std.U128) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_u128 x
 
 /-- [core_models::num::{core_models::num::u128}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.ilog2 (x : Std.U128) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_u128 x
 
 /-- [core_models::num::{core_models::num::u128}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.from_be_bytes
   (bytes : Array Std.U8 16#usize) : RustM Std.U128 := do
   rust_primitives.arithmetic.from_be_bytes_u128 bytes
 
 /-- [core_models::num::{core_models::num::u128}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.from_le_bytes
   (bytes : Array Std.U8 16#usize) : RustM Std.U128 := do
   rust_primitives.arithmetic.from_le_bytes_u128 bytes
 
 /-- [core_models::num::{core_models::num::u128}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.to_be_bytes
   (bytes : Std.U128) : RustM (Array Std.U8 16#usize) := do
   rust_primitives.arithmetic.to_be_bytes_u128 bytes
 
 /-- [core_models::num::{core_models::num::u128}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.to_le_bytes
   (bytes : Std.U128) : RustM (Array Std.U8 16#usize) := do
@@ -10185,7 +12120,7 @@ def num.U128.to_le_bytes
     num.U128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::u128}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.checked_div
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
@@ -10195,13 +12130,13 @@ def num.U128.checked_div
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u128}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.unchecked_div (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   x / y
 
 /-- [core_models::num::{core_models::num::u128}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.checked_rem
   (x : Std.U128) (y : Std.U128) : RustM (option.Option Std.U128) := do
@@ -10211,13 +12146,13 @@ def num.U128.checked_rem
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::u128}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.unchecked_rem (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   x % y
 
 /-- [core_models::num::{core_models::num::u128}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.is_power_of_two (x : Std.U128) : RustM Bool := do
   if x != 0#u128
@@ -10227,7 +12162,7 @@ def num.U128.is_power_of_two (x : Std.U128) : RustM Bool := do
   else ok false
 
 /-- [core_models::num::{core_models::num::u128}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.div_ceil (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   let d ← x / y
@@ -10237,7 +12172,7 @@ def num.U128.div_ceil (x : Std.U128) (y : Std.U128) : RustM Std.U128 := do
   else ok d
 
 /-- [core_models::num::{core_models::num::u128}::is_multiple_of]:
-    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.is_multiple_of (x : Std.U128) (y : Std.U128) : RustM Bool := do
   if y = 0#u128
@@ -10245,28 +12180,123 @@ def num.U128.is_multiple_of (x : Std.U128) (y : Std.U128) : RustM Bool := do
   else let i ← x % y
        ok (i = 0#u128)
 
+/-- [core_models::num::{core_models::num::u128}::trailing_zeros]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U128.trailing_zeros_loop.body
+  (x : Std.U128) (iter1 : core.ops.range.Range Std.U32) (n : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done n)
+  | core.option.Option.Some i =>
+    let i1 ← 128#u32 - 1#u32
+    let j ← i1 - i
+    let i2 ← x >>> j
+    let i3 ← lift (i2 &&& 1#u128)
+    if i3 = 1#u128
+    then ok (cont (iter2, j))
+    else ok (cont (iter2, n))
+
+/-- [core_models::num::{core_models::num::u128}::trailing_zeros]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+@[rust_loop]
+def num.U128.trailing_zeros_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U128) (n : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, n1) => num.U128.trailing_zeros_loop.body x iter2 n1)
+    (iter1, n)
+
+/-- [core_models::num::{core_models::num::u128}::trailing_zeros]:
+    Source: 'core-models/src/core/num/mod.rs', lines 261:12-271:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+@[reducible]
+def num.U128.trailing_zeros (x : Std.U128) : RustM Std.U32 := do
+  num.U128.trailing_zeros_loop { start := 0#u32, «end» := 128#u32 } x 128#u32
+
+/-- [core_models::num::{core_models::num::u128}::reverse_bits]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.U128.reverse_bits_loop.body
+  (x : Std.U128) (iter1 : core.ops.range.Range Std.U32) (r : Std.U128) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U128) Std.U128)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done r)
+  | core.option.Option.Some i =>
+    let i1 ← x >>> i
+    let i2 ← lift (i1 &&& 1#u128)
+    if i2 = 1#u128
+    then
+      let i3 ← 128#u32 - 1#u32
+      let i4 ← i3 - i
+      let i5 ← 1#u128 <<< i4
+      let r1 ← lift (r ||| i5)
+      ok (cont (iter2, r1))
+    else ok (cont (iter2, r))
+
+/-- [core_models::num::{core_models::num::u128}::reverse_bits]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+@[rust_loop]
+def num.U128.reverse_bits_loop
+  (iter1 : core.ops.range.Range Std.U32) (x : Std.U128) (r : Std.U128) :
+  RustM Std.U128
+  := do
+  loop
+    (fun (iter2, r1) => num.U128.reverse_bits_loop.body x iter2 r1)
+    (iter1, r)
+
+/-- [core_models::num::{core_models::num::u128}::reverse_bits]:
+    Source: 'core-models/src/core/num/mod.rs', lines 273:12-281:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+@[reducible]
+def num.U128.reverse_bits (x : Std.U128) : RustM Std.U128 := do
+  num.U128.reverse_bits_loop { start := 0#u32, «end» := 128#u32 } x 0#u128
+
+/-- [core_models::num::{core_models::num::u128}::checked_shl]:
+    Source: 'core-models/src/core/num/mod.rs', lines 283:12-289:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
+    Visibility: public -/
+def num.U128.checked_shl
+  (x : Std.U128) (n : Std.U32) : RustM (option.Option Std.U128) := do
+  if n < 128#u32
+  then let i ← x <<< n
+       ok (option.Option.Some i)
+  else ok option.Option.None
+
 /-- [core_models::num::{core_models::num::u128}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 274:12-276:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 def num.U128.wrapping_neg (x : Std.U128) : RustM Std.U128 := do
   rust_primitives.arithmetic.wrapping_sub_u128 0#u128 x
 
 /-
 /-- [core_models::num::{core_models::num::u128}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 25:12-25:37; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U128.MIN : Std.U128 := 0#u128
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-
 /-- [core_models::num::{core_models::num::u128}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 663:0-669:1
+    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 688:0-694:1
     Visibility: public -/
 @[global_simps, irreducible] def num.U128.BITS : Std.U32 := 128#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::usize}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::usize}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1 -/
 def
   num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.Usize.to_le_bytes.closure) (tupled_args : Std.Usize) :
@@ -10281,7 +12311,7 @@ def
   ok (i5, c)
 
 /-- [core_models::num::{core_models::num::usize}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::usize}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1 -/
 def
   num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.Usize.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -10291,7 +12321,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::usize}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::usize}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1 -/
 @[reducible]
 def num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.Usize.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -10300,7 +12330,7 @@ def num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::usize}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::usize}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 210:54-213:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1 -/
 @[reducible]
 def num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.Usize.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -10311,56 +12341,56 @@ def num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::usize}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 31:12-33:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.wrapping_add
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.wrapping_add_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 35:12-37:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.saturating_add
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.saturating_add_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 57:12-59:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.wrapping_sub
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.wrapping_sub_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 61:12-63:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.saturating_sub
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.saturating_sub_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 83:12-85:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.wrapping_mul
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.wrapping_mul_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 87:12-89:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.saturating_mul
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.saturating_mul_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 91:12-93:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.overflowing_mul
   (x : Std.Usize) (y : Std.Usize) : RustM (Std.Usize × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 95:12-102:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.checked_mul
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -10370,34 +12400,34 @@ def num.Usize.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::usize}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 105:12-107:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.unchecked_mul
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   x * y
 
 /-- [core_models::num::{core_models::num::usize}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 110:12-112:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.rem_euclid
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.rem_euclid_usize x y
 
 /-- [core_models::num::{core_models::num::usize}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 115:12-117:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.pow (x : Std.Usize) (exp : Std.U32) : RustM Std.Usize := do
   rust_primitives.arithmetic.pow_usize x exp
 
 /-- [core_models::num::{core_models::num::usize}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 119:12-121:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.overflowing_pow
   (x : Std.Usize) (exp : Std.U32) : RustM (Std.Usize × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_usize x exp
 
 /-- [core_models::num::{core_models::num::usize}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 124:12-131:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.checked_pow
   (x : Std.Usize) (exp : Std.U32) : RustM (option.Option Std.Usize) := do
@@ -10407,7 +12437,7 @@ def num.Usize.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::usize}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 @[rust_loop_body]
 def num.Usize.count_ones_loop.body
@@ -10428,7 +12458,7 @@ def num.Usize.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::usize}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 @[rust_loop]
 def num.Usize.count_ones_loop
@@ -10440,14 +12470,14 @@ def num.Usize.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::usize}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 133:12-144:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.count_ones (x : Std.Usize) : RustM Std.U32 := do
   let i ← rust_primitives.arithmetic.SIZE_BITS
   num.Usize.count_ones_loop { start := 0#u32, «end» := i } x 0#u32
 
 /-- [core_models::num::{core_models::num::usize}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 147:12-154:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.rotate_right
   (x : Std.Usize) (n : Std.U32) : RustM Std.Usize := do
@@ -10461,7 +12491,7 @@ def num.Usize.rotate_right
        ok (i1 ^^^ i3)
 
 /-- [core_models::num::{core_models::num::usize}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 157:12-164:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.rotate_left (x : Std.Usize) (n : Std.U32) : RustM Std.Usize := do
   let i ← rust_primitives.arithmetic.SIZE_BITS
@@ -10474,40 +12504,40 @@ def num.Usize.rotate_left (x : Std.Usize) (n : Std.U32) : RustM Std.Usize := do
        ok (i1 ^^^ i3)
 
 /-- [core_models::num::{core_models::num::usize}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 167:12-169:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.leading_zeros (x : Std.Usize) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_usize x
 
 /-- [core_models::num::{core_models::num::usize}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 173:12-175:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.ilog2 (x : Std.Usize) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_usize x
 
 /-- [core_models::num::{core_models::num::usize}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 195:12-197:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.from_be_bytes
   (bytes : Array Std.U8 8#usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.from_be_bytes_usize bytes
 
 /-- [core_models::num::{core_models::num::usize}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 200:12-202:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.from_le_bytes
   (bytes : Array Std.U8 8#usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.from_le_bytes_usize bytes
 
 /-- [core_models::num::{core_models::num::usize}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 205:12-207:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.to_be_bytes
   (bytes : Std.Usize) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.arithmetic.to_be_bytes_usize bytes
 
 /-- [core_models::num::{core_models::num::usize}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 209:12-214:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.to_le_bytes
   (bytes : Std.Usize) : RustM (Array Std.U8 8#usize) := do
@@ -10515,7 +12545,7 @@ def num.Usize.to_le_bytes
     num.Usize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::usize}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 216:12-222:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.checked_div
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -10525,14 +12555,14 @@ def num.Usize.checked_div
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::usize}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 225:12-227:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.unchecked_div
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   x / y
 
 /-- [core_models::num::{core_models::num::usize}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 229:12-235:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.checked_rem
   (x : Std.Usize) (y : Std.Usize) : RustM (option.Option Std.Usize) := do
@@ -10542,14 +12572,14 @@ def num.Usize.checked_rem
        ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::usize}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 238:12-240:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.unchecked_rem
   (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   x % y
 
 /-- [core_models::num::{core_models::num::usize}::is_power_of_two]:
-    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 242:12-244:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.is_power_of_two (x : Std.Usize) : RustM Bool := do
   if x != 0#usize
@@ -10559,7 +12589,7 @@ def num.Usize.is_power_of_two (x : Std.Usize) : RustM Bool := do
   else ok false
 
 /-- [core_models::num::{core_models::num::usize}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 247:12-251:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.div_ceil (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   let d ← x / y
@@ -10569,7 +12599,7 @@ def num.Usize.div_ceil (x : Std.Usize) (y : Std.Usize) : RustM Std.Usize := do
   else ok d
 
 /-- [core_models::num::{core_models::num::usize}::is_multiple_of]:
-    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 253:12-259:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.is_multiple_of (x : Std.Usize) (y : Std.Usize) : RustM Bool := do
   if y = 0#usize
@@ -10577,22 +12607,122 @@ def num.Usize.is_multiple_of (x : Std.Usize) (y : Std.Usize) : RustM Bool := do
   else let i ← x % y
        ok (i = 0#usize)
 
+/-- [core_models::num::{core_models::num::usize}::trailing_zeros]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.Usize.trailing_zeros_loop.body
+  (n : Std.U32) (x : Std.Usize) (iter1 : core.ops.range.Range Std.U32)
+  (n1 : Std.U32) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.U32) Std.U32)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done n1)
+  | core.option.Option.Some i =>
+    let i1 ← n - 1#u32
+    let j ← i1 - i
+    let i2 ← x >>> j
+    let i3 ← lift (i2 &&& 1#usize)
+    if i3 = 1#usize
+    then ok (cont (iter2, j))
+    else ok (cont (iter2, n1))
+
+/-- [core_models::num::{core_models::num::usize}::trailing_zeros]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+@[rust_loop]
+def num.Usize.trailing_zeros_loop
+  (n : Std.U32) (iter1 : core.ops.range.Range Std.U32) (x : Std.Usize)
+  (n1 : Std.U32) :
+  RustM Std.U32
+  := do
+  loop
+    (fun (iter2, n2) => num.Usize.trailing_zeros_loop.body n x iter2 n2)
+    (iter1, n1)
+
+/-- [core_models::num::{core_models::num::usize}::trailing_zeros]:
+    Source: 'core-models/src/core/num/mod.rs', lines 261:12-271:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+def num.Usize.trailing_zeros (x : Std.Usize) : RustM Std.U32 := do
+  let n ← rust_primitives.arithmetic.SIZE_BITS
+  num.Usize.trailing_zeros_loop n { start := 0#u32, «end» := n } x n
+
+/-- [core_models::num::{core_models::num::usize}::reverse_bits]: loop body 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+@[rust_loop_body]
+def num.Usize.reverse_bits_loop.body
+  (i : Std.U32) (x : Std.Usize) (iter1 : core.ops.range.Range Std.U32)
+  (r : Std.Usize) :
+  RustM (ControlFlow ((core.ops.range.Range Std.U32) × Std.Usize) Std.Usize)
+  := do
+  let (o, iter2) ←
+    core.ops.range.Range.Insts.CoreIterTraitsIteratorIterator.next
+      core.U32.Insts.CoreIterRangeStep iter1
+  match o with
+  | core.option.Option.None => ok (done r)
+  | core.option.Option.Some i1 =>
+    let i2 ← x >>> i1
+    let i3 ← lift (i2 &&& 1#usize)
+    if i3 = 1#usize
+    then
+      let i4 ← i - 1#u32
+      let i5 ← i4 - i1
+      let i6 ← 1#usize <<< i5
+      let r1 ← lift (r ||| i6)
+      ok (cont (iter2, r1))
+    else ok (cont (iter2, r))
+
+/-- [core_models::num::{core_models::num::usize}::reverse_bits]: loop 0:
+    Source: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+@[rust_loop]
+def num.Usize.reverse_bits_loop
+  (i : Std.U32) (iter1 : core.ops.range.Range Std.U32) (x : Std.Usize)
+  (r : Std.Usize) :
+  RustM Std.Usize
+  := do
+  loop
+    (fun (iter2, r1) => num.Usize.reverse_bits_loop.body i x iter2 r1)
+    (iter1, r)
+
+/-- [core_models::num::{core_models::num::usize}::reverse_bits]:
+    Source: 'core-models/src/core/num/mod.rs', lines 273:12-281:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+def num.Usize.reverse_bits (x : Std.Usize) : RustM Std.Usize := do
+  let i ← rust_primitives.arithmetic.SIZE_BITS
+  num.Usize.reverse_bits_loop i { start := 0#u32, «end» := i } x 0#usize
+
+/-- [core_models::num::{core_models::num::usize}::checked_shl]:
+    Source: 'core-models/src/core/num/mod.rs', lines 283:12-289:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
+    Visibility: public -/
+def num.Usize.checked_shl
+  (x : Std.Usize) (n : Std.U32) : RustM (option.Option Std.Usize) := do
+  let i ← rust_primitives.arithmetic.SIZE_BITS
+  if n < i
+  then let i1 ← x <<< n
+       ok (option.Option.Some i1)
+  else ok option.Option.None
+
 /-- [core_models::num::{core_models::num::usize}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 274:12-276:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 299:12-301:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 def num.Usize.wrapping_neg (x : Std.Usize) : RustM Std.Usize := do
   rust_primitives.arithmetic.wrapping_sub_usize 0#usize x
 
 /-
 /-- [core_models::num::{core_models::num::usize}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 671:0-680:1
+    Source: 'core-models/src/core/num/mod.rs', lines 29:12-29:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 696:0-705:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Usize.BITS : RustM Std.U32 := rust_primitives.arithmetic.SIZE_BITS
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i8}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i8}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1 -/
 def num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.I8.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.I8.to_le_bytes.closure)
@@ -10605,7 +12735,7 @@ def num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::i8}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i8}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1 -/
 def
   num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.I8.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -10615,7 +12745,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::i8}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i8}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1 -/
 @[reducible]
 def num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.I8.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -10624,7 +12754,7 @@ def num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::i8}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i8}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1 -/
 @[reducible]
 def num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.I8.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -10635,13 +12765,13 @@ def num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::i8}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 305:12-307:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 330:12-332:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.saturating_add (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.saturating_add_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 313:12-320:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 338:12-345:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_add
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
@@ -10651,19 +12781,19 @@ def num.I8.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 323:12-325:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 348:12-350:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.unchecked_add (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   x + y
 
 /-- [core_models::num::{core_models::num::i8}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 331:12-333:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 356:12-358:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.saturating_sub (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.saturating_sub_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 339:12-346:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_sub
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
@@ -10673,32 +12803,32 @@ def num.I8.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 349:12-351:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 374:12-376:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.unchecked_sub (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   x - y
 
 /-- [core_models::num::{core_models::num::i8}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 373:12-375:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 398:12-400:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.wrapping_mul (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.wrapping_mul_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 377:12-379:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 402:12-404:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.saturating_mul (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.saturating_mul_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 381:12-383:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.overflowing_mul
   (x : Std.I8) (y : Std.I8) : RustM (Std.I8 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 385:12-392:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 410:12-417:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_mul
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
@@ -10708,32 +12838,32 @@ def num.I8.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 395:12-397:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 420:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.unchecked_mul (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   x * y
 
 /-- [core_models::num::{core_models::num::i8}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 401:12-403:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 426:12-428:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.rem_euclid (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.rem_euclid_i8 x y
 
 /-- [core_models::num::{core_models::num::i8}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 431:12-433:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.pow (x : Std.I8) (exp : Std.U32) : RustM Std.I8 := do
   rust_primitives.arithmetic.pow_i8 x exp
 
 /-- [core_models::num::{core_models::num::i8}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 410:12-412:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 435:12-437:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.overflowing_pow
   (x : Std.I8) (exp : Std.U32) : RustM (Std.I8 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_i8 x exp
 
 /-- [core_models::num::{core_models::num::i8}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 415:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 440:12-447:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_pow
   (x : Std.I8) (exp : Std.U32) : RustM (option.Option Std.I8) := do
@@ -10743,7 +12873,7 @@ def num.I8.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i8}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 @[rust_loop_body]
 def num.I8.count_ones_loop.body
@@ -10764,7 +12894,7 @@ def num.I8.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::i8}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 @[rust_loop]
 def num.I8.count_ones_loop
@@ -10776,14 +12906,14 @@ def num.I8.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::i8}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 424:12-435:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 449:12-460:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 @[reducible]
 def num.I8.count_ones (x : Std.I8) : RustM Std.U32 := do
   num.I8.count_ones_loop { start := 0#u32, «end» := 8#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::i8}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 438:12-440:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.abs (x : Std.I8) : RustM Std.I8 := do
   if x < 0#i8
@@ -10791,7 +12921,7 @@ def num.I8.abs (x : Std.I8) : RustM Std.I8 := do
   else ok x
 
 /-- [core_models::num::{core_models::num::i8}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 442:12-444:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 467:12-469:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.unsigned_abs (x : Std.I8) : RustM Std.U8 := do
   if x < 0#i8
@@ -10803,56 +12933,56 @@ def num.I8.unsigned_abs (x : Std.I8) : RustM Std.U8 := do
   else ok (IScalar.hcast .U8 x)
 
 /-- [core_models::num::{core_models::num::i8}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 447:12-449:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 472:12-474:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.rotate_right (x : Std.I8) (n : Std.U32) : RustM Std.I8 := do
   rust_primitives.arithmetic.rotate_right_i8 x n
 
 /-- [core_models::num::{core_models::num::i8}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 452:12-454:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 477:12-479:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.rotate_left (x : Std.I8) (n : Std.U32) : RustM Std.I8 := do
   rust_primitives.arithmetic.rotate_left_i8 x n
 
 /-- [core_models::num::{core_models::num::i8}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 457:12-459:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 482:12-484:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.leading_zeros (x : Std.I8) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_i8 x
 
 /-- [core_models::num::{core_models::num::i8}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 488:12-490:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.ilog2 (x : Std.I8) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_i8 x
 
 /-- [core_models::num::{core_models::num::i8}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 485:12-487:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 510:12-512:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.from_be_bytes (bytes : Array Std.U8 1#usize) : RustM Std.I8 := do
   rust_primitives.arithmetic.from_be_bytes_i8 bytes
 
 /-- [core_models::num::{core_models::num::i8}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 490:12-492:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 515:12-517:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.from_le_bytes (bytes : Array Std.U8 1#usize) : RustM Std.I8 := do
   rust_primitives.arithmetic.from_le_bytes_i8 bytes
 
 /-- [core_models::num::{core_models::num::i8}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 495:12-497:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 520:12-522:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.to_be_bytes (bytes : Std.I8) : RustM (Array Std.U8 1#usize) := do
   rust_primitives.arithmetic.to_be_bytes_i8 bytes
 
 /-- [core_models::num::{core_models::num::i8}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 499:12-505:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 524:12-530:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.to_le_bytes (bytes : Std.I8) : RustM (Array Std.U8 1#usize) := do
   rust_primitives.slice.array_from_fn 1#usize
     num.I8.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::i8}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 507:12-513:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 532:12-538:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_div
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
@@ -10869,13 +12999,13 @@ def num.I8.checked_div
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 516:12-518:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 541:12-543:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.unchecked_div (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   x / y
 
 /-- [core_models::num::{core_models::num::i8}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 520:12-526:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 545:12-551:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.checked_rem
   (x : Std.I8) (y : Std.I8) : RustM (option.Option Std.I8) := do
@@ -10892,13 +13022,13 @@ def num.I8.checked_rem
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i8}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 529:12-531:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 554:12-556:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.unchecked_rem (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   x % y
 
 /-- [core_models::num::{core_models::num::i8}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 533:12-541:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 558:12-566:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.signum (x : Std.I8) : RustM Std.I8 := do
   if x > 0#i8
@@ -10908,7 +13038,7 @@ def num.I8.signum (x : Std.I8) : RustM Std.I8 := do
        else ok (-1)#i8
 
 /-- [core_models::num::{core_models::num::i8}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 545:12-554:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 570:12-579:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.div_ceil (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
   let d ← x / y
@@ -10929,20 +13059,20 @@ def num.I8.div_ceil (x : Std.I8) (y : Std.I8) : RustM Std.I8 := do
        else ok d
 
 /-- [core_models::num::{core_models::num::i8}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 569:12-571:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 594:12-596:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 def num.I8.wrapping_neg (x : Std.I8) : RustM Std.I8 := do
   rust_primitives.arithmetic.wrapping_sub_i8 0#i8 x
 
 /-
 /-- [core_models::num::{core_models::num::i8}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 300:12-300:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 682:0-690:1
+    Source: 'core-models/src/core/num/mod.rs', lines 325:12-325:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 707:0-715:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I8.BITS : Std.U32 := 8#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i16}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i16}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1 -/
 def num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.I16.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.I16.to_le_bytes.closure)
@@ -10955,7 +13085,7 @@ def num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::i16}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i16}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1 -/
 def
   num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.I16.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -10965,7 +13095,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::i16}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i16}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1 -/
 @[reducible]
 def num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.I16.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -10974,7 +13104,7 @@ def num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::i16}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i16}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1 -/
 @[reducible]
 def num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.I16.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -10985,13 +13115,13 @@ def num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::i16}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 305:12-307:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 330:12-332:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.saturating_add (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.saturating_add_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 313:12-320:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 338:12-345:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_add
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
@@ -11001,19 +13131,19 @@ def num.I16.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 323:12-325:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 348:12-350:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.unchecked_add (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   x + y
 
 /-- [core_models::num::{core_models::num::i16}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 331:12-333:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 356:12-358:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.saturating_sub (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.saturating_sub_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 339:12-346:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_sub
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
@@ -11023,32 +13153,32 @@ def num.I16.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 349:12-351:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 374:12-376:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.unchecked_sub (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   x - y
 
 /-- [core_models::num::{core_models::num::i16}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 373:12-375:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 398:12-400:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.wrapping_mul (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.wrapping_mul_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 377:12-379:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 402:12-404:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.saturating_mul (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.saturating_mul_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 381:12-383:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.overflowing_mul
   (x : Std.I16) (y : Std.I16) : RustM (Std.I16 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 385:12-392:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 410:12-417:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_mul
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
@@ -11058,32 +13188,32 @@ def num.I16.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 395:12-397:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 420:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.unchecked_mul (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   x * y
 
 /-- [core_models::num::{core_models::num::i16}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 401:12-403:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 426:12-428:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.rem_euclid (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.rem_euclid_i16 x y
 
 /-- [core_models::num::{core_models::num::i16}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 431:12-433:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.pow (x : Std.I16) (exp : Std.U32) : RustM Std.I16 := do
   rust_primitives.arithmetic.pow_i16 x exp
 
 /-- [core_models::num::{core_models::num::i16}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 410:12-412:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 435:12-437:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.overflowing_pow
   (x : Std.I16) (exp : Std.U32) : RustM (Std.I16 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_i16 x exp
 
 /-- [core_models::num::{core_models::num::i16}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 415:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 440:12-447:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_pow
   (x : Std.I16) (exp : Std.U32) : RustM (option.Option Std.I16) := do
@@ -11093,7 +13223,7 @@ def num.I16.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i16}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 @[rust_loop_body]
 def num.I16.count_ones_loop.body
@@ -11114,7 +13244,7 @@ def num.I16.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::i16}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 @[rust_loop]
 def num.I16.count_ones_loop
@@ -11126,14 +13256,14 @@ def num.I16.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::i16}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 424:12-435:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 449:12-460:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 @[reducible]
 def num.I16.count_ones (x : Std.I16) : RustM Std.U32 := do
   num.I16.count_ones_loop { start := 0#u32, «end» := 16#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::i16}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 438:12-440:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.abs (x : Std.I16) : RustM Std.I16 := do
   if x < 0#i16
@@ -11141,7 +13271,7 @@ def num.I16.abs (x : Std.I16) : RustM Std.I16 := do
   else ok x
 
 /-- [core_models::num::{core_models::num::i16}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 442:12-444:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 467:12-469:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.unsigned_abs (x : Std.I16) : RustM Std.U16 := do
   if x < 0#i16
@@ -11153,56 +13283,56 @@ def num.I16.unsigned_abs (x : Std.I16) : RustM Std.U16 := do
   else ok (IScalar.hcast .U16 x)
 
 /-- [core_models::num::{core_models::num::i16}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 447:12-449:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 472:12-474:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.rotate_right (x : Std.I16) (n : Std.U32) : RustM Std.I16 := do
   rust_primitives.arithmetic.rotate_right_i16 x n
 
 /-- [core_models::num::{core_models::num::i16}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 452:12-454:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 477:12-479:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.rotate_left (x : Std.I16) (n : Std.U32) : RustM Std.I16 := do
   rust_primitives.arithmetic.rotate_left_i16 x n
 
 /-- [core_models::num::{core_models::num::i16}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 457:12-459:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 482:12-484:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.leading_zeros (x : Std.I16) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_i16 x
 
 /-- [core_models::num::{core_models::num::i16}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 488:12-490:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.ilog2 (x : Std.I16) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_i16 x
 
 /-- [core_models::num::{core_models::num::i16}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 485:12-487:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 510:12-512:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.from_be_bytes (bytes : Array Std.U8 2#usize) : RustM Std.I16 := do
   rust_primitives.arithmetic.from_be_bytes_i16 bytes
 
 /-- [core_models::num::{core_models::num::i16}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 490:12-492:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 515:12-517:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.from_le_bytes (bytes : Array Std.U8 2#usize) : RustM Std.I16 := do
   rust_primitives.arithmetic.from_le_bytes_i16 bytes
 
 /-- [core_models::num::{core_models::num::i16}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 495:12-497:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 520:12-522:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.to_be_bytes (bytes : Std.I16) : RustM (Array Std.U8 2#usize) := do
   rust_primitives.arithmetic.to_be_bytes_i16 bytes
 
 /-- [core_models::num::{core_models::num::i16}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 499:12-505:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 524:12-530:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.to_le_bytes (bytes : Std.I16) : RustM (Array Std.U8 2#usize) := do
   rust_primitives.slice.array_from_fn 2#usize
     num.I16.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::i16}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 507:12-513:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 532:12-538:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_div
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
@@ -11219,13 +13349,13 @@ def num.I16.checked_div
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i16}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 516:12-518:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 541:12-543:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.unchecked_div (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   x / y
 
 /-- [core_models::num::{core_models::num::i16}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 520:12-526:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 545:12-551:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.checked_rem
   (x : Std.I16) (y : Std.I16) : RustM (option.Option Std.I16) := do
@@ -11242,13 +13372,13 @@ def num.I16.checked_rem
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i16}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 529:12-531:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 554:12-556:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.unchecked_rem (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   x % y
 
 /-- [core_models::num::{core_models::num::i16}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 533:12-541:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 558:12-566:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.signum (x : Std.I16) : RustM Std.I16 := do
   if x > 0#i16
@@ -11258,7 +13388,7 @@ def num.I16.signum (x : Std.I16) : RustM Std.I16 := do
        else ok (-1)#i16
 
 /-- [core_models::num::{core_models::num::i16}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 545:12-554:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 570:12-579:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.div_ceil (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
   let d ← x / y
@@ -11279,20 +13409,20 @@ def num.I16.div_ceil (x : Std.I16) (y : Std.I16) : RustM Std.I16 := do
        else ok d
 
 /-- [core_models::num::{core_models::num::i16}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 569:12-571:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 594:12-596:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 def num.I16.wrapping_neg (x : Std.I16) : RustM Std.I16 := do
   rust_primitives.arithmetic.wrapping_sub_i16 0#i16 x
 
 /-
 /-- [core_models::num::{core_models::num::i16}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 300:12-300:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 692:0-700:1
+    Source: 'core-models/src/core/num/mod.rs', lines 325:12-325:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 717:0-725:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I16.BITS : Std.U32 := 16#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i32}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i32}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1 -/
 def num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.I32.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.I32.to_le_bytes.closure)
@@ -11305,7 +13435,7 @@ def num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::i32}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i32}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1 -/
 def
   num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.I32.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -11315,7 +13445,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::i32}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i32}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1 -/
 @[reducible]
 def num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.I32.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -11324,7 +13454,7 @@ def num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::i32}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i32}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1 -/
 @[reducible]
 def num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.I32.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -11335,13 +13465,13 @@ def num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::i32}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 305:12-307:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 330:12-332:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.saturating_add (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.saturating_add_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 313:12-320:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 338:12-345:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_add
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
@@ -11351,19 +13481,19 @@ def num.I32.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 323:12-325:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 348:12-350:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.unchecked_add (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   x + y
 
 /-- [core_models::num::{core_models::num::i32}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 331:12-333:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 356:12-358:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.saturating_sub (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.saturating_sub_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 339:12-346:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_sub
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
@@ -11373,32 +13503,32 @@ def num.I32.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 349:12-351:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 374:12-376:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.unchecked_sub (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   x - y
 
 /-- [core_models::num::{core_models::num::i32}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 373:12-375:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 398:12-400:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.wrapping_mul (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.wrapping_mul_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 377:12-379:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 402:12-404:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.saturating_mul (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.saturating_mul_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 381:12-383:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.overflowing_mul
   (x : Std.I32) (y : Std.I32) : RustM (Std.I32 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 385:12-392:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 410:12-417:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_mul
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
@@ -11408,32 +13538,32 @@ def num.I32.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 395:12-397:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 420:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.unchecked_mul (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   x * y
 
 /-- [core_models::num::{core_models::num::i32}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 401:12-403:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 426:12-428:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.rem_euclid (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.rem_euclid_i32 x y
 
 /-- [core_models::num::{core_models::num::i32}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 431:12-433:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.pow (x : Std.I32) (exp : Std.U32) : RustM Std.I32 := do
   rust_primitives.arithmetic.pow_i32 x exp
 
 /-- [core_models::num::{core_models::num::i32}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 410:12-412:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 435:12-437:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.overflowing_pow
   (x : Std.I32) (exp : Std.U32) : RustM (Std.I32 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_i32 x exp
 
 /-- [core_models::num::{core_models::num::i32}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 415:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 440:12-447:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_pow
   (x : Std.I32) (exp : Std.U32) : RustM (option.Option Std.I32) := do
@@ -11443,7 +13573,7 @@ def num.I32.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i32}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 @[rust_loop_body]
 def num.I32.count_ones_loop.body
@@ -11464,7 +13594,7 @@ def num.I32.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::i32}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 @[rust_loop]
 def num.I32.count_ones_loop
@@ -11476,14 +13606,14 @@ def num.I32.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::i32}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 424:12-435:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 449:12-460:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 @[reducible]
 def num.I32.count_ones (x : Std.I32) : RustM Std.U32 := do
   num.I32.count_ones_loop { start := 0#u32, «end» := 32#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::i32}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 438:12-440:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.abs (x : Std.I32) : RustM Std.I32 := do
   if x < 0#i32
@@ -11491,7 +13621,7 @@ def num.I32.abs (x : Std.I32) : RustM Std.I32 := do
   else ok x
 
 /-- [core_models::num::{core_models::num::i32}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 442:12-444:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 467:12-469:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.unsigned_abs (x : Std.I32) : RustM Std.U32 := do
   if x < 0#i32
@@ -11503,56 +13633,56 @@ def num.I32.unsigned_abs (x : Std.I32) : RustM Std.U32 := do
   else ok (IScalar.hcast .U32 x)
 
 /-- [core_models::num::{core_models::num::i32}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 447:12-449:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 472:12-474:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.rotate_right (x : Std.I32) (n : Std.U32) : RustM Std.I32 := do
   rust_primitives.arithmetic.rotate_right_i32 x n
 
 /-- [core_models::num::{core_models::num::i32}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 452:12-454:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 477:12-479:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.rotate_left (x : Std.I32) (n : Std.U32) : RustM Std.I32 := do
   rust_primitives.arithmetic.rotate_left_i32 x n
 
 /-- [core_models::num::{core_models::num::i32}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 457:12-459:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 482:12-484:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.leading_zeros (x : Std.I32) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_i32 x
 
 /-- [core_models::num::{core_models::num::i32}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 488:12-490:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.ilog2 (x : Std.I32) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_i32 x
 
 /-- [core_models::num::{core_models::num::i32}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 485:12-487:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 510:12-512:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.from_be_bytes (bytes : Array Std.U8 4#usize) : RustM Std.I32 := do
   rust_primitives.arithmetic.from_be_bytes_i32 bytes
 
 /-- [core_models::num::{core_models::num::i32}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 490:12-492:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 515:12-517:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.from_le_bytes (bytes : Array Std.U8 4#usize) : RustM Std.I32 := do
   rust_primitives.arithmetic.from_le_bytes_i32 bytes
 
 /-- [core_models::num::{core_models::num::i32}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 495:12-497:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 520:12-522:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.to_be_bytes (bytes : Std.I32) : RustM (Array Std.U8 4#usize) := do
   rust_primitives.arithmetic.to_be_bytes_i32 bytes
 
 /-- [core_models::num::{core_models::num::i32}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 499:12-505:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 524:12-530:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.to_le_bytes (bytes : Std.I32) : RustM (Array Std.U8 4#usize) := do
   rust_primitives.slice.array_from_fn 4#usize
     num.I32.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::i32}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 507:12-513:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 532:12-538:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_div
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
@@ -11569,13 +13699,13 @@ def num.I32.checked_div
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i32}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 516:12-518:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 541:12-543:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.unchecked_div (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   x / y
 
 /-- [core_models::num::{core_models::num::i32}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 520:12-526:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 545:12-551:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.checked_rem
   (x : Std.I32) (y : Std.I32) : RustM (option.Option Std.I32) := do
@@ -11592,13 +13722,13 @@ def num.I32.checked_rem
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i32}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 529:12-531:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 554:12-556:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.unchecked_rem (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   x % y
 
 /-- [core_models::num::{core_models::num::i32}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 533:12-541:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 558:12-566:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.signum (x : Std.I32) : RustM Std.I32 := do
   if x > 0#i32
@@ -11608,7 +13738,7 @@ def num.I32.signum (x : Std.I32) : RustM Std.I32 := do
        else ok (-1)#i32
 
 /-- [core_models::num::{core_models::num::i32}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 545:12-554:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 570:12-579:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.div_ceil (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
   let d ← x / y
@@ -11629,20 +13759,20 @@ def num.I32.div_ceil (x : Std.I32) (y : Std.I32) : RustM Std.I32 := do
        else ok d
 
 /-- [core_models::num::{core_models::num::i32}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 569:12-571:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 594:12-596:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 def num.I32.wrapping_neg (x : Std.I32) : RustM Std.I32 := do
   rust_primitives.arithmetic.wrapping_sub_i32 0#i32 x
 
 /-
 /-- [core_models::num::{core_models::num::i32}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 300:12-300:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 702:0-710:1
+    Source: 'core-models/src/core/num/mod.rs', lines 325:12-325:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 727:0-735:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I32.BITS : Std.U32 := 32#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i64}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i64}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1 -/
 def num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.I64.to_le_bytes.closure) (tupled_args : Std.Usize) :
   RustM (Std.U8 × num.I64.to_le_bytes.closure)
@@ -11655,7 +13785,7 @@ def num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::i64}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i64}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1 -/
 def
   num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.I64.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -11665,7 +13795,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::i64}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i64}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1 -/
 @[reducible]
 def num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.I64.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -11674,7 +13804,7 @@ def num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::i64}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i64}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1 -/
 @[reducible]
 def num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.I64.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -11685,13 +13815,13 @@ def num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::i64}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 305:12-307:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 330:12-332:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.saturating_add (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.saturating_add_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 313:12-320:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 338:12-345:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_add
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
@@ -11701,19 +13831,19 @@ def num.I64.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 323:12-325:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 348:12-350:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.unchecked_add (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   x + y
 
 /-- [core_models::num::{core_models::num::i64}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 331:12-333:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 356:12-358:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.saturating_sub (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.saturating_sub_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 339:12-346:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_sub
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
@@ -11723,32 +13853,32 @@ def num.I64.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 349:12-351:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 374:12-376:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.unchecked_sub (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   x - y
 
 /-- [core_models::num::{core_models::num::i64}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 373:12-375:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 398:12-400:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.wrapping_mul (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.wrapping_mul_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 377:12-379:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 402:12-404:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.saturating_mul (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.saturating_mul_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 381:12-383:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.overflowing_mul
   (x : Std.I64) (y : Std.I64) : RustM (Std.I64 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 385:12-392:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 410:12-417:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_mul
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
@@ -11758,32 +13888,32 @@ def num.I64.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 395:12-397:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 420:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.unchecked_mul (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   x * y
 
 /-- [core_models::num::{core_models::num::i64}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 401:12-403:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 426:12-428:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.rem_euclid (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.rem_euclid_i64 x y
 
 /-- [core_models::num::{core_models::num::i64}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 431:12-433:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.pow (x : Std.I64) (exp : Std.U32) : RustM Std.I64 := do
   rust_primitives.arithmetic.pow_i64 x exp
 
 /-- [core_models::num::{core_models::num::i64}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 410:12-412:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 435:12-437:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.overflowing_pow
   (x : Std.I64) (exp : Std.U32) : RustM (Std.I64 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_i64 x exp
 
 /-- [core_models::num::{core_models::num::i64}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 415:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 440:12-447:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_pow
   (x : Std.I64) (exp : Std.U32) : RustM (option.Option Std.I64) := do
@@ -11793,7 +13923,7 @@ def num.I64.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i64}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 @[rust_loop_body]
 def num.I64.count_ones_loop.body
@@ -11814,7 +13944,7 @@ def num.I64.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::i64}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 @[rust_loop]
 def num.I64.count_ones_loop
@@ -11826,14 +13956,14 @@ def num.I64.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::i64}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 424:12-435:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 449:12-460:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 @[reducible]
 def num.I64.count_ones (x : Std.I64) : RustM Std.U32 := do
   num.I64.count_ones_loop { start := 0#u32, «end» := 64#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::i64}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 438:12-440:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.abs (x : Std.I64) : RustM Std.I64 := do
   if x < 0#i64
@@ -11841,7 +13971,7 @@ def num.I64.abs (x : Std.I64) : RustM Std.I64 := do
   else ok x
 
 /-- [core_models::num::{core_models::num::i64}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 442:12-444:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 467:12-469:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.unsigned_abs (x : Std.I64) : RustM Std.U64 := do
   if x < 0#i64
@@ -11853,56 +13983,56 @@ def num.I64.unsigned_abs (x : Std.I64) : RustM Std.U64 := do
   else ok (IScalar.hcast .U64 x)
 
 /-- [core_models::num::{core_models::num::i64}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 447:12-449:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 472:12-474:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.rotate_right (x : Std.I64) (n : Std.U32) : RustM Std.I64 := do
   rust_primitives.arithmetic.rotate_right_i64 x n
 
 /-- [core_models::num::{core_models::num::i64}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 452:12-454:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 477:12-479:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.rotate_left (x : Std.I64) (n : Std.U32) : RustM Std.I64 := do
   rust_primitives.arithmetic.rotate_left_i64 x n
 
 /-- [core_models::num::{core_models::num::i64}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 457:12-459:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 482:12-484:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.leading_zeros (x : Std.I64) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_i64 x
 
 /-- [core_models::num::{core_models::num::i64}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 488:12-490:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.ilog2 (x : Std.I64) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_i64 x
 
 /-- [core_models::num::{core_models::num::i64}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 485:12-487:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 510:12-512:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.from_be_bytes (bytes : Array Std.U8 8#usize) : RustM Std.I64 := do
   rust_primitives.arithmetic.from_be_bytes_i64 bytes
 
 /-- [core_models::num::{core_models::num::i64}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 490:12-492:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 515:12-517:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.from_le_bytes (bytes : Array Std.U8 8#usize) : RustM Std.I64 := do
   rust_primitives.arithmetic.from_le_bytes_i64 bytes
 
 /-- [core_models::num::{core_models::num::i64}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 495:12-497:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 520:12-522:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.to_be_bytes (bytes : Std.I64) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.arithmetic.to_be_bytes_i64 bytes
 
 /-- [core_models::num::{core_models::num::i64}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 499:12-505:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 524:12-530:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.to_le_bytes (bytes : Std.I64) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.slice.array_from_fn 8#usize
     num.I64.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::i64}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 507:12-513:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 532:12-538:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_div
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
@@ -11919,13 +14049,13 @@ def num.I64.checked_div
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i64}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 516:12-518:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 541:12-543:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.unchecked_div (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   x / y
 
 /-- [core_models::num::{core_models::num::i64}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 520:12-526:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 545:12-551:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.checked_rem
   (x : Std.I64) (y : Std.I64) : RustM (option.Option Std.I64) := do
@@ -11942,13 +14072,13 @@ def num.I64.checked_rem
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i64}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 529:12-531:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 554:12-556:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.unchecked_rem (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   x % y
 
 /-- [core_models::num::{core_models::num::i64}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 533:12-541:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 558:12-566:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.signum (x : Std.I64) : RustM Std.I64 := do
   if x > 0#i64
@@ -11958,7 +14088,7 @@ def num.I64.signum (x : Std.I64) : RustM Std.I64 := do
        else ok (-1)#i64
 
 /-- [core_models::num::{core_models::num::i64}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 545:12-554:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 570:12-579:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.div_ceil (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
   let d ← x / y
@@ -11979,20 +14109,20 @@ def num.I64.div_ceil (x : Std.I64) (y : Std.I64) : RustM Std.I64 := do
        else ok d
 
 /-- [core_models::num::{core_models::num::i64}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 569:12-571:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 594:12-596:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 def num.I64.wrapping_neg (x : Std.I64) : RustM Std.I64 := do
   rust_primitives.arithmetic.wrapping_sub_i64 0#i64 x
 
 /-
 /-- [core_models::num::{core_models::num::i64}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 300:12-300:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 712:0-720:1
+    Source: 'core-models/src/core/num/mod.rs', lines 325:12-325:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 737:0-745:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I64.BITS : Std.U32 := 64#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i128}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i128}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1 -/
 def
   num.I128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.I128.to_le_bytes.closure) (tupled_args : Std.Usize) :
@@ -12006,7 +14136,7 @@ def
   ok (i4, c)
 
 /-- [core_models::num::{core_models::num::i128}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i128}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1 -/
 def
   num.I128.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.I128.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -12016,7 +14146,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::i128}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::i128}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1 -/
 @[reducible]
 def num.I128.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.I128.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -12025,7 +14155,7 @@ def num.I128.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::i128}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::i128}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1 -/
 @[reducible]
 def num.I128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.I128.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -12036,65 +14166,65 @@ def num.I128.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::i128}::wrapping_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 301:12-303:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 326:12-328:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.wrapping_add (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.wrapping_add_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 305:12-307:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 330:12-332:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.saturating_add
   (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.saturating_add_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 323:12-325:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 348:12-350:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.unchecked_add (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   x + y
 
 /-- [core_models::num::{core_models::num::i128}::wrapping_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 327:12-329:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 352:12-354:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.wrapping_sub (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.wrapping_sub_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 331:12-333:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 356:12-358:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.saturating_sub
   (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.saturating_sub_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 349:12-351:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 374:12-376:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.unchecked_sub (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   x - y
 
 /-- [core_models::num::{core_models::num::i128}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 373:12-375:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 398:12-400:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.wrapping_mul (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.wrapping_mul_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 377:12-379:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 402:12-404:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.saturating_mul
   (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.saturating_mul_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 381:12-383:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.overflowing_mul
   (x : Std.I128) (y : Std.I128) : RustM (Std.I128 × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 385:12-392:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 410:12-417:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_mul
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
@@ -12104,32 +14234,32 @@ def num.I128.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i128}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 395:12-397:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 420:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.unchecked_mul (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   x * y
 
 /-- [core_models::num::{core_models::num::i128}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 401:12-403:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 426:12-428:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.rem_euclid (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.rem_euclid_i128 x y
 
 /-- [core_models::num::{core_models::num::i128}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 431:12-433:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.pow (x : Std.I128) (exp : Std.U32) : RustM Std.I128 := do
   rust_primitives.arithmetic.pow_i128 x exp
 
 /-- [core_models::num::{core_models::num::i128}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 410:12-412:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 435:12-437:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.overflowing_pow
   (x : Std.I128) (exp : Std.U32) : RustM (Std.I128 × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_i128 x exp
 
 /-- [core_models::num::{core_models::num::i128}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 415:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 440:12-447:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_pow
   (x : Std.I128) (exp : Std.U32) : RustM (option.Option Std.I128) := do
@@ -12139,7 +14269,7 @@ def num.I128.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::i128}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 @[rust_loop_body]
 def num.I128.count_ones_loop.body
@@ -12160,7 +14290,7 @@ def num.I128.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::i128}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 @[rust_loop]
 def num.I128.count_ones_loop
@@ -12172,14 +14302,14 @@ def num.I128.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::i128}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 424:12-435:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 449:12-460:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 @[reducible]
 def num.I128.count_ones (x : Std.I128) : RustM Std.U32 := do
   num.I128.count_ones_loop { start := 0#u32, «end» := 128#u32 } x 0#u32
 
 /-- [core_models::num::{core_models::num::i128}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 438:12-440:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.abs (x : Std.I128) : RustM Std.I128 := do
   if x < 0#i128
@@ -12187,7 +14317,7 @@ def num.I128.abs (x : Std.I128) : RustM Std.I128 := do
   else ok x
 
 /-- [core_models::num::{core_models::num::i128}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 442:12-444:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 467:12-469:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.unsigned_abs (x : Std.I128) : RustM Std.U128 := do
   if x < 0#i128
@@ -12199,52 +14329,52 @@ def num.I128.unsigned_abs (x : Std.I128) : RustM Std.U128 := do
   else ok (IScalar.hcast .U128 x)
 
 /-- [core_models::num::{core_models::num::i128}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 447:12-449:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 472:12-474:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.rotate_right (x : Std.I128) (n : Std.U32) : RustM Std.I128 := do
   rust_primitives.arithmetic.rotate_right_i128 x n
 
 /-- [core_models::num::{core_models::num::i128}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 452:12-454:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 477:12-479:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.rotate_left (x : Std.I128) (n : Std.U32) : RustM Std.I128 := do
   rust_primitives.arithmetic.rotate_left_i128 x n
 
 /-- [core_models::num::{core_models::num::i128}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 457:12-459:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 482:12-484:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.leading_zeros (x : Std.I128) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_i128 x
 
 /-- [core_models::num::{core_models::num::i128}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 488:12-490:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.ilog2 (x : Std.I128) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_i128 x
 
 /-- [core_models::num::{core_models::num::i128}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 485:12-487:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 510:12-512:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.from_be_bytes
   (bytes : Array Std.U8 16#usize) : RustM Std.I128 := do
   rust_primitives.arithmetic.from_be_bytes_i128 bytes
 
 /-- [core_models::num::{core_models::num::i128}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 490:12-492:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 515:12-517:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.from_le_bytes
   (bytes : Array Std.U8 16#usize) : RustM Std.I128 := do
   rust_primitives.arithmetic.from_le_bytes_i128 bytes
 
 /-- [core_models::num::{core_models::num::i128}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 495:12-497:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 520:12-522:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.to_be_bytes
   (bytes : Std.I128) : RustM (Array Std.U8 16#usize) := do
   rust_primitives.arithmetic.to_be_bytes_i128 bytes
 
 /-- [core_models::num::{core_models::num::i128}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 499:12-505:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 524:12-530:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.to_le_bytes
   (bytes : Std.I128) : RustM (Array Std.U8 16#usize) := do
@@ -12253,14 +14383,14 @@ def num.I128.to_le_bytes
 
 /-
 /-- [core_models::num::{core_models::num::i128}::MIN]
-    Source: 'core-models/src/core/num/mod.rs', lines 296:12-296:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 321:12-321:40; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.I128.MIN : Std.I128 := (-170141183460469231731687303715884105728)#i128
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::i128}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 507:12-513:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 532:12-538:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_div
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
@@ -12277,13 +14407,13 @@ def num.I128.checked_div
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i128}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 516:12-518:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 541:12-543:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.unchecked_div (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   x / y
 
 /-- [core_models::num::{core_models::num::i128}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 520:12-526:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 545:12-551:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.checked_rem
   (x : Std.I128) (y : Std.I128) : RustM (option.Option Std.I128) := do
@@ -12300,13 +14430,13 @@ def num.I128.checked_rem
          ok (option.Option.Some i)
 
 /-- [core_models::num::{core_models::num::i128}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 529:12-531:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 554:12-556:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.unchecked_rem (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   x % y
 
 /-- [core_models::num::{core_models::num::i128}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 533:12-541:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 558:12-566:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.signum (x : Std.I128) : RustM Std.I128 := do
   if x > 0#i128
@@ -12316,7 +14446,7 @@ def num.I128.signum (x : Std.I128) : RustM Std.I128 := do
        else ok (-1)#i128
 
 /-- [core_models::num::{core_models::num::i128}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 545:12-554:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 570:12-579:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.div_ceil (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
   let d ← x / y
@@ -12337,20 +14467,20 @@ def num.I128.div_ceil (x : Std.I128) (y : Std.I128) : RustM Std.I128 := do
        else ok d
 
 /-- [core_models::num::{core_models::num::i128}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 569:12-571:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 594:12-596:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 def num.I128.wrapping_neg (x : Std.I128) : RustM Std.I128 := do
   rust_primitives.arithmetic.wrapping_sub_i128 0#i128 x
 
 /-
 /-- [core_models::num::{core_models::num::i128}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 300:12-300:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 722:0-730:1
+    Source: 'core-models/src/core/num/mod.rs', lines 325:12-325:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 747:0-755:1
     Visibility: public -/
 @[global_simps, irreducible] def num.I128.BITS : Std.U32 := 128#u32
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{core_models::num::isize}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::isize}::to_le_bytes::{closure}<'_0>}::call_mut]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1 -/
 def
   num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8.call_mut
   (c : num.Isize.to_le_bytes.closure) (tupled_args : Std.Usize) :
@@ -12365,7 +14495,7 @@ def
   ok (i5, c)
 
 /-- [core_models::num::{core_models::num::isize}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::isize}::to_le_bytes::{closure}<'_0>}::call_once]:
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1 -/
 def
   num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8.call_once
   (c : num.Isize.to_le_bytes.closure) (i : Std.Usize) : RustM Std.U8 := do
@@ -12375,7 +14505,7 @@ def
   ok i1
 
 /-- Trait implementation: [core_models::num::{core_models::num::isize}::to_le_bytes::{impl core::ops::function::FnOnce<(usize,), u8> for core_models::num::{core_models::num::isize}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1 -/
 @[reducible]
 def num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
   core.ops.function.FnOnce num.Isize.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -12384,7 +14514,7 @@ def num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnOnceTupleUsizeU8 :
 }
 
 /-- Trait implementation: [core_models::num::{core_models::num::isize}::to_le_bytes::{impl core::ops::function::FnMut<(usize,), u8> for core_models::num::{core_models::num::isize}::to_le_bytes::{closure}<'_0>}]
-    Source: 'core-models/src/core/num/mod.rs', lines 500:54-504:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 525:54-529:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1 -/
 @[reducible]
 def num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
   core.ops.function.FnMut num.Isize.to_le_bytes.closure Std.Usize Std.U8 := {
@@ -12395,14 +14525,14 @@ def num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 :
 }
 
 /-- [core_models::num::{core_models::num::isize}::saturating_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 305:12-307:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 330:12-332:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.saturating_add
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.saturating_add_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::checked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 313:12-320:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 338:12-345:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_add
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
@@ -12412,21 +14542,21 @@ def num.Isize.checked_add
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::unchecked_add]:
-    Source: 'core-models/src/core/num/mod.rs', lines 323:12-325:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 348:12-350:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.unchecked_add
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   x + y
 
 /-- [core_models::num::{core_models::num::isize}::saturating_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 331:12-333:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 356:12-358:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.saturating_sub
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.saturating_sub_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::checked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 339:12-346:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 364:12-371:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_sub
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
@@ -12436,35 +14566,35 @@ def num.Isize.checked_sub
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::unchecked_sub]:
-    Source: 'core-models/src/core/num/mod.rs', lines 349:12-351:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 374:12-376:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.unchecked_sub
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   x - y
 
 /-- [core_models::num::{core_models::num::isize}::wrapping_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 373:12-375:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 398:12-400:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.wrapping_mul
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.wrapping_mul_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::saturating_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 377:12-379:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 402:12-404:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.saturating_mul
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.saturating_mul_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::overflowing_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 381:12-383:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.overflowing_mul
   (x : Std.Isize) (y : Std.Isize) : RustM (Std.Isize × Bool) := do
   rust_primitives.arithmetic.overflowing_mul_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::checked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 385:12-392:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 410:12-417:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_mul
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
@@ -12474,34 +14604,34 @@ def num.Isize.checked_mul
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::unchecked_mul]:
-    Source: 'core-models/src/core/num/mod.rs', lines 395:12-397:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 420:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.unchecked_mul
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   x * y
 
 /-- [core_models::num::{core_models::num::isize}::rem_euclid]:
-    Source: 'core-models/src/core/num/mod.rs', lines 401:12-403:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 426:12-428:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.rem_euclid
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.rem_euclid_isize x y
 
 /-- [core_models::num::{core_models::num::isize}::pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 406:12-408:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 431:12-433:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.pow (x : Std.Isize) (exp : Std.U32) : RustM Std.Isize := do
   rust_primitives.arithmetic.pow_isize x exp
 
 /-- [core_models::num::{core_models::num::isize}::overflowing_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 410:12-412:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 435:12-437:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.overflowing_pow
   (x : Std.Isize) (exp : Std.U32) : RustM (Std.Isize × Bool) := do
   rust_primitives.arithmetic.overflowing_pow_isize x exp
 
 /-- [core_models::num::{core_models::num::isize}::checked_pow]:
-    Source: 'core-models/src/core/num/mod.rs', lines 415:12-422:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 440:12-447:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_pow
   (x : Std.Isize) (exp : Std.U32) : RustM (option.Option Std.Isize) := do
@@ -12511,7 +14641,7 @@ def num.Isize.checked_pow
   else ok (option.Option.Some result1)
 
 /-- [core_models::num::{core_models::num::isize}::count_ones]: loop body 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 @[rust_loop_body]
 def num.Isize.count_ones_loop.body
@@ -12532,7 +14662,7 @@ def num.Isize.count_ones_loop.body
     else ok (cont (iter2, n))
 
 /-- [core_models::num::{core_models::num::isize}::count_ones]: loop 0:
-    Source: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 @[rust_loop]
 def num.Isize.count_ones_loop
@@ -12544,14 +14674,14 @@ def num.Isize.count_ones_loop
     (iter1, n)
 
 /-- [core_models::num::{core_models::num::isize}::count_ones]:
-    Source: 'core-models/src/core/num/mod.rs', lines 424:12-435:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 449:12-460:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.count_ones (x : Std.Isize) : RustM Std.U32 := do
   let i ← rust_primitives.arithmetic.SIZE_BITS
   num.Isize.count_ones_loop { start := 0#u32, «end» := i } x 0#u32
 
 /-- [core_models::num::{core_models::num::isize}::abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 438:12-440:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.abs (x : Std.Isize) : RustM Std.Isize := do
   if x < 0#isize
@@ -12559,7 +14689,7 @@ def num.Isize.abs (x : Std.Isize) : RustM Std.Isize := do
   else ok x
 
 /-- [core_models::num::{core_models::num::isize}::unsigned_abs]:
-    Source: 'core-models/src/core/num/mod.rs', lines 442:12-444:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 467:12-469:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.unsigned_abs (x : Std.Isize) : RustM Std.Usize := do
   if x < 0#isize
@@ -12571,53 +14701,53 @@ def num.Isize.unsigned_abs (x : Std.Isize) : RustM Std.Usize := do
   else ok (IScalar.hcast .Usize x)
 
 /-- [core_models::num::{core_models::num::isize}::rotate_right]:
-    Source: 'core-models/src/core/num/mod.rs', lines 447:12-449:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 472:12-474:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.rotate_right
   (x : Std.Isize) (n : Std.U32) : RustM Std.Isize := do
   rust_primitives.arithmetic.rotate_right_isize x n
 
 /-- [core_models::num::{core_models::num::isize}::rotate_left]:
-    Source: 'core-models/src/core/num/mod.rs', lines 452:12-454:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 477:12-479:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.rotate_left (x : Std.Isize) (n : Std.U32) : RustM Std.Isize := do
   rust_primitives.arithmetic.rotate_left_isize x n
 
 /-- [core_models::num::{core_models::num::isize}::leading_zeros]:
-    Source: 'core-models/src/core/num/mod.rs', lines 457:12-459:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 482:12-484:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.leading_zeros (x : Std.Isize) : RustM Std.U32 := do
   rust_primitives.arithmetic.leading_zeros_isize x
 
 /-- [core_models::num::{core_models::num::isize}::ilog2]:
-    Source: 'core-models/src/core/num/mod.rs', lines 463:12-465:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 488:12-490:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.ilog2 (x : Std.Isize) : RustM Std.U32 := do
   rust_primitives.arithmetic.ilog2_isize x
 
 /-- [core_models::num::{core_models::num::isize}::from_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 485:12-487:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 510:12-512:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.from_be_bytes
   (bytes : Array Std.U8 8#usize) : RustM Std.Isize := do
   rust_primitives.arithmetic.from_be_bytes_isize bytes
 
 /-- [core_models::num::{core_models::num::isize}::from_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 490:12-492:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 515:12-517:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.from_le_bytes
   (bytes : Array Std.U8 8#usize) : RustM Std.Isize := do
   rust_primitives.arithmetic.from_le_bytes_isize bytes
 
 /-- [core_models::num::{core_models::num::isize}::to_be_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 495:12-497:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 520:12-522:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.to_be_bytes
   (bytes : Std.Isize) : RustM (Array Std.U8 8#usize) := do
   rust_primitives.arithmetic.to_be_bytes_isize bytes
 
 /-- [core_models::num::{core_models::num::isize}::to_le_bytes]:
-    Source: 'core-models/src/core/num/mod.rs', lines 499:12-505:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 524:12-530:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.to_le_bytes
   (bytes : Std.Isize) : RustM (Array Std.U8 8#usize) := do
@@ -12625,7 +14755,7 @@ def num.Isize.to_le_bytes
     num.Isize.to_le_bytes.closure.Insts.CoreOpsFunctionFnMutTupleUsizeU8 bytes
 
 /-- [core_models::num::{core_models::num::isize}::checked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 507:12-513:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 532:12-538:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_div
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
@@ -12643,14 +14773,14 @@ def num.Isize.checked_div
          ok (option.Option.Some i1)
 
 /-- [core_models::num::{core_models::num::isize}::unchecked_div]:
-    Source: 'core-models/src/core/num/mod.rs', lines 516:12-518:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 541:12-543:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.unchecked_div
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   x / y
 
 /-- [core_models::num::{core_models::num::isize}::checked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 520:12-526:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 545:12-551:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.checked_rem
   (x : Std.Isize) (y : Std.Isize) : RustM (option.Option Std.Isize) := do
@@ -12668,14 +14798,14 @@ def num.Isize.checked_rem
          ok (option.Option.Some i1)
 
 /-- [core_models::num::{core_models::num::isize}::unchecked_rem]:
-    Source: 'core-models/src/core/num/mod.rs', lines 529:12-531:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 554:12-556:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.unchecked_rem
   (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   x % y
 
 /-- [core_models::num::{core_models::num::isize}::signum]:
-    Source: 'core-models/src/core/num/mod.rs', lines 533:12-541:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 558:12-566:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.signum (x : Std.Isize) : RustM Std.Isize := do
   if x > 0#isize
@@ -12685,7 +14815,7 @@ def num.Isize.signum (x : Std.Isize) : RustM Std.Isize := do
        else ok (-1)#isize
 
 /-- [core_models::num::{core_models::num::isize}::div_ceil]:
-    Source: 'core-models/src/core/num/mod.rs', lines 545:12-554:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 570:12-579:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.div_ceil (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
   let d ← x / y
@@ -12707,183 +14837,183 @@ def num.Isize.div_ceil (x : Std.Isize) (y : Std.Isize) : RustM Std.Isize := do
        else ok d
 
 /-- [core_models::num::{core_models::num::isize}::wrapping_neg]:
-    Source: 'core-models/src/core/num/mod.rs', lines 569:12-571:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 594:12-596:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 def num.Isize.wrapping_neg (x : Std.Isize) : RustM Std.Isize := do
   rust_primitives.arithmetic.wrapping_sub_isize 0#isize x
 
 /-
 /-- [core_models::num::{core_models::num::isize}::BITS]
-    Source: 'core-models/src/core/num/mod.rs', lines 300:12-300:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 732:0-741:1
+    Source: 'core-models/src/core/num/mod.rs', lines 325:12-325:57; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 757:0-766:1
     Visibility: public -/
 @[global_simps, irreducible]
 def num.Isize.BITS : RustM Std.U32 := rust_primitives.arithmetic.SIZE_BITS
 -/  -- provided by CoreModels.Core.FunsPrologue
 
 /-- [core_models::num::{impl core_models::default::Default for u8}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def U8.Insts.CoreDefaultDefault.default : RustM Std.U8 := do
   ok 0#u8
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u8}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def U8.Insts.CoreDefaultDefault : default.Default Std.U8 := {
   default := U8.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u16}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def U16.Insts.CoreDefaultDefault.default : RustM Std.U16 := do
   ok 0#u16
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u16}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def U16.Insts.CoreDefaultDefault : default.Default Std.U16 := {
   default := U16.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u32}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def U32.Insts.CoreDefaultDefault.default : RustM Std.U32 := do
   ok 0#u32
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u32}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def U32.Insts.CoreDefaultDefault : default.Default Std.U32 := {
   default := U32.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u64}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def U64.Insts.CoreDefaultDefault.default : RustM Std.U64 := do
   ok 0#u64
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u64}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def U64.Insts.CoreDefaultDefault : default.Default Std.U64 := {
   default := U64.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for u128}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def U128.Insts.CoreDefaultDefault.default : RustM Std.U128 := do
   ok 0#u128
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for u128}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def U128.Insts.CoreDefaultDefault : default.Default Std.U128 := {
   default := U128.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for usize}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def Usize.Insts.CoreDefaultDefault.default : RustM Std.Usize := do
   ok 0#usize
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for usize}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def Usize.Insts.CoreDefaultDefault : default.Default Std.Usize := {
   default := Usize.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i8}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def I8.Insts.CoreDefaultDefault.default : RustM Std.I8 := do
   ok 0#i8
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i8}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def I8.Insts.CoreDefaultDefault : default.Default Std.I8 := {
   default := I8.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i16}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def I16.Insts.CoreDefaultDefault.default : RustM Std.I16 := do
   ok 0#i16
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i16}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def I16.Insts.CoreDefaultDefault : default.Default Std.I16 := {
   default := I16.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i32}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def I32.Insts.CoreDefaultDefault.default : RustM Std.I32 := do
   ok 0#i32
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i32}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def I32.Insts.CoreDefaultDefault : default.Default Std.I32 := {
   default := I32.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i64}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def I64.Insts.CoreDefaultDefault.default : RustM Std.I64 := do
   ok 0#i64
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i64}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def I64.Insts.CoreDefaultDefault : default.Default Std.I64 := {
   default := I64.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for i128}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def I128.Insts.CoreDefaultDefault.default : RustM Std.I128 := do
   ok 0#i128
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for i128}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def I128.Insts.CoreDefaultDefault : default.Default Std.I128 := {
   default := I128.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for isize}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 748:16-750:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1
+    Source: 'core-models/src/core/num/mod.rs', lines 773:16-775:17; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1
     Visibility: public -/
 def Isize.Insts.CoreDefaultDefault.default : RustM Std.Isize := do
   ok 0#isize
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for isize}]
-    Source: 'core-models/src/core/num/mod.rs', lines 747:12-751:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 756:0-769:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 772:12-776:13; this code is generated from a macro invocation at: 'core-models/src/core/num/mod.rs', lines 781:0-794:1 -/
 @[reducible]
 def Isize.Insts.CoreDefaultDefault : default.Default Std.Isize := {
   default := Isize.Insts.CoreDefaultDefault.default
 }
 
 /-- [core_models::num::{impl core_models::default::Default for bool}::default]:
-    Source: 'core-models/src/core/num/mod.rs', lines 774:4-776:5
+    Source: 'core-models/src/core/num/mod.rs', lines 799:4-801:5
     Visibility: public -/
 def Bool.Insts.CoreDefaultDefault.default : RustM Bool := do
   ok false
 
 /-- Trait implementation: [core_models::num::{impl core_models::default::Default for bool}]
-    Source: 'core-models/src/core/num/mod.rs', lines 772:0-777:1 -/
+    Source: 'core-models/src/core/num/mod.rs', lines 797:0-802:1 -/
 @[reducible]
 def Bool.Insts.CoreDefaultDefault : default.Default Bool := {
   default := Bool.Insts.CoreDefaultDefault.default
@@ -14036,6 +16166,64 @@ impl_def PairBoundBound.Insts.CoreOpsRangeRangeBounds (T : Type _) :
     cmpPartialOrdInst1
 }
 
+/-- [core_models::ops::range::derived::{impl core_models::clone::Clone for core_models::ops::range::Range<Idx>}::clone]:
+    Source: 'core-models/src/core/ops.rs', lines 641:12-646:13
+    Visibility: public -/
+def ops.range.Range.Insts.CoreCloneClone.clone
+  {Idx : Type _} (cloneCloneInst : clone.Clone Idx)
+  (self : ops.range.Range Idx) :
+  RustM (ops.range.Range Idx)
+  := do
+  let t ← cloneCloneInst.clone self.start
+  let t1 ← cloneCloneInst.clone self.end
+  ok { start := t, «end» := t1 }
+
+/-- Trait implementation: [core_models::ops::range::derived::{impl core_models::clone::Clone for core_models::ops::range::Range<Idx>}]
+    Source: 'core-models/src/core/ops.rs', lines 640:8-647:9 -/
+@[reducible]
+impl_def ops.range.Range.Insts.CoreCloneClone {Idx : Type _}
+  (cloneCloneInst : clone.Clone Idx) : clone.Clone (ops.range.Range Idx) := {
+  clone := ops.range.Range.Insts.CoreCloneClone.clone cloneCloneInst
+  clone_from := clone.Clone.clone_from.default
+    (ops.range.Range.Insts.CoreCloneClone cloneCloneInst)
+}
+
+/-- [core_models::ops::range::derived::{impl core_models::cmp::PartialEq<core_models::ops::range::Range<Idx>> for core_models::ops::range::Range<Idx>}::eq]:
+    Source: 'core-models/src/core/ops.rs', lines 654:12-656:13
+    Visibility: public -/
+def ops.range.Range.Insts.CoreCmpPartialEqRange.eq
+  {Idx : Type _} (cmpPartialEqInst : cmp.PartialEq Idx Idx)
+  (self : ops.range.Range Idx) (other : ops.range.Range Idx) :
+  RustM Bool
+  := do
+  let b ← cmpPartialEqInst.eq self.start other.start
+  if b
+  then cmpPartialEqInst.eq self.end other.end
+  else ok false
+
+/-- [core_models::ops::range::derived::{impl core_models::cmp::PartialEq<core_models::ops::range::Range<Idx>> for core_models::ops::range::Range<Idx>}::ne]:
+    Source: 'core-models/src/core/ops.rs', lines 651:12-653:13
+    Visibility: public -/
+def ops.range.Range.Insts.CoreCmpPartialEqRange.ne
+  {Idx : Type _} (cmpPartialEqInst : cmp.PartialEq Idx Idx)
+  (self : ops.range.Range Idx) (other : ops.range.Range Idx) :
+  RustM Bool
+  := do
+  let b ←
+    ops.range.Range.Insts.CoreCmpPartialEqRange.eq cmpPartialEqInst self
+      other
+  ok (b = false)
+
+/-- Trait implementation: [core_models::ops::range::derived::{impl core_models::cmp::PartialEq<core_models::ops::range::Range<Idx>> for core_models::ops::range::Range<Idx>}]
+    Source: 'core-models/src/core/ops.rs', lines 650:8-657:9 -/
+@[reducible]
+def ops.range.Range.Insts.CoreCmpPartialEqRange {Idx : Type _}
+  (cmpPartialEqInst : cmp.PartialEq Idx Idx) : cmp.PartialEq (ops.range.Range
+  Idx) (ops.range.Range Idx) := {
+  eq := ops.range.Range.Insts.CoreCmpPartialEqRange.eq cmpPartialEqInst
+  ne := ops.range.Range.Insts.CoreCmpPartialEqRange.ne cmpPartialEqInst
+}
+
 /-- [core_models::option::{impl core_models::fmt::Debug for core_models::option::Option<T>}::fmt]:
     Source: 'core-models/src/core/option.rs', lines 18:4-23:5
     Visibility: public -/
@@ -14956,29 +17144,6 @@ def slice.iter.ChunksExact.new
   := do
   ok { cs, elements }
 
-/-- [core_models::slice::iter::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::slice::iter::Iter<'a, T>}::next]:
-    Source: 'core-models/src/core/slice.rs', lines 47:8-54:9
-    Visibility: public -/
-def slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
-  {T : Type _} (self : slice.iter.Iter T) :
-  RustM ((option.Option T) × (slice.iter.Iter T))
-  := do
-  let i ← rust_primitives.sequence.seq_len self
-  if i = 0#usize
-  then ok (option.Option.None, self)
-  else
-    let (res, s) ← rust_primitives.sequence.seq_remove self 0#usize
-    ok (option.Option.Some res, s)
-
-/-- Trait implementation: [core_models::slice::iter::{impl core_models::iter::traits::iterator::Iterator<&'a T> for core_models::slice::iter::Iter<'a, T>}]
-    Source: 'core-models/src/core/slice.rs', lines 45:4-55:5 -/
-@[reducible]
-def slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT (T :
-  Type _) : iter.traits.iterator.Iterator (slice.iter.Iter T) T := {
-  next :=
-    slice.iter.Iter.Insts.CoreIterTraitsIteratorIteratorSharedAT.next
-}
-
 /-- [core_models::slice::iter::{impl core_models::iter::traits::double_ended::DoubleEndedIterator<&'_ T> for core_models::slice::iter::Iter<'a, T>}::next_back]:
     Source: 'core-models/src/core/slice.rs', lines 62:8-70:9
     Visibility: public -/
@@ -15158,13 +17323,20 @@ def slice.iter.Windows.Insts.CoreIterTraitsIteratorIteratorSharedASlice
     slice.iter.Windows.Insts.CoreIterTraitsIteratorIteratorSharedASlice.next
 }
 
+/-- [core_models::slice::chunk_size_nonzero]:
+    Source: 'core-models/src/core/slice.rs', lines 152:0-156:1 -/
+def slice.chunk_size_nonzero (n : Std.Usize) : RustM Unit := do
+  if n = 0#usize
+  then panicking.internal.panic Unit
+  else ok ()
+
 /-- [core_models::slice::{core_models::slice::Slice<T>}::len]:
-    Source: 'core-models/src/core/slice.rs', lines 153:4-155:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 161:4-163:5 -/
 def slice.Slice.len {T : Type _} (s : Slice T) : RustM Std.Usize := do
   rust_primitives.slice.slice_length s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::chunks]:
-    Source: 'core-models/src/core/slice.rs', lines 158:4-163:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 166:4-171:5 -/
 def slice.Slice.chunks
   {T : Type _} (s : Slice T) (cs : Std.Usize) :
   RustM (slice.iter.Chunks T)
@@ -15174,15 +17346,8 @@ def slice.Slice.chunks
   else ok ()
   slice.iter.Chunks.new cs s
 
-/-- [core_models::slice::{core_models::slice::Slice<T>}::iter]:
-    Source: 'core-models/src/core/slice.rs', lines 165:4-167:5 -/
-def slice.Slice.iter
-  {T : Type _} (s : Slice T) : RustM (slice.iter.Iter T) := do
-  let s1 ← rust_primitives.sequence.seq_from_slice s
-  ok s1
-
 /-- [core_models::slice::{core_models::slice::Slice<T>}::chunks_exact]:
-    Source: 'core-models/src/core/slice.rs', lines 170:4-175:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 178:4-183:5 -/
 def slice.Slice.chunks_exact
   {T : Type _} (s : Slice T) (cs : Std.Usize) :
   RustM (slice.iter.ChunksExact T)
@@ -15193,7 +17358,7 @@ def slice.Slice.chunks_exact
   slice.iter.ChunksExact.new cs s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::copy_from_slice]:
-    Source: 'core-models/src/core/slice.rs', lines 178:4-183:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 186:4-191:5 -/
 def slice.Slice.copy_from_slice
   {T : Type _} (coremarkerCopyInst : core.marker.Copy T) (s : Slice T)
   (src : Slice T) :
@@ -15203,7 +17368,7 @@ def slice.Slice.copy_from_slice
     coremarkerCopyInst.cloneCloneInst s src
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::clone_from_slice]:
-    Source: 'core-models/src/core/slice.rs', lines 186:4-191:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 194:4-199:5 -/
 def slice.Slice.clone_from_slice
   {T : Type _} (corecloneCloneInst : core.clone.Clone T) (s : Slice T)
   (src : Slice T) :
@@ -15212,7 +17377,7 @@ def slice.Slice.clone_from_slice
   rust_primitives.slice.slice_clone_from_slice corecloneCloneInst s src
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::split_at]:
-    Source: 'core-models/src/core/slice.rs', lines 194:4-196:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 202:4-204:5 -/
 def slice.Slice.split_at
   {T : Type _} (s : Slice T) (mid : Std.Usize) :
   RustM ((Slice T) × (Slice T))
@@ -15220,7 +17385,7 @@ def slice.Slice.split_at
   rust_primitives.slice.slice_split_at s mid
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::split_at_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 201:4-203:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 209:4-211:5 -/
 def slice.Slice.split_at_mut
   {T : Type _} (s : Slice T) (mid : Std.Usize) :
   RustM (((Slice T) × (Slice T)) × (((Slice T) × (Slice T)) → Slice T))
@@ -15228,7 +17393,7 @@ def slice.Slice.split_at_mut
   rust_primitives.slice.slice_split_at_mut s mid
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::iter_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 207:4-209:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 215:4-217:5 -/
 def slice.Slice.iter_mut
   {T : Type _} (s : Slice T) :
   RustM ((slice.iter.IterMut T) × (slice.iter.IterMut T → Slice T))
@@ -15237,8 +17402,54 @@ def slice.Slice.iter_mut
     rust_primitives.sequence.seq_from_slice_mut s
   ok (s1, seq_from_slice_mut_back)
 
+/-- [core_models::slice::{core_models::slice::Slice<T>}::as_chunks]:
+    Source: 'core-models/src/core/slice.rs', lines 220:4-223:5 -/
+def slice.Slice.as_chunks
+  {T : Type _} (N : Std.Usize) (s : Slice T) :
+  RustM ((Slice (Array T N)) × (Slice T))
+  := do
+  slice.chunk_size_nonzero N
+  rust_primitives.slice.slice_as_chunks N s
+
+/-- [core_models::slice::{core_models::slice::Slice<T>}::as_chunks_mut]:
+    Source: 'core-models/src/core/slice.rs', lines 228:4-231:5 -/
+def slice.Slice.as_chunks_mut
+  {T : Type _} (N : Std.Usize) (s : Slice T) :
+  RustM (((Slice (Array T N)) × (Slice T)) × (((Slice (Array T N)) × (Slice
+    T)) → Slice T))
+  := do
+  slice.chunk_size_nonzero N
+  rust_primitives.slice.slice_as_chunks_mut N s
+
+/-- [core_models::slice::{core_models::slice::Slice<T>}::split_first_chunk]:
+    Source: 'core-models/src/core/slice.rs', lines 233:4-240:5 -/
+def slice.Slice.split_first_chunk
+  {T : Type _} (N : Std.Usize) (s : Slice T) :
+  RustM (option.Option ((Array T N) × (Slice T)))
+  := do
+  let i ← slice.Slice.len s
+  if i < N
+  then ok option.Option.None
+  else
+    let (first, tail) ← slice.Slice.split_at s N
+    let a ← rust_primitives.slice.slice_as_array N first
+    ok (option.Option.Some (a, tail))
+
+/-- [core_models::slice::{core_models::slice::Slice<T>}::as_array]:
+    Source: 'core-models/src/core/slice.rs', lines 242:4-248:5 -/
+def slice.Slice.as_array
+  {T : Type _} (N : Std.Usize) (s : Slice T) :
+  RustM (option.Option (Array T N))
+  := do
+  let i ← slice.Slice.len s
+  if i = N
+  then
+    let a ← rust_primitives.slice.slice_as_array N s
+    ok (option.Option.Some a)
+  else ok option.Option.None
+
 /-- [core_models::slice::{core_models::slice::Slice<T>}::split_at_checked]:
-    Source: 'core-models/src/core/slice.rs', lines 211:4-217:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 250:4-256:5 -/
 def slice.Slice.split_at_checked
   {T : Type _} (s : Slice T) (mid : Std.Usize) :
   RustM (option.Option ((Slice T) × (Slice T)))
@@ -15251,13 +17462,13 @@ def slice.Slice.split_at_checked
   else ok option.Option.None
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::is_empty]:
-    Source: 'core-models/src/core/slice.rs', lines 219:4-221:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 258:4-260:5 -/
 def slice.Slice.is_empty {T : Type _} (s : Slice T) : RustM Bool := do
   let i ← slice.Slice.len s
   ok (i = 0#usize)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::contains]:
-    Source: 'core-models/src/core/slice.rs', lines 224:4-229:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 263:4-268:5 -/
 def slice.Slice.contains
   {T : Type _} (corecmpPartialEqInst : core.cmp.PartialEq T T) (s : Slice T)
   (v : T) :
@@ -15266,7 +17477,7 @@ def slice.Slice.contains
   rust_primitives.slice.slice_contains corecmpPartialEqInst s v
 
 /-- [core_models::slice::index::end_index]:
-    Source: 'core-models/src/core/slice.rs', lines 813:4-820:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 866:4-873:5 -/
 def slice.index.end_index
   {R : Type _} (opsrangeRangeBoundsRUsizeInst : ops.range.RangeBounds R
   Std.Usize) (range : R) (len : Std.Usize) :
@@ -15279,7 +17490,7 @@ def slice.index.end_index
   | ops.range.Bound.Unbounded => ok (option.Option.Some len)
 
 /-- [core_models::slice::index::start_index]:
-    Source: 'core-models/src/core/slice.rs', lines 803:4-810:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 856:4-863:5 -/
 def slice.index.start_index
   {R : Type _} (opsrangeRangeBoundsRUsizeInst : ops.range.RangeBounds R
   Std.Usize) (range : R) :
@@ -15292,7 +17503,7 @@ def slice.index.start_index
   | ops.range.Bound.Unbounded => ok (option.Option.Some 0#usize)
 
 /-- [core_models::slice::index::try_range]:
-    Source: 'core-models/src/core/slice.rs', lines 782:4-800:5
+    Source: 'core-models/src/core/slice.rs', lines 835:4-853:5
     Visibility: public -/
 def slice.index.try_range
   {R : Type _} (opsrangeRangeBoundsRUsizeInst : ops.range.RangeBounds R
@@ -15316,7 +17527,7 @@ def slice.index.try_range
   | option.Option.None => ok option.Option.None
 
 /-- [core_models::slice::index::range]:
-    Source: 'core-models/src/core/slice.rs', lines 824:4-832:5
+    Source: 'core-models/src/core/slice.rs', lines 877:4-885:5
     Visibility: public -/
 def slice.index.range
   {R : Type _} (opsrangeRangeBoundsRUsizeInst : ops.range.RangeBounds R
@@ -15329,7 +17540,7 @@ def slice.index.range
   | option.Option.None => panicking.internal.panic (ops.range.Range Std.Usize)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::copy_within]:
-    Source: 'core-models/src/core/slice.rs', lines 237:4-243:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 276:4-282:5 -/
 def slice.Slice.copy_within
   {T : Type _} {R : Type _} (opsrangeRangeBoundsRUsizeInst :
   ops.range.RangeBounds R Std.Usize) (coremarkerCopyInst : core.marker.Copy T)
@@ -15343,7 +17554,7 @@ def slice.Slice.copy_within
     r.end dest
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::binary_search]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 259:8-268:9 -/
+    Source: 'core-models/src/core/slice.rs', lines 298:8-307:9 -/
 @[rust_loop_body]
 def slice.Slice.binary_search_loop.body
   {T : Type _} (cmpOrdInst : cmp.Ord T) (s : Slice T) (x : T)
@@ -15366,7 +17577,7 @@ def slice.Slice.binary_search_loop.body
   else ok (done base)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::binary_search]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 259:8-268:9 -/
+    Source: 'core-models/src/core/slice.rs', lines 298:8-307:9 -/
 @[rust_loop]
 def slice.Slice.binary_search_loop
   {T : Type _} (cmpOrdInst : cmp.Ord T) (s : Slice T) (x : T)
@@ -15379,7 +17590,7 @@ def slice.Slice.binary_search_loop
     (size, base)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::binary_search]:
-    Source: 'core-models/src/core/slice.rs', lines 250:4-274:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 289:4-313:5 -/
 def slice.Slice.binary_search
   {T : Type _} (cmpOrdInst : cmp.Ord T) (s : Slice T) (x : T) :
   RustM (result.Result Std.Usize Std.Usize)
@@ -15398,7 +17609,7 @@ def slice.Slice.binary_search
     | cmp.Ordering.Greater => ok (result.Result.Err base)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 276:4-278:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 315:4-317:5 -/
 def slice.Slice.get
   {T : Type _} {I : Type _} {Clause0_Output : Type _}
   (indexSliceIndexISliceClause0_OutputInst : slice.index.SliceIndex I (Slice T)
@@ -15408,7 +17619,7 @@ def slice.Slice.get
   indexSliceIndexISliceClause0_OutputInst.get index s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 284:4-286:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 323:4-325:5 -/
 def slice.Slice.get_unchecked
   {T : Type _} {I : Type _} {Clause0_Output : Type _}
   (indexSliceIndexISliceClause0_OutputInst : slice.index.SliceIndex I (Slice T)
@@ -15418,7 +17629,7 @@ def slice.Slice.get_unchecked
   indexSliceIndexISliceClause0_OutputInst.get_unchecked index s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 290:4-295:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 329:4-334:5 -/
 def slice.Slice.get_mut
   {T : Type _} {I : Type _} {Clause0_Output : Type _}
   (indexSliceIndexISliceClause0_OutputInst : slice.index.SliceIndex I (Slice T)
@@ -15429,7 +17640,7 @@ def slice.Slice.get_mut
   indexSliceIndexISliceClause0_OutputInst.get_mut index s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 299:4-304:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 338:4-343:5 -/
 def slice.Slice.get_unchecked_mut
   {T : Type _} {I : Type _} {Clause0_Output : Type _}
   (indexSliceIndexISliceClause0_OutputInst : slice.index.SliceIndex I (Slice T)
@@ -15439,7 +17650,7 @@ def slice.Slice.get_unchecked_mut
   indexSliceIndexISliceClause0_OutputInst.get_unchecked_mut index s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::first]:
-    Source: 'core-models/src/core/slice.rs', lines 306:4-312:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 345:4-351:5 -/
 def slice.Slice.first
   {T : Type _} (s : Slice T) : RustM (option.Option T) := do
   let b ← slice.Slice.is_empty s
@@ -15450,7 +17661,7 @@ def slice.Slice.first
     ok (option.Option.Some t)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::last]:
-    Source: 'core-models/src/core/slice.rs', lines 314:4-320:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 353:4-359:5 -/
 def slice.Slice.last {T : Type _} (s : Slice T) : RustM (option.Option T) := do
   let b ← slice.Slice.is_empty s
   if b
@@ -15462,7 +17673,7 @@ def slice.Slice.last {T : Type _} (s : Slice T) : RustM (option.Option T) := do
     ok (option.Option.Some t)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::swap]:
-    Source: 'core-models/src/core/slice.rs', lines 325:4-327:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 364:4-366:5 -/
 def slice.Slice.swap
   {T : Type _} (s : Slice T) (a : Std.Usize) (b : Std.Usize) :
   RustM (Slice T)
@@ -15470,12 +17681,12 @@ def slice.Slice.swap
   rust_primitives.slice.slice_swap s a b
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::reverse]:
-    Source: 'core-models/src/core/slice.rs', lines 331:4-333:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 370:4-372:5 -/
 def slice.Slice.reverse {T : Type _} (s : Slice T) : RustM (Slice T) := do
   rust_primitives.slice.slice_reverse s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::windows]:
-    Source: 'core-models/src/core/slice.rs', lines 336:4-341:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 375:4-380:5 -/
 def slice.Slice.windows
   {T : Type _} (s : Slice T) (size : Std.Usize) :
   RustM (slice.iter.Windows T)
@@ -15486,7 +17697,7 @@ def slice.Slice.windows
   slice.iter.Windows.new size s
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::fill]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 354:12-356:13 -/
+    Source: 'core-models/src/core/slice.rs', lines 393:12-395:13 -/
 @[rust_loop_body]
 def slice.Slice.fill_loop.body
   {T : Type _} (corecloneCloneInst : core.clone.Clone T) (value : T)
@@ -15506,7 +17717,7 @@ def slice.Slice.fill_loop.body
     ok (cont (iter2, s2))
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::fill]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 354:12-356:13 -/
+    Source: 'core-models/src/core/slice.rs', lines 393:12-395:13 -/
 @[rust_loop]
 def slice.Slice.fill_loop
   {T : Type _} (corecloneCloneInst : core.clone.Clone T)
@@ -15519,7 +17730,7 @@ def slice.Slice.fill_loop
     (iter1, s)
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::fill]:
-    Source: 'core-models/src/core/slice.rs', lines 346:4-359:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 385:4-398:5 -/
 def slice.Slice.fill
   {T : Type _} (corecloneCloneInst : core.clone.Clone T) (s : Slice T)
   (value : T) :
@@ -15538,7 +17749,7 @@ def slice.Slice.fill
   else ok s
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 401:12-406:13
+    Source: 'core-models/src/core/slice.rs', lines 440:12-445:13
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
@@ -15564,7 +17775,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq_loop.body
     else ok (cont (iter2, res))
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 401:12-406:13
+    Source: 'core-models/src/core/slice.rs', lines 440:12-445:13
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialEqSlice.eq_loop
@@ -15579,7 +17790,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq_loop
     (iter1, res)
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::eq]:
-    Source: 'core-models/src/core/slice.rs', lines 396:4-409:5
+    Source: 'core-models/src/core/slice.rs', lines 435:4-448:5
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqSlice.eq
   {U : Type _} {T : Type _} (cmpPartialEqInst : cmp.PartialEq T U)
@@ -15595,7 +17806,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.eq
       { start := 0#usize, «end» := i } self other true
 
 /-- [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}::ne]:
-    Source: 'core-models/src/core/slice.rs', lines 393:4-395:5
+    Source: 'core-models/src/core/slice.rs', lines 432:4-434:5
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqSlice.ne
   {U : Type _} {T : Type _} (cmpPartialEqInst : cmp.PartialEq T U)
@@ -15607,7 +17818,7 @@ def Slice.Insts.CoreCmpPartialEqSlice.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::PartialEq<[U]> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 391:0-410:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 430:0-449:1 -/
 @[reducible]
 def Slice.Insts.CoreCmpPartialEqSlice {U : Type _} {T : Type _}
   (cmpPartialEqInst : cmp.PartialEq T U) : cmp.PartialEq (Slice T) (Slice U)
@@ -15617,7 +17828,7 @@ def Slice.Insts.CoreCmpPartialEqSlice {U : Type _} {T : Type _}
 }
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::Eq for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 413:0-413:49 -/
+    Source: 'core-models/src/core/slice.rs', lines 452:0-452:49 -/
 @[reducible]
 def Slice.Insts.CoreCmpEq {T : Type _} (cmpEqInst : cmp.Eq T) : cmp.Eq
   (Slice T) := {
@@ -15626,7 +17837,7 @@ def Slice.Insts.CoreCmpEq {T : Type _} (cmpEqInst : cmp.Eq T) : cmp.Eq
 }
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 426:8-440:5
+    Source: 'core-models/src/core/slice.rs', lines 465:8-479:5
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
@@ -15661,7 +17872,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop.body
     | option.Option.None => ok (done option.Option.None)
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 426:8-440:5
+    Source: 'core-models/src/core/slice.rs', lines 465:8-479:5
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop
@@ -15676,7 +17887,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp_loop
     iter1
 
 /-- [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}::partial_cmp]:
-    Source: 'core-models/src/core/slice.rs', lines 418:4-440:5
+    Source: 'core-models/src/core/slice.rs', lines 457:4-479:5
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
   {T : Type _} (cmpPartialOrdInst : cmp.PartialOrd T T) (self : Slice T)
@@ -15692,7 +17903,7 @@ def Slice.Insts.CoreCmpPartialOrdSlice.partial_cmp
     { start := 0#usize, «end» := l } self other
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::PartialOrd<[T]> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 417:0-441:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 456:0-480:1 -/
 @[reducible]
 impl_def Slice.Insts.CoreCmpPartialOrdSlice {T : Type _}
   (cmpPartialOrdInst : cmp.PartialOrd T T) : cmp.PartialOrd (Slice T) (Slice T)
@@ -15712,7 +17923,7 @@ impl_def Slice.Insts.CoreCmpPartialOrdSlice {T : Type _}
 }
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 454:8-468:5
+    Source: 'core-models/src/core/slice.rs', lines 493:8-507:5
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpOrd.cmp_loop.body
@@ -15743,7 +17954,7 @@ def Slice.Insts.CoreCmpOrd.cmp_loop.body
     | cmp.Ordering.Greater => ok (done cmp.Ordering.Greater)
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 454:8-468:5
+    Source: 'core-models/src/core/slice.rs', lines 493:8-507:5
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpOrd.cmp_loop
@@ -15757,7 +17968,7 @@ def Slice.Insts.CoreCmpOrd.cmp_loop
     iter1
 
 /-- [core_models::slice::{impl core_models::cmp::Ord for [T]}::cmp]:
-    Source: 'core-models/src/core/slice.rs', lines 446:4-468:5
+    Source: 'core-models/src/core/slice.rs', lines 485:4-507:5
     Visibility: public -/
 def Slice.Insts.CoreCmpOrd.cmp
   {T : Type _} (cmpOrdInst : cmp.Ord T) (self : Slice T) (other : Slice T) :
@@ -15772,18 +17983,27 @@ def Slice.Insts.CoreCmpOrd.cmp
     { start := 0#usize, «end» := l } self other
 
 /-- Trait implementation: [core_models::slice::{impl core_models::cmp::Ord for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 445:0-469:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 484:0-508:1 -/
 @[reducible]
-def Slice.Insts.CoreCmpOrd {T : Type _} (cmpOrdInst : cmp.Ord T) :
+impl_def Slice.Insts.CoreCmpOrd {T : Type _} (cmpOrdInst : cmp.Ord T) :
   cmp.Ord (Slice T) := {
   EqInst := Slice.Insts.CoreCmpEq cmpOrdInst.EqInst
   PartialOrdInst := Slice.Insts.CoreCmpPartialOrdSlice
     cmpOrdInst.PartialOrdInst
   cmp := Slice.Insts.CoreCmpOrd.cmp cmpOrdInst
+  max := cmp.Ord.max.default (Slice.Insts.CoreCmpOrd cmpOrdInst)
+  min := cmp.Ord.min.default (Slice.Insts.CoreCmpOrd cmpOrdInst)
+  clamp := cmp.Ord.clamp.default (Slice.Insts.CoreCmpOrd cmpOrdInst)
 }
 
+/-- [core_models::slice::{core_models::slice::SliceArray<T, N>}::as_flattened]:
+    Source: 'core-models/src/core/slice.rs', lines 519:4-521:5 -/
+def slice.SliceArray.as_flattened
+  {T : Type _} {N : Std.Usize} (s : Slice (Array T N)) : RustM (Slice T) := do
+  rust_primitives.slice.slice_as_flattened s
+
 /-- [core_models::slice::{core_models::slice::Slice<T>}::starts_with]:
-    Source: 'core-models/src/core/slice.rs', lines 480:4-486:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 533:4-539:5 -/
 def slice.Slice.starts_with
   {T : Type _} (corecmpPartialEqInst : core.cmp.PartialEq T T) (s : Slice T)
   (needle : Slice T) :
@@ -15798,7 +18018,7 @@ def slice.Slice.starts_with
   else ok false
 
 /-- [core_models::slice::{core_models::slice::Slice<T>}::ends_with]:
-    Source: 'core-models/src/core/slice.rs', lines 490:4-497:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 543:4-550:5 -/
 def slice.Slice.ends_with
   {T : Type _} (corecmpPartialEqInst : core.cmp.PartialEq T T) (s : Slice T)
   (needle : Slice T) :
@@ -15813,17 +18033,8 @@ def slice.Slice.ends_with
     core.Slice.Insts.CoreCmpPartialEqSlice.eq corecmpPartialEqInst s1 needle
   else ok false
 
-/-- [core_models::slice::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T]}::into_iter]:
-    Source: 'core-models/src/core/slice.rs', lines 505:4-507:5
-    Visibility: public -/
-def
-  SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter.into_iter
-  {T : Type _} (self : Slice T) : RustM (slice.iter.Iter T) := do
-  let i ← slice.Slice.iter self
-  ok i
-
 /-- Trait implementation: [core_models::slice::{impl core_models::iter::traits::collect::IntoIterator<&'a T, core_models::slice::iter::Iter<'a, T>> for &'a [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 502:0-508:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 555:0-561:1 -/
 @[reducible]
 def SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter (T
   : Type _) : iter.traits.collect.IntoIterator (Slice T) T (slice.iter.Iter T)
@@ -15835,7 +18046,7 @@ def SharedASlice.Insts.CoreIterTraitsCollectIntoIteratorSharedATIter (T
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 585:8-587:9
+    Source: 'core-models/src/core/slice.rs', lines 638:8-640:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index_mut
   {T : Type _} (self : Std.Usize) (slice1 : Slice T) :
@@ -15844,7 +18055,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index_mut
   rust_primitives.slice.slice_index_mut slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 580:8-582:9
+    Source: 'core-models/src/core/slice.rs', lines 633:8-635:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked_mut
   {T : Type _} (self : Std.Usize) (slice1 : Slice T) :
@@ -15853,7 +18064,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked_mut
   rust_primitives.slice.slice_index_mut slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 571:8-577:9
+    Source: 'core-models/src/core/slice.rs', lines 624:8-630:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_mut
   {T : Type _} (self : Std.Usize) (slice1 : Slice T) :
@@ -15875,21 +18086,21 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_mut
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 567:8-569:9
+    Source: 'core-models/src/core/slice.rs', lines 620:8-622:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get_unchecked
   {T : Type _} (self : Std.Usize) (slice1 : Slice T) : RustM T := do
   rust_primitives.slice.slice_index slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 563:8-565:9
+    Source: 'core-models/src/core/slice.rs', lines 616:8-618:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.index
   {T : Type _} (self : Std.Usize) (slice1 : Slice T) : RustM T := do
   rust_primitives.slice.slice_index slice1 self
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 555:8-561:9
+    Source: 'core-models/src/core/slice.rs', lines 608:8-614:9
     Visibility: public -/
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get
   {T : Type _} (self : Std.Usize) (slice1 : Slice T) :
@@ -15903,7 +18114,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT.get
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], T> for usize}]
-    Source: 'core-models/src/core/slice.rs', lines 553:4-588:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 606:4-641:5 -/
 @[reducible]
 def Usize.Insts.CoreSliceIndexSliceIndexSliceT (T : Type _) :
   slice.index.SliceIndex Std.Usize (Slice T) T := {
@@ -15918,7 +18129,7 @@ def Usize.Insts.CoreSliceIndexSliceIndexSliceT (T : Type _) :
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 612:8-614:9
+    Source: 'core-models/src/core/slice.rs', lines 665:8-667:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -15928,7 +18139,7 @@ def
   ok (slice1, fun slice2 => slice2)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 608:8-610:9
+    Source: 'core-models/src/core/slice.rs', lines 661:8-663:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -15938,7 +18149,7 @@ def
   ok (slice1, fun slice2 => slice2)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 604:8-606:9
+    Source: 'core-models/src/core/slice.rs', lines 657:8-659:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
   {T : Type _} (self : ops.range.RangeFull) (slice1 : Slice T) :
@@ -15950,7 +18161,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
   ok (option.Option.Some slice1, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 600:8-602:9
+    Source: 'core-models/src/core/slice.rs', lines 653:8-655:9
     Visibility: public -/
 def
   ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -15960,7 +18171,7 @@ def
   ok slice1
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 597:8-599:9
+    Source: 'core-models/src/core/slice.rs', lines 650:8-652:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   {T : Type _} (self : ops.range.RangeFull) (slice1 : Slice T) :
@@ -15969,7 +18180,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   ok slice1
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 594:8-596:9
+    Source: 'core-models/src/core/slice.rs', lines 647:8-649:9
     Visibility: public -/
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   {T : Type _} (self : ops.range.RangeFull) (slice1 : Slice T) :
@@ -15978,7 +18189,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   ok (option.Option.Some slice1)
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFull}]
-    Source: 'core-models/src/core/slice.rs', lines 592:4-615:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 645:4-668:5 -/
 @[reducible]
 def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
   Type _) : slice.index.SliceIndex ops.range.RangeFull (Slice T) (Slice T) := {
@@ -15997,7 +18208,7 @@ def ops.range.RangeFull.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 653:8-656:9
+    Source: 'core-models/src/core/slice.rs', lines 706:8-709:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -16008,7 +18219,7 @@ def
   rust_primitives.slice.slice_slice_mut slice1 self.start len
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 647:8-650:9
+    Source: 'core-models/src/core/slice.rs', lines 700:8-703:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -16019,7 +18230,7 @@ def
   rust_primitives.slice.slice_slice_mut slice1 self.start len
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 637:8-644:9
+    Source: 'core-models/src/core/slice.rs', lines 690:8-697:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
@@ -16042,7 +18253,7 @@ def
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 633:8-635:9
+    Source: 'core-models/src/core/slice.rs', lines 686:8-688:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -16053,7 +18264,7 @@ def
   rust_primitives.slice.slice_slice slice1 self.start i
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 629:8-631:9
+    Source: 'core-models/src/core/slice.rs', lines 682:8-684:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
@@ -16064,7 +18275,7 @@ def
   rust_primitives.slice.slice_slice slice1 self.start i
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 621:8-627:9
+    Source: 'core-models/src/core/slice.rs', lines 674:8-680:9
     Visibility: public -/
 def
   ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
@@ -16079,7 +18290,7 @@ def
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeFrom<usize>}]
-    Source: 'core-models/src/core/slice.rs', lines 619:4-657:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 672:4-710:5 -/
 @[reducible]
 def ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T
   : Type _) : slice.index.SliceIndex (ops.range.RangeFrom Std.Usize) (Slice T)
@@ -16099,7 +18310,7 @@ def ops.range.RangeFromUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 692:8-694:9
+    Source: 'core-models/src/core/slice.rs', lines 745:8-747:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -16109,7 +18320,7 @@ def
   rust_primitives.slice.slice_slice_mut slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 687:8-689:9
+    Source: 'core-models/src/core/slice.rs', lines 740:8-742:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -16119,7 +18330,7 @@ def
   rust_primitives.slice.slice_slice_mut slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 678:8-684:9
+    Source: 'core-models/src/core/slice.rs', lines 731:8-737:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
@@ -16142,7 +18353,7 @@ def
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 674:8-676:9
+    Source: 'core-models/src/core/slice.rs', lines 727:8-729:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -16152,7 +18363,7 @@ def
   rust_primitives.slice.slice_slice slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 670:8-672:9
+    Source: 'core-models/src/core/slice.rs', lines 723:8-725:9
     Visibility: public -/
 def
   ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
@@ -16162,7 +18373,7 @@ def
   rust_primitives.slice.slice_slice slice1 0#usize self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 662:8-668:9
+    Source: 'core-models/src/core/slice.rs', lines 715:8-721:9
     Visibility: public -/
 def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   {T : Type _} (self : ops.range.RangeTo Std.Usize) (slice1 : Slice T) :
@@ -16176,7 +18387,7 @@ def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::RangeTo<usize>}]
-    Source: 'core-models/src/core/slice.rs', lines 660:4-695:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 713:4-748:5 -/
 @[reducible]
 def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
   Type _) : slice.index.SliceIndex (ops.range.RangeTo Std.Usize) (Slice T)
@@ -16196,7 +18407,7 @@ def ops.range.RangeToUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
 }
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 730:8-732:9
+    Source: 'core-models/src/core/slice.rs', lines 783:8-785:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index_mut
@@ -16206,7 +18417,7 @@ def
   rust_primitives.slice.slice_slice_mut slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_unchecked_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 725:8-727:9
+    Source: 'core-models/src/core/slice.rs', lines 778:8-780:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked_mut
@@ -16216,7 +18427,7 @@ def
   rust_primitives.slice.slice_slice_mut slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 716:8-722:9
+    Source: 'core-models/src/core/slice.rs', lines 769:8-775:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_mut
@@ -16243,7 +18454,7 @@ def
        ok (option.Option.None, back)
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get_unchecked]:
-    Source: 'core-models/src/core/slice.rs', lines 712:8-714:9
+    Source: 'core-models/src/core/slice.rs', lines 765:8-767:9
     Visibility: public -/
 def
   ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get_unchecked
@@ -16253,7 +18464,7 @@ def
   rust_primitives.slice.slice_slice slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 708:8-710:9
+    Source: 'core-models/src/core/slice.rs', lines 761:8-763:9
     Visibility: public -/
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   {T : Type _} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
@@ -16262,7 +18473,7 @@ def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.index
   rust_primitives.slice.slice_slice slice1 self.start self.end
 
 /-- [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}::get]:
-    Source: 'core-models/src/core/slice.rs', lines 700:8-706:9
+    Source: 'core-models/src/core/slice.rs', lines 753:8-759:9
     Visibility: public -/
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   {T : Type _} (self : ops.range.Range Std.Usize) (slice1 : Slice T) :
@@ -16279,7 +18490,7 @@ def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice.get
   else ok option.Option.None
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::slice::index::SliceIndex<[T], [T]> for core_models::ops::range::Range<usize>}]
-    Source: 'core-models/src/core/slice.rs', lines 698:4-733:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 751:4-786:5 -/
 @[reducible]
 def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
   Type _) : slice.index.SliceIndex (ops.range.Range Std.Usize) (Slice T) (Slice
@@ -16299,7 +18510,7 @@ def ops.range.RangeUsize.Insts.CoreSliceIndexSliceIndexSliceSlice (T :
 }
 
 /-- [core_models::slice::index::{impl core_models::ops::index::Index<I, Clause0_Output> for [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 749:8-754:9
+    Source: 'core-models/src/core/slice.rs', lines 802:8-807:9
     Visibility: public -/
 def Slice.Insts.CoreOpsIndexIndex.index
   {T : Type _} {I : Type _} {Clause0_Output : Type _}
@@ -16313,7 +18524,7 @@ def Slice.Insts.CoreOpsIndexIndex.index
   | option.Option.None => panicking.internal.panic Clause0_Output
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::ops::index::Index<I, Clause0_Output> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 743:4-755:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 796:4-808:5 -/
 @[reducible]
 def Slice.Insts.CoreOpsIndexIndex {T : Type _} {I : Type _}
   {Clause0_Output : Type _} (SliceIndexISliceClause0_OutputInst :
@@ -16324,7 +18535,7 @@ def Slice.Insts.CoreOpsIndexIndex {T : Type _} {I : Type _}
 }
 
 /-- [core_models::slice::index::{impl core_models::ops::index::IndexMut<I, Clause0_Output> for [T]}::index_mut]:
-    Source: 'core-models/src/core/slice.rs', lines 774:8-776:9
+    Source: 'core-models/src/core/slice.rs', lines 827:8-829:9
     Visibility: public -/
 def Slice.Insts.CoreOpsIndexIndexMut.index_mut
   {T : Type _} {I : Type _} {Clause0_Output : Type _}
@@ -16335,7 +18546,7 @@ def Slice.Insts.CoreOpsIndexIndexMut.index_mut
   SliceIndexISliceClause0_OutputInst.get_unchecked_mut i self
 
 /-- Trait implementation: [core_models::slice::index::{impl core_models::ops::index::IndexMut<I, Clause0_Output> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 763:4-777:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 816:4-830:5 -/
 @[reducible]
 def Slice.Insts.CoreOpsIndexIndexMut {T : Type _} {I : Type _}
   {Clause0_Output : Type _} (SliceIndexISliceClause0_OutputInst :
@@ -16348,7 +18559,7 @@ def Slice.Insts.CoreOpsIndexIndexMut {T : Type _} {I : Type _}
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::Range<usize>, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 847:4-849:5
+    Source: 'core-models/src/core/slice.rs', lines 900:4-902:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice.index
   {T : Type _} (self : Slice T) (i : ops.range.Range Std.Usize) :
@@ -16357,7 +18568,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice.index
   rust_primitives.slice.slice_slice self i.start i.end
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::Range<usize>, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 844:0-850:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 897:0-903:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice (T : Type _) :
   ops.index.Index (Slice T) (ops.range.Range Std.Usize) (Slice T) := {
@@ -16365,7 +18576,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeUsizeSlice (T : Type _) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeTo<usize>, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 856:4-858:5
+    Source: 'core-models/src/core/slice.rs', lines 909:4-911:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice.index
   {T : Type _} (self : Slice T) (i : ops.range.RangeTo Std.Usize) :
@@ -16374,7 +18585,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice.index
   rust_primitives.slice.slice_slice self 0#usize i.end
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeTo<usize>, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 853:0-859:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 906:0-912:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice (T : Type _) :
   ops.index.Index (Slice T) (ops.range.RangeTo Std.Usize) (Slice T) := {
@@ -16382,7 +18593,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeToUsizeSlice (T : Type _) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFrom<usize>, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 865:4-867:5
+    Source: 'core-models/src/core/slice.rs', lines 918:4-920:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice.index
   {T : Type _} (self : Slice T) (i : ops.range.RangeFrom Std.Usize) :
@@ -16392,7 +18603,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice.index
   rust_primitives.slice.slice_slice self i.start i1
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFrom<usize>, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 862:0-868:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 915:0-921:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice (T : Type _)
   : ops.index.Index (Slice T) (ops.range.RangeFrom Std.Usize) (Slice T) := {
@@ -16400,7 +18611,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFromUsizeSlice (T : Type _)
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFull, [T]> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 873:4-875:5
+    Source: 'core-models/src/core/slice.rs', lines 926:4-928:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice.index
   {T : Type _} (self : Slice T) (i : ops.range.RangeFull) :
@@ -16410,7 +18621,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice.index
   rust_primitives.slice.slice_slice self 0#usize i1
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<core_models::ops::range::RangeFull, [T]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 871:0-876:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 924:0-929:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice (T : Type _) :
   ops.index.Index (Slice T) ops.range.RangeFull (Slice T) := {
@@ -16418,14 +18629,14 @@ def Shared0Slice.Insts.CoreOpsIndexIndexRangeFullSlice (T : Type _) :
 }
 
 /-- [core_models::slice::{impl core_models::ops::index::Index<usize, T> for &'_0 [T]}::index]:
-    Source: 'core-models/src/core/slice.rs', lines 883:4-885:5
+    Source: 'core-models/src/core/slice.rs', lines 936:4-938:5
     Visibility: public -/
 def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT.index
   {T : Type _} (self : Slice T) (i : Std.Usize) : RustM T := do
   rust_primitives.slice.slice_index self i
 
 /-- Trait implementation: [core_models::slice::{impl core_models::ops::index::Index<usize, T> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 880:0-886:1 -/
+    Source: 'core-models/src/core/slice.rs', lines 933:0-939:1 -/
 @[reducible]
 def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT (T : Type _) :
   ops.index.Index (Slice T) Std.Usize T := {
@@ -16433,7 +18644,7 @@ def Shared0Slice.Insts.CoreOpsIndexIndexUsizeT (T : Type _) :
 }
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]: loop body 0:
-    Source: 'core-models/src/core/slice.rs', lines 905:16-910:17
+    Source: 'core-models/src/core/slice.rs', lines 958:16-963:17
     Visibility: public -/
 @[rust_loop_body]
 def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
@@ -16459,7 +18670,7 @@ def Slice.Insts.CoreCmpPartialEqArray.eq_loop.body
     else ok (cont (iter2, res))
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]: loop 0:
-    Source: 'core-models/src/core/slice.rs', lines 905:16-910:17
+    Source: 'core-models/src/core/slice.rs', lines 958:16-963:17
     Visibility: public -/
 @[rust_loop]
 def Slice.Insts.CoreCmpPartialEqArray.eq_loop
@@ -16474,7 +18685,7 @@ def Slice.Insts.CoreCmpPartialEqArray.eq_loop
     (iter1, res)
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::eq]:
-    Source: 'core-models/src/core/slice.rs', lines 900:8-913:9
+    Source: 'core-models/src/core/slice.rs', lines 953:8-966:9
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqArray.eq
   {T : Type _} {U : Type _} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T
@@ -16489,7 +18700,7 @@ def Slice.Insts.CoreCmpPartialEqArray.eq
       { start := 0#usize, «end» := N } self other true
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}::ne]:
-    Source: 'core-models/src/core/slice.rs', lines 897:8-899:9
+    Source: 'core-models/src/core/slice.rs', lines 950:8-952:9
     Visibility: public -/
 def Slice.Insts.CoreCmpPartialEqArray.ne
   {T : Type _} {U : Type _} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T
@@ -16501,7 +18712,7 @@ def Slice.Insts.CoreCmpPartialEqArray.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 895:4-914:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 948:4-967:5 -/
 @[reducible]
 def Slice.Insts.CoreCmpPartialEqArray {T : Type _} {U : Type _} (N :
   Std.Usize) (cmpPartialEqInst : cmp.PartialEq T U) : cmp.PartialEq (Slice T)
@@ -16511,7 +18722,7 @@ def Slice.Insts.CoreCmpPartialEqArray {T : Type _} {U : Type _} (N :
 }
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for &'_0 [T]}::eq]:
-    Source: 'core-models/src/core/slice.rs', lines 925:8-927:9
+    Source: 'core-models/src/core/slice.rs', lines 978:8-980:9
     Visibility: public -/
 def Shared0Slice.Insts.CoreCmpPartialEqArray.eq
   {T : Type _} {U : Type _} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T
@@ -16521,7 +18732,7 @@ def Shared0Slice.Insts.CoreCmpPartialEqArray.eq
   Slice.Insts.CoreCmpPartialEqArray.eq cmpPartialEqInst self other
 
 /-- [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for &'_0 [T]}::ne]:
-    Source: 'core-models/src/core/slice.rs', lines 922:8-924:9
+    Source: 'core-models/src/core/slice.rs', lines 975:8-977:9
     Visibility: public -/
 def Shared0Slice.Insts.CoreCmpPartialEqArray.ne
   {T : Type _} {U : Type _} {N : Std.Usize} (cmpPartialEqInst : cmp.PartialEq T
@@ -16534,7 +18745,7 @@ def Shared0Slice.Insts.CoreCmpPartialEqArray.ne
   ok (b = false)
 
 /-- Trait implementation: [core_models::slice::equality::{impl core_models::cmp::PartialEq<[U; N]> for &'_0 [T]}]
-    Source: 'core-models/src/core/slice.rs', lines 920:4-928:5 -/
+    Source: 'core-models/src/core/slice.rs', lines 973:4-981:5 -/
 @[reducible]
 def Shared0Slice.Insts.CoreCmpPartialEqArray {T : Type _} {U : Type _}
   (N : Std.Usize) (cmpPartialEqInst : cmp.PartialEq T U) : cmp.PartialEq (Slice
@@ -16562,7 +18773,7 @@ def str.error.Utf8Error.Insts.CoreFmtDebug : fmt.Debug
 
 
 /-- [core_models::iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::step_by::StepBy<I>}::next]: loop body 0:
-    Source: 'core-models/src/core/iter.rs', lines 607:16-609:17
+    Source: 'core-models/src/core/iter.rs', lines 677:16-679:17
     Visibility: public -/
 @[rust_loop_body]
 def
@@ -16582,7 +18793,7 @@ def
     ok (cont (iter2, t1))
 
 /-- [core_models::iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::step_by::StepBy<I>}::next]: loop 0:
-    Source: 'core-models/src/core/iter.rs', lines 607:16-609:17
+    Source: 'core-models/src/core/iter.rs', lines 677:16-679:17
     Visibility: public -/
 @[rust_loop]
 def
@@ -16599,7 +18810,7 @@ def
     (iter1, t)
 
 /-- [core_models::iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::step_by::StepBy<I>}::next]:
-    Source: 'core-models/src/core/iter.rs', lines 603:12-611:13
+    Source: 'core-models/src/core/iter.rs', lines 673:12-681:13
     Visibility: public -/
 def
   iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator.next
@@ -16615,7 +18826,7 @@ def
   ok (current, { self with iter := t1 })
 
 /-- Trait implementation: [core_models::iter::adapters::step_by::{impl core_models::iter::traits::iterator::Iterator<Clause0_Item> for core_models::iter::adapters::step_by::StepBy<I>}]
-    Source: 'core-models/src/core/iter.rs', lines 599:8-612:9 -/
+    Source: 'core-models/src/core/iter.rs', lines 669:8-682:9 -/
 @[reducible]
 def iter.adapters.step_by.StepBy.Insts.CoreIterTraitsIteratorIterator {I
   : Type _} {Clause0_Item : Type _} (traitsiteratorIteratorInst :

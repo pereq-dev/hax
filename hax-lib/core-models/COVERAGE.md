@@ -8,7 +8,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 
 ## `core`
 
-**Targeted coverage: 784/3802 items (21%) across 35 modules — 23 have at least a partial model.**
+**Targeted coverage: 820/3802 items (22%) across 35 modules — 23 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
@@ -21,7 +21,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `cell` | 0 | 81 | 0% |
 | `char` | 0 | 67 | 0% |
 | `clone` | 3 | 6 | 50% |
-| `cmp` | 25 | 35 | 71% |
+| `cmp` | 28 | 35 | 80% |
 | `convert` | 13 | 17 | 76% |
 | `default` | 2 | 2 | 100% |
 | `error` | 1 | 15 | 7% |
@@ -34,11 +34,11 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `hash` | 5 | 29 | 17% |
 | `hint` | 2 | 9 | 22% |
 | `index` | 0 | 2 | 0% |
-| `iter` | 38 | 169 | 22% |
+| `iter` | 42 | 169 | 25% |
 | `marker` | 6 | 35 | 17% |
 | `mem` | 19 | 60 | 32% |
-| `num` | 471 | 1815 | 26% |
-| `ops` | 100 | 151 | 66% |
+| `num` | 495 | 1815 | 27% |
+| `ops` | 105 | 151 | 70% |
 | `option` | 28 | 52 | 54% |
 | `panicking` | 2 | 31 | 6% |
 | `pin` | 1 | 27 | 4% |
@@ -47,7 +47,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `result` | 30 | 42 | 71% |
 | `slice` | 15 | 198 | 8% |
 | `str` | 6 | 160 | 4% |
-| **subtotal** | **784** | **3802** | **21%** |
+| **subtotal** | **820** | **3802** | **22%** |
 
 <details><summary>Non-targeted modules: 20 modules, 7/14738 items</summary>
 
@@ -56,7 +56,7 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 
 ## `alloc`
 
-**Targeted coverage: 48/594 items (8%) across 11 modules — 7 have at least a partial model.**
+**Targeted coverage: 54/594 items (9%) across 11 modules — 8 have at least a partial model.**
 
 | module | covered | total | coverage |
 |---|--:|--:|---|
@@ -64,14 +64,14 @@ Some platform and runtime modules are not targeted and taken out of the count. S
 | `alloc` | 1 | 6 | 17% |
 | `borrow` | 3 | 9 | 33% |
 | `boxed` | 2 | 50 | 4% |
-| `collections` | 15 | 312 | 5% |
+| `collections` | 18 | 312 | 6% |
 | `fmt` | 1 | 1 | 100% |
 | `rc` | 0 | 67 | 0% |
-| `slice` | 0 | 6 | 0% |
+| `slice` | 3 | 6 | 50% |
 | `str` | 0 | 1 | 0% |
 | `string` | 5 | 63 | 8% |
 | `vec` | 21 | 77 | 27% |
-| **subtotal** | **48** | **594** | **8%** |
+| **subtotal** | **54** | **594** | **9%** |
 
 <details><summary>Non-targeted modules: 4 modules, 0/100 items</summary>
 

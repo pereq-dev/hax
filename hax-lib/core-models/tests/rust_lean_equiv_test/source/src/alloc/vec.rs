@@ -519,3 +519,32 @@ pub fn test_vec_ne_goes_through_the_dictionary() -> bool {
     b.push(keyed(1, 2));
     (a != b) == false
 }
+
+// ----- extend ----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_vec_extend() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    v.push(1);
+    let w: Vec<u8> = vec![2, 3];
+    v.extend(w);
+    v.len() == 3 && v[2] == 3
+}
+
+#[rust_lean_test]
+pub fn test_vec_extend_refs() -> bool {
+    let mut v: Vec<u8> = Vec::new();
+    let a: [u8; 2] = [4, 5];
+    v.extend(a.iter());
+    v.len() == 2 && v[1] == 5
+}
+
+#[rust_lean_test]
+pub fn test_vec_into_iter_sum() -> bool {
+    let v: Vec<u64> = vec![1, 2, 3];
+    let mut total = 0u64;
+    for x in v {
+        total += x;
+    }
+    total == 6
+}

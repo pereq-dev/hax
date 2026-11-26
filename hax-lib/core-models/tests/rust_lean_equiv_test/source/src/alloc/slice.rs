@@ -124,3 +124,21 @@ pub fn test_to_vec_empty_of_a_cloneable_element() -> bool {
     let a: [Bumped; 0] = [];
     a.as_slice().to_vec().len() == 0
 }
+
+// ----- concat ----------------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_slice_concat() -> bool {
+    let a: [u8; 2] = [1, 2];
+    let b: [u8; 1] = [3];
+    let parts: [&[u8]; 2] = [&a, &b];
+    let joined = parts.as_slice().concat();
+    joined.len() == 3 && joined[2] == 3
+}
+
+#[rust_lean_test]
+pub fn test_slice_concat_vecs() -> bool {
+    let parts: [Vec<u8>; 2] = [vec![1], vec![2, 3]];
+    let joined = parts.as_slice().concat();
+    joined.len() == 3 && joined[0] == 1
+}

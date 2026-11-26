@@ -255,3 +255,66 @@ pub fn test_ordering_eq_different() -> bool {
 pub fn test_ordering_ne() -> bool {
     5u8.cmp(&5u8) != core::cmp::Ordering::Less
 }
+
+// ----- Ord::max / min / clamp -----------------------------------------------
+
+#[rust_lean_test]
+pub fn test_ord_max_min() -> bool {
+    3usize.max(5) == 5 && 3usize.min(5) == 3 && 7u8.max(7) == 7
+}
+
+#[rust_lean_test]
+pub fn test_ord_clamp() -> bool {
+    10u32.clamp(2, 5) == 5 && 1u32.clamp(2, 5) == 2 && 3u32.clamp(2, 5) == 3
+}
+
+#[rust_lean_test(panics)]
+pub fn test_ord_clamp_inverted_panics() -> bool {
+    3u32.clamp(5, 2) == 3
+}
+
+#[derive(PartialEq, Eq, PartialOrd, Ord)]
+pub struct Wrapped(pub u8);
+
+#[rust_lean_test]
+pub fn test_ord_min_on_derived() -> bool {
+    Wrapped(4).min(Wrapped(2)) == Wrapped(2) && Wrapped(4).max(Wrapped(2)) == Wrapped(4)
+}
+
+// ----- Ord for arrays --------------------------------------------------------
+
+#[rust_lean_test]
+pub fn test_array_cmp() -> bool {
+    [1u8, 2, 3].cmp(&[1u8, 3, 0]) == core::cmp::Ordering::Less
+        && [1u8, 2, 3].cmp(&[1u8, 2, 3]) == core::cmp::Ordering::Equal
+        && [2u8, 0, 0].cmp(&[1u8, 9, 9]) == core::cmp::Ordering::Greater
+}
+
+/// `PartialOrd` reversed against `Ord`: `max`, `min` and `clamp` follow the
+/// former, as std's do.
+#[derive(PartialEq, Eq)]
+pub struct Skew(pub u8);
+
+impl PartialOrd for Skew {
+    fn partial_cmp(&self, other: &Skew) -> Option<core::cmp::Ordering> {
+        Some(other.0.cmp(&self.0))
+    }
+}
+
+impl Ord for Skew {
+    fn cmp(&self, other: &Skew) -> core::cmp::Ordering {
+        self.0.cmp(&other.0)
+    }
+}
+
+#[rust_lean_test]
+pub fn test_ord_defaults_follow_partial_ord() -> bool {
+    Skew(1).max(Skew(2)) == Skew(1)
+        && Skew(1).min(Skew(2)) == Skew(2)
+        && Skew(5).clamp(Skew(4), Skew(2)) == Skew(4)
+}
+
+#[rust_lean_test]
+pub fn test_cmp_max_min_follow_partial_ord() -> bool {
+    core::cmp::max(Skew(1), Skew(2)) == Skew(1) && core::cmp::min(Skew(1), Skew(2)) == Skew(2)
+}

@@ -187,6 +187,20 @@ def rename_boxed_box_insts(text: str) -> str:
                    "boxed.Box.Insts.", "Box.Insts.")
 
 
+def add_vec_into_iter_allocator(text: str) -> str:
+    """Give `Vec`'s `IntoIterator` instance std's allocator parameter.
+
+    The Lean-lane `Vec` model has no allocator, but a client's
+    `IntoIterator for Vec<T, A>` dictionary is applied to `A` too (aeneas only
+    erases it for the impls in its own builtin table). The parameter is
+    unused, as `A` is everywhere in the Lean `Vec`.
+    """
+    return replace("vec/into_iter allocator", text,
+                   "def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type _) :",
+                   "def vec.Vec.Insts.CoreIterTraitsCollectIntoIteratorTIntoIter (T : Type _)\n"
+                   "  (A : Type _) :")
+
+
 def rewrite_alloc_imports(text: str) -> str:
     """Adjust the imports / opens emitted by Aeneas for the staged alloc
     crate. The `alloc_models` rename has already happened by the time this
@@ -767,6 +781,7 @@ def patch_alloc() -> None:
         text = escape_keyword_binders(text)
         if path == funs:
             text = rename_iter_param(text)
+            text = add_vec_into_iter_allocator(text)
             # `drop_intoiterator_iterator_inst` removed: `IntoIterator` now carries
             # the `iteratorIteratorInst` super-instance field (the `IntoIter: Iterator`
             # bound is back, mirroring Aeneas.Std), so the alloc impls must KEEP it.
