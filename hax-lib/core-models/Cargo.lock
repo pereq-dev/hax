@@ -143,7 +143,7 @@ checksum = "4f467dd6dccf739c208452f8014c75c18bb8301b050ad1cfb27153803edb0f51"
 
 [[package]]
 name = "hax-lib"
-version = "0.5.0"
+version = "0.4.0"
 dependencies = [
  "hax-lib-macros",
  "num-bigint",
@@ -152,7 +152,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros"
-version = "0.5.0"
+version = "0.4.0"
 dependencies = [
  "hax-lib-macros-types",
  "proc-macro2",
@@ -162,7 +162,7 @@ dependencies = [
 
 [[package]]
 name = "hax-lib-macros-types"
-version = "0.5.0"
+version = "0.4.0"
 dependencies = [
  "proc-macro2",
  "quote",
