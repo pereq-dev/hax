@@ -13,6 +13,7 @@ Lean backend and library:
  - Add `mvcgen` specs for more core models: integer ranges, arrays, slices,
    conversions, byte encodings and `rem_euclid`
  - Add a spec for `array::from_fn` with a closure whose state changes
+ - `@[spec]` for `core::slice::copy_from_slice` on primitive integer types
 
 ### Changed
 
