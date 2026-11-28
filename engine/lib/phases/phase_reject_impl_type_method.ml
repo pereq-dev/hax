@@ -14,14 +14,22 @@ module Make (F : Features.T) =
         let ctx = Diagnostics.Context.Phase phase_id
       end)
 
-      let reject_anon_assoc_ty =
+      (* `impl` return types are lowered to anonymous associated types. Those
+         surfaced as trait/impl members (the non-GAT case) translate like named
+         associated types; a reference to one that has no such member (a GAT)
+         cannot be stated and rejects its item. *)
+      let reject_anon_assoc_ty declared =
+        let is_declared item =
+          List.mem declared item ~equal:Concrete_ident.equal
+        in
         object
           inherit [_] Visitors.map as super
 
           method! visit_ty span t =
             match t with
             | TAssociatedType { item; _ }
-              when Concrete_ident.is_anon_assoc_ty item ->
+              when Concrete_ident.is_anon_assoc_ty item && not (is_declared item)
+              ->
                 Error.unimplemented ~issue_id:1965
                   ~details:
                     "`impl` types are not supported in type signatures of \
@@ -41,5 +49,20 @@ module Make (F : Features.T) =
               make_hax_error_item i.span i.ident msg
         end
 
-      let ditems = List.map ~f:(reject_anon_assoc_ty#visit_item None)
+      let ditems items =
+        let declared =
+          List.concat_map items ~f:(fun i ->
+              let idents get l =
+                List.filter_map l ~f:(fun x ->
+                    let ident = get x in
+                    Option.some_if
+                      (Concrete_ident.is_anon_assoc_ty ident)
+                      ident)
+              in
+              match i.v with
+              | Trait { items; _ } -> idents (fun ti -> ti.ti_ident) items
+              | Impl { items; _ } -> idents (fun ii -> ii.ii_ident) items
+              | _ -> [])
+        in
+        List.map ~f:((reject_anon_assoc_ty declared)#visit_item None) items
     end)
