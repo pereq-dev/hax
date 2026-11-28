@@ -1,6 +1,7 @@
 module
 public import CoreModels.MissingAeneas
 public import CoreModels.Core.Funs
+public import CoreModels.Spec.Core.Clone
 public import CoreModels.Spec.Core.Slice
 public import CoreModels.Spec.RustPrimitives.Slice
 
@@ -149,18 +150,6 @@ iscalar @[spec] theorem core.Array.Insts.CoreCloneClone.«%S».clone_spec {N : S
 
 
 /-! ## `repeat` -/
-
-/-- Cloning every element of a list with an identity `clone` returns the list. -/
-private theorem mapM_clone_spec {T : Type} (inst : core.clone.Clone T)
-    (hclone : ∀ y, ⦃ ⌜ True ⌝ ⦄ inst.clone y ⦃ ⇓ r => ⌜ r = y ⌝ ⦄) (l : List T) :
-    ⦃ ⌜ True ⌝ ⦄ l.mapM inst.clone ⦃ ⇓ r => ⌜ r = l ⌝ ⦄ := by
-  induction l with
-  | nil => mvcgen
-  | cons y l ih =>
-    rw [List.mapM_cons]
-    mvcgen [hclone, ih]
-    subst_vars
-    rfl
 
 /-- With an identity `clone`, `seq_create` returns `n` copies of `x`. -/
 private theorem seq_create_spec {T : Type} (inst : core.clone.Clone T)
